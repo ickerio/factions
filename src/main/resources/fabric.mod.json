@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "factions",
+  "version": "${version}",
+
+  "name": "Factions Mod",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "authors": [
+    "ickerio"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "MIT",
+  "icon": "assets/factions/icon.png",
+
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "io.icker.factions.Factions"
+    ]
+  },
+  "mixins": [
+    "factions.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.17.x",
+    "java": ">=16"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
