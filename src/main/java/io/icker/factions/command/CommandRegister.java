@@ -6,7 +6,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.icker.factions.teams.TeamsManager;
+
+import io.icker.factions.teams.Database;
 import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -23,21 +24,23 @@ public class CommandRegister {
 				.redirect(factionsNode)
 				.build();
 
+			
 			LiteralCommandNode<ServerCommandSource> claimNode = CommandManager
 				.literal("claim")
-				.requires(source -> inFaction(source))
+				//.requires(source -> inFaction(source))
 				.executes(ClaimCommand::claim)
 				.build();
 
+			
 			LiteralCommandNode<ServerCommandSource> unclaimNode = CommandManager
 				.literal("unclaim")
-				.requires(source -> inFaction(source))
+				//.requires(source -> inFaction(source))
 				.executes(ClaimCommand::unclaim)
 				.build();
 
 			LiteralCommandNode<ServerCommandSource> createNode = CommandManager
 				.literal("create")
-				.requires(source -> !inFaction(source))
+				//.requires(source -> !inFaction(source))
 				.then(
 					CommandManager.argument("name", StringArgumentType.string())
 					.executes(CreateTeamCommand::runWithoutColour)
@@ -56,12 +59,12 @@ public class CommandRegister {
 
     }
 
-	public static boolean inFaction(ServerCommandSource source) {
-		try {
-			UUID uuid = source.getPlayer().getUuid();
-			return TeamsManager.getMember(uuid) != null;
-		} catch (CommandSyntaxException e) {
-			return false;
-		}
-	}
+	// public static boolean inFaction(ServerCommandSource source) {
+	// 	try {
+	// 		UUID uuid = source.getPlayer().getUuid();
+	// 		return Database.Members.get(uuid) != null;
+	// 	} catch (CommandSyntaxException e) {
+	// 		return false;
+	// 	}
+	// }
 }

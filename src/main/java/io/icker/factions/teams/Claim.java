@@ -4,12 +4,16 @@ public class Claim {
     public int x;
     public int z;
     public String level;
-    public transient Team owner;
+    private String teamName;
 
-    public Claim(int x, int z, String level, Team owner) {
+    public Claim(int x, int z, String level, String team) {
         this.x = x;
         this.z = z;
         this.level = level;
-        this.owner = owner;
+        this.teamName = team;
+    }
+
+    public Team getTeam() {
+        return Database.Teams.get(teamName);
     }
 }

@@ -1,5 +1,8 @@
 package io.icker.factions;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.icker.factions.command.CommandRegister;
 import io.icker.factions.event.BlockInteractEvents;
 import io.icker.factions.event.ServerEvents;
@@ -11,6 +14,8 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 
 public class Factions implements ModInitializer {
+	public static Logger LOGGER = LogManager.getLogger("factions");
+
 	@Override
 	public void onInitialize() {
 		CommandRegistrationCallback.EVENT.register(CommandRegister::register);

@@ -7,32 +7,31 @@ import net.minecraft.util.Formatting;
 
 public class Team {
     public String name;
+    public String description;
     public Formatting color;
-    public ArrayList<Member> members;
-    public ArrayList<Claim> claims;
     public int power;
 
-    public Team(String name, Formatting color) {
+    public Team(String name, String description, Formatting color, int power) {
         this.name = name;
+        this.description = description;
         this.color = color;
-        this.members = new ArrayList<Member>();
-        this.claims = new ArrayList<Claim>();
-        this.power = 100;
+        this.power = power;
+    }
+
+    public ArrayList<Claim> getClaims() {
+        return Database.Claims.getMultiple(name);
     }
 
     public Claim claim(int x, int z, String level) {
-        Claim newClaim = new Claim(x, z, level, this);
-        claims.add(newClaim);
-        return newClaim;
+        return Database.Claims.add(x, z, level, name);
     }
 
-    public boolean unclaim(int x, int z, String level) {
-        return claims.removeIf(c -> c.x == x & c.z == z && c.level == level);
+    
+    public void unclaim(int x, int z, String level) {
+        Database.Claims.remove(x, z, level, name);
     }
-
+    
     public Member addMember(UUID uuid) {
-        Member newMember = new Member(uuid, this);
-        members.add(newMember);
-        return newMember;
+        return Database.Members.add(uuid, name);
     }
 }

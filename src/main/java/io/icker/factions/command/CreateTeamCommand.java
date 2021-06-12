@@ -3,7 +3,7 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import io.icker.factions.teams.TeamsManager;
+import io.icker.factions.teams.Database;
 import io.icker.factions.util.FactionsUtil;
 
 import java.util.UUID;
@@ -30,16 +30,16 @@ public class CreateTeamCommand {
 		ServerPlayerEntity player = context.getSource().getPlayer();
 		UUID uuid = player.getUuid();
 		
-		if (TeamsManager.getMember(uuid) != null) {
-			FactionsUtil.Message.sendError(player, "Error! You are already in a team");
+		if (Database.Members.get(uuid) != null) {
+			FactionsUtil.Message.sendError(player, "You are already in a team");
 			return 0;
 		}
-		if (TeamsManager.getTeam(name) != null) {
-			FactionsUtil.Message.sendError(player, "Error! Team with that name already exists");
+		if (Database.Teams.get(name) != null) {
+			FactionsUtil.Message.sendError(player, "Team with that name already exists");
 			return 0;
 		}
 
-		TeamsManager.addTeam(name, color).addMember(uuid);
+		Database.Teams.add(name, "", color.getName(), 100).addMember(uuid);
 		player.server.getPlayerManager().sendCommandTree(player);
 
 		FactionsUtil.Message.sendSuccess(player, "Success! Team created");
