@@ -1,7 +1,7 @@
 package io.icker.factions.event;
 
-import io.icker.factions.teams.Claim;
-import io.icker.factions.teams.Database;
+import io.icker.factions.database.Claim;
+import io.icker.factions.database.Database;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,7 +20,7 @@ public class BlockInteractEvents {
 		ChunkPos chunkPos =  chunk.getPos();
 
         Claim claim = Database.Claims.get(chunkPos.x, chunkPos.z, "Overworld");
-        if (claim == null || Database.Members.get(p.getUuid()).getTeam().name == claim.getTeam().name) {
+        if (claim == null || Database.Members.get(p.getUuid()).getFaction().name == claim.getFaction().name) {
             return true;
         } else {
             return false;

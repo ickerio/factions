@@ -13,7 +13,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 
-public class Factions implements ModInitializer {
+public class FactionsMod implements ModInitializer {
 	public static Logger LOGGER = LogManager.getLogger("factions");
 
 	@Override

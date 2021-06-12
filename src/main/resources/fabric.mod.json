@@ -19,7 +19,7 @@
   "environment": "server",
   "entrypoints": {
     "main": [
-      "io.icker.factions.Factions"
+      "io.icker.factions.FactionsMod"
     ]
   },
   "mixins": [
