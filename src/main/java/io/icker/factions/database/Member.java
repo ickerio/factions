@@ -14,4 +14,8 @@ public class Member {
     public Faction getFaction() {
         return Database.Factions.get(factionName);
     }
+
+    public void remove() {
+        Database.Members.remove(uuid);
+    }
 }

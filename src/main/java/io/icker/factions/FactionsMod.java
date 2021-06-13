@@ -18,11 +18,11 @@ public class FactionsMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		CommandRegistrationCallback.EVENT.register(CommandRegister::register);
-		PlayerBlockBreakEvents.BEFORE.register(BlockInteractEvents::breakBlocks);
-		UseBlockCallback.EVENT.register(BlockInteractEvents::useBlocks);
 		ServerLifecycleEvents.SERVER_STARTING.register(ServerEvents::starting);
 		ServerLifecycleEvents.SERVER_STOPPED.register(ServerEvents::stopped);
 		ServerTickEvents.END_SERVER_TICK.register(ServerEvents::tick);
+		PlayerBlockBreakEvents.BEFORE.register(BlockInteractEvents::breakBlocks);
+		UseBlockCallback.EVENT.register(BlockInteractEvents::useBlocks);
+		CommandRegistrationCallback.EVENT.register(CommandRegister::register);
 	}
 }

@@ -19,13 +19,8 @@ public class OpenCommand implements Command<ServerCommandSource> {
 
 		ServerPlayerEntity player = context.getSource().getPlayer();
 		Member member = Database.Members.get(player.getUuid());
-		
-		if (member == null) {
-			FactionsUtil.Message.sendError(player, "You must be in a faction to open a faction"); //TODO: Faction requirement command idea
-			return 0;
-		}
 
-        //member.getFaction().setOpen(open); // TODO
+		member.getFaction().setOpen(open);
 		FactionsUtil.Message.sendSuccess(player, "Success! Faction is now %s".formatted(open ? "open" : "closed"));
 		return 1;
 	}

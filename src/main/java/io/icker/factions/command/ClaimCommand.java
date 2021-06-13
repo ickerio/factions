@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Database;
+import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
 import io.icker.factions.util.FactionsUtil;
 import net.minecraft.server.command.ServerCommandSource;
@@ -14,15 +15,12 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 
 public class ClaimCommand {
-
 	public static int claim(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		ServerPlayerEntity player = context.getSource().getPlayer();
 		ChunkPos chunkPos = getPosFromPlayer(player);
 
 		Member member = Database.Members.get(player.getUuid());
 		Claim existingClaim = Database.Claims.get(chunkPos.x, chunkPos.z, "Overworld");
-
-		// TODO: prevent someone not in team from running this command
 		
 		if (existingClaim == null) {
 			member.getFaction().claim(chunkPos.x, chunkPos.z, "Overworld"); // TODO: dimension
@@ -42,16 +40,17 @@ public class ClaimCommand {
 		ChunkPos chunkPos = getPosFromPlayer(player);
 
 		Member member = Database.Members.get(player.getUuid());
+		Faction faction = member.getFaction();
 		Claim existingClaim = Database.Claims.get(chunkPos.x, chunkPos.z, "Overworld");
 
 		if (existingClaim == null) {
 			FactionsUtil.Message.sendError(player, "Cannot unclaim an unclaimed chunk");
 			return 0;
-		} else if (existingClaim.getFaction().name != member.getFaction().name) {
+		} else if (existingClaim.getFaction().name != faction.name) {
 			FactionsUtil.Message.sendError(player, "Cannot unclaim a chunk your faction doesn't own");
 			return 0;
 		} else {
-			member.getFaction().removeClaim(chunkPos.x, chunkPos.z, "Overworld");
+			faction.removeClaim(chunkPos.x, chunkPos.z, "Overworld");
 			FactionsUtil.Message.sendSuccess(player, "Success! Chunk claim removed at %s,%s".formatted(chunkPos.x, chunkPos.z));
 			return 1;
 		}
