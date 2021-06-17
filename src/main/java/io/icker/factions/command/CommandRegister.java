@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.icker.factions.database.Database;
+import io.icker.factions.database.Member;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -58,12 +58,29 @@ public class CommandRegister {
 			.executes(ClaimCommand::remove)
 			.build();
 
+		LiteralCommandNode<ServerCommandSource> joinNode = CommandManager
+			.literal("join")
+			.requires(src -> !isMember(src))
+			.then(
+				CommandManager.argument("name", StringArgumentType.greedyString())
+				.executes(new JoinCommand())
+			)
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> leaveNode = CommandManager
+			.literal("leave")
+			.requires(CommandRegister::isMember)
+			.executes(new JoinCommand())
+			.build();
+
 		dispatcher.getRoot().addChild(factionsNode);
 		dispatcher.getRoot().addChild(factionsAliasNode);
 
 		factionsNode.addChild(createNode);
 		factionsNode.addChild(disbandNode);
 		factionsNode.addChild(openNode);
+		factionsNode.addChild(joinNode);
+		factionsNode.addChild(leaveNode);
 
 		factionsNode.addChild(claimNode);
 		claimNode.addChild(removeNode);
@@ -72,7 +89,7 @@ public class CommandRegister {
 	public static boolean isMember(ServerCommandSource source) {
 		try {
 			ServerPlayerEntity player = source.getPlayer();
-			return Database.Members.get(player.getUuid()) != null;
+			return Member.get(player.getUuid()) != null;
 		} catch (CommandSyntaxException e) { return false; }
 	}
 }

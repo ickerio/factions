@@ -1,0 +1,20 @@
+{
+    "factions.command.create.success": "Success! Faction created",
+    "factions.command.create.already_exists": "Cannot create a faction as a one with that name already exists",
+
+    "factions.command.claim.success": "Success! Chunk (%d,%d) claimed",
+    "factions.command.claim.already_owns": "Cannot claim a chunk your faction has already claimed",
+    "factions.command.claim.already_claimed": "Cannot claim a chunk already claimed by %s",
+
+    "factions.command.claim_remove.success": "Success! Chunk (%d,%d) claim removed",
+    "factions.command.claim_remove.unclaimed": "Cannot unclaim an unclaimed chunk",
+    "factions.command.claim_remove.not_yours": "Cannot unclaim a chunk that your faction does not own",
+
+    "factions.command.disband.success": "Success! Faction disbanded",
+
+    "factions.command.join.success": "Success! Joined faction %s",
+    "factions.command.join.not_exist": "Cannot join a faction that does not exist",
+    "factions.command.join.closed": "Cannot join a faction that is closed",
+
+    "factions.command.leave.success": "Success! Left the faction"
+}

@@ -2,25 +2,25 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
-import io.icker.factions.database.Database;
 import io.icker.factions.database.Member;
-import io.icker.factions.util.FactionsUtil;
 import com.mojang.brigadier.Command;
-
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 public class LeaveCommand implements Command<ServerCommandSource> {
 	@Override
 	public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerPlayerEntity player = context.getSource().getPlayer();
-		Member member = Database.Members.get(player.getUuid());
-
-		member.remove();
-        // TODO: remove faction if no members left - think this can be done in pure SQL
+		ServerCommandSource source = context.getSource();
+		ServerPlayerEntity player = source.getPlayer();
+		
+		Member.get(player.getUuid()).remove();
+        
+		// TODO: set to Open if no players left
         context.getSource().getMinecraftServer().getPlayerManager().sendCommandTree(player);
-		FactionsUtil.Message.sendSuccess(player, "Success! You have left your faction");
+		
+		source.sendFeedback(new TranslatableText("factions.command.leave.success").formatted(Formatting.GREEN), false);
 		return 1;
 	}
 }

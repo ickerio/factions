@@ -6,12 +6,16 @@ import java.sql.SQLException;
 
 import io.icker.factions.FactionsMod;
 
+// TODO: stmt.close() on gets
 public class Query {
-    private PreparedStatement statement;;
+    private PreparedStatement statement;
     private ResultSet result;
+
+    private String query;
     private int paramIndex = 1;
+    private boolean skippedNext = false;
+
     boolean success;
-    String query;
 
     public Query(String query) {
         this.query = query;
@@ -51,6 +55,14 @@ public class Query {
         return false;
     }
 
+    public Object getObject(String columnName) {
+        try {
+            return result.getObject(columnName);
+        } catch (SQLException e) {error();}
+        return false;
+    }
+
+
     public Query executeUpdate() {
         try {
             int affectedRows = statement.executeUpdate();
@@ -65,6 +77,14 @@ public class Query {
             success = result.next();
         } catch (SQLException e) {error();}
         return this;
+    }
+
+    public boolean next() {
+        try {
+            if (skippedNext) return result.next();
+        } catch (SQLException e) {error();}
+        skippedNext = true;
+        return success;
     }
 
     private void error() {
