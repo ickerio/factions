@@ -16,6 +16,7 @@ v1.1 release
  - /f home, /f home set
 
 v1.2 release
+ - Remove desync (from doors and inventory)
  - Scoreboard (with team kills, deaths, power and claims)
  - Coloured name tags
  - Customized chat
