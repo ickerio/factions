@@ -1,5 +1,6 @@
 package io.icker.factions.database;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import net.minecraft.util.Formatting;
@@ -47,7 +48,12 @@ public class Faction {
 
     public void setOpen(boolean open) {
         new Query("UPDATE Faction SET open = ? WHERE name = ?;")
-            .set(open, name);
+            .set(open, name)
+            .executeUpdate();
+    }
+
+    public ArrayList<Invite> getInvites() {
+        return Invite.get(name);
     }
 
     public void remove() {

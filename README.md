@@ -1,7 +1,6 @@
 # Factions
 
 Highly customizable lightweight fabric mod for minecraft.
-Very much a work in progress at this point...
 
 # Plan
 
@@ -14,6 +13,8 @@ v1.1 release
  - Config
     - friendly_fire, teleport_delay
  - /f home, /f home set
+ - Faction admins
+    - promote, kick, ban
 
 v1.2 release
  - Remove desync (from doors and inventory)
@@ -21,6 +22,7 @@ v1.2 release
  - Coloured name tags
  - Customized chat
  - Admin claims
+ - Custom language options
 
 # Commands
 

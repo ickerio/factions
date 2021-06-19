@@ -22,7 +22,7 @@ public class CreateCommand implements Command<ServerCommandSource> {
 		}
 
 		ServerPlayerEntity player = source.getPlayer();
-		Faction.add(name, "No description set", Formatting.RESET.getName(), true, 100).addMember(player.getUuid());
+		Faction.add(name, "No description set", Formatting.RESET.getName(), false, 100).addMember(player.getUuid());
 		source.getMinecraftServer().getPlayerManager().sendCommandTree(source.getPlayer());
 		
 		source.sendFeedback(new TranslatableText("factions.command.create.success").formatted(Formatting.GREEN), false);

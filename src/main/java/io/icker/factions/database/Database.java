@@ -40,7 +40,6 @@ public class Database {
                     player UUID,
                     faction VARCHAR(255),
                     PRIMARY KEY (player, faction),
-                    FOREIGN KEY(player) REFERENCES Member(uuid) ON DELETE CASCADE,
                     FOREIGN KEY(faction) REFERENCES Faction(name) ON DELETE CASCADE
                 )
                 """)

@@ -13,8 +13,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 
-// TODO: rewrite given that Claim.add will return null on duplicate add
-
 public class ClaimCommand {
 	public static int claim(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		ServerCommandSource source = context.getSource();
