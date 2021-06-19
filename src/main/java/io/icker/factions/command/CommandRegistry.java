@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.database.Member;
+import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -36,6 +37,15 @@ public class CommandRegistry {
 			.literal("disband")
 			.requires(CommandRegistry::isFactionMember)
 			.executes(new DisbandCommand())
+			.build();           
+
+		LiteralCommandNode<ServerCommandSource> color = CommandManager
+			.literal("color")
+			.requires(CommandRegistry::isFactionMember)
+			.then(
+				CommandManager.argument("color", ColorArgumentType.color())
+				.executes(new ColorCommand())
+			)
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> open = CommandManager
@@ -105,6 +115,7 @@ public class CommandRegistry {
 
 		factions.addChild(create);
 		factions.addChild(disband);
+		factions.addChild(color);
 		factions.addChild(open);
 		factions.addChild(join);
 		factions.addChild(leave);
