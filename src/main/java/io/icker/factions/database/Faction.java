@@ -46,6 +46,18 @@ public class Faction {
         return Member.add(uuid, name);
     }
 
+    public void setDescription(String description) {
+        new Query("UPDATE Faction SET description = ? WHERE name = ?;")
+        .set(description, name)
+        .executeUpdate();
+    }
+
+    public void setColor(Formatting color) {
+        new Query("UPDATE Faction SET color = ? WHERE name = ?;")
+            .set(color.getName(), name)
+            .executeUpdate();
+    }
+
     public void setOpen(boolean open) {
         new Query("UPDATE Faction SET open = ? WHERE name = ?;")
             .set(open, name)
