@@ -18,9 +18,8 @@ public class ColorCommand implements Command<ServerCommandSource> {
 		ServerCommandSource source = context.getSource();
 
 		Member.get(source.getPlayer().getUuid()).getFaction().setColor(color);
-        MutableText reply = new LiteralText("Succesfully updated faction color to ").formatted(Formatting.GREEN)
-            .append(new LiteralText(color.getName()).formatted(color));
-            
+        MutableText reply = new LiteralText("Succesfully updated faction color").formatted(Formatting.GREEN);
+        
 		source.sendFeedback(reply, false);
 		return 1;
 	}
