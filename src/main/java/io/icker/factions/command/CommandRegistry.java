@@ -120,6 +120,17 @@ public class CommandRegistry {
 			.executes(ClaimCommand::remove)
 			.build();
 
+		LiteralCommandNode<ServerCommandSource> home = CommandManager
+			.literal("home")
+			.requires(CommandRegistry::isFactionMember)
+			.executes(HomeCommand::go)
+			.build();
+		
+		LiteralCommandNode<ServerCommandSource> setHome = CommandManager
+			.literal("set")
+			.executes(HomeCommand::set)
+			.build();
+
 		dispatcher.getRoot().addChild(factions);
 		dispatcher.getRoot().addChild(alias);
 
@@ -140,6 +151,9 @@ public class CommandRegistry {
 
 		factions.addChild(claim);
 		claim.addChild(removeClaim);
+
+		factions.addChild(home);
+		home.addChild(setHome);
 	}
 
 	public static boolean isFactionMember(ServerCommandSource source) {

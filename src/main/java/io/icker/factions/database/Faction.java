@@ -68,6 +68,14 @@ public class Faction {
         return Invite.get(name);
     }
 
+    public Home getHome() {
+        return Home.get(name);
+    }
+
+    public Home setHome(double x, double y, double z, float yaw, float pitch, String level) {
+        return Home.set(name, x, y, z, yaw, pitch, level);
+    }
+
     public void remove() {
         new Query("DELETE FROM Faction WHERE name = ?;")
             .set(name)

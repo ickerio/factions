@@ -48,6 +48,20 @@ public class Query {
         return 0;
     }
 
+    public double getDouble(String columnName) {
+        try {
+            return result.getDouble(columnName);
+        } catch (SQLException e) {error();}
+        return 0;
+    }
+
+    public float getFloat(String columnName) {
+        try {
+            return result.getFloat(columnName);
+        } catch (SQLException e) {error();}
+        return 0;
+    }
+
     public boolean getBool(String columnName) {
         try {
             return result.getBoolean(columnName);

@@ -41,7 +41,18 @@ public class Database {
                     faction VARCHAR(255),
                     PRIMARY KEY (player, faction),
                     FOREIGN KEY(faction) REFERENCES Faction(name) ON DELETE CASCADE
-                )
+                );
+
+                CREATE TABLE IF NOT EXISTS Home (
+                    faction VARCHAR(255),
+                    x DOUBLE,
+                    y DOUBLE,
+                    z DOUBLE,
+                    yaw REAL,
+                    pitch REAL,
+                    level VARCHAR(255),
+                    FOREIGN KEY(faction) REFERENCES Faction(name) ON DELETE CASCADE
+                );
                 """)
                 .executeUpdate();
             FactionsMod.LOGGER.info("Successfully connected to database");
