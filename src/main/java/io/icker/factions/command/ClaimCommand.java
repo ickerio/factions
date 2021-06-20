@@ -9,7 +9,7 @@ import io.icker.factions.database.Member;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 
@@ -28,14 +28,12 @@ public class ClaimCommand {
 		
 		if (existingClaim == null) {
 			member.getFaction().claim(chunkPos.x, chunkPos.z, dimension);
-			source.sendFeedback(new TranslatableText("factions.command.claim.success", chunkPos.x, chunkPos.z).formatted(Formatting.GREEN), false);
+			source.sendFeedback(new LiteralText("Successfully claimed chunk"), false);
 			return 1;
 		}
 		
-		if (existingClaim.getFaction().name == member.getFaction().name)
-			source.sendFeedback(new TranslatableText("factions.command.claim.already_owns").formatted(Formatting.RED), false);
-		else 
-			source.sendFeedback(new TranslatableText("factions.command.claim.already_claimed").formatted(Formatting.RED), false);
+		String owner = existingClaim.getFaction().name == member.getFaction().name ? "Your" : "Another";
+		source.sendFeedback(new LiteralText(owner + " faction already owns this chunk").formatted(Formatting.RED), false);
 		return 0;
 	}
 
@@ -51,18 +49,18 @@ public class ClaimCommand {
 		Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
 		if (existingClaim == null) {
-			source.sendFeedback(new TranslatableText("factions.command.claim_remove.unclaimed").formatted(Formatting.RED), false);
+			source.sendFeedback(new LiteralText("Cannot remove a claim on an unclaimed chunk").formatted(Formatting.RED), false);
 			return 0;
 		}
 
 		Faction faction = Member.get(player.getUuid()).getFaction();
 		if (existingClaim.getFaction().name != faction.name) {
-			source.sendFeedback(new TranslatableText("factions.command.claim_remove.not_yours").formatted(Formatting.RED), false);
+			source.sendFeedback(new LiteralText("Cannot remove a claim owned by another faction").formatted(Formatting.RED), false);
 			return 0;
 		}
 
 		existingClaim.remove();
-		source.sendFeedback(new TranslatableText("factions.command.claim_remove.success").formatted(Formatting.GREEN), false);
+		source.sendFeedback(new LiteralText("Successfully removed claim"), false);
 		return 1;
 	}
 }

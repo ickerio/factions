@@ -13,9 +13,12 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.UserCache;
 
 public class InviteCommand {
 	public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -24,17 +27,17 @@ public class InviteCommand {
 		ArrayList<Invite> invites = Member.get(source.getPlayer().getUuid()).getFaction().getInvites();
 		int count = invites == null ? 0 : invites.size();
 
-		MutableText reply = new LiteralText("You have ").formatted(Formatting.GREEN)
+		MutableText reply = new LiteralText("You have ")
 			.append(new LiteralText(String.valueOf(count)).formatted(Formatting.YELLOW))
-			.append(new LiteralText(String.format(" outgoing invite%s", count == 1 ? "" : "s")).formatted(Formatting.GREEN));
+			.append(new LiteralText(String.format(" outgoing invite%s", count == 1 ? "" : "s")));
 
 		source.sendFeedback(reply, false);
 
 		if (count == 0) return 1;
 
-		PlayerManager manager = source.getMinecraftServer().getPlayerManager();
+		UserCache cache = source.getMinecraftServer().getUserCache();
 		String players = invites.stream()
-			.map(invite -> manager.getPlayer(invite.playerId).getName().getString()) // TODO: Fix Null when player offline
+			.map(invite -> cache.getByUuid(invite.playerId).getName()) // TODO: Fix Null when player offline
 			.collect(Collectors.joining(", "));
 
 		source.sendFeedback(new LiteralText(players).formatted(Formatting.ITALIC), false);
@@ -48,18 +51,18 @@ public class InviteCommand {
 		Faction faction = Member.get(source.getPlayer().getUuid()).getFaction();
 		Invite invite = Invite.get(target.getUuid(), faction.name);
 		if (invite != null) {
-			MutableText reply = new LiteralText(target.getName().getString())
-				.append(new LiteralText(" was already invited to your faction").formatted(Formatting.RED));
+			MutableText reply = new LiteralText(target.getName().getString() + " was already invited to your faction").formatted(Formatting.RED);
 			source.sendFeedback(reply, false);
 			return 0;
 		}
 
 		Invite.add(target.getUuid(), faction.name); 
 
-		MutableText reply = new LiteralText(target.getName().getString())
-			.append(new LiteralText(" has been invited to your faction.").formatted(Formatting.GREEN));
+		MutableText reply = new LiteralText(target.getName().getString() + " has been invited to your faction.");
 		MutableText alert = new LiteralText(String.format("You have been invited to join ")).formatted(Formatting.YELLOW)
-			.append(new LiteralText(faction.name).formatted(faction.color));
+			.append(new LiteralText(faction.name).formatted(faction.color))
+			.styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to join")))
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/factions join " + faction.name)));
 
 		source.sendFeedback(reply, false);
 		target.sendMessage(alert, false);
@@ -75,8 +78,7 @@ public class InviteCommand {
 		Faction faction = Member.get(player.getUuid()).getFaction();
 		new Invite(target.getUuid(), faction.name).remove();
 
-		MutableText reply = new LiteralText(target.getName().getString())
-			.append(new LiteralText(" is no longer invited to your faction").formatted(Formatting.GREEN));
+		MutableText reply = new LiteralText(target.getName().getString() + " is no longer invited to your faction");
 		source.sendFeedback(reply, false);
 		return 1;
 	}

@@ -29,7 +29,7 @@ public class JoinCommand implements Command<ServerCommandSource> {
 		ServerPlayerEntity player = source.getPlayer();
 		Invite invite = Invite.get(player.getUuid(), faction.name);
         if (!faction.open && invite == null) {
-			source.sendFeedback(new LiteralText("Cannot join faction as it is not open you are not invited").formatted(Formatting.RED), false);
+			source.sendFeedback(new LiteralText("Cannot join faction as it is not open and you are not invited").formatted(Formatting.RED), false);
 			return 0;
 		}
 
@@ -37,8 +37,7 @@ public class JoinCommand implements Command<ServerCommandSource> {
 		faction.addMember(player.getUuid());
         source.getMinecraftServer().getPlayerManager().sendCommandTree(player);
 		
-		MutableText reply = new LiteralText("You are now a member of ").formatted(Formatting.GREEN)
-			.append(new LiteralText(faction.name).formatted(faction.color));
+		MutableText reply = new LiteralText("Joined ").append(new LiteralText(faction.name).formatted(faction.color));
 		source.sendFeedback(reply, false);
 		return 1;
 	}

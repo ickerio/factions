@@ -37,24 +37,6 @@ public class CommandRegistry {
 			.literal("disband")
 			.requires(CommandRegistry::isFactionMember)
 			.executes(new DisbandCommand())
-			.build();           
-
-		LiteralCommandNode<ServerCommandSource> color = CommandManager
-			.literal("color")
-			.requires(CommandRegistry::isFactionMember)
-			.then(
-				CommandManager.argument("color", ColorArgumentType.color())
-				.executes(new ColorCommand())
-			)
-			.build();
-
-		LiteralCommandNode<ServerCommandSource> open = CommandManager
-			.literal("open")
-			.requires(CommandRegistry::isFactionMember)
-			.then(
-				CommandManager.argument("open", BoolArgumentType.bool())
-				.executes(new OpenCommand())
-			)
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> join = CommandManager
@@ -70,6 +52,35 @@ public class CommandRegistry {
 			.literal("leave")
 			.requires(CommandRegistry::isFactionMember)
 			.executes(new LeaveCommand())
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> modify = CommandManager
+			.literal("modify")
+			.requires(CommandRegistry::isFactionMember)
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> description = CommandManager
+			.literal("description")
+			.then(
+				CommandManager.argument("description", StringArgumentType.greedyString())
+				.executes(ModifyCommand::description)
+			)
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> color = CommandManager
+			.literal("color")
+			.then(
+				CommandManager.argument("color", ColorArgumentType.color())
+				.executes(ModifyCommand::color)
+			)
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> open = CommandManager
+			.literal("open")
+			.then(
+				CommandManager.argument("open", BoolArgumentType.bool())
+				.executes(ModifyCommand::open)
+			)
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> invite = CommandManager
@@ -106,7 +117,6 @@ public class CommandRegistry {
 		
 		LiteralCommandNode<ServerCommandSource> removeClaim = CommandManager
 			.literal("remove")
-			.requires(CommandRegistry::isFactionMember)
 			.executes(ClaimCommand::remove)
 			.build();
 
@@ -115,10 +125,13 @@ public class CommandRegistry {
 
 		factions.addChild(create);
 		factions.addChild(disband);
-		factions.addChild(color);
-		factions.addChild(open);
 		factions.addChild(join);
 		factions.addChild(leave);
+
+		factions.addChild(modify);
+		modify.addChild(description);
+		modify.addChild(color);
+		modify.addChild(open);
 
 		factions.addChild(invite);
 		invite.addChild(listInvites);

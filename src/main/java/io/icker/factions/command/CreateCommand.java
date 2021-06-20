@@ -7,6 +7,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
@@ -17,7 +18,7 @@ public class CreateCommand implements Command<ServerCommandSource> {
 
 		ServerCommandSource source = context.getSource();
 		if (Faction.get(name) != null) {
-			source.sendFeedback(new TranslatableText("factions.command.create.already_exists").formatted(Formatting.RED), false);
+			source.sendFeedback(new LiteralText("Cannot create a faction as a one with that name already exists").formatted(Formatting.RED), false);
 			return 0;
 		}
 
@@ -25,7 +26,7 @@ public class CreateCommand implements Command<ServerCommandSource> {
 		Faction.add(name, "No description set", Formatting.RESET.getName(), false, 100).addMember(player.getUuid());
 		source.getMinecraftServer().getPlayerManager().sendCommandTree(source.getPlayer());
 		
-		source.sendFeedback(new TranslatableText("factions.command.create.success").formatted(Formatting.GREEN), false);
+		source.sendFeedback(new TranslatableText("Successfully created faction"), false);
 		return 1;
 	}
 }
