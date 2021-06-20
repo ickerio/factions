@@ -10,7 +10,6 @@ import io.icker.factions.database.Faction;
 import io.icker.factions.database.Invite;
 import io.icker.factions.database.Member;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
