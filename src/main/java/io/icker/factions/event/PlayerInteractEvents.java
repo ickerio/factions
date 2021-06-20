@@ -3,43 +3,38 @@ package io.icker.factions.event;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Member;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 public class PlayerInteractEvents {
-    public static boolean canBreakBlocks(World world, PlayerEntity player, BlockPos pos) {
+    public static boolean preventBlockChange(PlayerEntity player, World world, BlockPos pos) {
         Member member = Member.get(player.getUuid());
 
-        boolean canPlayerChunk = actionPermitted(player.getBlockPos(), world, member);
-        boolean canActionChunk = actionPermitted(pos, world, member);
+        boolean preventPlayerChunk = actionPermitted(player.getBlockPos(), world, member);
+        boolean preventActionChunk = actionPermitted(pos, world, member);
 
-        return canPlayerChunk && canActionChunk;
+        return !preventPlayerChunk || !preventActionChunk;
     }
-
-    public static boolean canUseBlocks(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
-        Member member = Member.get(player.getUuid());
-
-        boolean canPlayerChunk = actionPermitted(player.getBlockPos(), world, member);
-        boolean canActionChunk = actionPermitted(hitResult.getBlockPos(), world, member);
-
-        return canPlayerChunk && canActionChunk;
-    }
-
     
-    public static boolean canUseItem(PlayerEntity player, World world) {
+    public static boolean preventUseItem(PlayerEntity player, World world) {
         Member member = Member.get(player.getUuid());
-
-        return actionPermitted(player.getBlockPos(), world, member);
+        return !actionPermitted(player.getBlockPos(), world, member);
     }
 
-    public static boolean actionPermitted(BlockPos pos, World world, Member member) {
+    public static void warnPlayer(PlayerEntity target, String action) {
+        target.sendMessage(new LiteralText(String.format("Unable to %s in this claim", action))
+            .formatted(Formatting.RED, Formatting.BOLD), true);
+    }
+
+    static boolean actionPermitted(BlockPos pos, World world, Member member) {
         String dimension = world.getRegistryKey().getValue().toString();
         ChunkPos actionPos =  world.getChunk(pos).getPos();
 
         Claim claim = Claim.get(actionPos.x, actionPos.z, dimension);
+
         return claim == null || (member == null ? false : member.getFaction().name == claim.getFaction().name);
     }
 }
