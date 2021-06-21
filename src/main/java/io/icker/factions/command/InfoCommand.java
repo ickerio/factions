@@ -1,5 +1,6 @@
 package io.icker.factions.command;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -7,14 +8,9 @@ import io.icker.factions.config.Config;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
 
-import java.text.Format;
 import java.util.ArrayList;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
-
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.HoverEvent;
