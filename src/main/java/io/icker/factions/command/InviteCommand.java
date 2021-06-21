@@ -36,7 +36,7 @@ public class InviteCommand {
 
 		UserCache cache = source.getMinecraftServer().getUserCache();
 		String players = invites.stream()
-			.map(invite -> cache.getByUuid(invite.playerId).getName()) // TODO: Fix Null when player offline
+			.map(invite -> cache.getByUuid(invite.playerId).getName())
 			.collect(Collectors.joining(", "));
 
 		source.sendFeedback(new LiteralText(players).formatted(Formatting.ITALIC), false);
