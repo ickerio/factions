@@ -32,7 +32,7 @@ public class InfoCommand  {
 
         source.sendFeedback(buildFactionMessage(member.getFaction(), source), false);
         return 1;
-	}
+    }
 
     public static int any(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		String factionName = StringArgumentType.getString(context, "faction"); // TODO: Suggestions for factions
@@ -47,7 +47,7 @@ public class InfoCommand  {
 
         source.sendFeedback(buildFactionMessage(faction, source), false);
         return 1;
-	}
+    }
 
     public static MutableText buildFactionMessage(Faction faction, ServerCommandSource source) {
         ArrayList<Member> members = faction.getMembers();
@@ -73,7 +73,7 @@ public class InfoCommand  {
             .append(new LiteralText(Formatting.GREEN.toString() + faction.power + slash() + requiredPower + slash() + maxPower)
                 .styled(s -> s.withHoverEvent(showEvent("Current / Required / Max")))
             );
-    } //☻.★.►·
+    }
 
     private static MutableText filler(String symbol) {
         return new LiteralText(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol +  Formatting.RESET +  " ");
