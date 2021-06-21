@@ -11,6 +11,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 public class HomeCommand {
     public static int go(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -25,17 +28,15 @@ public class HomeCommand {
         }
 
         DamageTracker tracker = player.getDamageTracker();
-        boolean canTeleport = tracker.getMostRecentDamage() == null || tracker.getTimeSinceLastAttack() >= 20 * 5;
-
-        if (canTeleport) {
+        if (tracker.getMostRecentDamage() == null || tracker.getTimeSinceLastAttack() >= 20 * 5) {
             player.teleport(
-                player.getServer().getOverworld(), // TODO: Home level
+                player.getServer().getWorld(RegistryKey.of(Registry.WORLD_KEY, new Identifier(home.level))),
                 home.x, home.y, home.z,
                 home.yaw, home.pitch
             );
-            source.sendFeedback(new LiteralText("Arrived at faction home"), false);
+            source.sendFeedback(new LiteralText("Warped to faction home"), false);
         } else {
-            source.sendFeedback(new LiteralText("Unable to warp when recently taken damage").formatted(Formatting.RED), false);
+            source.sendFeedback(new LiteralText("Unable to warp while in combat").formatted(Formatting.RED), false);
         }
         return 1;
     }
@@ -51,7 +52,7 @@ public class HomeCommand {
                 player.getServerWorld().getRegistryKey().getValue().toString()
             );
 
-        source.sendFeedback(new LiteralText(String.format("Set faction home to (%1$,.2f,%1$,.2f,%1$,.2f)", home.x, home.y, home.z)), false);
+        source.sendFeedback(new LiteralText(String.format("Set faction home to %.2f, %.2f, %.2f", home.x, home.y, home.z)), false);
         return 1;
     }
 }
