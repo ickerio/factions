@@ -54,6 +54,15 @@ public class CommandRegistry {
 			.executes(new LeaveCommand())
 			.build();
 
+		LiteralCommandNode<ServerCommandSource> info = CommandManager
+			.literal("info")
+			.executes(InfoCommand::self)
+			.then(
+				CommandManager.argument("faction", StringArgumentType.greedyString())
+				.executes(InfoCommand::any)
+			)
+			.build();
+
 		LiteralCommandNode<ServerCommandSource> modify = CommandManager
 			.literal("modify")
 			.requires(CommandRegistry::isFactionMember)
@@ -138,6 +147,7 @@ public class CommandRegistry {
 		factions.addChild(disband);
 		factions.addChild(join);
 		factions.addChild(leave);
+		factions.addChild(info);
 
 		factions.addChild(modify);
 		modify.addChild(description);

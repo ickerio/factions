@@ -38,6 +38,13 @@ public class Faction {
         this.power = power;
     }
 
+    public int getClaimCount() {
+        return new Query("SELECT COUNT(*) AS count FROM Claim where faction = ?;")
+            .set(name)
+            .executeQuery()
+            .getInt("count");
+    }
+
     public Claim claim(int x, int z, String level) {
         return Claim.add(x, z, level, name);
     }
@@ -46,10 +53,24 @@ public class Faction {
         return Member.add(uuid, name);
     }
 
+    public ArrayList<Member> getMembers() {
+        Query query = new Query("SELECT uuid FROM Member WHERE faction = ?;")
+            .set(name)
+            .executeQuery();
+
+        if (!query.success) return null;
+        ArrayList<Member> members = new ArrayList<Member>();
+
+        while (query.next()) {
+            members.add(new Member((UUID) query.getObject("uuid"), name));
+        }
+        return members;
+    }
+
     public void setDescription(String description) {
         new Query("UPDATE Faction SET description = ? WHERE name = ?;")
-        .set(description, name)
-        .executeUpdate();
+            .set(description, name)
+            .executeUpdate();
     }
 
     public void setColor(Formatting color) {
