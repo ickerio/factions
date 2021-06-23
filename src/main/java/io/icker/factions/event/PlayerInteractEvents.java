@@ -1,6 +1,8 @@
 package io.icker.factions.event;
 
+import io.icker.factions.config.Config;
 import io.icker.factions.database.Claim;
+import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
 import io.icker.factions.util.Message;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,7 +46,13 @@ public class PlayerInteractEvents {
         ChunkPos actionPos =  world.getChunk(pos).getPos();
 
         Claim claim = Claim.get(actionPos.x, actionPos.z, dimension);
+        if (claim == null) return true;
 
-        return claim == null || (member == null ? false : member.getFaction().name == claim.getFaction().name);
+        Faction owner = claim.getFaction();
+
+        boolean overclaimed = owner.getClaimCount() * Config.CLAIM_WEIGHT > owner.power;
+        boolean validMember = member == null ? false : member.getFaction().name == owner.name;
+
+        return overclaimed || validMember;
     }
 }
