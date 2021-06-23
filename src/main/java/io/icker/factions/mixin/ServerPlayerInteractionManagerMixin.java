@@ -27,7 +27,7 @@ public class ServerPlayerInteractionManagerMixin {
     // TODO: Prevent inventory and door desync
     @Inject(at = @At("HEAD"), method = "tryBreakBlock", cancellable = true)
     private void tryBreakBlock(BlockPos pos, CallbackInfoReturnable<Boolean> info) {
-        if (PlayerInteractEvents.preventBlockChange(player, world, pos)) {
+        if (PlayerInteractEvents.preventInteract(player, world, pos)) {
             PlayerInteractEvents.warnPlayer(player, "break blocks");
             info.setReturnValue(false);
         }
@@ -35,7 +35,7 @@ public class ServerPlayerInteractionManagerMixin {
 
 	@Inject(at = @At("HEAD"), method = "interactBlock", cancellable = true)
 	public void interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult blockHitResult, CallbackInfoReturnable<ActionResult> info) {
-        if (PlayerInteractEvents.preventBlockChange(player, world, blockHitResult.getBlockPos())) {
+        if (PlayerInteractEvents.preventInteract(player, world, blockHitResult.getBlockPos())) {
             PlayerInteractEvents.warnPlayer(player, "use blocks");
             info.setReturnValue(ActionResult.FAIL);
         }

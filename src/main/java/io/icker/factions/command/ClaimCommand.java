@@ -6,11 +6,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
+import io.icker.factions.util.Message;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 
 public class ClaimCommand {
@@ -27,13 +26,14 @@ public class ClaimCommand {
 		Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 		
 		if (existingClaim == null) {
-			member.getFaction().claim(chunkPos.x, chunkPos.z, dimension);
-			source.sendFeedback(new LiteralText("Successfully claimed chunk"), false);
+			Faction faction = member.getFaction();
+			faction.claim(chunkPos.x, chunkPos.z, dimension);
+			new Message("%s claimed chunk (%d, %d)", player.getName().asString(), chunkPos.x, chunkPos.z).send(faction);
 			return 1;
 		}
 		
 		String owner = existingClaim.getFaction().name == member.getFaction().name ? "Your" : "Another";
-		source.sendFeedback(new LiteralText(owner + " faction already owns this chunk").formatted(Formatting.RED), false);
+		new Message(owner + " faction already owns this chunk").fail().send(player, false);
 		return 0;
 	}
 
@@ -49,18 +49,18 @@ public class ClaimCommand {
 		Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
 		if (existingClaim == null) {
-			source.sendFeedback(new LiteralText("Cannot remove a claim on an unclaimed chunk").formatted(Formatting.RED), false);
+			new Message("Cannot remove a claim on an unclaimed chunk").fail().send(player, false);
 			return 0;
 		}
 
 		Faction faction = Member.get(player.getUuid()).getFaction();
 		if (existingClaim.getFaction().name != faction.name) {
-			source.sendFeedback(new LiteralText("Cannot remove a claim owned by another faction").formatted(Formatting.RED), false);
+			new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
 			return 0;
 		}
 
 		existingClaim.remove();
-		source.sendFeedback(new LiteralText("Successfully removed claim"), false);
+		new Message("%s removed claim at chunk (%d, %d)", player.getName().asString(), existingClaim.x, existingClaim.z).send(faction);
 		return 1;
 	}
 }

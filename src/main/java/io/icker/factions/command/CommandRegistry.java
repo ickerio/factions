@@ -65,7 +65,6 @@ public class CommandRegistry {
 
 		LiteralCommandNode<ServerCommandSource> list = CommandManager
 			.literal("list")
-			.requires(CommandRegistry::isFactionMember)
 			.executes(new ListCommand())
 			.build();
 

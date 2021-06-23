@@ -15,6 +15,7 @@ public class FactionsMod implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Initalized Factions Mod v0 for Minecraft v1.17");
 		ServerLifecycleEvents.SERVER_STARTING.register(ServerEvents::starting);
+		ServerLifecycleEvents.SERVER_STARTED.register(ServerEvents::started);
 		ServerLifecycleEvents.SERVER_STOPPED.register(ServerEvents::stopped);
 		ServerTickEvents.END_SERVER_TICK.register(ServerEvents::tick);
 	}

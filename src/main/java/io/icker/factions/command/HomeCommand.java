@@ -5,13 +5,13 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import io.icker.factions.config.Config;
+import io.icker.factions.database.Faction;
 import io.icker.factions.database.Home;
 import io.icker.factions.database.Member;
+import io.icker.factions.util.Message;
 import net.minecraft.entity.damage.DamageTracker;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -24,7 +24,7 @@ public class HomeCommand {
         Home home = Member.get(player.getUuid()).getFaction().getHome();
 
         if (home == null) {
-            source.sendFeedback(new LiteralText("No faction home set").formatted(Formatting.RED), false);
+            new Message("No faction home set").fail().send(player, false);
             return 0;
         }
 
@@ -35,9 +35,9 @@ public class HomeCommand {
                 home.x, home.y, home.z,
                 home.yaw, home.pitch
             );
-            source.sendFeedback(new LiteralText("Warped to faction home"), false);
+            new Message("Warped to faction home").send(player, false);
         } else {
-            source.sendFeedback(new LiteralText("Unable to warp while in combat").formatted(Formatting.RED), false);
+            new Message("Unable to warp while in combat").fail().send(player, false);
         }
         return 1;
     }
@@ -46,14 +46,14 @@ public class HomeCommand {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Home home = Member.get(player.getUuid()).getFaction()
-            .setHome(
-                player.getX(), player.getY(), player.getZ(),
-                player.getHeadYaw(), player.getPitch(),
-                player.getServerWorld().getRegistryKey().getValue().toString()
-            );
+        Faction faction = Member.get(player.getUuid()).getFaction();
+        Home home = faction.setHome(
+            player.getX(), player.getY(), player.getZ(),
+            player.getHeadYaw(), player.getPitch(),
+            player.getServerWorld().getRegistryKey().getValue().toString()
+        );
 
-        source.sendFeedback(new LiteralText(String.format("Set faction home to %.2f, %.2f, %.2f", home.x, home.y, home.z)), false);
+        new Message("%s set home to %.2f, %.2f, %.2f", player.getName().asString(), home.x, home.y, home.z).send(faction);
         return 1;
     }
 }

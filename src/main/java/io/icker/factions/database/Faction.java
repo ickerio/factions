@@ -61,10 +61,6 @@ public class Faction {
     public Claim claim(int x, int z, String level) {
         return Claim.add(x, z, level, name);
     }
-    
-    public Member addMember(UUID uuid) {
-        return Member.add(uuid, name);
-    }
 
     public ArrayList<Member> getMembers() {
         Query query = new Query("SELECT uuid FROM Member WHERE faction = ?;")
@@ -78,6 +74,10 @@ public class Faction {
             members.add(new Member((UUID) query.getObject("uuid"), name));
         }
         return members;
+    }
+
+    public Member addMember(UUID uuid) {
+        return Member.add(uuid, name);
     }
 
     public void setDescription(String description) {
@@ -95,6 +95,12 @@ public class Faction {
     public void setOpen(boolean open) {
         new Query("UPDATE Faction SET open = ? WHERE name = ?;")
             .set(open, name)
+            .executeUpdate();
+    }
+
+    public void setPower(int power) {
+        new Query("UPDATE Faction SET power = ? WHERE name = ?;")
+            .set(power, name)
             .executeUpdate();
     }
 

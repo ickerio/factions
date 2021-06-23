@@ -2,15 +2,16 @@ package io.icker.factions.event;
 
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Member;
+import io.icker.factions.util.Message;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 public class PlayerInteractEvents {
-    public static boolean preventBlockChange(PlayerEntity player, World world, BlockPos pos) {
+    public static boolean preventInteract(PlayerEntity player, World world, BlockPos pos) {
         Member member = Member.get(player.getUuid());
 
         boolean preventPlayerChunk = actionPermitted(player.getBlockPos(), world, member);
@@ -24,9 +25,18 @@ public class PlayerInteractEvents {
         return !actionPermitted(player.getBlockPos(), world, member);
     }
 
+    public static boolean preventFriendlyFire(ServerPlayerEntity player, ServerPlayerEntity target) {
+        Member playerMember = Member.get(player.getUuid());
+        Member targetMember = Member.get(target.getUuid());
+
+        if (playerMember == null || targetMember == null) return false;
+        return playerMember.getFaction().name == playerMember.getFaction().name;
+    }
+
     public static void warnPlayer(PlayerEntity target, String action) {
-        target.sendMessage(new LiteralText(String.format("Unable to %s in this claim", action))
-            .formatted(Formatting.RED, Formatting.BOLD), true);
+        new Message("Unable to %s in this claim", action)
+            .format(Formatting.RED, Formatting.BOLD)
+            .send(target, true);
     }
 
     static boolean actionPermitted(BlockPos pos, World world, Member member) {

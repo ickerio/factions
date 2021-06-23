@@ -9,13 +9,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Invite;
 import io.icker.factions.database.Member;
+import io.icker.factions.util.Message;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 
@@ -26,11 +23,10 @@ public class InviteCommand {
 		ArrayList<Invite> invites = Member.get(source.getPlayer().getUuid()).getFaction().getInvites();
 		int count = invites == null ? 0 : invites.size();
 
-		MutableText reply = new LiteralText("You have ")
-			.append(new LiteralText(String.valueOf(count)).formatted(Formatting.YELLOW))
-			.append(new LiteralText(String.format(" outgoing invite%s", count == 1 ? "" : "s")));
-
-		source.sendFeedback(reply, false);
+		new Message("You have ")
+			.add(new Message(String.valueOf(count)).format(Formatting.YELLOW))
+			.add(" outgoing invite%s", count == 1 ? "" : "s")
+			.send(source.getPlayer(), false);
 
 		if (count == 0) return 1;
 
@@ -39,32 +35,31 @@ public class InviteCommand {
 			.map(invite -> cache.getByUuid(invite.playerId).getName())
 			.collect(Collectors.joining(", "));
 
-		source.sendFeedback(new LiteralText(players).formatted(Formatting.ITALIC), false);
+		new Message(players).format(Formatting.ITALIC).send(source.getPlayer(), false);
 		return 1;
 	}
 
 	public static int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
+
 		ServerCommandSource source = context.getSource();
+		ServerPlayerEntity player = source.getPlayer();
 
 		Faction faction = Member.get(source.getPlayer().getUuid()).getFaction();
 		Invite invite = Invite.get(target.getUuid(), faction.name);
 		if (invite != null) {
-			MutableText reply = new LiteralText(target.getName().getString() + " was already invited to your faction").formatted(Formatting.RED);
-			source.sendFeedback(reply, false);
+			new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
 			return 0;
 		}
 
 		Invite.add(target.getUuid(), faction.name); 
 
-		MutableText reply = new LiteralText(target.getName().getString() + " has been invited to your faction.");
-		MutableText alert = new LiteralText(String.format("You have been invited to join ")).formatted(Formatting.YELLOW)
-			.append(new LiteralText(faction.name).formatted(faction.color))
-			.styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to join")))
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/factions join " + faction.name)));
-
-		source.sendFeedback(reply, false);
-		target.sendMessage(alert, false);
+		new Message(target.getName().getString() + " has been invited")
+			.send(faction);
+		new Message("You have been invited to join this faction").format(Formatting.YELLOW)
+			.hover("Click to join").click("/factions join " + faction.name)
+			.prependFaction(faction)
+			.send(target, false);
 		return 1;
 	}
 
@@ -77,8 +72,7 @@ public class InviteCommand {
 		Faction faction = Member.get(player.getUuid()).getFaction();
 		new Invite(target.getUuid(), faction.name).remove();
 
-		MutableText reply = new LiteralText(target.getName().getString() + " is no longer invited to your faction");
-		source.sendFeedback(reply, false);
+		new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);
 		return 1;
 	}
 }

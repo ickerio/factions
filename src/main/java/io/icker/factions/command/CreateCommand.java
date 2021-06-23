@@ -2,13 +2,15 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+import io.icker.factions.config.Config;
 import io.icker.factions.database.Faction;
+import io.icker.factions.util.Message;
+
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class CreateCommand implements Command<ServerCommandSource> {
@@ -17,16 +19,17 @@ public class CreateCommand implements Command<ServerCommandSource> {
 		String name = StringArgumentType.getString(context, "name");
 
 		ServerCommandSource source = context.getSource();
+		ServerPlayerEntity player = source.getPlayer();
+
 		if (Faction.get(name) != null) {
-			source.sendFeedback(new LiteralText("Cannot create a faction as a one with that name already exists").formatted(Formatting.RED), false);
+			new Message("Cannot create a faction as a one with that name already exists").fail().send(player, false);
 			return 0;
 		}
 
-		ServerPlayerEntity player = source.getPlayer();
-		Faction.add(name, "No description set", Formatting.RESET.getName(), false, 100).addMember(player.getUuid());
-		source.getMinecraftServer().getPlayerManager().sendCommandTree(source.getPlayer());
+		Faction.add(name, "No description set", Formatting.RESET.getName(), false, Config.BASE_POWER + Config.MEMBER_POWER).addMember(player.getUuid());
+		source.getMinecraftServer().getPlayerManager().sendCommandTree(player);
 		
-		source.sendFeedback(new TranslatableText("Successfully created faction"), false);
+		new Message("Successfully created faction").send(player, false);
 		return 1;
 	}
 }

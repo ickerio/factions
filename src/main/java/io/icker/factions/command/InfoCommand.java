@@ -7,15 +7,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
+import io.icker.factions.util.Message;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 
@@ -26,33 +24,32 @@ public class InfoCommand  {
         
         Member member = Member.get(player.getUuid());
         if (member == null) {
-            source.sendFeedback(new LiteralText("Command can only be whilst in a faction").formatted(Formatting.RED), false);
+            new Message("Command can only be used whilst in a faction").fail().send(player, false);
             return 0;
         }
 
-        source.sendFeedback(buildFactionMessage(member.getFaction(), source), false);
-        return 1;
+        return info(player, member.getFaction());
     }
 
     public static int any(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		String factionName = StringArgumentType.getString(context, "faction"); // TODO: Suggestions for factions
         
         ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
         
         Faction faction = Faction.get(factionName);
         if (faction == null) {
-            source.sendFeedback(new LiteralText("Faction does not exist").formatted(Formatting.RED), false);
+            new Message("Faction does not exist").fail().send(player, false);
             return 0;
         }
 
-        source.sendFeedback(buildFactionMessage(faction, source), false);
-        return 1;
+        return info(player, faction);
     }
 
-    public static MutableText buildFactionMessage(Faction faction, ServerCommandSource source) {
+    public static int info(ServerPlayerEntity player, Faction faction) {
         ArrayList<Member> members = faction.getMembers();
 
-        UserCache cache = source.getMinecraftServer().getUserCache();
+        UserCache cache = player.getServer().getUserCache();
 		String membersList = members.stream()
 			.map(member -> cache.getByUuid(member.uuid).getName())
 			.collect(Collectors.joining(", "));
@@ -60,26 +57,19 @@ public class InfoCommand  {
         int requiredPower = faction.getClaimCount() * Config.CLAIM_WEIGHT;
         int maxPower = Config.BASE_POWER + (members.size() * Config.MEMBER_POWER);
 
-        return new LiteralText("")
-            .append(new LiteralText(faction.color.toString() + Formatting.BOLD + faction.name)
-                .styled(s -> s.withHoverEvent(showEvent(faction.description)))
+        new Message("")
+            .add(
+                new Message(members.size() + (Config.MAX_FACTION_SIZE != -1 ? "/" + Config.MAX_FACTION_SIZE : " member"))
+                .hover(membersList))
+            .filler("·")
+            .add(
+                new Message(Formatting.GREEN.toString() + faction.power + slash() + requiredPower + slash() + maxPower)
+                .hover("Current / Required / Max")
             )
-            .append(filler("»"))
-            .append(new LiteralText(members.size() + (Config.MAX_FACTION_SIZE != -1 ? "/" + Config.MAX_FACTION_SIZE : " member"))
-                .styled(s -> s.withHoverEvent(showEvent(membersList)))
-            )
-            .append(filler("·"))
-            .append(new LiteralText(Formatting.GREEN.toString() + faction.power + slash() + requiredPower + slash() + maxPower)
-                .styled(s -> s.withHoverEvent(showEvent("Current / Required / Max")))
-            );
-    }
+            .prependFaction(faction)
+            .send(player, false);
 
-    private static MutableText filler(String symbol) {
-        return new LiteralText(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol +  Formatting.RESET +  " ");
-    }
-
-    private static HoverEvent showEvent(String text) {
-        return new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(text));
+        return 1;
     }
 
     private static String slash() {
