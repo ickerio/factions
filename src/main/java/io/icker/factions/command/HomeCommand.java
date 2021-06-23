@@ -4,6 +4,7 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import io.icker.factions.config.Config;
 import io.icker.factions.database.Home;
 import io.icker.factions.database.Member;
 import net.minecraft.entity.damage.DamageTracker;
@@ -28,7 +29,7 @@ public class HomeCommand {
         }
 
         DamageTracker tracker = player.getDamageTracker();
-        if (tracker.getMostRecentDamage() == null || tracker.getTimeSinceLastAttack() >= 20 * 5) {
+        if (tracker.getMostRecentDamage() == null || tracker.getTimeSinceLastAttack() > Config.SAFE_TICKS_TO_WARP) {
             player.teleport(
                 player.getServer().getWorld(RegistryKey.of(Registry.WORLD_KEY, new Identifier(home.level))),
                 home.x, home.y, home.z,

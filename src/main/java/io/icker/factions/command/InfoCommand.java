@@ -60,10 +60,9 @@ public class InfoCommand  {
         int requiredPower = faction.getClaimCount() * Config.CLAIM_WEIGHT;
         int maxPower = Config.BASE_POWER + (members.size() * Config.MEMBER_POWER);
 
-        return new LiteralText(false ? "► " : "")
-            .append(
-                new LiteralText(faction.color.toString() + Formatting.BOLD + faction.name)
-                    .styled(s -> s.withHoverEvent(showEvent(faction.description)))
+        return new LiteralText("")
+            .append(new LiteralText(faction.color.toString() + Formatting.BOLD + faction.name)
+                .styled(s -> s.withHoverEvent(showEvent(faction.description)))
             )
             .append(filler("»"))
             .append(new LiteralText(members.size() + (Config.MAX_FACTION_SIZE != -1 ? "/" + Config.MAX_FACTION_SIZE : " member"))

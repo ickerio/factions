@@ -5,4 +5,5 @@ public class Config {
     public static int MEMBER_POWER = 20;
     public static int CLAIM_WEIGHT = 10;
     public static int MAX_FACTION_SIZE = 4;
+    public static int SAFE_TICKS_TO_WARP = 20 * 5;
 }

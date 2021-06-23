@@ -63,6 +63,12 @@ public class CommandRegistry {
 			)
 			.build();
 
+		LiteralCommandNode<ServerCommandSource> list = CommandManager
+			.literal("list")
+			.requires(CommandRegistry::isFactionMember)
+			.executes(new ListCommand())
+			.build();
+
 		LiteralCommandNode<ServerCommandSource> modify = CommandManager
 			.literal("modify")
 			.requires(CommandRegistry::isFactionMember)
@@ -148,6 +154,7 @@ public class CommandRegistry {
 		factions.addChild(join);
 		factions.addChild(leave);
 		factions.addChild(info);
+		factions.addChild(list);
 
 		factions.addChild(modify);
 		modify.addChild(description);

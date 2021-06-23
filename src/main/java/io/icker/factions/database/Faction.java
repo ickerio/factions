@@ -30,6 +30,19 @@ public class Faction {
         return new Faction(name, description, Formatting.byName(color), open, power);
     }
 
+    public static ArrayList<Faction> all() {
+        Query query = new Query("SELECT * FROM Faction;")
+            .executeQuery();
+
+        if (!query.success) return null;
+        ArrayList<Faction> factions = new ArrayList<Faction>();
+
+        while (query.next()) {
+            factions.add(new Faction(query.getString("name"), query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power")));
+        }
+        return factions;
+    }
+
     public Faction(String name, String description, Formatting color, boolean open, int power) {
         this.name = name;
         this.description = description;
