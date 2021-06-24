@@ -35,6 +35,11 @@ public class JoinCommand implements Command<ServerCommandSource> {
 			return 0;
 		}
 
+		if (faction.getMembers().size() >= Config.MAX_FACTION_SIZE) {
+			new Message("Cannot join faction as it is currently full").fail().send(player, false);
+			return 0;
+		}
+
 		if (invite != null) invite.remove();
 		faction.addMember(player.getUuid());
         source.getMinecraftServer().getPlayerManager().sendCommandTree(player);
