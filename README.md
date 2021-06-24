@@ -6,7 +6,9 @@
 
 Highly customizable, lightweight and elegant factions mod for the [Fabric loader][fabric] in Minecraft 1.17
 
-[![Release](https://img.shields.io/github/v/release/ickerio/factions=semver)][releases]
+[![Release](https://img.shields.io/github/v/release/ickerio/factions?style=for-the-badge&include_prereleases&sort=semver)][releases:github]
+[![Available For](https://img.shields.io/badge/dynamic/json?label=Available%20For&style=for-the-badge&color=e64626&query=gameVersionLatestFiles%5B0%5D.gameVersion&url=https%3A%2F%2Faddons-ecs.forgesvc.net%2Fapi%2Fv2%2Faddon%2F497362)][curseforge]
+[![Downloads](https://img.shields.io/badge/dynamic/json?label=Downloads&style=for-the-badge&color=e64626&query=downloadCount&url=https%3A%2F%2Faddons-ecs.forgesvc.net%2Fapi%2Fv2%2Faddon%2F497362)][releases:curseforge]
 
 </div>
 
@@ -16,7 +18,7 @@ A faction's power cap increases as new members join, expanding their ability to 
 
 # Getting Started
  - Set up your [fabric server][fabric:install]
- - Download the latest version of Factions in [releases][releases]
+ - Download from [Github][releases:github], [Modrinth][releases:modrinth] or [Curseforge][releases:curseforge]
  - Drag the Factions jar file into the mods folder
  - Optionally fonfigure `config.json` in the `factions` directory (*coming soon*)
 
@@ -83,4 +85,7 @@ Have an issue or a suggestion? Join [our discord](https://discord.gg/tHPFegeAY8)
 
 [fabric]: https://fabricmc.net/
 [fabric:install]: https://fabricmc.net/use/?page=server
-[releases]: https://github.com/ickerio/factions/releases
+[curseforge]: https://www.curseforge.com/minecraft/mc-mods/factions-fabric
+[releases:github]: https://github.com/ickerio/factions/releases
+[releases:modrinth]: https://modrinth.com/mod/factions/versions
+[releases:curseforge]: https://www.curseforge.com/minecraft/mc-mods/factions-fabric/files
