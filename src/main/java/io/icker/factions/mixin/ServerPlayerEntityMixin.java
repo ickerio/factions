@@ -23,14 +23,12 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         super(entityType, world);
     }
 
-
     @Inject(at = @At("HEAD"), method = "onDeath")
     public void onDeath(DamageSource source, CallbackInfo info) {
         Entity entity = source.getSource();
         if (entity == null || !entity.isPlayer()) return;
         FactionEvents.playerDeath((ServerPlayerEntity) (Object) this);
     }
-
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void tick(CallbackInfo info) {
