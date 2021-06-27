@@ -64,9 +64,10 @@ public class Message {
     }
 
     public Message send(Faction faction) {
+        MutableText message = prependFaction(faction).raw();
         for (Member member : faction.getMembers()) {
             ServerPlayerEntity mem = manager.getPlayer(member.uuid);
-            if (mem != null) mem.sendMessage(prependFaction(faction).raw(), false);
+            if (mem != null) mem.sendMessage(message, false);
         }
         return this;
     }

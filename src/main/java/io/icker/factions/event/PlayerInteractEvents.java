@@ -32,7 +32,7 @@ public class PlayerInteractEvents {
         Member targetMember = Member.get(target.getUuid());
 
         if (playerMember == null || targetMember == null) return false;
-        return playerMember.getFaction().name == playerMember.getFaction().name;
+        return playerMember.getFaction().name == targetMember.getFaction().name;
     }
 
     public static void warnPlayer(PlayerEntity target, String action) {
