@@ -34,8 +34,8 @@ public class Faction {
         Query query = new Query("SELECT * FROM Faction;")
             .executeQuery();
 
-        if (!query.success) return null;
         ArrayList<Faction> factions = new ArrayList<Faction>();
+        if (!query.success) return factions;
 
         while (query.next()) {
             factions.add(new Faction(query.getString("name"), query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power")));
@@ -67,8 +67,8 @@ public class Faction {
             .set(name)
             .executeQuery();
 
-        if (!query.success) return null;
         ArrayList<Member> members = new ArrayList<Member>();
+        if (!query.success) return members;
 
         while (query.next()) {
             members.add(new Member((UUID) query.getObject("uuid"), name));
