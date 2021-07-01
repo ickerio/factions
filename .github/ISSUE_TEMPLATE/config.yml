@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Wiki
+    url: https://github.com/ickerio/factions/wiki
+    about: Please find helpful guides related to Factions Mod here
+  - name: Join Discord
+    url: https://discord.gg/tHPFegeAY8
+    about: Please get involved with Faction Mod's Development
+  - name: About Fabric
+    url: https://fabricmc.net/
+    about: Please find information regarding the Fabric mod loader here
