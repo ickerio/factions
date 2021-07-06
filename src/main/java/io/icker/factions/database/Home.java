@@ -30,8 +30,8 @@ public class Home {
         return new Home(factionName, x, y, z, yaw, pitch, level);
     }
     
-    public Home(String factionName, double x, double y, double z, float yaw, float pitch, String level) {
-        this.factionName = factionName;
+    public Home(String faction, double x, double y, double z, float yaw, float pitch, String level) {
+        this.factionName = faction;
         this.x = x;
         this.y = y;
         this.z = z;

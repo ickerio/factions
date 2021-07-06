@@ -21,7 +21,7 @@ public class InviteCommand {
 		ServerCommandSource source = context.getSource();
 
 		ArrayList<Invite> invites = Member.get(source.getPlayer().getUuid()).getFaction().getInvites();
-		int count = invites == null ? 0 : invites.size();
+		int count = invites.size();
 
 		new Message("You have ")
 			.add(new Message(String.valueOf(count)).format(Formatting.YELLOW))

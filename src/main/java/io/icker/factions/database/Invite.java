@@ -21,8 +21,8 @@ public class Invite {
             .set(playerId)
             .executeQuery();
 
-        if (!query.success) return null;
         ArrayList<Invite> invites = new ArrayList<Invite>();
+        if (!query.success) return invites;
 
         while (query.next()) {
             invites.add(new Invite(playerId, query.getString("faction")));
@@ -34,9 +34,9 @@ public class Invite {
         Query query = new Query("SELECT player FROM Invite WHERE faction = ?;")
             .set(factionName)
             .executeQuery();
-            
-        if (!query.success) return null;
+        
         ArrayList<Invite> invites = new ArrayList<Invite>();
+        if (!query.success) return invites;
 
         while (query.next()) {
             invites.add(new Invite((UUID) query.getObject("player"), factionName));
