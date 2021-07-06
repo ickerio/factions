@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import io.icker.factions.config.Config;
 import io.icker.factions.database.Member;
 import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -146,7 +147,7 @@ public class CommandRegistry {
 
 		LiteralCommandNode<ServerCommandSource> home = CommandManager
 			.literal("home")
-			.requires(CommandRegistry::isFactionMember)
+			.requires(s -> isFactionMember(s) && Config.HOME != Config.HomeOptions.DISABLED)
 			.executes(HomeCommand::go)
 			.build();
 		

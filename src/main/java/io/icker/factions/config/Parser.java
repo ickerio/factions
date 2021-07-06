@@ -3,7 +3,6 @@ package io.icker.factions.config;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,7 +12,7 @@ import com.google.gson.JsonObject;
 import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
 
-public class ConfigParser {
+public class Parser {
     private static final File factionDir = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -58,12 +57,10 @@ public class ConfigParser {
         }
     }
 
-    public static String asEnum(String key, List<String> options, String fallback) {
+    public static <T extends Enum<T>> T asEnum(String key, Class<T> c, T fallback) {
         try {
-            String item = obj.get(key).getAsString();
-            if (!options.contains(item)) return fallback;
-            return item;
-        } catch (NullPointerException | UnsupportedOperationException e) {
+            return Enum.valueOf(c, obj.get(key).getAsString().trim().toUpperCase());
+        } catch (NullPointerException | UnsupportedOperationException | IllegalArgumentException e) {
             return fallback;
         }
     }
