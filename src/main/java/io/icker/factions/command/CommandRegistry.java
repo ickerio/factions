@@ -126,12 +126,22 @@ public class CommandRegistry {
 		LiteralCommandNode<ServerCommandSource> claim = CommandManager
 			.literal("claim")
 			.requires(CommandRegistry::isFactionMember)
-			.executes(ClaimCommand::claim)
+			.executes(ClaimCommand::add)
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> listClaim = CommandManager
+			.literal("list")
+			.executes(ClaimCommand::list)
 			.build();
 		
 		LiteralCommandNode<ServerCommandSource> removeClaim = CommandManager
 			.literal("remove")
 			.executes(ClaimCommand::remove)
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> removeAllClaims = CommandManager
+			.literal("all")
+			.executes(ClaimCommand::removeAll)
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> home = CommandManager
@@ -166,7 +176,9 @@ public class CommandRegistry {
 		invite.addChild(removeInvite);
 
 		factions.addChild(claim);
+		claim.addChild(listClaim);
 		claim.addChild(removeClaim);
+		removeClaim.addChild(removeAllClaims);
 
 		factions.addChild(home);
 		home.addChild(setHome);

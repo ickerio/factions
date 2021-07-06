@@ -51,35 +51,6 @@ public class Faction {
         this.power = power;
     }
 
-    public int getClaimCount() {
-        return new Query("SELECT COUNT(*) AS count FROM Claim where faction = ?;")
-            .set(name)
-            .executeQuery()
-            .getInt("count");
-    }
-
-    public Claim claim(int x, int z, String level) {
-        return Claim.add(x, z, level, name);
-    }
-
-    public ArrayList<Member> getMembers() {
-        Query query = new Query("SELECT uuid FROM Member WHERE faction = ?;")
-            .set(name)
-            .executeQuery();
-
-        ArrayList<Member> members = new ArrayList<Member>();
-        if (!query.success) return members;
-
-        while (query.next()) {
-            members.add(new Member((UUID) query.getObject("uuid"), name));
-        }
-        return members;
-    }
-
-    public Member addMember(UUID uuid) {
-        return Member.add(uuid, name);
-    }
-
     public void setDescription(String description) {
         new Query("UPDATE Faction SET description = ? WHERE name = ?;")
             .set(description, name)
@@ -102,6 +73,48 @@ public class Faction {
         new Query("UPDATE Faction SET power = ? WHERE name = ?;")
             .set(power, name)
             .executeUpdate();
+    }
+
+    public ArrayList<Member> getMembers() {
+        Query query = new Query("SELECT uuid FROM Member WHERE faction = ?;")
+            .set(name)
+            .executeQuery();
+
+        ArrayList<Member> members = new ArrayList<Member>();
+        if (!query.success) return members;
+
+        while (query.next()) {
+            members.add(new Member((UUID) query.getObject("uuid"), name));
+        }
+        return members;
+    }
+
+    public Member addMember(UUID uuid) {
+        return Member.add(uuid, name);
+    }
+
+    public ArrayList<Claim> getClaims() {
+        Query query = new Query("SELECT * FROM Claim WHERE faction = ?;")
+            .set(name)
+            .executeQuery();
+
+        ArrayList<Claim> claims = new ArrayList<Claim>();
+        if (!query.success) return claims;
+
+        while (query.next()) {
+            claims.add(new Claim(query.getInt("x"), query.getInt("z"), query.getString("level"), name));
+        }
+        return claims;
+    }
+
+    public void removeAllClaims() {
+        new Query("DELETE FROM Claim WHERE faction = ?;")
+            .set(name)
+            .executeUpdate();
+    }
+
+    public Claim addClaim(int x, int z, String level) {
+        return Claim.add(x, z, level, name);
     }
 
     public ArrayList<Invite> getInvites() {
