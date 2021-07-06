@@ -14,7 +14,7 @@ public class FactionEvents {
         Faction faction = member.getFaction();
 
         int adjusted = adjustPower(faction, Config.POWER_DEATH_PENALTY);
-        new Message("Lost " + adjusted + " power from member death").send(faction);
+        new Message("%s lost %d power from dying", player.getName().asString(), adjusted).send(faction);
     }
 
     public static void powerTick(ServerPlayerEntity player) {
@@ -24,14 +24,14 @@ public class FactionEvents {
         Faction faction = member.getFaction();
 
         int adjusted = adjustPower(faction, Config.TICKS_FOR_POWER_REWARD);
-        if (adjusted != 0) new Message("Gained " + adjusted + " power for member survival").send(faction);
+        if (adjusted != 0) new Message("%s gained %d power from surviving", player.getName().asString(), adjusted).send(faction);
     }
 
     public static int adjustPower(Faction faction, int adjustment) {
         int maxPower = Config.BASE_POWER + (faction.getMembers().size() * Config.MEMBER_POWER);
 
-        int result = faction.power + adjustment > maxPower ? maxPower : faction.power + adjustment;
-        faction.setPower(result);
-        return result - faction.power;
+        int updated = Math.min(Math.max(0, faction.power + adjustment), maxPower);
+        faction.setPower(updated);
+        return Math.abs(updated - faction.power);
     }
 }
