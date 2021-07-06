@@ -50,7 +50,7 @@ public class PlayerInteractEvents {
 
         Faction owner = claim.getFaction();
 
-        boolean overclaimed = owner.getClaimCount() * Config.CLAIM_WEIGHT > owner.power;
+        boolean overclaimed = owner.getClaims().size() * Config.CLAIM_WEIGHT > owner.power;
         boolean validMember = member == null ? false : member.getFaction().name == owner.name;
 
         return overclaimed || validMember;

@@ -49,17 +49,19 @@ public class InfoCommand  {
     public static int info(ServerPlayerEntity player, Faction faction) {
         ArrayList<Member> members = faction.getMembers();
 
+        String memberText = members.size() + (Config.MAX_FACTION_SIZE != -1 ? "/" + Config.MAX_FACTION_SIZE : (" member" + (members.size() != 1 ? "s" : "")));
+
         UserCache cache = player.getServer().getUserCache();
 		String membersList = members.stream()
 			.map(member -> cache.getByUuid(member.uuid).getName())
 			.collect(Collectors.joining(", "));
 
-        int requiredPower = faction.getClaimCount() * Config.CLAIM_WEIGHT;
+        int requiredPower = faction.getClaims().size() * Config.CLAIM_WEIGHT;
         int maxPower = Config.BASE_POWER + (members.size() * Config.MEMBER_POWER);
 
         new Message("")
             .add(
-                new Message(members.size() + (Config.MAX_FACTION_SIZE != -1 ? "/" + Config.MAX_FACTION_SIZE : " member"))
+                new Message(memberText)
                 .hover(membersList))
             .filler("·")
             .add(
