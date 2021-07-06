@@ -46,7 +46,11 @@ All commands begin with `/factions` (or `/f` shortcut)
 
 /f claim *Claims the chunk you're standing in*
 
+/f claim list *Lists all faction claims*
+
 /f claim remove *Removes the chunk claim you're standing in*
+
+/f claim remove all *Removes all faction claims*
 
 /f home *Warps to designated faction home*
 
