@@ -25,7 +25,7 @@ public class Config {
         CLAIM_WEIGHT = Parser.asInt("claimWeight", 5);
         MAX_FACTION_SIZE = Parser.asInt("maxFactionSize", -1);
         SAFE_TICKS_TO_WARP = Parser.asInt("safeTicksToWarp", 5 * 20);
-        POWER_DEATH_PENALTY = Parser.asInt("powerDeathPenalty", -10);
+        POWER_DEATH_PENALTY = Parser.asInt("powerDeathPenalty", 10);
         TICKS_FOR_POWER = Parser.asInt("ticksForPower", 10 * 60 * 20);
         TICKS_FOR_POWER_REWARD = Parser.asInt("ticksForPowerReward", 1);
         HOME = Parser.asEnum("home", HomeOptions.class, HomeOptions.CLAIMS);

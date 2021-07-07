@@ -13,7 +13,7 @@ public class FactionEvents {
 
         Faction faction = member.getFaction();
 
-        int adjusted = adjustPower(faction, Config.POWER_DEATH_PENALTY);
+        int adjusted = adjustPower(faction, -Config.POWER_DEATH_PENALTY);
         new Message("%s lost %d power from dying", player.getName().asString(), adjusted).send(faction);
     }
 
