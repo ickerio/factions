@@ -16,70 +16,9 @@ Factions Mod is an ultra lightweight, fast, and elegant solution to factions in 
 
 A faction's power cap increases as new members join, expanding their ability to claim more land. For each claim they make, it requires that faction to sustain more power. Dying to other players will temporarily lose faction power and if it drops below the required threshold, all their claims will be vulnerable to being overtaken. 
 
-## Getting Started
-- Set up your [fabric server][fabric:install]
-- Download from [Github][github:releases], [Modrinth][modrinth:releases] or [Curseforge][curseforge:releases]
-- Drag the Factions jar file into the mods folder
-- Optionally configure `config.json` in the `factions` directory (*coming soon*)
+## Documentation
 
-Factions Mod works out of the box and requires no additional configuration.
-
-# Commands
-
-All commands begin with `/factions` (or `/f` shortcut)
-
-### Essentials 
-
-/f create &lt;faction name&gt; *Create a faction*
-
-/f join &lt;faction name&gt; *Joins a faction*
-
-/f leave &lt;faction name&gt; *Leaves a faction*
-
-/f info &lt;faction name&gt; *Basic info about a faction*
-
-/f info *Basic info about the faction you're in*
-
-/f list *Basic info about all factions*
-
-### Faction Management
-
-/f claim *Claims the chunk you're standing in*
-
-/f claim list *Lists all faction claims*
-
-/f claim remove *Removes the chunk claim you're standing in*
-
-/f claim remove all *Removes all faction claims*
-
-/f home *Warps to designated faction home*
-
-/f home set *Sets faction home to current position*
-
-/f invite add &lt;player name&gt; *Invite player to join your faction*
-
-/f invite list *Lists all your faction outgoing invites*
-
-/f invite remove &lt;player name&gt; *Removes player invite to your faction*
-
-### Faction Settings
-
-/f modify open [true / false] *Set faction to public or invite only*
-
-/f modify description &lt;faction description&gt; *Set faction description*
-
-/f modify color &lt;color&gt; *Set faction color*
-
-# Upcoming Features
-
-- Fully customisable configuration
-- Faction privileges (owner, admin etc)
-  - promote, kick, ban commands
-- Removing desync when interacting with claimed chunks
-- Scoreboard
-  - Coloured name tags
-  - Customized chat
-- Custom language options
+Factions Mod is very intiuative to use and works out of the box, requiring no additional configuration. However, you can read further about the mod on the [Wiki](https://github.com/ickerio/factions/wiki)
 
 Have an issue or a suggestion? Join [our discord][discord]
 
@@ -87,10 +26,7 @@ Have an issue or a suggestion? Join [our discord][discord]
 [MIT](LICENSE)
 
 [fabric]: https://fabricmc.net/
-[fabric:install]: https://fabricmc.net/use/?page=server
 [curseforge]: https://www.curseforge.com/minecraft/mc-mods/factions-fabric
 [curseforge:releases]: https://www.curseforge.com/minecraft/mc-mods/factions-fabric/files
-[modrinth]: https://modrinth.com/mod/factions
-[modrinth:releases]: https://modrinth.com/mod/factions/versions
 [github:releases]: https://github.com/ickerio/factions/releases
 [discord]: https://discord.gg/tHPFegeAY8
