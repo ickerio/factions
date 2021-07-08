@@ -3,6 +3,7 @@ package io.icker.factions.command;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -14,6 +15,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import net.minecraft.util.UserCache;
 
 public class InviteCommand {
@@ -30,9 +32,9 @@ public class InviteCommand {
 
 		if (count == 0) return 1;
 
-		UserCache cache = source.getMinecraftServer().getUserCache();
+		UserCache cache = source.getServer().getUserCache();
 		String players = invites.stream()
-			.map(invite -> cache.getByUuid(invite.playerId).getName())
+			.map(invite -> cache.getByUuid(invite.playerId).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
 			.collect(Collectors.joining(", "));
 
 		new Message(players).format(Formatting.ITALIC).send(source.getPlayer(), false);

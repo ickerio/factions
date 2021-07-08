@@ -42,7 +42,7 @@ public class JoinCommand implements Command<ServerCommandSource> {
 
 		if (invite != null) invite.remove();
 		faction.addMember(player.getUuid());
-        source.getMinecraftServer().getPlayerManager().sendCommandTree(player);
+        source.getServer().getPlayerManager().sendCommandTree(player);
 		
 		new Message(player.getName().asString() + " joined").send(faction);
 		FactionEvents.adjustPower(faction, Config.MEMBER_POWER); // TODO: change this, its ew

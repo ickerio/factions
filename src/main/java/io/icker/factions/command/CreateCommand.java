@@ -27,7 +27,7 @@ public class CreateCommand implements Command<ServerCommandSource> {
 		}
 
 		Faction.add(name, "No description set", Formatting.RESET.getName(), false, Config.BASE_POWER + Config.MEMBER_POWER).addMember(player.getUuid());
-		source.getMinecraftServer().getPlayerManager().sendCommandTree(player);
+		source.getServer().getPlayerManager().sendCommandTree(player);
 		
 		new Message("Successfully created faction").send(player, false);
 		return 1;

@@ -24,7 +24,7 @@ public class DisbandCommand implements Command<ServerCommandSource> {
 		new Message(player.getName().asString() + " disbanded the faction").send(faction);
 		faction.remove();
 
-		PlayerManager manager = source.getMinecraftServer().getPlayerManager();
+		PlayerManager manager = source.getServer().getPlayerManager();
 		for (ServerPlayerEntity p : manager.getPlayerList()) {
 			manager.sendCommandTree(p);
 		}

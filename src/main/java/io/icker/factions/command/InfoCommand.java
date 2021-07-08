@@ -1,5 +1,6 @@
 package io.icker.factions.command;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import net.minecraft.util.UserCache;
 
 public class InfoCommand  {
@@ -53,7 +55,7 @@ public class InfoCommand  {
 
         UserCache cache = player.getServer().getUserCache();
 		String membersList = members.stream()
-			.map(member -> cache.getByUuid(member.uuid).getName())
+			.map(member -> cache.getByUuid(member.uuid).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
 			.collect(Collectors.joining(", "));
 
         int requiredPower = faction.getClaims().size() * Config.CLAIM_WEIGHT;

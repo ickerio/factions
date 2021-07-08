@@ -24,7 +24,7 @@ public class LeaveCommand implements Command<ServerCommandSource> {
         
 		new Message(player.getName().asString() + " left").send(faction);
 		member.remove();
-        context.getSource().getMinecraftServer().getPlayerManager().sendCommandTree(player);
+        context.getSource().getServer().getPlayerManager().sendCommandTree(player);
 
 		if (faction.getMembers().size() == 0) {
 			faction.remove();
