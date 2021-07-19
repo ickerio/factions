@@ -42,8 +42,11 @@ public class PlayerInteractEvents {
     }
 
     static boolean actionPermitted(BlockPos pos, World world, Member member) {
+        ServerPlayerEntity player = world.getServer().getPlayerManager().getPlayer(member.uuid);
+        if (player.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL) == true) return true;
+
         String dimension = world.getRegistryKey().getValue().toString();
-        ChunkPos actionPos =  world.getChunk(pos).getPos();
+        ChunkPos actionPos = world.getChunk(pos).getPos();
 
         Claim claim = Claim.get(actionPos.x, actionPos.z, dimension);
         if (claim == null) return true;
