@@ -26,7 +26,7 @@ public class CreateCommand implements Command<ServerCommandSource> {
 			return 0;
 		}
 
-		Faction.add(name, "No description set", Formatting.RESET.getName(), false, Config.BASE_POWER + Config.MEMBER_POWER).addMember(player.getUuid());
+		Faction.add(name, "No description set", Formatting.WHITE.getName(), false, Config.BASE_POWER + Config.MEMBER_POWER).addMember(player.getUuid());
 		source.getServer().getPlayerManager().sendCommandTree(player);
 		
 		new Message("Successfully created faction").send(player, false);
