@@ -2,10 +2,14 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import com.mojang.brigadier.Command;
+
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Formatting;
+
+import io.icker.factions.database.PlayerConfig;
+import io.icker.factions.util.Message;
 
 public class BypassCommand implements Command<ServerCommandSource> {
     @Override
@@ -13,7 +17,17 @@ public class BypassCommand implements Command<ServerCommandSource> {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        //Add Toggle Here
+        PlayerConfig config = PlayerConfig.get(player.getUuid());
+        boolean bypass = !config.getBypass();
+        config.setBypass(bypass);
+
+        new Message("Successfully toggled claim bypass")
+        .filler("·")
+        .add(
+            new Message(bypass ? "ON" : "OFF")
+            .format(bypass ? Formatting.GREEN : Formatting.RED)
+        )
+        .send(player, false);
 
         return 1;
     }

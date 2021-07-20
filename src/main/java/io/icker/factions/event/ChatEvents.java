@@ -9,7 +9,7 @@ import io.icker.factions.database.PlayerConfig.ChatOption;
 import io.icker.factions.util.Message;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
-// TODO: for when a player joins the game make an event to make them a playerconfig
+
 public class ChatEvents {
     public static void handleMessage(ServerPlayerEntity sender, String message) {
         UUID id = sender.getUuid();

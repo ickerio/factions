@@ -11,29 +11,51 @@ public class PlayerConfig {
 
     public UUID uuid;
     public ChatOption chat;
+    public boolean bypass;
 
     public static PlayerConfig get(UUID uuid) {
-        Query query = new Query("SELECT chat FROM PlayerConfig WHERE uuid = ?;")
+        Query query = new Query("SELECT * FROM PlayerConfig WHERE uuid = ?;")
             .set(uuid)
             .executeQuery();
 
-        if (!query.success) return new PlayerConfig(uuid, ChatOption.GLOBAL);
+        if (!query.success) return new PlayerConfig(uuid, ChatOption.GLOBAL, false);
 
         try {
-            return new PlayerConfig(uuid, Enum.valueOf(ChatOption.class, query.getString("chat")));
+            return new PlayerConfig(uuid, Enum.valueOf(ChatOption.class, query.getString("chat")), query.getBool("bypass"));
         } catch (IllegalArgumentException e) {
-            return new PlayerConfig(uuid, ChatOption.GLOBAL);
+            return new PlayerConfig(uuid, ChatOption.GLOBAL, false);
         }
     }
 
-    public PlayerConfig(UUID uuid, ChatOption chat) {
+    public PlayerConfig(UUID uuid, ChatOption chat, boolean bypass) {
         this.uuid = uuid;
         this.chat = chat;
+        this.bypass = bypass;
     }
 
     public void setChat(ChatOption chat) {
-        new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?);")
-            .set(uuid, chat.toString())
+        new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?, ?);")
+            .set(uuid, chat.toString(), bypass)
+            .executeUpdate();
+    }
+
+    public boolean getBypass() {
+        Query query = new Query("SELECT bypass FROM PlayerConfig WHERE uuid = ?;")
+            .set(uuid)
+            .executeQuery();
+        
+        if (!query.success) return false;
+
+        try {
+            return query.getBool("bypass");
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public void setBypass(boolean bypass) {
+        new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?, ?);")
+            .set(uuid, chat.toString(), bypass)
             .executeUpdate();
     }
 }

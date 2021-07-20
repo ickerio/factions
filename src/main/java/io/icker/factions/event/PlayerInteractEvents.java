@@ -4,6 +4,7 @@ import io.icker.factions.config.Config;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
+import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.util.Message;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -40,7 +41,14 @@ public class PlayerInteractEvents {
     }
 
     static boolean actionPermitted(BlockPos pos, World world, PlayerEntity player) {
-        //if (CHECK TOGGLE HERE) return true;
+        PlayerConfig config = PlayerConfig.get(player.getUuid());
+        if (config.getBypass()) {
+            if (player.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL)) {
+                return true;
+            } else {
+                config.setBypass(false);
+            }
+        }
 
         String dimension = world.getRegistryKey().getValue().toString();
         ChunkPos actionPos = world.getChunk(pos).getPos();
