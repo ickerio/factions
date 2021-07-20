@@ -155,6 +155,12 @@ public class CommandRegistry {
 			.literal("set")
 			.executes(HomeCommand::set)
 			.build();
+		
+		LiteralCommandNode<ServerCommandSource> adminBypass = CommandManager
+			.literal("adminBypass")
+			.requires(s -> s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
+			.executes(new BypassCommand())
+			.build();
 
 		dispatcher.getRoot().addChild(factions);
 		dispatcher.getRoot().addChild(alias);
@@ -165,6 +171,7 @@ public class CommandRegistry {
 		factions.addChild(leave);
 		factions.addChild(info);
 		factions.addChild(list);
+		factions.addChild(adminBypass);
 
 		factions.addChild(modify);
 		modify.addChild(description);
