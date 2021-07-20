@@ -36,7 +36,7 @@ public class PlayerInteractEvents {
     }
 
     public static void warnPlayer(PlayerEntity target, String action) {
-        new Message("Unable to %s in this claim", action)
+        new Message("Cannot %s in this claim", action)
             .format(Formatting.RED, Formatting.BOLD)
             .send(target, true);
     }
