@@ -13,11 +13,9 @@ import net.minecraft.util.Formatting;
 public class ChatEvents {
     public static void handleMessage(ServerPlayerEntity sender, String message) {
         UUID id = sender.getUuid();
-
-        ChatOption option = new PlayerConfig(id).getChatOption();
         Member member = Member.get(id);
 
-        if (option == ChatOption.GLOBAL) {
+        if (PlayerConfig.get(id).chat == ChatOption.GLOBAL) {
             if (member == null) {
                 ChatEvents.factionlessGlobal(sender, message);
             } else {

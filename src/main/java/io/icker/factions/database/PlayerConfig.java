@@ -10,29 +10,30 @@ public class PlayerConfig {
     }
 
     public UUID uuid;
-    public ChatOption chatOption;
+    public ChatOption chat;
 
-    public PlayerConfig(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public ChatOption getChatOption() {
-        Query query = new Query("SELECT option FROM PlayerConfig WHERE uuid = ?;")
+    public static PlayerConfig get(UUID uuid) {
+        Query query = new Query("SELECT chat FROM PlayerConfig WHERE uuid = ?;")
             .set(uuid)
             .executeQuery();
 
-        if (!query.success) return ChatOption.GLOBAL;
+        if (!query.success) return new PlayerConfig(uuid, ChatOption.GLOBAL);
 
         try {
-            return Enum.valueOf(ChatOption.class, query.getString("option"));
+            return new PlayerConfig(uuid, Enum.valueOf(ChatOption.class, query.getString("chat")));
         } catch (IllegalArgumentException e) {
-            return ChatOption.GLOBAL;
+            return new PlayerConfig(uuid, ChatOption.GLOBAL);
         }
     }
 
-    public void setChatOption(ChatOption option) {
+    public PlayerConfig(UUID uuid, ChatOption chat) {
+        this.uuid = uuid;
+        this.chat = chat;
+    }
+
+    public void setChat(ChatOption chat) {
         new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?);")
-            .set(uuid, option.toString())
+            .set(uuid, chat.toString())
             .executeUpdate();
     }
 }

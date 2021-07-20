@@ -24,7 +24,7 @@ public class ChatCommand {
 
     private static int set(ServerCommandSource source, ChatOption option) throws CommandSyntaxException {
 		ServerPlayerEntity player = source.getPlayer();
-        new PlayerConfig(player.getUuid()).setChatOption(option);
+        PlayerConfig.get(player.getUuid()).setChat(option);
         
         new Message("Successfully updated your chat preference").send(player, false);
         return 1;
