@@ -2,6 +2,8 @@ package io.icker.factions.util;
 
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
+import io.icker.factions.database.PlayerConfig;
+import io.icker.factions.database.PlayerConfig.ChatOption;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -64,12 +66,26 @@ public class Message {
     }
 
     public Message send(Faction faction) {
-        MutableText message = prependFaction(faction).raw();
+        Message message = this.prependFaction(faction);
         for (Member member : faction.getMembers()) {
-            ServerPlayerEntity mem = manager.getPlayer(member.uuid);
-            if (mem != null) mem.sendMessage(message, false);
+            ServerPlayerEntity player = manager.getPlayer(member.uuid);
+            if (player != null) message.send(player, false);
         }
         return this;
+    }
+
+    public void sendToGlobalChat() {
+        for (ServerPlayerEntity player : manager.getPlayerList()) {
+            ChatOption option = new PlayerConfig(player.getUuid()).getChatOption();
+            if (option != ChatOption.FOCUS) player.sendMessage(text, false);
+        }
+    }
+
+    public void sendToFactionChat(Faction faction) {
+        for (Member member : faction.getMembers()) {
+            ServerPlayerEntity player = manager.getPlayer(member.uuid);
+            player.sendMessage(text, false);
+        }
     }
 
     public Message prependFaction(Faction faction) {

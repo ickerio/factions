@@ -69,6 +69,22 @@ public class CommandRegistry {
 			.executes(new ListCommand())
 			.build();
 
+			LiteralCommandNode<ServerCommandSource> chat = CommandManager
+			.literal("chat")
+			.then(
+				CommandManager.literal("global")
+				.executes(ChatCommand::global)
+			)
+			.then(
+				CommandManager.literal("faction")
+				.executes(ChatCommand::faction)
+			)
+			.then(
+				CommandManager.literal("focus")
+				.executes(ChatCommand::focus)
+			)
+			.build();
+
 		LiteralCommandNode<ServerCommandSource> modify = CommandManager
 			.literal("modify")
 			.requires(CommandRegistry::isFactionMember)
@@ -172,6 +188,7 @@ public class CommandRegistry {
 		factions.addChild(info);
 		factions.addChild(list);
 		factions.addChild(adminBypass);
+		factions.addChild(chat);
 
 		factions.addChild(modify);
 		modify.addChild(description);

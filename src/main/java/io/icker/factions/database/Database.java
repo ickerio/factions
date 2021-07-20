@@ -53,6 +53,11 @@ public class Database {
                     level VARCHAR(255),
                     FOREIGN KEY(faction) REFERENCES Faction(name) ON DELETE CASCADE
                 );
+
+                CREATE TABLE IF NOT EXISTS PlayerConfig (
+                    uuid UUID PRIMARY KEY,
+                    option VARCHAR(255)
+                );
                 """)
                 .executeUpdate();
             FactionsMod.LOGGER.info("Successfully connected to database");
