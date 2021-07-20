@@ -14,17 +14,15 @@ import net.minecraft.world.World;
 
 public class PlayerInteractEvents {
     public static boolean preventInteract(PlayerEntity player, World world, BlockPos pos) {
-        Member member = Member.get(player.getUuid());
 
-        boolean preventPlayerChunk = actionPermitted(player.getBlockPos(), world, member);
-        boolean preventActionChunk = actionPermitted(pos, world, member);
+        boolean preventPlayerChunk = actionPermitted(player.getBlockPos(), world, player);
+        boolean preventActionChunk = actionPermitted(pos, world, player);
 
         return !preventPlayerChunk || !preventActionChunk;
     }
     
     public static boolean preventUseItem(PlayerEntity player, World world) {
-        Member member = Member.get(player.getUuid());
-        return !actionPermitted(player.getBlockPos(), world, member);
+        return !actionPermitted(player.getBlockPos(), world, player);
     }
 
     public static boolean preventFriendlyFire(ServerPlayerEntity player, ServerPlayerEntity target) {
@@ -41,9 +39,8 @@ public class PlayerInteractEvents {
             .send(target, true);
     }
 
-    static boolean actionPermitted(BlockPos pos, World world, Member member) {
-        ServerPlayerEntity player = world.getServer().getPlayerManager().getPlayer(member.uuid);
-        if (player.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL) == true) return true;
+    static boolean actionPermitted(BlockPos pos, World world, PlayerEntity player) {
+        //if (CHECK TOGGLE HERE) return true;
 
         String dimension = world.getRegistryKey().getValue().toString();
         ChunkPos actionPos = world.getChunk(pos).getPos();
@@ -51,6 +48,7 @@ public class PlayerInteractEvents {
         Claim claim = Claim.get(actionPos.x, actionPos.z, dimension);
         if (claim == null) return true;
 
+        Member member = Member.get(player.getUuid());
         Faction owner = claim.getFaction();
 
         boolean overclaimed = owner.getClaims().size() * Config.CLAIM_WEIGHT > owner.power;
