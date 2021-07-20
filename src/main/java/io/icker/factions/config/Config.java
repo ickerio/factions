@@ -15,7 +15,6 @@ public class Config {
     public static int POWER_DEATH_PENALTY;
     public static int TICKS_FOR_POWER;
     public static int TICKS_FOR_POWER_REWARD;
-    public static int REQUIRED_BYPASS_LEVEL;
     public static HomeOptions HOME;
 
     public static void init() {
@@ -29,7 +28,6 @@ public class Config {
         POWER_DEATH_PENALTY = Parser.asInt("powerDeathPenalty", 10);
         TICKS_FOR_POWER = Parser.asInt("ticksForPower", 10 * 60 * 20);
         TICKS_FOR_POWER_REWARD = Parser.asInt("ticksForPowerReward", 1);
-        REQUIRED_BYPASS_LEVEL = Parser.asInt("requiredBypassLevel", 2);
         HOME = Parser.asEnum("home", HomeOptions.class, HomeOptions.CLAIMS);
     }
 }
