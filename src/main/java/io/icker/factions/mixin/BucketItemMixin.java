@@ -7,7 +7,7 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.fluid.Fluid;
 
 @Mixin(BucketItem.class)
-public interface BucketItemAccessor {
+public interface BucketItemMixin {
     @Accessor
     Fluid getFluid();
 }

@@ -10,7 +10,7 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 @Mixin(Item.class)
-public interface ItemInvoker {
+public interface ItemMixin {
     @Invoker("raycast")
     public static BlockHitResult invokeRaycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling)  {
         throw new AssertionError();

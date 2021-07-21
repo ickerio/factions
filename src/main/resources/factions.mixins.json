@@ -4,8 +4,8 @@
   "package": "io.icker.factions.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "ItemInvoker",
-    "BucketItemAccessor",
+    "ItemMixin",
+    "BucketItemMixin",
     "CommandManagerMixin",
     "MinecraftServerMixin",
     "ServerPlayerEntityMixin",

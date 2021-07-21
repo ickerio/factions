@@ -5,8 +5,8 @@ import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
 import io.icker.factions.util.Message;
-import io.icker.factions.mixin.BucketItemAccessor;
-import io.icker.factions.mixin.ItemInvoker;
+import io.icker.factions.mixin.BucketItemMixin;
+import io.icker.factions.mixin.ItemMixin;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
@@ -25,14 +25,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.KnowledgeBookItem;
 import net.minecraft.item.SnowballItem;
 import net.minecraft.item.Wearable;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.BundleItem;
 import net.minecraft.item.EggItem;
 import net.minecraft.item.EnderEyeItem;
 import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.ExperienceBottleItem;
 import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.FluidModificationItem;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 
 public class PlayerInteractEvents {
@@ -58,15 +56,11 @@ public class PlayerInteractEvents {
         }
         BlockHitResult blockHitResult;
         if (item instanceof BucketItem) {
-            FluidHandling fluidHandling = ((BucketItemAccessor)item).getFluid() == Fluids.EMPTY ? 
+            FluidHandling fluidHandling = ((BucketItemMixin)item).getFluid() == Fluids.EMPTY ? 
                     RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
-            blockHitResult = ItemInvoker.invokeRaycast(world, player, fluidHandling);
+            blockHitResult = ItemMixin.invokeRaycast(world, player, fluidHandling);
         } else {
-            blockHitResult = ItemInvoker.invokeRaycast(world, player, RaycastContext.FluidHandling.NONE);
-        }
-        if (item instanceof FluidModificationItem || item instanceof BlockItem) {
-            resyncBlock(player, world, blockHitResult.getBlockPos());
-            return true;
+            blockHitResult = ItemMixin.invokeRaycast(world, player, RaycastContext.FluidHandling.NONE);
         }
         if (blockHitResult.getType() != BlockHitResult.Type.MISS) {
             return !actionPermitted(blockHitResult.getBlockPos(), world, player);
