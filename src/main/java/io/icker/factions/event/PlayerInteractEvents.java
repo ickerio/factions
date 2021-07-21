@@ -5,6 +5,8 @@ import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
 import io.icker.factions.util.Message;
+import io.icker.factions.mixin.BucketItemAccessor;
+import io.icker.factions.mixin.ItemInvoker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
@@ -13,11 +15,12 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.RaycastContext;
+import net.minecraft.world.RaycastContext.FluidHandling;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
+import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.KnowledgeBookItem;
 import net.minecraft.item.SnowballItem;
@@ -42,20 +45,29 @@ public class PlayerInteractEvents {
             return false;
         }
         Item item = stack.getItem();
-        if (item instanceof FluidModificationItem || item instanceof BlockItem) {
-            return true;
-        } else if (item instanceof Wearable             ||
-                   item instanceof SnowballItem         ||
-                   item instanceof EggItem              ||
-                   item instanceof FishingRodItem       ||
-                   item instanceof BundleItem           ||
-                   item instanceof EnderEyeItem         ||
-                   item instanceof ExperienceBottleItem ||
-                   item instanceof KnowledgeBookItem    ||
-                   item instanceof EnderPearlItem       ){
+        if (item instanceof Wearable             ||
+            item instanceof SnowballItem         ||
+            item instanceof EggItem              ||
+            item instanceof FishingRodItem       ||
+            item instanceof BundleItem           ||
+            item instanceof EnderEyeItem         ||
+            item instanceof ExperienceBottleItem ||
+            item instanceof KnowledgeBookItem    ||
+            item instanceof EnderPearlItem       ){
             return false;
         }
-        BlockHitResult blockHitResult = raycast(world, player, RaycastContext.FluidHandling.NONE);
+        BlockHitResult blockHitResult;
+        if (item instanceof BucketItem) {
+            FluidHandling fluidHandling = ((BucketItemAccessor)item).getFluid() == Fluids.EMPTY ? 
+                    RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
+            blockHitResult = ItemInvoker.invokeRaycast(world, player, fluidHandling);
+        } else {
+            blockHitResult = ItemInvoker.invokeRaycast(world, player, RaycastContext.FluidHandling.NONE);
+        }
+        if (item instanceof FluidModificationItem || item instanceof BlockItem) {
+            resyncBlock(player, world, blockHitResult.getBlockPos());
+            return true;
+        }
         if (blockHitResult.getType() != BlockHitResult.Type.MISS) {
             return !actionPermitted(blockHitResult.getBlockPos(), world, player);
         }
@@ -90,13 +102,7 @@ public class PlayerInteractEvents {
         boolean validMember = member == null ? false : member.getFaction().name == owner.name;
 
         if (overclaimed || validMember == false) {
-            for (int x = -1; x < 2; x++) {
-                for (int y = -1; y < 2; y++) {
-                    for (int z = -1; z < 2; z++) {
-                        player.networkHandler.sendPacket(new BlockUpdateS2CPacket(world, pos.add(x, y, z)));
-                    }
-                }
-            }
+            resyncBlock(player, world, pos);
             return false;
         }
         return true;
@@ -114,17 +120,13 @@ public class PlayerInteractEvents {
         }
     }
 
-    private static BlockHitResult raycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling) {
-        float f = player.getPitch();
-        float g = player.getYaw();
-        Vec3d vec3d = player.getEyePos();
-        float h = MathHelper.cos(-g * 0.017453292F - 3.1415927F);
-        float i = MathHelper.sin(-g * 0.017453292F - 3.1415927F);
-        float j = -MathHelper.cos(-f * 0.017453292F);
-        float k = MathHelper.sin(-f * 0.017453292F);
-        float l = i * j;
-        float n = h * j;
-        Vec3d vec3d2 = vec3d.add((double)l * 5.0D, (double)k * 5.0D, (double)n * 5.0D);
-        return world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
-     }
+    public static void resyncBlock(ServerPlayerEntity player, World world, BlockPos pos) {
+        for (int x = -1; x < 2; x++) {
+            for (int y = -1; y < 2; y++) {
+                for (int z = -1; z < 2; z++) {
+                    player.networkHandler.sendPacket(new BlockUpdateS2CPacket(world, pos.add(x, y, z)));
+                }
+            }
+        }
+    }
 }
