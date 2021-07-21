@@ -31,6 +31,7 @@ import net.minecraft.item.EnderEyeItem;
 import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.ExperienceBottleItem;
 import net.minecraft.item.FishingRodItem;
+import net.minecraft.item.FluidModificationItem;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 
 public class PlayerInteractEvents {
@@ -59,14 +60,19 @@ public class PlayerInteractEvents {
             return false;
         }
 
-        BlockHitResult blockHitResult;
         FluidHandling handling = item instanceof BucketItem &&
             ((BucketItemMixin)item).getFluid() == Fluids.EMPTY ? 
             RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
 
-        blockHitResult = ItemMixin.invokeRaycast(world, player, handling);
-        if (blockHitResult.getType() != BlockHitResult.Type.MISS) {
-            return !actionPermitted(blockHitResult.getBlockPos(), world, player);
+        BlockHitResult result = ItemMixin.invokeRaycast(world, player, handling);
+        BlockPos pos = result.getBlockPos();
+        if (result.getType() != BlockHitResult.Type.MISS) {
+            boolean placementPermitted = false;
+            if (item instanceof FluidModificationItem) {
+                BlockPos placePos = pos.add(result.getSide().getVector());
+                placementPermitted = !actionPermitted(placePos, world, player);
+            }
+            return !actionPermitted(pos, world, player) || placementPermitted;
         }
 
         return false;
