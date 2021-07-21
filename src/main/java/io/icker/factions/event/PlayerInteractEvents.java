@@ -42,7 +42,7 @@ public class PlayerInteractEvents {
 
     static boolean actionPermitted(BlockPos pos, World world, PlayerEntity player) {
         PlayerConfig config = PlayerConfig.get(player.getUuid());
-        if (config.getBypass()) {
+        if (config.bypass) {
             if (player.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL)) {
                 return true;
             } else {

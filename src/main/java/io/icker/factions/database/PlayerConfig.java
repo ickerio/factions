@@ -39,20 +39,6 @@ public class PlayerConfig {
             .executeUpdate();
     }
 
-    public boolean getBypass() {
-        Query query = new Query("SELECT bypass FROM PlayerConfig WHERE uuid = ?;")
-            .set(uuid)
-            .executeQuery();
-        
-        if (!query.success) return false;
-
-        try {
-            return query.getBool("bypass");
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
     public void setBypass(boolean bypass) {
         new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?, ?);")
             .set(uuid, chat.toString(), bypass)
