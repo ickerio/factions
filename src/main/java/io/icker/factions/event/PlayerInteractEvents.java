@@ -5,23 +5,31 @@ import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
 import io.icker.factions.util.Message;
-import io.icker.factions.mixin.BucketItemAccessor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.UseAction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.RaycastContext.FluidHandling;
 import net.minecraft.world.RaycastContext;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
-import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.KnowledgeBookItem;
+import net.minecraft.item.SnowballItem;
+import net.minecraft.item.Wearable;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.BundleItem;
+import net.minecraft.item.EggItem;
+import net.minecraft.item.EnderEyeItem;
+import net.minecraft.item.EnderPearlItem;
+import net.minecraft.item.ExperienceBottleItem;
+import net.minecraft.item.FishingRodItem;
+import net.minecraft.item.FluidModificationItem;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 
 public class PlayerInteractEvents {
@@ -30,14 +38,24 @@ public class PlayerInteractEvents {
     }
     
     public static boolean preventUseItem(ServerPlayerEntity player, World world, ItemStack stack) {
-        Item item = stack.getItem();
-        BlockHitResult blockHitResult;
-        if (item instanceof BucketItem) {
-            FluidHandling fluidHandling = ((BucketItemAccessor)item).getFluid() == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
-            blockHitResult = raycast(world, player, fluidHandling);
-        } else {
-            blockHitResult = raycast(world, player, RaycastContext.FluidHandling.NONE);
+        if (stack.getUseAction() != UseAction.NONE) {
+            return false;
         }
+        Item item = stack.getItem();
+        if (item instanceof FluidModificationItem || item instanceof BlockItem) {
+            return true;
+        } else if (item instanceof Wearable             ||
+                   item instanceof SnowballItem         ||
+                   item instanceof EggItem              ||
+                   item instanceof FishingRodItem       ||
+                   item instanceof BundleItem           ||
+                   item instanceof EnderEyeItem         ||
+                   item instanceof ExperienceBottleItem ||
+                   item instanceof KnowledgeBookItem    ||
+                   item instanceof EnderPearlItem       ){
+            return false;
+        }
+        BlockHitResult blockHitResult = raycast(world, player, RaycastContext.FluidHandling.NONE);
         if (blockHitResult.getType() != BlockHitResult.Type.MISS) {
             return !actionPermitted(blockHitResult.getBlockPos(), world, player);
         }
