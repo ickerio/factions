@@ -18,7 +18,7 @@ public class BypassCommand implements Command<ServerCommandSource> {
         ServerPlayerEntity player = source.getPlayer();
 
         PlayerConfig config = PlayerConfig.get(player.getUuid());
-        boolean bypass = !config.getBypass();
+        boolean bypass = !config.bypass;
         config.setBypass(bypass);
 
         new Message("Successfully toggled claim bypass")
