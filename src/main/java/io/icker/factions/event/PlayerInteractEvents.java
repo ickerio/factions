@@ -34,14 +34,18 @@ import net.minecraft.item.FishingRodItem;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 
 public class PlayerInteractEvents {
-    public static boolean preventInteract(ServerPlayerEntity player, World world, BlockPos pos) {
-        return !actionPermitted(pos, world, player);
+    public static boolean preventInteract(ServerPlayerEntity player, World world, BlockHitResult result) {
+        BlockPos pos = result.getBlockPos();
+        BlockPos placePos = pos.add(result.getSide().getVector());
+        boolean placementPermitted = !actionPermitted(placePos, world, player);
+        return !actionPermitted(pos, world, player) || placementPermitted;
     }
     
     public static boolean preventUseItem(ServerPlayerEntity player, World world, ItemStack stack) {
         if (stack.getUseAction() != UseAction.NONE) {
             return false;
         }
+        
         Item item = stack.getItem();
         if (item instanceof Wearable             ||
             item instanceof SnowballItem         ||
@@ -54,17 +58,17 @@ public class PlayerInteractEvents {
             item instanceof EnderPearlItem       ){
             return false;
         }
+
         BlockHitResult blockHitResult;
-        if (item instanceof BucketItem) {
-            FluidHandling fluidHandling = ((BucketItemMixin)item).getFluid() == Fluids.EMPTY ? 
-                    RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
-            blockHitResult = ItemMixin.invokeRaycast(world, player, fluidHandling);
-        } else {
-            blockHitResult = ItemMixin.invokeRaycast(world, player, RaycastContext.FluidHandling.NONE);
-        }
+        FluidHandling handling = item instanceof BucketItem &&
+            ((BucketItemMixin)item).getFluid() == Fluids.EMPTY ? 
+            RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
+
+        blockHitResult = ItemMixin.invokeRaycast(world, player, handling);
         if (blockHitResult.getType() != BlockHitResult.Type.MISS) {
             return !actionPermitted(blockHitResult.getBlockPos(), world, player);
         }
+
         return false;
     }
 
@@ -82,7 +86,7 @@ public class PlayerInteractEvents {
             .send(target, true);
     }
 
-    static boolean actionPermitted(BlockPos pos, World world, ServerPlayerEntity player) {
+    public static boolean actionPermitted(BlockPos pos, World world, ServerPlayerEntity player) {
         String dimension = world.getRegistryKey().getValue().toString();
         ChunkPos actionPos = world.getChunk(pos).getPos();
 

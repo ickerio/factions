@@ -44,7 +44,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
             info.cancel();
         }
 
-        if (!target.isLiving() && PlayerInteractEvents.preventInteract(player, world, target.getBlockPos())) {
+        if (!target.isLiving() && !PlayerInteractEvents.actionPermitted(target.getBlockPos(), world, player)) {
             info.cancel();
         }
     }

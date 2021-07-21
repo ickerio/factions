@@ -26,7 +26,7 @@ public class ServerPlayerInteractionManagerMixin {
 
     @Inject(at = @At("HEAD"), method = "tryBreakBlock", cancellable = true)
     private void tryBreakBlock(BlockPos pos, CallbackInfoReturnable<Boolean> info) {
-        if (PlayerInteractEvents.preventInteract(player, world, pos)) {
+        if (!PlayerInteractEvents.actionPermitted(pos, world, player)) {
             PlayerInteractEvents.warnPlayer(player, "break blocks");
             info.setReturnValue(false);
         }
@@ -34,8 +34,7 @@ public class ServerPlayerInteractionManagerMixin {
 
 	@Inject(at = @At("HEAD"), method = "interactBlock", cancellable = true)
 	public void interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult blockHitResult, CallbackInfoReturnable<ActionResult> info) {
-        BlockPos pos = blockHitResult.getBlockPos();
-        if (PlayerInteractEvents.preventInteract(player, world, pos)) {
+        if (PlayerInteractEvents.preventInteract(player, world, blockHitResult)) {
             PlayerInteractEvents.warnPlayer(player, "use blocks");
             PlayerInteractEvents.syncItem(player, stack, hand);
             info.setReturnValue(ActionResult.FAIL);
