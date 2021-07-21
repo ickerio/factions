@@ -8,7 +8,6 @@ import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.util.Message;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -87,13 +86,13 @@ public class PlayerInteractEvents {
         return playerMember.getFaction().name == targetMember.getFaction().name;
     }
 
-    public static void warnPlayer(PlayerEntity target, String action) {
+    public static void warnPlayer(ServerPlayerEntity target, String action) {
         new Message("Cannot %s in this claim", action)
             .format(Formatting.RED, Formatting.BOLD)
             .send(target, true);
     }
 
-    static boolean actionPermitted(BlockPos pos, World world, PlayerEntity player) {
+    public static boolean actionPermitted(BlockPos pos, World world, ServerPlayerEntity player) {
         PlayerConfig config = PlayerConfig.get(player.getUuid());
         if (config.bypass) {
             if (player.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL)) {
