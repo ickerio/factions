@@ -56,7 +56,8 @@ public class Database {
 
                 CREATE TABLE IF NOT EXISTS PlayerConfig (
                     uuid UUID PRIMARY KEY,
-                    chat VARCHAR(255)
+                    chat VARCHAR(255),
+                    bypass BOOLEAN
                 );
                 """)
                 .executeUpdate();
