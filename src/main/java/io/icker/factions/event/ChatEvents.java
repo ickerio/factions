@@ -17,20 +17,20 @@ public class ChatEvents {
 
         if (PlayerConfig.get(id).chat == ChatOption.GLOBAL) {
             if (member == null) {
-                ChatEvents.factionlessGlobal(sender, message);
+                ChatEvents.global(sender, message);
             } else {
                 ChatEvents.memberGlobal(sender, member.getFaction(), message);
             }
         } else {
             if (member == null) {
-                ChatEvents.factionlessFactionChat(sender);
+                ChatEvents.fail(sender);
             } else {
-                ChatEvents.factionChat(sender, member.getFaction(), message);
+                ChatEvents.faction(sender, member.getFaction(), message);
             }
         }
     }
 
-    public static void factionlessGlobal(ServerPlayerEntity sender, String message) {
+    public static void global(ServerPlayerEntity sender, String message) {
         new Message(sender.getName().asString())
             .filler("»")
             .add(new Message(message).format(Formatting.GRAY))
@@ -46,7 +46,7 @@ public class ChatEvents {
             .sendToGlobalChat();
     }
 
-    public static void factionlessFactionChat(ServerPlayerEntity sender) {
+    public static void fail(ServerPlayerEntity sender) {
         new Message("You must be in a faction to use faction chat")
             .hover("Click to join global chat")
             .click("/f chat global")
@@ -54,7 +54,7 @@ public class ChatEvents {
             .send(sender, false);
     }
 
-    public static void factionChat(ServerPlayerEntity sender, Faction faction, String message) {
+    public static void faction(ServerPlayerEntity sender, Faction faction, String message) {
         new Message(sender.getName().asString())
             .add(new Message(" F").format(Formatting.BOLD, faction.color))
             .filler("»")
