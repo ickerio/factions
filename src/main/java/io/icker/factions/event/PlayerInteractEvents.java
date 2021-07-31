@@ -11,7 +11,6 @@ import io.icker.factions.mixin.ItemMixin;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -23,15 +22,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.KnowledgeBookItem;
-import net.minecraft.item.SnowballItem;
-import net.minecraft.item.Wearable;
-import net.minecraft.item.BundleItem;
-import net.minecraft.item.EggItem;
-import net.minecraft.item.EnderEyeItem;
-import net.minecraft.item.EnderPearlItem;
-import net.minecraft.item.ExperienceBottleItem;
-import net.minecraft.item.FishingRodItem;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 
 public class PlayerInteractEvents {
@@ -42,22 +32,7 @@ public class PlayerInteractEvents {
     }
     
     public static boolean preventUseItem(ServerPlayerEntity player, World world, ItemStack stack) {
-        if (stack.getUseAction() != UseAction.NONE) {
-            return false;
-        }
-        
         Item item = stack.getItem();
-        if (item instanceof Wearable             ||
-            item instanceof SnowballItem         ||
-            item instanceof EggItem              ||
-            item instanceof FishingRodItem       ||
-            item instanceof BundleItem           ||
-            item instanceof EnderEyeItem         ||
-            item instanceof ExperienceBottleItem ||
-            item instanceof KnowledgeBookItem    ||
-            item instanceof EnderPearlItem       ){
-            return false;
-        }
 
         if (item instanceof BucketItem) {
             Fluid fluid = ((BucketItemMixin)item).getFluid();
