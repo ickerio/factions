@@ -8,8 +8,8 @@ import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.util.Message;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
+
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -18,6 +18,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.RaycastContext.FluidHandling;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.BucketItem;
@@ -31,15 +32,13 @@ import net.minecraft.item.EnderEyeItem;
 import net.minecraft.item.EnderPearlItem;
 import net.minecraft.item.ExperienceBottleItem;
 import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.FluidModificationItem;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 
 public class PlayerInteractEvents {
     public static boolean preventInteract(ServerPlayerEntity player, World world, BlockHitResult result) {
         BlockPos pos = result.getBlockPos();
         BlockPos placePos = pos.add(result.getSide().getVector());
-        boolean placementPermitted = !actionPermitted(placePos, world, player);
-        return !actionPermitted(pos, world, player) || placementPermitted;
+        return !actionPermitted(pos, world, player) || !actionPermitted(placePos, world, player);
     }
     
     public static boolean preventUseItem(ServerPlayerEntity player, World world, ItemStack stack) {
@@ -60,19 +59,15 @@ public class PlayerInteractEvents {
             return false;
         }
 
-        FluidHandling handling = item instanceof BucketItem &&
-            ((BucketItemMixin)item).getFluid() == Fluids.EMPTY ? 
-            RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
+        if (item instanceof BucketItem) {
+            Fluid fluid = ((BucketItemMixin)item).getFluid();
+            FluidHandling handling = fluid == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
 
-        BlockHitResult result = ItemMixin.invokeRaycast(world, player, handling);
-        BlockPos pos = result.getBlockPos();
-        if (result.getType() != BlockHitResult.Type.MISS) {
-            boolean placementPermitted = false;
-            if (item instanceof FluidModificationItem) {
-                BlockPos placePos = pos.add(result.getSide().getVector());
-                placementPermitted = !actionPermitted(placePos, world, player);
+            BlockHitResult result = ItemMixin.invokeRaycast(world, player, handling);
+
+            if (result.getType() != BlockHitResult.Type.MISS) {
+                return preventInteract(player, world, result);
             }
-            return !actionPermitted(pos, world, player) || placementPermitted;
         }
 
         return false;
@@ -88,7 +83,7 @@ public class PlayerInteractEvents {
 
     public static void warnPlayer(ServerPlayerEntity target, String action) {
         new Message("Cannot %s in this claim", action)
-            .format(Formatting.RED, Formatting.BOLD)
+            .fail()
             .send(target, true);
     }
 
@@ -114,11 +109,9 @@ public class PlayerInteractEvents {
         boolean overclaimed = owner.getClaims().size() * Config.CLAIM_WEIGHT > owner.power;
         boolean validMember = member == null ? false : member.getFaction().name == owner.name;
 
-        if (overclaimed || validMember == false) {
-            resyncBlock(player, world, pos);
-            return false;
-        }
-        return true;
+        boolean permitted = overclaimed || validMember;
+        if (!permitted) syncBlocks(player, world, pos);
+        return permitted;
     }
 
     public static void syncItem(ServerPlayerEntity player, ItemStack itemStack, Hand hand) {
@@ -133,8 +126,8 @@ public class PlayerInteractEvents {
         }
     }
 
-    public static void resyncBlock(ServerPlayerEntity player, World world, BlockPos pos) {
-        for (int x = -1; x < 2; x++) {
+    public static void syncBlocks(ServerPlayerEntity player, World world, BlockPos pos) {
+        for (int x = -1; x < 2; x++) { // TODO: this is slighty inefficent as it may do some blocks twice
             for (int y = -1; y < 2; y++) {
                 for (int z = -1; z < 2; z++) {
                     player.networkHandler.sendPacket(new BlockUpdateS2CPacket(world, pos.add(x, y, z)));
