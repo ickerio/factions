@@ -20,11 +20,14 @@ public class PlayerConfig {
 
         if (!query.success) return new PlayerConfig(uuid, ChatOption.GLOBAL, false);
 
+        ChatOption opt;
         try {
-            return new PlayerConfig(uuid, Enum.valueOf(ChatOption.class, query.getString("chat")), query.getBool("bypass"));
+            opt = Enum.valueOf(ChatOption.class, query.getString("chat"));
         } catch (IllegalArgumentException e) {
-            return new PlayerConfig(uuid, ChatOption.GLOBAL, false);
+            opt = ChatOption.GLOBAL;
         }
+
+        return new PlayerConfig(uuid, opt, query.getBool("bypass"));
     }
 
     public PlayerConfig(UUID uuid, ChatOption chat, boolean bypass) {
