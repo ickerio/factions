@@ -1,10 +1,10 @@
 package io.icker.factions.database;
 
+import io.icker.factions.FactionsMod;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import io.icker.factions.FactionsMod;
 
 public class Database {
     public static Connection con;
@@ -18,6 +18,8 @@ public class Database {
                     description VARCHAR(255),
                     color VARCHAR(255),
                     open BOOLEAN,
+                    allowMonsters BOOLEAN,
+                    allowAnimals BOOLEAN,
                     power INTEGER
                 );
 

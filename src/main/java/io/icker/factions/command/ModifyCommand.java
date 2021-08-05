@@ -4,7 +4,6 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.database.Member;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.ColorArgumentType;
@@ -43,6 +42,28 @@ public class ModifyCommand {
 
 		Member.get(player.getUuid()).getFaction().setOpen(open);
 		new Message("Successfully updated faction to  " + (open ? "open" : "closed")).send(player, false);
+		return 1;
+	}
+
+	public static int allowMonsters(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+		boolean allowMonsters = BoolArgumentType.getBool(context, "monsters");
+
+		ServerCommandSource source = context.getSource();
+		ServerPlayerEntity player = source.getPlayer();
+
+		Member.get(player.getUuid()).getFaction().setAllowMonsters(allowMonsters);
+		new Message("Successfully updated faction to %s monster spawning", allowMonsters ? "allow" : "deny").send(player, false);
+		return 1;
+	}
+
+	public static int allowAnimals(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+		boolean allowAnimals = BoolArgumentType.getBool(context, "animals");
+
+		ServerCommandSource source = context.getSource();
+		ServerPlayerEntity player = source.getPlayer();
+
+		Member.get(player.getUuid()).getFaction().setAllowAnimals(allowAnimals);
+		new Message("Successfully updated faction to %s monster spawning", allowAnimals ? "allow" : "deny").send(player, false);
 		return 1;
 	}
 }

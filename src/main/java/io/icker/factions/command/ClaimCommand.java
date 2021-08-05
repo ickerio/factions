@@ -1,11 +1,8 @@
 package io.icker.factions.command;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
@@ -15,6 +12,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class ClaimCommand {
 	public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -58,8 +58,44 @@ public class ClaimCommand {
 			return 1;
 		}
 		
-		String owner = existingClaim.getFaction().name == member.getFaction().name ? "Your" : "Another";
+		String owner = existingClaim.getFaction().name.equals(member.getFaction().name) ? "Your" : "Another";
 		new Message(owner + " faction already owns this chunk").fail().send(player, false);
+		return 0;
+	}
+
+	public static int square(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+		ServerCommandSource source = context.getSource();
+
+		ServerPlayerEntity player = source.getPlayer();
+		ServerWorld world = player.getServerWorld();
+
+		ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
+		String dimension = world.getRegistryKey().getValue().toString();
+
+		Member member = Member.get(player.getUuid());
+		Faction faction = member.getFaction();
+
+		int size = IntegerArgumentType.getInteger(context, "size");
+		int claimed = 0;
+		for (int xOffset = -size; xOffset < size; xOffset++) {
+			for (int zOffset = -size; zOffset < size; zOffset++) {
+				Claim existingClaim = Claim.get(chunkPos.x + xOffset, chunkPos.z + zOffset, dimension);
+				if (existingClaim == null) {
+					faction.addClaim(chunkPos.x + xOffset, chunkPos.z + zOffset, dimension);
+					claimed++;
+				} else {
+					String owner = existingClaim.getFaction().name.equals(member.getFaction().name) ? "Your" : "Another";
+					new Message("%s faction already owns the chunk at (%d, %d)", owner, chunkPos.x + xOffset, chunkPos.z + zOffset).fail().send(player, false);
+				}
+
+			}
+		}
+
+		if (claimed > 0) {
+			new Message("%s claimed %s chunk%s near (%d, %d)", player.getName().asString(), claimed, claimed == 1 ? "" : "s", chunkPos.x, chunkPos.z).send(faction);
+			return 1;
+		}
+
 		return 0;
 	}
 

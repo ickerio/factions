@@ -1,14 +1,12 @@
 package io.icker.factions.command;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Faction;
 import io.icker.factions.util.Message;
-
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
@@ -26,7 +24,7 @@ public class CreateCommand implements Command<ServerCommandSource> {
 			return 0;
 		}
 
-		Faction.add(name, "No description set", Formatting.WHITE.getName(), false, Config.BASE_POWER + Config.MEMBER_POWER).addMember(player.getUuid());
+		Faction.add(name, "No description set", Formatting.WHITE.getName(), false, false, true, Config.BASE_POWER + Config.MEMBER_POWER).addMember(player.getUuid());
 		source.getServer().getPlayerManager().sendCommandTree(player);
 		
 		new Message("Successfully created faction").send(player, false);

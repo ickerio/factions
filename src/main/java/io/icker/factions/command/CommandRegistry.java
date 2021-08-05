@@ -2,10 +2,10 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Member;
 import net.minecraft.command.argument.ColorArgumentType;
@@ -114,6 +114,22 @@ public class CommandRegistry {
 			)
 			.build();
 
+		LiteralCommandNode<ServerCommandSource> allowMonsters = CommandManager
+				.literal("monsters")
+				.then(
+					CommandManager.argument("monsters", BoolArgumentType.bool())
+					.executes(ModifyCommand::allowMonsters)
+				)
+				.build();
+
+		LiteralCommandNode<ServerCommandSource> allowAnimals = CommandManager
+				.literal("animals")
+				.then(
+					CommandManager.argument("animals", BoolArgumentType.bool())
+					.executes(ModifyCommand::allowAnimals)
+				)
+				.build();
+
 		LiteralCommandNode<ServerCommandSource> invite = CommandManager
 			.literal("invite")
 			.requires(CommandRegistry::isFactionMember)
@@ -156,6 +172,20 @@ public class CommandRegistry {
 			.executes(ClaimCommand::remove)
 			.build();
 
+		LiteralCommandNode<ServerCommandSource> squareClaim = CommandManager
+			.literal("square")
+				.then(
+						CommandManager.argument("size", IntegerArgumentType.integer(1, 10)) // Max should probs be a config option
+						.executes(ClaimCommand::square)
+				)
+				.build();
+
+
+		LiteralCommandNode<ServerCommandSource> squareClaimAlias = CommandManager
+			.literal("s")
+			.redirect(squareClaim)
+			.build();
+
 		LiteralCommandNode<ServerCommandSource> removeAllClaims = CommandManager
 			.literal("all")
 			.executes(ClaimCommand::removeAll)
@@ -194,6 +224,8 @@ public class CommandRegistry {
 		modify.addChild(description);
 		modify.addChild(color);
 		modify.addChild(open);
+		modify.addChild(allowMonsters);
+		modify.addChild(allowAnimals);
 
 		factions.addChild(invite);
 		invite.addChild(listInvites);
@@ -204,6 +236,8 @@ public class CommandRegistry {
 		claim.addChild(listClaim);
 		claim.addChild(removeClaim);
 		removeClaim.addChild(removeAllClaims);
+		claim.addChild(squareClaim);
+		claim.addChild(squareClaimAlias);
 
 		factions.addChild(home);
 		home.addChild(setHome);

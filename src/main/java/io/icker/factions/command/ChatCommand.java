@@ -2,7 +2,6 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.database.PlayerConfig.ChatOption;
 import io.icker.factions.util.Message;

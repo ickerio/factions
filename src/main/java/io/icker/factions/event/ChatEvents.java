@@ -1,7 +1,5 @@
 package io.icker.factions.event;
 
-import java.util.UUID;
-
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
 import io.icker.factions.database.PlayerConfig;
@@ -9,6 +7,8 @@ import io.icker.factions.database.PlayerConfig.ChatOption;
 import io.icker.factions.util.Message;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
+
+import java.util.UUID;
 
 public class ChatEvents {
     public static void handleMessage(ServerPlayerEntity sender, String message) {

@@ -1,12 +1,8 @@
 package io.icker.factions.command;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Invite;
 import io.icker.factions.database.Member;
@@ -15,8 +11,11 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Util;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class InviteCommand {
 	public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

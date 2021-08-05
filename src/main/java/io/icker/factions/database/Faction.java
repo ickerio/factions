@@ -1,15 +1,17 @@
 package io.icker.factions.database;
 
+import net.minecraft.util.Formatting;
+
 import java.util.ArrayList;
 import java.util.UUID;
-
-import net.minecraft.util.Formatting;
 
 public class Faction {
     public String name;
     public String description;
     public Formatting color;
     public boolean open;
+    public boolean allowMonsters;
+    public boolean allowAnimals;
     public int power;
 
     public static Faction get(String name) {
@@ -18,16 +20,16 @@ public class Faction {
             .executeQuery();
 
         if (!query.success) return null;
-        return new Faction(name, query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power"));
+        return new Faction(name, query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getBool("allowMonsters"), query.getBool("allowAnimals"), query.getInt("power"));
     }
 
-    public static Faction add(String name, String description, String color, boolean open, int power) {
-        Query query = new Query("INSERT INTO Faction VALUES (?, ?, ?, ?, ?);")
-            .set(name, description, color, open, power)
+    public static Faction add(String name, String description, String color, boolean open, boolean allowMonsters, boolean allowAnimals, int power) {
+        Query query = new Query("INSERT INTO Faction VALUES (?, ?, ?, ?, ?, ?, ?);")
+            .set(name, description, color, open, allowMonsters, allowAnimals, power)
             .executeUpdate();
 
         if (!query.success) return null;
-        return new Faction(name, description, Formatting.byName(color), open, power);
+        return new Faction(name, description, Formatting.byName(color), open, allowMonsters, allowAnimals, power);
     }
 
     public static ArrayList<Faction> all() {
@@ -38,17 +40,19 @@ public class Faction {
         if (!query.success) return factions;
 
         while (query.next()) {
-            factions.add(new Faction(query.getString("name"), query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power")));
+            factions.add(new Faction(query.getString("name"), query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getBool("allowMonsters"), query.getBool("allowAnimals"), query.getInt("power")));
         }
         return factions;
     }
 
-    public Faction(String name, String description, Formatting color, boolean open, int power) {
+    public Faction(String name, String description, Formatting color, boolean open, boolean allowMonsters, boolean allowAnimals, int power) {
         this.name = name;
         this.description = description;
         this.color = color;
         this.open = open;
         this.power = power;
+        this.allowMonsters = allowMonsters;
+        this.allowAnimals = allowAnimals;
     }
 
     public void setDescription(String description) {
@@ -67,6 +71,18 @@ public class Faction {
         new Query("UPDATE Faction SET open = ? WHERE name = ?;")
             .set(open, name)
             .executeUpdate();
+    }
+
+    public void setAllowMonsters(boolean allowMonsters) {
+        new Query("UPDATE Faction SET allowMonsters = ? WHERE name = ?;")
+                .set(allowMonsters, name)
+                .executeUpdate();
+    }
+
+    public void setAllowAnimals(boolean allowAnimals) {
+        new Query("UPDATE Faction SET allowAnimals = ? WHERE name = ?;")
+                .set(allowAnimals, name)
+                .executeUpdate();
     }
 
     public void setPower(int power) {

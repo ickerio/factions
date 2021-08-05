@@ -1,15 +1,13 @@
 package io.icker.factions.command;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.Command;
-
+import io.icker.factions.database.PlayerConfig;
+import io.icker.factions.util.Message;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
-
-import io.icker.factions.database.PlayerConfig;
-import io.icker.factions.util.Message;
 
 public class BypassCommand implements Command<ServerCommandSource> {
     @Override

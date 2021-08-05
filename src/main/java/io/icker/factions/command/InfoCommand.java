@@ -4,20 +4,18 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
 import io.icker.factions.util.Message;
-
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Util;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class InfoCommand  {
 	public static int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

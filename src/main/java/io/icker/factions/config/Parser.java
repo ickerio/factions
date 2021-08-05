@@ -1,16 +1,15 @@
 package io.icker.factions.config;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Parser {
     private static final File factionDir = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();

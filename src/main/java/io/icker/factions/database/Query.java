@@ -1,10 +1,10 @@
 package io.icker.factions.database;
 
+import io.icker.factions.FactionsMod;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import io.icker.factions.FactionsMod;
 
 // TODO: stmt.close() on gets
 public class Query {

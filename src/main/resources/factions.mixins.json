@@ -4,13 +4,14 @@
   "package": "io.icker.factions.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "ItemMixin",
     "BucketItemMixin",
     "CommandManagerMixin",
+    "ItemMixin",
     "MinecraftServerMixin",
     "ServerPlayerEntityMixin",
+    "ServerPlayerInteractionManagerMixin",
     "ServerPlayNetworkManagerMixin",
-    "ServerPlayerInteractionManagerMixin"
+    "ServerWorldMixin"
   ],
   "server": [],
   "injectors": {
