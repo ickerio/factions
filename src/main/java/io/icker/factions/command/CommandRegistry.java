@@ -205,6 +205,11 @@ public class CommandRegistry {
 			.requires(CommandRegistry::isRankAboveOfficer)
 			.executes(HomeCommand::set)
 			.build();
+
+		LiteralCommandNode<ServerCommandSource> map = CommandManager
+			.literal("map")
+			.executes(MapCommand::show)
+			.build();
 		
 		LiteralCommandNode<ServerCommandSource> adminBypass = CommandManager
 			.literal("bypass")
@@ -286,6 +291,8 @@ public class CommandRegistry {
 		claim.addChild(listClaim);
 		claim.addChild(removeClaim);
 		removeClaim.addChild(removeAllClaims);
+
+		factions.addChild(map);
 
 		factions.addChild(home);
 
