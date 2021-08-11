@@ -18,30 +18,31 @@ public class Parser {
 
     private static final int version = 1;
 
-    public static JsonObject obj;
-
-    public static void load() {
+    public static JsonObject load() {
         File config = new File(factionDir, "config.json");
 
         if (config.exists()) {
             try {
                 FileReader reader = new FileReader(config);
-                obj = GSON.fromJson(reader, JsonObject.class);
+                JsonObject obj = GSON.fromJson(reader, JsonObject.class);
 
-                if (asInt("version", 0) != version) {
+                if (Parser.asInt(obj, "version", 0) != version) {
                     FactionsMod.LOGGER.warn(String.format("Factions config file incompatible or version not specified (Requires version %d)", version));
                 }
                 reader.close();
+
+                return obj;
             } catch (IOException e) {
                 FactionsMod.LOGGER.error("Factions config file failed to load");
+                return new JsonObject();
             }
         } else {
             FactionsMod.LOGGER.warn("Factions config file not present, using default values");
-            obj = new JsonObject();
+            return new JsonObject();
         }
     }
 
-    public static int asInt(String key, int fallback) {
+    public static int asInt(JsonObject obj, String key, Integer fallback) {
         try {
             return obj.get(key).getAsInt();
         } catch (NullPointerException | UnsupportedOperationException e) {
@@ -49,7 +50,7 @@ public class Parser {
         }
     }
 
-    public static String asString(String key, String fallback) {
+    public static String asString(JsonObject obj, String key, String fallback) {
         try {
             return obj.get(key).getAsString();
         } catch (NullPointerException | UnsupportedOperationException e) {
@@ -57,7 +58,7 @@ public class Parser {
         }
     }
 
-    public static <T extends Enum<T>> T asEnum(String key, Class<T> c, T fallback) {
+    public static <T extends Enum<T>> T asEnum(JsonObject obj, String key, Class<T> c, T fallback) {
         try {
             return Enum.valueOf(c, obj.get(key).getAsString().trim().toUpperCase());
         } catch (NullPointerException | UnsupportedOperationException | IllegalArgumentException e) {
@@ -65,11 +66,25 @@ public class Parser {
         }
     }
 
-    public static JsonArray asArray(String key) {
+    public static JsonArray asArray(JsonObject obj, String key) {
         try {
             return obj.get(key).getAsJsonArray();
         } catch (NullPointerException | UnsupportedOperationException e) {
             return new JsonArray();
         }
+    }
+
+    public static Constraint asConstraint(JsonObject obj, String key) {
+        JsonObject conObj = obj.getAsJsonObject(key);
+        Constraint con = new Constraint();
+
+        con.equal = Parser.asInt(conObj, "==", null);
+        con.notEqual = Parser.asInt(conObj, "!=", null);
+        con.lessThan = Parser.asInt(conObj, "<", null);
+        con.lessThanOrEqual = Parser.asInt(conObj, "<=", null);
+        con.greaterThan = Parser.asInt(conObj, ">", null);
+        con.greaterThanOrEqual = Parser.asInt(conObj, ">=", null);
+
+        return con;
     }
 }
