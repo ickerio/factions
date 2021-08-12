@@ -3,11 +3,13 @@ package io.icker.factions.config;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
@@ -68,9 +70,17 @@ public class Parser {
 
     public static JsonArray asArray(JsonObject obj, String key) {
         try {
-            return obj.get(key).getAsJsonArray();
+            return obj.getAsJsonArray(key);
         } catch (NullPointerException | UnsupportedOperationException e) {
             return new JsonArray();
+        }
+    }
+
+    public static JsonObject asObject(JsonObject obj, String key) {
+        try {
+            return obj.getAsJsonObject(key);
+        } catch (NullPointerException | UnsupportedOperationException e) {
+            return new JsonObject();
         }
     }
 
@@ -86,5 +96,18 @@ public class Parser {
         con.greaterThanOrEqual = Parser.asInt(conObj, ">=", null);
 
         return con;
+    }
+
+    public static List<String> asDimensionList(JsonObject obj, String key) {
+        List<String> list = List.of();
+
+        asArray(obj, key).forEach(e -> {
+            if (e.isJsonPrimitive()) {
+                JsonPrimitive primitive = e.getAsJsonPrimitive();
+                if (primitive.isString()) list.add(primitive.getAsString());
+            }
+        });
+
+        return list;
     }
 }

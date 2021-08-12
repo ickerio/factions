@@ -2,7 +2,6 @@ package io.icker.factions.config;
 
 import java.util.List;
 
-// first claim constraint will take priority - if none found default to type `claimable`
 public class Zone {
     public static enum Type {
         DEFAULT,
@@ -14,7 +13,7 @@ public class Zone {
     String message;
     Constraint x;
     Constraint y;
-    List<String> includedDimensions = List.of("*");
+    List<String> includedDimensions;
     List<String> excludedDimensions;
 
     public Zone(Type type, String message) {
@@ -40,6 +39,6 @@ public class Zone {
     }
 
     public Type getType() {
-        return Type.DEFAULT;
+        return type;
     }
 }

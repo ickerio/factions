@@ -29,6 +29,7 @@ public class Config {
         JsonObject obj = Parser.load();
         
         Parser.asArray(obj, "zones").forEach(e -> {
+            if (!e.isJsonObject()) return;
             JsonObject zoneObj = e.getAsJsonObject();
             
             Type type = Parser.asEnum(zoneObj, "type", Type.class, Type.DEFAULT);
@@ -38,7 +39,9 @@ public class Config {
             zone.x = Parser.asConstraint(zoneObj, "x");
             zone.y = Parser.asConstraint(zoneObj, "y");
 
-            // TODO: dimensions
+            JsonObject dimensions = Parser.asObject(zoneObj, "dimensions");
+            zone.includedDimensions = Parser.asDimensionList(dimensions, "included");
+            zone.excludedDimensions = Parser.asDimensionList(dimensions, "excluded");
 
             ZONES.add(zone);
         });
