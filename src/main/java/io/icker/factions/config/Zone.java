@@ -12,7 +12,7 @@ public class Zone {
     Type type;
     String message;
     Constraint x;
-    Constraint y;
+    Constraint z;
     List<String> includedDimensions;
     List<String> excludedDimensions;
 
@@ -21,8 +21,8 @@ public class Zone {
         this.message = message;
     }
 
-    public boolean isApplicable(String dimension, int x, int y) {
-        return matchDimension(dimension) && matchCoords(x, y);
+    public boolean isApplicable(String dimension, int x, int z) {
+        return matchDimension(dimension) && matchCoords(x, z);
     }
 
     public boolean matchDimension(String dimension) {
@@ -30,8 +30,8 @@ public class Zone {
         return excludedDimensions.contains(dimension) ? false : included;
     }
 
-    public boolean matchCoords(int xPos, int yPos) {
-        return x.validate(xPos) && y.validate(yPos);
+    public boolean matchCoords(int xPos, int zPos) {
+        return x.validate(xPos) && z.validate(zPos);
     }
 
     public String getFailMessage() {

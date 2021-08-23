@@ -3,7 +3,7 @@ package io.icker.factions.config;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,7 +44,7 @@ public class Parser {
         }
     }
 
-    public static int asInt(JsonObject obj, String key, Integer fallback) {
+    public static Integer asInt(JsonObject obj, String key, Integer fallback) {
         try {
             return obj.get(key).getAsInt();
         } catch (NullPointerException | UnsupportedOperationException e) {
@@ -70,16 +70,16 @@ public class Parser {
 
     public static JsonArray asArray(JsonObject obj, String key) {
         try {
-            return obj.getAsJsonArray(key);
-        } catch (NullPointerException | UnsupportedOperationException e) {
+            return obj.get(key).getAsJsonArray();
+        } catch (NullPointerException | UnsupportedOperationException | IllegalStateException e) {
             return new JsonArray();
         }
     }
 
     public static JsonObject asObject(JsonObject obj, String key) {
         try {
-            return obj.getAsJsonObject(key);
-        } catch (NullPointerException | UnsupportedOperationException e) {
+            return obj.get(key).getAsJsonObject();
+        } catch (NullPointerException | UnsupportedOperationException | IllegalStateException e) {
             return new JsonObject();
         }
     }
@@ -98,8 +98,8 @@ public class Parser {
         return con;
     }
 
-    public static List<String> asDimensionList(JsonObject obj, String key) {
-        List<String> list = List.of();
+    public static ArrayList<String> asDimensionList(JsonObject obj, String key) {
+        ArrayList<String> list = new ArrayList<String>();
 
         asArray(obj, key).forEach(e -> {
             if (e.isJsonPrimitive()) {

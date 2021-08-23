@@ -1,6 +1,6 @@
 package io.icker.factions.config;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import com.google.gson.JsonObject;
 
@@ -13,7 +13,7 @@ public class Config {
         DISABLED;
     }
 
-    public static List<Zone> ZONES;
+    public static ArrayList<Zone> ZONES = new ArrayList<Zone>();
     public static int BASE_POWER;
     public static int MEMBER_POWER;
     public static int CLAIM_WEIGHT;
@@ -37,13 +37,13 @@ public class Config {
 
             Zone zone = new Zone(type, message);
             zone.x = Parser.asConstraint(zoneObj, "x");
-            zone.y = Parser.asConstraint(zoneObj, "y");
+            zone.z = Parser.asConstraint(zoneObj, "z");
 
             JsonObject dimensions = Parser.asObject(zoneObj, "dimensions");
-            zone.includedDimensions = Parser.asDimensionList(dimensions, "included");
-            zone.excludedDimensions = Parser.asDimensionList(dimensions, "excluded");
+            zone.includedDimensions = Parser.asDimensionList(dimensions, "include");
+            zone.excludedDimensions = Parser.asDimensionList(dimensions, "exclude");
 
-            ZONES.add(zone);
+           ZONES.add(zone);
         });
 
         BASE_POWER = Parser.asInt(obj, "basePower", 20);
@@ -58,7 +58,7 @@ public class Config {
         HOME = Parser.asEnum(obj, "home", HomeOptions.class, HomeOptions.CLAIMS);
     }
 
-    public static Zone getZone(String dimension, int x, int y) {
-        return ZONES.stream().filter(zone -> zone.isApplicable(dimension, x, y)).findFirst().orElse(new Zone(Type.DEFAULT, "No Zones Set"));
+    public static Zone getZone(String dimension, int x, int z) {
+        return ZONES.stream().filter(zone -> zone.isApplicable(dimension, x, z)).findFirst().orElse(new Zone(Type.DEFAULT, "No Zones Set"));
     };
 }
