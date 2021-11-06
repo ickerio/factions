@@ -43,7 +43,7 @@ public class ClaimCommand {
 		ServerCommandSource source = context.getSource();
 
 		ServerPlayerEntity player = source.getPlayer();
-		ServerWorld world = player.getWorld();
+		ServerWorld world = player.getServerWorld();
 		
 		ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
 		String dimension = world.getRegistryKey().getValue().toString();
@@ -67,7 +67,7 @@ public class ClaimCommand {
 		ServerCommandSource source = context.getSource();
 
 		ServerPlayerEntity player = source.getPlayer();
-		ServerWorld world = player.getWorld();
+		ServerWorld world = player.getServerWorld();
 
 		ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
 		String dimension = world.getRegistryKey().getValue().toString();
