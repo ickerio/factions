@@ -160,7 +160,7 @@ public class CommandRegistry {
 			.executes(ClaimCommand::removeAll)
 			.build();
 
-		/*LiteralCommandNode<ServerCommandSource> home = CommandManager
+		LiteralCommandNode<ServerCommandSource> home = CommandManager
 			.literal("home")
 			.requires(s -> isFactionMember(s) && Config.HOME != Config.HomeOptions.DISABLED)
 			.executes(HomeCommand::go)
@@ -170,7 +170,7 @@ public class CommandRegistry {
 			.literal("set")
 			.requires(CommandRegistry::isRankAboveOfficer)
 			.executes(HomeCommand::set)
-			.build();*/
+			.build();
 		
 		LiteralCommandNode<ServerCommandSource> adminBypass = CommandManager
 			.literal("adminBypass")
@@ -236,14 +236,15 @@ public class CommandRegistry {
 		claim.addChild(removeClaim);
 		removeClaim.addChild(removeAllClaims);
 
-		/*factions.addChild(home);*/
+		factions.addChild(home);
 
 		factions.addChild(rank);
 		rank.addChild(promote);
 		rank.addChild(demote);
 		factions.addChild(transferOwner);
 		factions.addChild(kickMember);
-		/*home.addChild(setHome);*/
+		
+		home.addChild(setHome);
 	}
 
 	public static boolean isFactionMember(ServerCommandSource source) {
