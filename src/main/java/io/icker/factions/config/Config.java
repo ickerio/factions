@@ -1,10 +1,9 @@
 package io.icker.factions.config;
 
-import java.util.ArrayList;
-
 import com.google.gson.JsonObject;
-
 import io.icker.factions.config.Zone.Type;
+
+import java.util.ArrayList;
 
 public class Config {
     public static enum HomeOptions {
@@ -49,7 +48,7 @@ public class Config {
         BASE_POWER = Parser.asInt(obj, "basePower", 20);
         MEMBER_POWER = Parser.asInt(obj, "memberPower", 20);
         CLAIM_WEIGHT = Parser.asInt(obj, "claimWeight", 5);
-        MAX_FACTION_SIZE = Parser.asInt(obj, "maxFactionSize", -1);
+        MAX_FACTION_SIZE = Parser.asInt(obj, "maxFactionSize", /*-1*/4);
         SAFE_TICKS_TO_WARP = Parser.asInt(obj, "safeTicksToWarp", 5 * 20);
         POWER_DEATH_PENALTY = Parser.asInt(obj, "powerDeathPenalty", 10);
         TICKS_FOR_POWER = Parser.asInt(obj, "ticksForPower", 10 * 60 * 20);

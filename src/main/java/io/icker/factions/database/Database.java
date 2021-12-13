@@ -1,10 +1,10 @@
 package io.icker.factions.database;
 
+import io.icker.factions.FactionsMod;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import io.icker.factions.FactionsMod;
 
 public class Database {
     public static Connection con;
@@ -24,6 +24,7 @@ public class Database {
                 CREATE TABLE IF NOT EXISTS Member (
                     uuid UUID PRIMARY KEY,
                     faction VARCHAR(255),
+                    rank VARCHAR(255),
                     FOREIGN KEY(faction) REFERENCES Faction(name) ON DELETE CASCADE
                 );
 

@@ -1,9 +1,9 @@
 package io.icker.factions.database;
 
+import net.minecraft.util.Formatting;
+
 import java.util.ArrayList;
 import java.util.UUID;
-
-import net.minecraft.util.Formatting;
 
 public class Faction {
     public String name;
@@ -76,7 +76,7 @@ public class Faction {
     }
 
     public ArrayList<Member> getMembers() {
-        Query query = new Query("SELECT uuid FROM Member WHERE faction = ?;")
+        Query query = new Query("SELECT uuid, rank FROM Member WHERE faction = ?;")
             .set(name)
             .executeQuery();
 
@@ -84,13 +84,17 @@ public class Faction {
         if (!query.success) return members;
 
         while (query.next()) {
-            members.add(new Member((UUID) query.getObject("uuid"), name));
+            members.add(new Member((UUID) query.getObject("uuid"), name, Member.Rank.valueOf(query.getString("rank").toUpperCase())));
         }
         return members;
     }
 
     public Member addMember(UUID uuid) {
         return Member.add(uuid, name);
+    }
+
+    public Member addMember(UUID uuid, Member.Rank rank) {
+        return Member.add(uuid, name, rank);
     }
 
     public ArrayList<Claim> getClaims() {
