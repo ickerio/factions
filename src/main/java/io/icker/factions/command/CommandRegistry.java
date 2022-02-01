@@ -139,6 +139,27 @@ public class CommandRegistry {
 			)
 			.build();
 
+		LiteralCommandNode<ServerCommandSource> ally = CommandManager
+				.literal("ally")
+				.requires(CommandRegistry::isRankAboveCivilian)
+				.build();
+
+		LiteralCommandNode<ServerCommandSource> addAlly = CommandManager
+				.literal("add")
+				.then(
+						CommandManager.argument("player", EntityArgumentType.player())
+								.executes(AllyCommand::add)
+				)
+				.build();
+
+		LiteralCommandNode<ServerCommandSource> removeAlly = CommandManager
+				.literal("remove")
+				.then(
+						CommandManager.argument("player", EntityArgumentType.player())
+								.executes(AllyCommand::remove)
+				)
+				.build();
+
 		LiteralCommandNode<ServerCommandSource> claim = CommandManager
 			.literal("claim")
 			.requires(CommandRegistry::isRankAboveCivilian)
@@ -230,6 +251,10 @@ public class CommandRegistry {
 		invite.addChild(listInvites);
 		invite.addChild(addInvite);
 		invite.addChild(removeInvite);
+
+		factions.addChild(ally);
+		ally.addChild(addAlly);
+		ally.addChild(removeAlly);
 
 		factions.addChild(claim);
 		claim.addChild(listClaim);

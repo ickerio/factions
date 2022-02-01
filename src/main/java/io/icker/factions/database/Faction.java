@@ -1,5 +1,6 @@
 package io.icker.factions.database;
 
+import io.icker.factions.FactionsMod;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -22,12 +23,36 @@ public class Faction {
     }
 
     public static Faction add(String name, String description, String color, boolean open, int power) {
-        Query query = new Query("INSERT INTO Faction VALUES (?, ?, ?, ?, ?);")
+        Query query = new Query("INSERT INTO Faction (name, description, color, open, power) VALUES (?, ?, ?, ?, ?);")
             .set(name, description, color, open, power)
             .executeUpdate();
 
         if (!query.success) return null;
         return new Faction(name, description, Formatting.byName(color), open, power);
+    }
+
+    public void addAlly(String name) {
+        FactionsMod.LOGGER.info("INSERT INTO Allies VALUES ("+this.name+", "+name+");");
+
+        Query query = new Query("INSERT INTO Allies (source, target) VALUES (?, ?);")
+            .set(this.name, name)
+            .executeQuery();
+    }
+
+    public void removeAlly(String name) {
+        Query query = new Query("DELETE FROM Allies WHERE source = ? AND target = ?;")
+                .set(this.name, name)
+                .executeQuery();
+    }
+
+    public boolean checkIfAlly(String name) {
+        Query query = new Query("SELECT * FROM Allies WHERE source = ? AND target = ?;")
+                .set(this.name, name)
+                .executeQuery();
+
+        if (!query.success) return false;
+
+        return query.getBool("SELECT EXISTS(SELECT * FROM Allies WHERE source = "+this.name+" AND target = "+name+");");
     }
 
     public static ArrayList<Faction> all() {
