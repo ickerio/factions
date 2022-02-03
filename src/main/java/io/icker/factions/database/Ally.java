@@ -1,6 +1,5 @@
 package io.icker.factions.database;
 
-import java.util.UUID;
 
 public class Ally {
   public String target;
@@ -35,5 +34,19 @@ public class Ally {
     Query query = new Query("DELETE FROM Allies WHERE source = ? AND target = ?;")
         .set(this.source, this.target)
         .executeUpdate();
+  }
+
+  public static void remove(String source, String target) {
+    Query query = new Query("DELETE FROM Allies WHERE source = ? AND target = ?;")
+        .set(source, target)
+        .executeUpdate();
+  }
+
+  public static boolean checkIfAlly(String source, String target) {
+    Query query = new Query("SELECT * FROM Allies WHERE source = ? AND target = ?;")
+        .set(source, target)
+        .executeQuery();
+
+    return query.exists();
   }
 }

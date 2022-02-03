@@ -4,6 +4,7 @@ import io.icker.factions.config.Config;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
+import io.icker.factions.database.Ally;
 import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.util.Message;
 import io.icker.factions.mixin.BucketItemMixin;
@@ -83,7 +84,7 @@ public class PlayerInteractEvents {
 
         boolean overclaimed = owner.getClaims().size() * Config.CLAIM_WEIGHT > owner.power;
         boolean validMember = member == null ? false : member.getFaction().name == owner.name;
-        boolean allied = owner.checkIfAlly(member.getFaction().name);
+        boolean allied = Ally.checkIfAlly(member.getFaction().name, owner.name);
 
         boolean permitted = overclaimed || validMember || allied;
         if (!permitted) syncBlocks(player, world, pos);

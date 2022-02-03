@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Invite;
 import io.icker.factions.database.Member;
+import io.icker.factions.database.Ally;
 import io.icker.factions.util.Message;
 import io.icker.factions.FactionsMod;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -28,10 +29,10 @@ public class AllyCommand {
 		Faction sourceFaction = Member.get(player.getUuid()).getFaction();
 		Faction targetFaction = Member.get(target.getUuid()).getFaction();
 		
-		if (sourceFaction.checkIfAlly(targetFaction.name)) {
+		if (Ally.checkIfAlly(sourceFaction.name, targetFaction.name)) {
 			new Message(targetFaction.name + " is already allied").format(Formatting.RED).send(player, false);
 		} else {
-			targetFaction.addAlly(sourceFaction.name);
+			Ally.add(sourceFaction.name, targetFaction.name);
 
 			new Message(targetFaction.name + " is now allied")
 					.send(player, false);
@@ -53,10 +54,10 @@ public class AllyCommand {
 		Faction sourceFaction = Member.get(player.getUuid()).getFaction();
 		Faction targetFaction = Member.get(target.getUuid()).getFaction();
 
-		if (!sourceFaction.checkIfAlly(targetFaction.name)) {
+		if (!Ally.checkIfAlly(sourceFaction.name, targetFaction.name)) {
 			new Message(targetFaction.name + " is not allied").format(Formatting.RED).send(player, false);
 		} else {
-			targetFaction.removeAlly(sourceFaction.name);
+			Ally.remove(sourceFaction.name, targetFaction.name);
 
 			new Message(target.getName().getString() + " is no longer allied")
 				.send(sourceFaction);

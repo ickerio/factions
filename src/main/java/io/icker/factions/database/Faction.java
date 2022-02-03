@@ -31,30 +31,6 @@ public class Faction {
         return new Faction(name, description, Formatting.byName(color), open, power);
     }
 
-    public void addAlly(String name) {
-        FactionsMod.LOGGER.info("INSERT INTO Allies VALUES ("+this.name+", "+name+");");
-
-        Query query = new Query("INSERT INTO Allies (source, target) VALUES (?, ?);")
-            .set(this.name, name)
-            .executeUpdate();
-    }
-
-    public void removeAlly(String name) {
-        Query query = new Query("DELETE FROM Allies WHERE source = ? AND target = ?;")
-                .set(this.name, name)
-                .executeUpdate();
-    }
-
-    public boolean checkIfAlly(String name) {
-        Query query = new Query("SELECT * FROM Allies WHERE source = ? AND target = ?;")
-                .set(this.name, name)
-                .executeQuery();
-
-        if (!query.success) return false;
-
-        return query.getBool("SELECT EXISTS(SELECT * FROM Allies WHERE source = "+this.name+" AND target = "+name+");");
-    }
-
     public static ArrayList<Faction> all() {
         Query query = new Query("SELECT * FROM Faction;")
             .executeQuery();

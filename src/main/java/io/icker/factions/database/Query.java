@@ -101,6 +101,13 @@ public class Query {
         return success;
     }
 
+    public boolean exists() {
+        try {
+            return result.next();
+        } catch (SQLException e) { error(); }
+        return false;
+    }
+
     private void error() {
         FactionsMod.LOGGER.error("Error executing database transaction {}", query);
     }
