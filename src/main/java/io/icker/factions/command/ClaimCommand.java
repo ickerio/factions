@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
+import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -79,7 +80,8 @@ public class ClaimCommand {
 		}
 
 		Faction faction = Member.get(player.getUuid()).getFaction();
-		if (existingClaim.getFaction().name != faction.name) {
+		PlayerConfig config = PlayerConfig.get(player.getUuid());
+		if (existingClaim.getFaction().name != faction.name || config.bypass) {
 			new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
 			return 0;
 		}

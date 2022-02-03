@@ -36,13 +36,13 @@ public class Faction {
 
         Query query = new Query("INSERT INTO Allies (source, target) VALUES (?, ?);")
             .set(this.name, name)
-            .executeQuery();
+            .executeUpdate();
     }
 
     public void removeAlly(String name) {
         Query query = new Query("DELETE FROM Allies WHERE source = ? AND target = ?;")
                 .set(this.name, name)
-                .executeQuery();
+                .executeUpdate();
     }
 
     public boolean checkIfAlly(String name) {
