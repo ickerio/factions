@@ -38,7 +38,7 @@ public class AllyCommand {
 					.send(player, false);
 			new Message(
 					"You are now allies with " + sourceFaction.name).format(Formatting.YELLOW)
-					.hover("Click to ally them back").click("/factions ally add " + sourceFaction.name)
+					.hover("Click to ally them back").click("/factions ally add " + source.getName())
 					.send(target, false);
 		}
 
