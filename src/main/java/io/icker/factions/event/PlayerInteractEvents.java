@@ -84,7 +84,7 @@ public class PlayerInteractEvents {
 
         boolean overclaimed = owner.getClaims().size() * Config.CLAIM_WEIGHT > owner.power;
         boolean validMember = member == null ? false : member.getFaction().name == owner.name;
-        boolean allied = Ally.checkIfAlly(member.getFaction().name, owner.name);
+        boolean allied = Ally.checkIfAlly(owner.name, member.getFaction().name);
 
         boolean permitted = overclaimed || validMember || allied;
         if (!permitted) syncBlocks(player, world, pos);

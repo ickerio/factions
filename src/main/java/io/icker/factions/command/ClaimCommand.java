@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
+import io.icker.factions.FactionsMod;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -81,7 +82,8 @@ public class ClaimCommand {
 
 		Faction faction = Member.get(player.getUuid()).getFaction();
 		PlayerConfig config = PlayerConfig.get(player.getUuid());
-		if (existingClaim.getFaction().name != faction.name || config.bypass) {
+		FactionsMod.LOGGER.info(config.bypass);
+		if (existingClaim.getFaction().name != faction.name && !config.bypass) {
 			new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
 			return 0;
 		}
