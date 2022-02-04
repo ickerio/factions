@@ -1,7 +1,5 @@
 package io.icker.factions.database;
 
-import io.icker.factions.FactionsMod;
-
 public class Ally {
   public String target;
   private String source;
@@ -48,12 +46,6 @@ public class Ally {
         .set(source, target)
         .executeQuery();
 
-    FactionsMod.LOGGER.info(query.getString("source") == source);
-
-    if (query.getString("source") == source) {
-      return true;
-    }
-
-    return false;
+    return query.getString("source") == source;
   }
 }

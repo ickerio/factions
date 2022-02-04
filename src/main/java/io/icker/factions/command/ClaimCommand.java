@@ -82,7 +82,7 @@ public class ClaimCommand {
 
 		Faction faction = Member.get(player.getUuid()).getFaction();
 		PlayerConfig config = PlayerConfig.get(player.getUuid());
-		FactionsMod.LOGGER.info(config.bypass);
+
 		if (existingClaim.getFaction().name != faction.name && !config.bypass) {
 			new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
 			return 0;
