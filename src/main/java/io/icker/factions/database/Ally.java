@@ -1,8 +1,11 @@
 package io.icker.factions.database;
 
+import java.util.ArrayList;
+import net.minecraft.util.Formatting;
+
 public class Ally {
   public String target;
-  private String source;
+  public String source;
 
   public static Ally get(String target, String source) {
     Query query = new Query("SELECT * FROM Ally WHERE source = ? AND target = ?;")
@@ -47,5 +50,20 @@ public class Ally {
         .executeQuery();
 
     return query.getString("source") == source;
+  }
+
+  public static ArrayList<Ally> getAllies(String source) {
+    Query query = new Query("SELECT * FROM Allies WHERE source = ?;")
+        .set(source)
+        .executeQuery();
+
+    ArrayList<Ally> allies = new ArrayList<Ally>();
+    if (!query.success)
+      return allies;
+
+    while (query.next()) {
+      allies.add(new Ally(query.getString("source"), query.getString("target")));
+    }
+    return allies;
   }
 }
