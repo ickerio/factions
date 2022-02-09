@@ -1,8 +1,6 @@
 package io.icker.factions.database;
 
 import java.util.ArrayList;
-import net.minecraft.util.Formatting;
-
 public class Ally {
   public String target;
   public String source;
