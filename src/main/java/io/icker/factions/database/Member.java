@@ -1,6 +1,5 @@
 package io.icker.factions.database;
 
-import io.icker.factions.FactionsMod;
 import java.util.UUID;
 
 public class Member {

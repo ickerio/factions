@@ -1,6 +1,5 @@
 package io.icker.factions.database;
 
-import io.icker.factions.FactionsMod;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
