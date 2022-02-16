@@ -29,6 +29,8 @@ public class AllyCommand {
 		
 		if (Ally.checkIfAlly(sourceFaction.name, targetFaction.name)) {
 			new Message(targetFaction.name + " is already allied").format(Formatting.RED).send(player, false);
+		} else if (sourceFaction.name == targetFaction.name) {
+			new Message("You can't ally yourself").format(Formatting.RED).send(player, false);
 		} else {
 			Ally.add(sourceFaction.name, targetFaction.name);
 
