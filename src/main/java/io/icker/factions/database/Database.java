@@ -24,7 +24,7 @@ public class Database {
                     CREATE TABLE IF NOT EXISTS Member (
                         uuid UUID PRIMARY KEY,
                         faction VARCHAR(255),
-                        rank VARCHAR(255),
+                        rank ENUM('owner', 'co_owner', 'officer', 'civilian'),
                         FOREIGN KEY(faction) REFERENCES Faction(name) ON DELETE CASCADE
                     );
 
