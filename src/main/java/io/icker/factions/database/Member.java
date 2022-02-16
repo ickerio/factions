@@ -48,7 +48,7 @@ public class Member {
     }
 
     public void updateRank(Rank rank) {
-        Query query = new Query("UPDATE Member SET rank = ? WHERE uuid = ?;")
+        new Query("UPDATE Member SET rank = ? WHERE uuid = ?;")
         .set(rank.name().toLowerCase(), uuid)
         .executeUpdate();
     }

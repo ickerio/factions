@@ -31,13 +31,13 @@ public class Ally {
   }
 
   public void remove() {
-    Query query = new Query("DELETE FROM Allies WHERE source = ? AND target = ?;")
+    new Query("DELETE FROM Allies WHERE source = ? AND target = ?;")
         .set(this.source, this.target)
         .executeUpdate();
   }
 
   public static void remove(String source, String target) {
-    Query query = new Query("DELETE FROM Allies WHERE source = ? AND target = ?;")
+    new Query("DELETE FROM Allies WHERE source = ? AND target = ?;")
         .set(source, target)
         .executeUpdate();
   }

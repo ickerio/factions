@@ -12,7 +12,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
-import io.icker.factions.FactionsMod;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
