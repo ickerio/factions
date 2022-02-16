@@ -1,5 +1,6 @@
 package io.icker.factions.database;
 
+import io.icker.factions.FactionsMod;
 import java.util.UUID;
 
 public class Member {
@@ -13,6 +14,7 @@ public class Member {
             .executeQuery();
 
         if (!query.success) return null;
+        FactionsMod.LOGGER.info(Rank.valueOf(query.getString("rank").toUpperCase()));
         return new Member(uuid, query.getString("faction"), Rank.valueOf(query.getString("rank").toUpperCase()));
     }
 
