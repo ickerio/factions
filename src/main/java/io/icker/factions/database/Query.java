@@ -103,8 +103,8 @@ public class Query {
 
     public boolean exists() {
         try {
-            return result.next();
-        } catch (SQLException e) { error(); }
+            return result.getBoolean(1);
+        } catch (SQLException e) {error();}
         return false;
     }
 

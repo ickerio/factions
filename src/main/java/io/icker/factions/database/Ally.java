@@ -43,11 +43,11 @@ public class Ally {
   }
 
   public static boolean checkIfAlly(String source, String target) {
-    Query query = new Query("SELECT * FROM Allies WHERE source = ? AND target = ?;")
+    Query query = new Query("SELECT EXISTS(SELECT * FROM Allies WHERE source = ? AND target = ?);")
         .set(source, target)
         .executeQuery();
 
-    return query.getString("source") == source;
+    return query.exists();
   }
 
   public static ArrayList<Ally> getAllies(String source) {

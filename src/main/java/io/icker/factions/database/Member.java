@@ -14,7 +14,6 @@ public class Member {
             .executeQuery();
 
         if (!query.success) return null;
-        FactionsMod.LOGGER.info(Rank.valueOf(query.getString("rank").toUpperCase()));
         return new Member(uuid, query.getString("faction"), Rank.valueOf(query.getString("rank").toUpperCase()));
     }
 
