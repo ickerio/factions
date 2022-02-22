@@ -153,7 +153,7 @@ public class CommandRegistry {
 				.build();
 
 		LiteralCommandNode<ServerCommandSource> acceptAlly = CommandManager
-				.literal("add")
+				.literal("accept")
 				.then(
 						CommandManager.argument("player", EntityArgumentType.player())
 								.executes(AllyCommand::accept)
@@ -161,7 +161,7 @@ public class CommandRegistry {
 				.build();
 		
 		LiteralCommandNode<ServerCommandSource> listAlly = CommandManager
-				.literal("add")
+				.literal("list")
 				.executes(AllyCommand::list)
 				.build();
 
@@ -281,7 +281,7 @@ public class CommandRegistry {
 		ally.addChild(removeAlly);
 
 		factions.addChild(admin);
-		ally.addChild(migrateAlly);
+		admin.addChild(migrateAlly);
 
 		factions.addChild(claim);
 		claim.addChild(listClaim);
