@@ -34,12 +34,6 @@ processResources {
 	}
 }
 
-// Open the local H2 database viewer
-task openDBViewer(type: Exec) {
-	workingDir "build/libs/factions-${project.version}/META-INF/jars"
-	commandLine "java", "-jar", "h2-${project.h2_version}.jar"
-}
-
 tasks.withType(JavaCompile).configureEach {
 	// ensure that the encoding is set to UTF-8, no matter what the system default is
 	// this fixes some edge cases with special characters not displaying correctly
