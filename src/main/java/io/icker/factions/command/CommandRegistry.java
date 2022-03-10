@@ -152,6 +152,19 @@ public class CommandRegistry {
 				)
 				.build();
 
+		LiteralCommandNode<ServerCommandSource> acceptAlly = CommandManager
+				.literal("accept")
+				.then(
+						CommandManager.argument("player", EntityArgumentType.player())
+								.executes(AllyCommand::accept)
+				)
+				.build();
+		
+		LiteralCommandNode<ServerCommandSource> listAlly = CommandManager
+				.literal("list")
+				.executes(AllyCommand::list)
+				.build();
+
 		LiteralCommandNode<ServerCommandSource> removeAlly = CommandManager
 				.literal("remove")
 				.then(
@@ -197,6 +210,15 @@ public class CommandRegistry {
 			.literal("adminBypass")
 			.requires(s -> s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
 			.executes(new BypassCommand())
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> admin = CommandManager
+			.literal("admin")
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> migrateAlly = CommandManager
+			.literal("migrate")
+			.executes(AdminCommand::migrateAlly)
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> rank = CommandManager
@@ -254,7 +276,12 @@ public class CommandRegistry {
 
 		factions.addChild(ally);
 		ally.addChild(addAlly);
+		ally.addChild(acceptAlly);
+		ally.addChild(listAlly);
 		ally.addChild(removeAlly);
+
+		factions.addChild(admin);
+		admin.addChild(migrateAlly);
 
 		factions.addChild(claim);
 		claim.addChild(listClaim);

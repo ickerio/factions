@@ -64,6 +64,7 @@ public class Database {
                     CREATE TABLE IF NOT EXISTS Allies (
                         source VARCHAR(255),
                         target VARCHAR(255),
+                        accept BOOL,
                         FOREIGN KEY(source) REFERENCES Faction(name) ON DELETE CASCADE,
                         FOREIGN KEY(target) REFERENCES Faction(name) ON DELETE CASCADE
                     );
