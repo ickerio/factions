@@ -23,7 +23,7 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	include "com.h2database:h2:${project.h2_version}"
+	implementation(include("com.h2database:h2:${project.h2_version}"))
 }
 
 processResources {
