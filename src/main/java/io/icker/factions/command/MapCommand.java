@@ -41,9 +41,9 @@ public class MapCommand {
 
         // Create and fill an array with the faction map.
         MutableText[] rows = new MutableText[11];
-        for (int x = -5; x <= 5; x++) {
+        for (int z = -5; z <= 5; z++) {
             MutableText row = new LiteralText("");
-            for (int z = -6; z <= 6; z++) {
+            for (int x = -6; x <= 6; x++) {
                 Claim claim = Claim.get(chunkPos.x + x, chunkPos.z + z, dimension);
                 if (x == 0 && z == 0) {
                     row.append(new LiteralText(" ■").formatted(Formatting.YELLOW));
@@ -65,7 +65,7 @@ public class MapCommand {
                 }
             }
 
-            rows[x + 5] = row;
+            rows[z + 5] = row;
         }
 
         // Attach the legend to the rows and send them to the player.
