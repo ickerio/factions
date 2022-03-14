@@ -207,7 +207,7 @@ public class CommandRegistry {
 			.build();
 		
 		LiteralCommandNode<ServerCommandSource> adminBypass = CommandManager
-			.literal("adminBypass")
+			.literal("bypass")
 			.requires(s -> s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
 			.executes(new BypassCommand())
 			.build();
@@ -261,7 +261,6 @@ public class CommandRegistry {
 		factions.addChild(leave);
 		factions.addChild(info);
 		factions.addChild(list);
-		factions.addChild(adminBypass);
 		factions.addChild(chat);
 
 		factions.addChild(modify);
@@ -281,7 +280,7 @@ public class CommandRegistry {
 		ally.addChild(removeAlly);
 
 		factions.addChild(admin);
-		admin.addChild(migrateAlly);
+		admin.addChild(adminBypass);
 
 		factions.addChild(claim);
 		claim.addChild(listClaim);
