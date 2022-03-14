@@ -60,7 +60,7 @@ public class HomeCommand {
 
         Faction faction = Member.get(player.getUuid()).getFaction();
 
-        if (checkLimitToClaim(faction, player.getServerWorld(), player.getBlockPos())) {
+        if (checkLimitToClaim(faction, player.getWorld(), player.getBlockPos())) {
             new Message("Cannot set home to an unclaimed chunk").fail().send(player, false);
             return 0;
         }
@@ -68,7 +68,7 @@ public class HomeCommand {
         Home home = faction.setHome(
             player.getX(), player.getY(), player.getZ(),
             player.getHeadYaw(), player.getPitch(),
-            player.getServerWorld().getRegistryKey().getValue().toString()
+            player.getWorld().getRegistryKey().getValue().toString()
         );
 
         new Message("%s set home to %.2f, %.2f, %.2f", player.getName().asString(), home.x, home.y, home.z).send(faction);

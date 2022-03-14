@@ -1,10 +1,10 @@
 package io.icker.factions.database;
 
+import io.icker.factions.FactionsMod;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import io.icker.factions.FactionsMod;
 
 // TODO: stmt.close() on gets
 public class Query {
@@ -99,6 +99,13 @@ public class Query {
         } catch (SQLException e) {error();}
         skippedNext = true;
         return success;
+    }
+
+    public boolean exists() {
+        try {
+            return result.getBoolean(1);
+        } catch (SQLException e) {error();}
+        return false;
     }
 
     private void error() {

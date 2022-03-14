@@ -1,20 +1,20 @@
 package io.icker.factions.command;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
+import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class ClaimCommand {
 	public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -43,7 +43,7 @@ public class ClaimCommand {
 		ServerCommandSource source = context.getSource();
 
 		ServerPlayerEntity player = source.getPlayer();
-		ServerWorld world = player.getServerWorld();
+		ServerWorld world = player.getWorld();
 		
 		ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
 		String dimension = world.getRegistryKey().getValue().toString();
@@ -67,7 +67,7 @@ public class ClaimCommand {
 		ServerCommandSource source = context.getSource();
 
 		ServerPlayerEntity player = source.getPlayer();
-		ServerWorld world = player.getServerWorld();
+		ServerWorld world = player.getWorld();
 
 		ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
 		String dimension = world.getRegistryKey().getValue().toString();
@@ -80,7 +80,9 @@ public class ClaimCommand {
 		}
 
 		Faction faction = Member.get(player.getUuid()).getFaction();
-		if (existingClaim.getFaction().name != faction.name) {
+		PlayerConfig config = PlayerConfig.get(player.getUuid());
+
+		if (existingClaim.getFaction().name != faction.name && !config.bypass) {
 			new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
 			return 0;
 		}
