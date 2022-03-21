@@ -219,6 +219,7 @@ public class CommandRegistry {
 
 		LiteralCommandNode<ServerCommandSource> admin = CommandManager
 			.literal("admin")
+			.requires(s -> s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> migrateAlly = CommandManager
