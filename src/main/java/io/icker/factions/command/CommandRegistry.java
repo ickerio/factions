@@ -258,6 +258,11 @@ public class CommandRegistry {
 					.executes(c -> new KickMemberCommand().run(c)))
 			.build();
 
+		LiteralCommandNode<ServerCommandSource> zoneMsg = CommandManager
+			.literal("zonemsg")
+			.executes(new ZoneMsgCommand())
+			.build();
+
 		dispatcher.getRoot().addChild(factions);
 		dispatcher.getRoot().addChild(alias);
 
@@ -268,6 +273,7 @@ public class CommandRegistry {
 		factions.addChild(info);
 		factions.addChild(list);
 		factions.addChild(chat);
+		factions.addChild(zoneMsg);
 
 		factions.addChild(modify);
 		modify.addChild(description);

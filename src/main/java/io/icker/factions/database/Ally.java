@@ -1,7 +1,7 @@
 package io.icker.factions.database;
 
 import java.util.ArrayList;
-import io.icker.factions.FactionsMod;
+
 public class Ally {
   public String target;
   public String source;
@@ -58,8 +58,6 @@ public class Ally {
         .set(source, target, target, source)
         .executeQuery();
 
-    FactionsMod.LOGGER.info(query.exists());
-
     return query.exists();
   }
 
@@ -67,8 +65,6 @@ public class Ally {
     Query query = new Query("SELECT EXISTS(SELECT * FROM Allies WHERE ((source = ? AND target = ?) OR (source = ? AND target = ?)) AND accept = 0);")
         .set(source, target, target, source)
         .executeQuery();
-
-    FactionsMod.LOGGER.info(query.exists());
 
     return query.exists();
   }
