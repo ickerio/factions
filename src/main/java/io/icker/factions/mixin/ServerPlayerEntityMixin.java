@@ -33,7 +33,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void tick(CallbackInfo info) {
-        if (PlayerConfig.get(((ServerPlayerEntity) (Object) this).getUuid()).currentZoneMessage) FactionEvents.tick((ServerPlayerEntity) (Object) this);
+        if (age % 7 == 0 && PlayerConfig.get(((ServerPlayerEntity) (Object) this).getUuid()).currentZoneMessage) FactionEvents.tick((ServerPlayerEntity) (Object) this);
         if (age % Config.TICKS_FOR_POWER != 0 || age == 0) return;
         FactionEvents.powerTick((ServerPlayerEntity) (Object) this);
     }
