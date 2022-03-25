@@ -11,7 +11,9 @@ import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import static net.minecraft.command.CommandSource.suggestMatching;
 import net.minecraft.server.network.ServerPlayerEntity;
+import io.icker.factions.util.FactionSuggestions;
 
 public class CommandRegistry {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -147,7 +149,8 @@ public class CommandRegistry {
 		LiteralCommandNode<ServerCommandSource> addAlly = CommandManager
 				.literal("add")
 				.then(
-						CommandManager.argument("player", EntityArgumentType.player())
+						CommandManager.argument("faction", StringArgumentType.greedyString())
+								.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.suggestions(), builder))
 								.executes(AllyCommand::add)
 				)
 				.build();
@@ -220,11 +223,6 @@ public class CommandRegistry {
 		LiteralCommandNode<ServerCommandSource> admin = CommandManager
 			.literal("admin")
 			.requires(s -> s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
-			.build();
-
-		LiteralCommandNode<ServerCommandSource> migrateAlly = CommandManager
-			.literal("migrate")
-			.executes(AdminCommand::migrateAlly)
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> rank = CommandManager
