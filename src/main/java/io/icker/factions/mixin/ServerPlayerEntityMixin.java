@@ -35,4 +35,18 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         if (age % Config.TICKS_FOR_POWER != 0 || age == 0) return;
         FactionEvents.powerTick((ServerPlayerEntity) (Object) this);
     }
+
+
+    @Inject(at = @At("HEAD"), method = "attack", cancellable = true)
+    private void attack(Entity target, CallbackInfo info) {
+        ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
+
+        if (target.isPlayer() && PlayerInteractEvents.preventFriendlyFire(player, (ServerPlayerEntity) target)) {
+            info.cancel();
+        }
+
+        if (!target.isLiving() && !PlayerInteractEvents.actionPermitted(target.getBlockPos(), world, player)) {
+            info.cancel();
+        }
+    }
 }
