@@ -150,7 +150,7 @@ public class CommandRegistry {
 				.literal("add")
 				.then(
 						CommandManager.argument("faction", StringArgumentType.greedyString())
-								.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.suggestions(), builder))
+								.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.general(ctx), builder))
 								.executes(AllyCommand::add)
 				)
 				.build();
@@ -158,20 +158,22 @@ public class CommandRegistry {
 		LiteralCommandNode<ServerCommandSource> acceptAlly = CommandManager
 				.literal("accept")
 				.then(
-						CommandManager.argument("player", EntityArgumentType.player())
+						CommandManager.argument("faction", StringArgumentType.greedyString())
+								.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.allyInvites(ctx), builder))
 								.executes(AllyCommand::accept)
 				)
 				.build();
 		
 		LiteralCommandNode<ServerCommandSource> listAlly = CommandManager
-				.literal("list")
+				.literal("listinvites")
 				.executes(AllyCommand::list)
 				.build();
 
 		LiteralCommandNode<ServerCommandSource> removeAlly = CommandManager
 				.literal("remove")
 				.then(
-						CommandManager.argument("player", EntityArgumentType.player())
+						CommandManager.argument("faction", StringArgumentType.greedyString())
+								.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.allies(ctx), builder))
 								.executes(AllyCommand::remove)
 				)
 				.build();

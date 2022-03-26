@@ -1,9 +1,28 @@
 package io.icker.factions.util;
 
 import io.icker.factions.database.Faction;
+import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.server.command.ServerCommandSource;
+import io.icker.factions.database.Ally;
+import io.icker.factions.database.Member;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 public class FactionSuggestions {
-    public static String[] suggestions() {
-      return Faction.all().stream().map(a -> a.name).toArray(String[]::new);
+    public static String[] general(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        Member player = Member.get(context.getSource().getPlayer().getUuid());
+
+        return Faction.allBut(player.getFaction().name).stream().map(a -> a.name).toArray(String[]::new);
+    }
+
+    public static String[] allyInvites(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        Member player = Member.get(context.getSource().getPlayer().getUuid());
+
+        return Ally.getAllyInvites(player.getFaction().name).stream().map(a -> a.source).toArray(String[]::new);
+    }
+
+    public static String[] allies(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        Member player = Member.get(context.getSource().getPlayer().getUuid());
+
+        return Ally.getAll(player.getFaction().name).stream().map(a -> a.source == player.getFaction().name ? a.target : a.source).toArray(String[]::new);
     }
 }
