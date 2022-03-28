@@ -36,6 +36,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         FactionEvents.powerTick((ServerPlayerEntity) (Object) this);
     }
 
+
     @Inject(at = @At("HEAD"), method = "attack", cancellable = true)
     private void attack(Entity target, CallbackInfo info) {
         ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;

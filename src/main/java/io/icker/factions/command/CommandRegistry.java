@@ -11,7 +11,9 @@ import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import static net.minecraft.command.CommandSource.suggestMatching;
 import net.minecraft.server.network.ServerPlayerEntity;
+import io.icker.factions.util.FactionSuggestions;
 
 public class CommandRegistry {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -147,7 +149,8 @@ public class CommandRegistry {
 		LiteralCommandNode<ServerCommandSource> addAlly = CommandManager
 				.literal("add")
 				.then(
-						CommandManager.argument("player", EntityArgumentType.player())
+						CommandManager.argument("faction", StringArgumentType.greedyString())
+								.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.general(ctx), builder))
 								.executes(AllyCommand::add)
 				)
 				.build();
@@ -155,20 +158,22 @@ public class CommandRegistry {
 		LiteralCommandNode<ServerCommandSource> acceptAlly = CommandManager
 				.literal("accept")
 				.then(
-						CommandManager.argument("player", EntityArgumentType.player())
+						CommandManager.argument("faction", StringArgumentType.greedyString())
+								.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.allyInvites(ctx), builder))
 								.executes(AllyCommand::accept)
 				)
 				.build();
 		
 		LiteralCommandNode<ServerCommandSource> listAlly = CommandManager
-				.literal("list")
+				.literal("listinvites")
 				.executes(AllyCommand::list)
 				.build();
 
 		LiteralCommandNode<ServerCommandSource> removeAlly = CommandManager
 				.literal("remove")
 				.then(
-						CommandManager.argument("player", EntityArgumentType.player())
+						CommandManager.argument("faction", StringArgumentType.greedyString())
+								.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.allies(ctx), builder))
 								.executes(AllyCommand::remove)
 				)
 				.build();
@@ -220,11 +225,6 @@ public class CommandRegistry {
 		LiteralCommandNode<ServerCommandSource> admin = CommandManager
 			.literal("admin")
 			.requires(s -> s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
-			.build();
-
-		LiteralCommandNode<ServerCommandSource> migrateAlly = CommandManager
-			.literal("migrate")
-			.executes(AdminCommand::migrateAlly)
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> rank = CommandManager
