@@ -10,8 +10,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 public class FactionSuggestions {
     public static String[] general(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         Member player = Member.get(context.getSource().getPlayer().getUuid());
+        Faction faction = player.getFaction();
 
-        return Faction.allBut(player.getFaction().name).stream().map(a -> a.name).toArray(String[]::new);
+        return Faction.allBut(faction.name).stream().map(a -> Ally.checkIfAlly(a.name, faction.name) || Ally.checkIfAllyInvite(a.name, faction.name) ? null : a.name).toArray(String[]::new);
     }
 
     public static String[] allyInvites(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

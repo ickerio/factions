@@ -55,10 +55,11 @@ public class AllyCommand {
 		} else {
 			Ally.accept(sourceFaction.name, targetFaction.name);
 
-			new Message(targetFaction.name + " is now an ally")
-					.send(player, false);
+			new Message("You are now allies with "
+					+ sourceFaction.name).format(Formatting.YELLOW)
+					.send(targetFaction);
 			new Message(
-					"You are now allies with " + sourceFaction.name).format(Formatting.YELLOW)
+					"You are now allies with " + targetFaction.name).format(Formatting.YELLOW)
 					.send(sourceFaction);
 		}
 
