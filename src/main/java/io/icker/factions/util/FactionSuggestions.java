@@ -26,4 +26,8 @@ public class FactionSuggestions {
 
         return Ally.getAll(player.getFaction().name).stream().map(a -> a.source == player.getFaction().name ? a.target : a.source).toArray(String[]::new);
     }
+
+    public static String[] openFaction(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        return Faction.all().stream().map(a -> a.open ? a.name : null).toArray(String[]::new);
+    }
 }

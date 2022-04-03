@@ -37,7 +37,7 @@ public class InfoCommand  {
     }
 
     public static int any(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		String factionName = StringArgumentType.getString(context, "faction"); // TODO: Suggestions for factions
+		String factionName = StringArgumentType.getString(context, "faction");
         
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
