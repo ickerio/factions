@@ -6,7 +6,8 @@
   "name": "Factions Mod",
   "description": "Highly customizable, lightweight and elegant Factions mod for the Fabric loader",
   "authors": [
-    "ickerio"
+    "ickerio",
+    "BlueZeeKing"
   ],
   "contact": {
     "homepage": "https://icker.io/factions/",
