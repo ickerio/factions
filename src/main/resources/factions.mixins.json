@@ -6,7 +6,6 @@
   "mixins": [
     "ItemMixin",
     "BucketItemMixin",
-    "MinecraftServerMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkManagerMixin",
     "ServerPlayerInteractionManagerMixin"
