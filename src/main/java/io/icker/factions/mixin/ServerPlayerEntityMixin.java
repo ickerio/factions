@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import io.icker.factions.FactionsMod;
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Member;
 import io.icker.factions.database.Ally;
