@@ -11,4 +11,12 @@ public class PermissionsWrapper {
       return true;
     }
   }
+  public static boolean exists() {
+    try {
+      PermissionsInnerWrapper.exists();
+      return true;
+    } catch (java.lang.NoClassDefFoundError e) {
+      return false;
+    }
+  }
 }

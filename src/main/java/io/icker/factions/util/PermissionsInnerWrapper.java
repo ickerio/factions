@@ -8,4 +8,8 @@ public class PermissionsInnerWrapper {
   public static boolean check(ServerCommandSource source, @NotNull String permission) {
     return Permissions.check(source, permission, true);
   }
+
+  public static void exists() {
+    ;
+  }
 }
