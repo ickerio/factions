@@ -249,7 +249,7 @@ public class CommandRegistry {
 		
 		LiteralCommandNode<ServerCommandSource> adminBypass = CommandManager
 			.literal("bypass")
-			.requires(s -> PermissionsWrapper.exists() ? PermissionsWrapper.require(s, "factions.admin.bypass") : s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
+			.requires(s -> PermissionsWrapper.exists() ? PermissionsWrapper.require(s, "factions.admin.bypass", false) : s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
 			.executes(new BypassCommand())
 			.build();
 
