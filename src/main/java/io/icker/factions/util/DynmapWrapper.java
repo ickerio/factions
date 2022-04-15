@@ -117,9 +117,11 @@ public class DynmapWrapper {
   }
 
   public void removeAll(Faction faction) {
-    Set<AreaMarker> markers = markerSet.getAreaMarkers().stream().filter(marker -> { return marker.getMarkerID().replaceAll("-.*", "").equals(faction.name); }).collect(Collectors.toSet());
-    for (AreaMarker marker : markers) {
-      marker.deleteMarker();
+    ArrayList<Claim> claims = faction.getClaims();
+
+    for (Claim claim : claims) {
+      String areaMarkerId = faction.name + "-" + claim.x + claim.z;
+      markerSet.findAreaMarker(areaMarkerId).deleteMarker();
     }
   }
 
