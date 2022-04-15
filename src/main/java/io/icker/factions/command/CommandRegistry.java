@@ -249,18 +249,18 @@ public class CommandRegistry {
 		
 		LiteralCommandNode<ServerCommandSource> adminBypass = CommandManager
 			.literal("bypass")
-			.requires(s -> PermissionsWrapper.exists() ? PermissionsWrapper.require(s, "factions.admin.bypass", false) : s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
+			.requires(s -> PermissionsWrapper.require(s, "factions.admin.bypass", Config.REQUIRED_BYPASS_LEVEL))
 			.executes(new BypassCommand())
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> admin = CommandManager
 			.literal("admin")
-			.requires(s -> PermissionsWrapper.exists() ? PermissionsWrapper.require(s, "factions.admin", false) : s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
+			.requires(s -> PermissionsWrapper.require(s, "factions.admin", Config.REQUIRED_BYPASS_LEVEL))
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> reload = CommandManager
 			.literal("reload")
-			.requires(s -> PermissionsWrapper.exists() ? PermissionsWrapper.require(s, "factions.admin.reload", false) : s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
+			.requires(s -> PermissionsWrapper.require(s, "factions.admin.reload", Config.REQUIRED_BYPASS_LEVEL))
 			.executes(new ReloadCommand())
 			.build();
 
