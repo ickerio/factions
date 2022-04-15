@@ -1,5 +1,7 @@
 package io.icker.factions.database;
 
+import io.icker.factions.FactionsMod;
+
 import java.util.UUID;
 
 public class Member {
@@ -54,9 +56,15 @@ public class Member {
     }
 
     public void remove() {
+        Faction old = Faction.get(factionName);
+
         new Query("DELETE FROM Member WHERE uuid = ?;")
             .set(uuid)
             .executeUpdate();
+
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.updateFaction(old, Faction.get(factionName));
+        }
     }
 
     public enum Rank {

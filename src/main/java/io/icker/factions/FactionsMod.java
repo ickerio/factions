@@ -14,7 +14,8 @@ import io.icker.factions.util.PermissionsWrapper;
 
 public class FactionsMod implements ModInitializer {
 	public static Logger LOGGER = LogManager.getLogger("Factions");
-	public DynmapWrapper dynmap;
+	public static DynmapWrapper dynmap;
+	public static boolean dynmapEnabled;
 
 	@Override
 	public void onInitialize() {
@@ -31,8 +32,10 @@ public class FactionsMod implements ModInitializer {
 			ServerEvents.started(server);
 			try {
 				dynmap = new DynmapWrapper();
+				dynmapEnabled = true;
 			} catch (java.lang.NoClassDefFoundError e) {
 				LOGGER.info("Dynmap not found");
+				dynmapEnabled = false;
 			}
 		});
 

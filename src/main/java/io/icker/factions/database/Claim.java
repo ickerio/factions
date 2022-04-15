@@ -1,5 +1,8 @@
 package io.icker.factions.database;
 
+import io.icker.factions.FactionsMod;
+import io.icker.factions.util.DynmapWrapper;
+
 public class Claim {
     public int x;
     public int z;
@@ -21,6 +24,11 @@ public class Claim {
             .executeUpdate();
 
         if (!query.success) return null;
+
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.addClaim(new Claim(x, z, level, faction));
+        }
+
         return new Claim(x, z, level, faction);
     }
 
@@ -39,5 +47,9 @@ public class Claim {
         new Query("DELETE FROM Claim WHERE x = ? AND z = ? AND level = ?;")
             .set(x, z, level)
             .executeUpdate();
+
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.removeClaim(this);
+        }
     }
 }
