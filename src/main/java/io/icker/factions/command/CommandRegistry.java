@@ -249,15 +249,19 @@ public class CommandRegistry {
 		
 		LiteralCommandNode<ServerCommandSource> adminBypass = CommandManager
 			.literal("bypass")
-			.requires(s -> PermissionsWrapper.require(s, "factions.admin.bypass"))
-			.requires(s -> s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
+			.requires(s -> PermissionsWrapper.exists() ? PermissionsWrapper.require(s, "factions.admin.bypass") : s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
 			.executes(new BypassCommand())
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> admin = CommandManager
 			.literal("admin")
-			.requires(s -> PermissionsWrapper.require(s, "factions.admin"))
-			.requires(s -> s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
+			.requires(s -> PermissionsWrapper.exists() ? PermissionsWrapper.require(s, "factions.admin", false) : s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> reload = CommandManager
+			.literal("reload")
+			.requires(s -> PermissionsWrapper.exists() ? PermissionsWrapper.require(s, "factions.admin.reload", false) : s.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL))
+			.executes(new ReloadCommand())
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> rank = CommandManager
@@ -325,6 +329,7 @@ public class CommandRegistry {
 
 		factions.addChild(admin);
 		admin.addChild(adminBypass);
+		admin.addChild(reload);
 
 		factions.addChild(claim);
 		claim.addChild(listClaim);

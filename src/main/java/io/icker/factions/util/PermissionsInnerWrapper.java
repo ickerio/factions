@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class PermissionsInnerWrapper {
-  public static boolean check(ServerCommandSource source, @NotNull String permission) {
-    return Permissions.check(source, permission, true);
+  public static boolean check(ServerCommandSource source, @NotNull String permission, boolean defaultValue) {
+    return Permissions.check(source, permission, defaultValue);
   }
 
   public static void exists() {
