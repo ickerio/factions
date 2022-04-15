@@ -6,7 +6,6 @@ import org.dynmap.DynmapCommonAPI;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.AreaMarker;
-import org.dynmap.markers.Marker;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.database.Ally;
@@ -36,23 +35,21 @@ public class DynmapWrapper {
           markerSet = markerApi.getMarkerSet("dynmap-factions");
         }
         ArrayList<Faction> factions = Faction.all();
-        for (int i = 0; i < factions.size(); i++) {
-          Faction faction = factions.get(i);
+        for (Faction faction : factions) {
           ArrayList<Claim> claims = faction.getClaims();
 
           if (faction.getHome() != null) {
             FactionsMod.LOGGER.info("home found");
             Home home = faction.getHome();
             String markerId = faction.name + "-home";
-            markerSet.createMarker(markerId, faction.name + "'s Home", "world", home.x, home.y, home.z, null, true);
+            markerSet.createMarker(markerId, faction.name + "'s Home", dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
           }
 
-          for (int i2 = 0; i2 < claims.size(); i2++) {
-            Claim claim = claims.get(i2);
+          for (Claim claim : claims) {
             ChunkPos pos = new ChunkPos(claim.x, claim.z);
 
             String areaMarkerId = faction.name + "-" + claim.x + claim.z;
-            AreaMarker marker = markerSet.createAreaMarker(areaMarkerId, getInfo(faction), true, "world", new double[]{pos.getStartX(), pos.getEndX()+1}, new double[]{pos.getStartZ(), pos.getEndZ()+1}, true);
+            AreaMarker marker = markerSet.createAreaMarker(areaMarkerId, getInfo(faction), true, dimensionTagToID(claim.level), new double[]{pos.getStartX(), pos.getEndX() + 1}, new double[]{pos.getStartZ(), pos.getEndZ() + 1}, true);
             if (marker != null) {
               marker.setFillStyle(marker.getFillOpacity(), faction.color.getColorValue());
               marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(), faction.color.getColorValue());
@@ -61,6 +58,19 @@ public class DynmapWrapper {
         }
       }
     });
+  }
+
+  private String dimensionTagToID(String level) { // FIXME: allow custom dimensions
+    if (level.equals("minecraft:overworld")) {
+      return "world";
+    }
+    if (level.equals("minecraft:the_nether")) {
+      return "DIM-1";
+    }
+    if (level.equals("minecraft:the_end")) {
+      return "DIM1";
+    }
+    return level;
   }
 
   private String getInfo(Faction faction) {
@@ -78,7 +88,7 @@ public class DynmapWrapper {
     FactionsMod.LOGGER.info(claim.level);
 
     String areaMarkerId = faction.name + "-" + claim.x + claim.z;
-    AreaMarker marker = markerSet.createAreaMarker(areaMarkerId, getInfo(faction), true, "world", new double[]{pos.getStartX(), pos.getEndX()+1}, new double[]{pos.getStartZ(), pos.getEndZ()+1}, true);
+    AreaMarker marker = markerSet.createAreaMarker(areaMarkerId, getInfo(faction), true, dimensionTagToID(claim.level), new double[]{pos.getStartX(), pos.getEndX()+1}, new double[]{pos.getStartZ(), pos.getEndZ()+1}, true);
     if (marker != null) {
       marker.setFillStyle(marker.getFillOpacity(), faction.color.getColorValue());
       marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(), faction.color.getColorValue());
@@ -116,9 +126,9 @@ public class DynmapWrapper {
   public void setHome(Faction faction, Home newHome) {
     String markerId = faction.name + "-home";
     if (markerSet.findMarker(markerId) == null) {
-      markerSet.createMarker(markerId, faction.name + "'s Home", "world", newHome.x, newHome.y, newHome.z, null, true);
+      markerSet.createMarker(markerId, faction.name + "'s Home", dimensionTagToID(newHome.level), newHome.x, newHome.y, newHome.z, null, true);
     } else {
-      markerSet.findMarker(markerId).setLocation("world", newHome.x, newHome.y, newHome.z);
+      markerSet.findMarker(markerId).setLocation(dimensionTagToID(newHome.level), newHome.x, newHome.y, newHome.z);
     }
   }
 
