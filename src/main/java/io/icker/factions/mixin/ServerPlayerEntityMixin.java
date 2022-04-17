@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.icker.factions.config.Config;
+import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.database.Member;
 import io.icker.factions.database.Ally;
 import io.icker.factions.database.Faction;

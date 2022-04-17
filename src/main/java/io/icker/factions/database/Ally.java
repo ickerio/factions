@@ -67,8 +67,6 @@ public class Ally {
         .set(source, target, target, source)
         .executeQuery();
 
-    FactionsMod.LOGGER.info(query.exists());
-
     return query.exists();
   }
 

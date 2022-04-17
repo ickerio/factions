@@ -58,7 +58,8 @@ public class Database {
                     CREATE TABLE IF NOT EXISTS PlayerConfig (
                         uuid UUID PRIMARY KEY,
                         chat VARCHAR(255),
-                        bypass BOOLEAN
+                        bypass BOOLEAN,
+                        zone BOOLEAN
                     );
                                     
                     CREATE TABLE IF NOT EXISTS Allies (
@@ -70,6 +71,19 @@ public class Database {
                     );
                     """)
                 .executeUpdate();
+
+            Query query = new Query("SELECT EXISTS(SELECT * FROM INFORMATION_SCHEMA.columns WHERE table_name = 'PLAYERCONFIG' and column_name = 'ZONE');")
+                .executeQuery();
+            
+            if (!query.exists()) {
+                new Query("""
+                        ALTER TABLE PlayerConfig ADD zone BOOLEAN;
+                        UPDATE PlayerConfig SET zone = 0;
+                        """)
+                    .executeUpdate();
+                
+                FactionsMod.LOGGER.info("Successfully migrated to newer version");
+            }
             FactionsMod.LOGGER.info("Successfully connected to database");
         } catch (SQLException e) {
             e.printStackTrace();    

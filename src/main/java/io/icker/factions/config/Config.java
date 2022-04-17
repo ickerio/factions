@@ -23,6 +23,7 @@ public class Config {
     public static int TICKS_FOR_POWER_REWARD;
     public static int REQUIRED_BYPASS_LEVEL;
     public static HomeOptions HOME;
+    public static boolean ZONE_MESSAGE;
 
     public static void init() {
         JsonObject obj = Parser.load();
@@ -55,6 +56,7 @@ public class Config {
         TICKS_FOR_POWER_REWARD = Parser.asInt(obj, "ticksForPowerReward", 1);
         REQUIRED_BYPASS_LEVEL = Parser.asInt(obj, "requiredBypassLevel", 2);
         HOME = Parser.asEnum(obj, "home", HomeOptions.class, HomeOptions.CLAIMS);
+        ZONE_MESSAGE = Parser.asBool(obj, "zoneMessageEnabled", true);
     }
 
     public static Zone getZone(String dimension, int x, int z) {

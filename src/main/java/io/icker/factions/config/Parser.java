@@ -60,6 +60,14 @@ public class Parser {
         }
     }
 
+    public static boolean asBool(JsonObject obj, String key, boolean fallback) {
+        try {
+            return obj.get(key).getAsBoolean();
+        } catch (NullPointerException | UnsupportedOperationException e) {
+            return fallback;
+        }
+    }
+
     public static <T extends Enum<T>> T asEnum(JsonObject obj, String key, Class<T> c, T fallback) {
         try {
             return Enum.valueOf(c, obj.get(key).getAsString().trim().toUpperCase());
