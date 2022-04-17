@@ -1,6 +1,7 @@
 package io.icker.factions.database;
 
 import java.util.ArrayList;
+import io.icker.factions.FactionsMod;
 
 public class Ally {
   public String target;
@@ -87,6 +88,36 @@ public class Ally {
   public static ArrayList<Ally> getAllyInvites(String source) {
     Query query = new Query("SELECT * FROM Allies WHERE target = ? AND accept = 0;")
         .set(source)
+        .executeQuery();
+
+    ArrayList<Ally> allies = new ArrayList<Ally>();
+    if (!query.success)
+      return allies;
+
+    while (query.next()) {
+      allies.add(new Ally(query.getString("source"), query.getString("target")));
+    }
+    return allies;
+  }
+
+  public static ArrayList<Ally> getSentInvites(String source) {
+    Query query = new Query("SELECT * FROM Allies WHERE source = ? AND accept = 0;")
+        .set(source)
+        .executeQuery();
+
+    ArrayList<Ally> allies = new ArrayList<Ally>();
+    if (!query.success)
+      return allies;
+
+    while (query.next()) {
+      allies.add(new Ally(query.getString("source"), query.getString("target")));
+    }
+    return allies;
+  }
+
+  public static ArrayList<Ally> getAll(String source) {
+    Query query = new Query("SELECT * FROM Allies WHERE target = ? OR source = ?;")
+        .set(source, source)
         .executeQuery();
 
     ArrayList<Ally> allies = new ArrayList<Ally>();

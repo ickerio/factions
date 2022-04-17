@@ -43,6 +43,20 @@ public class Faction {
         return factions;
     }
 
+    public static ArrayList<Faction> allBut(String faction) {
+        Query query = new Query("SELECT * FROM Faction WHERE NOT name = ?;")
+            .set(faction)
+            .executeQuery();
+
+        ArrayList<Faction> factions = new ArrayList<Faction>();
+        if (!query.success) return factions;
+
+        while (query.next()) {
+            factions.add(new Faction(query.getString("name"), query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power")));
+        }
+        return factions;
+    }
+
     public Faction(String name, String description, Formatting color, boolean open, int power) {
         this.name = name;
         this.description = description;

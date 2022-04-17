@@ -4,11 +4,11 @@
 
 # Factions Mod
 
-Highly customizable, lightweight and elegant factions mod for the [Fabric loader][fabric] in Minecraft 1.17
+Highly customizable, lightweight and elegant factions mod for the [Fabric loader][fabric] in Minecraft 1.18
 
 [![Release](https://img.shields.io/github/v/release/ickerio/factions?style=for-the-badge&include_prereleases&sort=semver)][github:releases]
-[![Available For](https://img.shields.io/badge/dynamic/json?label=Available%20For&style=for-the-badge&color=e64626&query=gameVersionLatestFiles%5B0%5D.gameVersion&url=https%3A%2F%2Faddons-ecs.forgesvc.net%2Fapi%2Fv2%2Faddon%2F497362)][curseforge]
-[![Downloads](https://img.shields.io/badge/dynamic/json?label=Downloads&style=for-the-badge&color=e64626&query=downloadCount&url=https%3A%2F%2Faddons-ecs.forgesvc.net%2Fapi%2Fv2%2Faddon%2F497362)][curseforge:releases]
+[![Available For](https://img.shields.io/badge/dynamic/json?label=Available%20For&style=for-the-badge&color=e64626&query=gameVersion&url=https://api.blueish.dev/api/curseforge/497362)][curseforge]
+ [![Downloads](https://img.shields.io/badge/dynamic/json?label=Downloads&style=for-the-badge&color=e64626&query=downloads&url=https://api.blueish.dev/api/curseforge/497362)][curseforge:releases]
 
 </div>
 
