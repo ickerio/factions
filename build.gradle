@@ -26,10 +26,6 @@ dependencies {
 	implementation(include("com.h2database:h2:${project.h2_version}"))
 }
 
-loom {
-	accessWidenerPath = file("src/main/resources/factions.accesswidener")
-}
-
 processResources {
 	inputs.property "version", project.version
 
