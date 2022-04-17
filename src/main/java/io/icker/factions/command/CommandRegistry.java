@@ -20,12 +20,12 @@ public class CommandRegistry {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> factions = CommandManager
 			.literal("factions")
-			.requires(s -> PermissionsWrapper.require(s, "factions.all"))
+			.requires(s -> PermissionsWrapper.require(s, "factions"))
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> alias = CommandManager
 			.literal("f")
-			.requires(s -> PermissionsWrapper.require(s, "factions.all"))
+			.requires(s -> PermissionsWrapper.require(s, "factions"))
 			.redirect(factions)
 			.build();
 
