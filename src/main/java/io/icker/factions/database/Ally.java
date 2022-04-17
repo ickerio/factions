@@ -28,12 +28,20 @@ public class Ally {
   }
 
   public static Ally accept(String source, String target) {
+    Faction oldSource = Faction.get(source);
+    Faction oldTarget = Faction.get(target);
+
     Query query = new Query("UPDATE Allies SET accept = 1 WHERE source = ? AND target = ?;")
         .set(source, target)
         .executeUpdate();
 
-    if (!query.success)
-      return null;
+    if (!query.success) return null;
+
+    if (FactionsMod.dynmapEnabled) {
+      FactionsMod.dynmap.updateFaction(oldSource, Faction.get(source));
+      FactionsMod.dynmap.updateFaction(oldTarget, Faction.get(target));
+    }
+
     return new Ally(source, target);
   }
 
@@ -43,15 +51,21 @@ public class Ally {
   }
 
   public void remove() {
-    new Query("DELETE FROM Allies WHERE (source = ? AND target = ?) OR (source = ? AND target = ?);")
-        .set(this.source, this.target, this.target, this.source)
-        .executeUpdate();
+    Ally.remove(source, target);
   }
 
   public static void remove(String source, String target) {
+    Faction oldSource = Faction.get(source);
+    Faction oldTarget = Faction.get(target);
+
     new Query("DELETE FROM Allies WHERE (source = ? AND target = ?) OR (source = ? AND target = ?);")
         .set(source, target, target, source)
         .executeUpdate();
+
+    if (FactionsMod.dynmapEnabled) {
+      FactionsMod.dynmap.updateFaction(oldSource, Faction.get(source));
+      FactionsMod.dynmap.updateFaction(oldTarget, Faction.get(target));
+    }
   }
 
   public static boolean checkIfAlly(String source, String target) {

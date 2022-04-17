@@ -1,5 +1,6 @@
 package io.icker.factions.database;
 
+import io.icker.factions.FactionsMod;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -69,12 +70,20 @@ public class Faction {
         new Query("UPDATE Faction SET description = ? WHERE name = ?;")
             .set(description, name)
             .executeUpdate();
+
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
+        }
     }
 
     public void setColor(Formatting color) {
         new Query("UPDATE Faction SET color = ? WHERE name = ?;")
             .set(color.getName(), name)
             .executeUpdate();
+
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
+        }
     }
 
     public void setOpen(boolean open) {
@@ -87,6 +96,10 @@ public class Faction {
         new Query("UPDATE Faction SET power = ? WHERE name = ?;")
             .set(power, name)
             .executeUpdate();
+
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
+        }
     }
 
     public ArrayList<Member> getMembers() {
@@ -104,11 +117,23 @@ public class Faction {
     }
 
     public Member addMember(UUID uuid) {
-        return Member.add(uuid, name);
+        Member member = Member.add(uuid, name);
+
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
+        }
+
+        return member;
     }
 
     public Member addMember(UUID uuid, Member.Rank rank) {
-        return Member.add(uuid, name, rank);
+        Member member = Member.add(uuid, name, rank);
+
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
+        }
+
+        return member;
     }
 
     public ArrayList<Claim> getClaims() {
@@ -129,6 +154,10 @@ public class Faction {
         new Query("DELETE FROM Claim WHERE faction = ?;")
             .set(name)
             .executeUpdate();
+
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.removeAll(this);
+        }
     }
 
     public Claim addClaim(int x, int z, String level) {
@@ -144,10 +173,21 @@ public class Faction {
     }
 
     public Home setHome(double x, double y, double z, float yaw, float pitch, String level) {
-        return Home.set(name, x, y, z, yaw, pitch, level);
+        Home home = Home.set(name, x, y, z, yaw, pitch, level);
+
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.setHome(this, home);
+        }
+
+        return home;
     }
 
     public void remove() {
+        if (FactionsMod.dynmapEnabled) {
+            FactionsMod.dynmap.removeHome(this);
+            FactionsMod.dynmap.removeAll(this);
+        }
+
         new Query("DELETE FROM Faction WHERE name = ?;")
             .set(name)
             .executeUpdate();

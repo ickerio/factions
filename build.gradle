@@ -12,6 +12,7 @@ group = project.maven_group
 
 repositories {
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+	maven { url = "https://repo.mikeprimm.com/" }
 }
 
 dependencies {
@@ -20,6 +21,7 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
+	compileOnly "us.dynmap:DynmapCoreAPI:3.4-beta-3"
 
 	implementation(include("com.h2database:h2:${project.h2_version}"))
 }

@@ -9,10 +9,13 @@ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import io.icker.factions.command.CommandRegistry;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import io.icker.factions.event.ServerEvents;
+import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.PermissionsWrapper;
 
 public class FactionsMod implements ModInitializer {
 	public static Logger LOGGER = LogManager.getLogger("Factions");
+	public static DynmapWrapper dynmap;
+	public static boolean dynmapEnabled;
 
 	@Override
 	public void onInitialize() {
@@ -27,6 +30,13 @@ public class FactionsMod implements ModInitializer {
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			ServerEvents.started(server);
+			try {
+				dynmap = new DynmapWrapper();
+				dynmapEnabled = true;
+			} catch (java.lang.NoClassDefFoundError e) {
+				LOGGER.info("Dynmap not found");
+				dynmapEnabled = false;
+			}
 		});
 
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
