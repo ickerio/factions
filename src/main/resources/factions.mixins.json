@@ -10,7 +10,8 @@
     "MinecraftServerMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkManagerMixin",
-    "ServerPlayerInteractionManagerMixin"
+    "ServerPlayerInteractionManagerMixin",
+    "MixinServerPlayNetworkHandler"
   ],
   "server": [],
   "injectors": {

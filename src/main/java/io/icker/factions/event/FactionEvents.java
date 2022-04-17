@@ -21,25 +21,6 @@ public class FactionEvents {
         new Message("%s lost %d power from dying", player.getName().asString(), adjusted).send(faction);
     }
 
-    public static void tick(ServerPlayerEntity player) {
-        ServerWorld world = player.getWorld();
-        String dimension = world.getRegistryKey().getValue().toString();
-
-        ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
-
-        Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
-
-        if (claim != null) {
-            new Message(claim.getFaction().name)
-                .format(claim.getFaction().color)
-                .send(player, true);
-        } else {
-            new Message("Wilderness")
-                .format(Formatting.GREEN)
-                .send(player, true);
-        }
-    }
-
     public static void powerTick(ServerPlayerEntity player) {
         Member member = Member.get(player.getUuid());
         if (member == null) return;

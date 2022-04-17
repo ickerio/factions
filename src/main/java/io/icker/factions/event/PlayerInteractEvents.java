@@ -1,5 +1,6 @@
 package io.icker.factions.event;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
@@ -11,6 +12,8 @@ import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -109,6 +112,27 @@ public class PlayerInteractEvents {
                 for (int z = -1; z < 2; z++) {
                     player.networkHandler.sendPacket(new BlockUpdateS2CPacket(world, pos.add(x, y, z)));
                 }
+            }
+        }
+    }
+
+    public static void onMove(ServerPlayerEntity player) {
+        if (PlayerConfig.get(player.getUuid()).currentZoneMessage && Config.ZONE_MESSAGE) {
+            ServerWorld world = player.getWorld();
+            String dimension = world.getRegistryKey().getValue().toString();
+
+            ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
+
+            Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+
+            if (claim != null) {
+                new Message(claim.getFaction().name)
+                        .format(claim.getFaction().color)
+                        .send(player, true);
+            } else {
+                new Message("Wilderness")
+                        .format(Formatting.GREEN)
+                        .send(player, true);
             }
         }
     }

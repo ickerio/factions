@@ -1,0 +1,3 @@
+accessWidener	v1	named
+
+accessible   field   ServerPlayNetworkHandler   player   Lnet/minecraft/server/network/ServerPlayerEntity;
