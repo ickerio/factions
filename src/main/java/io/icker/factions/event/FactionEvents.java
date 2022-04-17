@@ -1,14 +1,18 @@
 package io.icker.factions.event;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Member;
 import io.icker.factions.util.Message;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.Formatting;
+
+import java.util.Collection;
 
 public class FactionEvents {
     public static void playerDeath(ServerPlayerEntity player) {
@@ -37,5 +41,13 @@ public class FactionEvents {
         int updated = Math.min(Math.max(0, faction.power + adjustment), maxPower);
         faction.setPower(updated);
         return Math.abs(updated - faction.power);
+    }
+
+    public static void updatePlayerList(ServerPlayerEntity player) {
+        FactionsMod.playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));
+    }
+
+    public static void updatePlayerList(Collection<ServerPlayerEntity> players) {
+        FactionsMod.playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, players));
     }
 }

@@ -9,8 +9,10 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import io.icker.factions.event.PlayerInteractEvents;
 
+import net.minecraft.client.gui.hud.InGameHud;
+
 @Mixin(ServerPlayNetworkHandler.class)
-public class MixinServerPlayNetworkHandler {
+public class ServerPlayNetworkHandlerMixin {
     @Inject(method = "onPlayerMove", at = @At("HEAD"))
     public void onPlayerMove(PlayerMoveC2SPacket packet, CallbackInfo ci) {
         PlayerInteractEvents.onMove(((ServerPlayNetworkHandler)(Object)this).player);

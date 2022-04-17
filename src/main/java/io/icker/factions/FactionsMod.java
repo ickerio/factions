@@ -1,5 +1,6 @@
 package io.icker.factions;
 
+import net.minecraft.server.PlayerManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +17,7 @@ public class FactionsMod implements ModInitializer {
 	public static Logger LOGGER = LogManager.getLogger("Factions");
 	public static DynmapWrapper dynmap;
 	public static boolean dynmapEnabled;
+	public static PlayerManager playerManager;
 
 	@Override
 	public void onInitialize() {
@@ -30,6 +32,7 @@ public class FactionsMod implements ModInitializer {
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			ServerEvents.started(server);
+			playerManager = server.getPlayerManager();
 			try {
 				dynmap = new DynmapWrapper();
 				dynmapEnabled = true;

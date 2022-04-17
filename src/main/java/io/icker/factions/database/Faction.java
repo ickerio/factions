@@ -1,9 +1,13 @@
 package io.icker.factions.database;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.event.FactionEvents;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public class Faction {
@@ -84,6 +88,8 @@ public class Faction {
         if (FactionsMod.dynmapEnabled) {
             FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
         }
+        List<ServerPlayerEntity> players = this.getMembers().stream().map(member -> FactionsMod.playerManager.getPlayer(member.uuid)).toList();
+        FactionEvents.updatePlayerList(players);
     }
 
     public void setOpen(boolean open) {
@@ -188,8 +194,12 @@ public class Faction {
             FactionsMod.dynmap.removeAll(this);
         }
 
+        List<ServerPlayerEntity> players = this.getMembers().stream().map(member -> FactionsMod.playerManager.getPlayer(member.uuid)).toList();
+
         new Query("DELETE FROM Faction WHERE name = ?;")
             .set(name)
             .executeUpdate();
+
+        FactionEvents.updatePlayerList(players);
     }
 }

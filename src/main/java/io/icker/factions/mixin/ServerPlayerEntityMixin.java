@@ -1,10 +1,15 @@
 package io.icker.factions.mixin;
 
+import io.icker.factions.FactionsMod;
+import io.icker.factions.util.Message;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -57,12 +62,27 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "isInvulnerableTo", at = @At("RETURN"), cancellable = true)
     private void damage(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
-        if (damageSource.getAttacker() == null ? false : damageSource.getAttacker().isPlayer()) {
+        if (damageSource.getAttacker() != null && damageSource.getAttacker().isPlayer()) {
             Faction attackFaction = Member.get(damageSource.getAttacker().getUuid()).getFaction();
             Faction thisFaction = Member.get(((ServerPlayerEntity) (Object) this).getUuid()).getFaction();
             cir.setReturnValue(cir.getReturnValue() || attackFaction == thisFaction || Ally.checkIfAlly(attackFaction.name, thisFaction.name));
         } else {
             cir.setReturnValue(cir.getReturnValue());
+        }
+    }
+
+    @Inject(method = "getPlayerListName", at = @At("HEAD"), cancellable = true)
+    public void getPlayerListName(CallbackInfoReturnable<Text> cir) {
+        Member player = Member.get(((ServerPlayerEntity) (Object) this).getUuid());
+        if (player != null) {
+            Faction faction = player.getFaction();
+            cir.setReturnValue(new Message(String.format("[%s] ", faction.name)).format(faction.color).add(
+                    new Message(((ServerPlayerEntity) (Object) this).getName().asString()).format(Formatting.WHITE)
+            ).raw());
+        } else {
+            cir.setReturnValue(new Message("[FACTIONLESS] ").format(Formatting.GRAY).add(
+                    new Message(((ServerPlayerEntity) (Object) this).getName().asString()).format(Formatting.WHITE)
+            ).raw());
         }
     }
 }

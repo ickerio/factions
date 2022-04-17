@@ -1,6 +1,7 @@
 package io.icker.factions.database;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.event.FactionEvents;
 
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ public class Member {
                 .executeUpdate();
 
         if (!query.success) return null;
+        FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(uuid));
         return new Member(uuid, faction, rank);
     }
 
@@ -65,6 +67,7 @@ public class Member {
         if (FactionsMod.dynmapEnabled) {
             FactionsMod.dynmap.updateFaction(old, Faction.get(factionName));
         }
+        FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(uuid));
     }
 
     public enum Rank {
