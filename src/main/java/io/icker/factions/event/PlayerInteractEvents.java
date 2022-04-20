@@ -27,6 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import java.util.UUID;
 
 public class PlayerInteractEvents {
     public static boolean preventInteract(ServerPlayerEntity player, World world, BlockHitResult result) {
@@ -53,11 +54,15 @@ public class PlayerInteractEvents {
     }
 
     public static boolean preventFriendlyFire(ServerPlayerEntity player, ServerPlayerEntity target) {
+        return PlayerInteractEvents.preventFriendlyFire(player, target.getUuid());
+    }
+
+    public static boolean preventFriendlyFire(ServerPlayerEntity player, UUID target) {
         Member playerMember = Member.get(player.getUuid());
-        Member targetMember = Member.get(target.getUuid());
+        Member targetMember = Member.get(target);
 
         if (playerMember == null || targetMember == null) return false;
-        return playerMember.getFaction().name == targetMember.getFaction().name;
+        return ((playerMember.getFaction().name == targetMember.getFaction().name  || Ally.checkIfAlly(playerMember.getFaction().name, targetMember.getFaction().name))) && !Config.FRIENDLY_FIRE;
     }
 
     public static void warnPlayer(ServerPlayerEntity target, String action) {
