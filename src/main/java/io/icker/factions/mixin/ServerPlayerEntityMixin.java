@@ -63,7 +63,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
     @Inject(method = "isInvulnerableTo", at = @At("RETURN"), cancellable = true)
     private void damage(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
         if (damageSource.getAttacker() != null && damageSource.getAttacker().isPlayer()) {
-            cir.setReturnValue(PlayerInteractEvents.preventFriendlyFire(((ServerPlayerEntity) (Object) this), damageSource.getAttacker().getUuid()));
+            cir.setReturnValue(cir.getReturnValue() || PlayerInteractEvents.preventFriendlyFire(((ServerPlayerEntity) (Object) this), damageSource.getAttacker().getUuid()));
         } else {
             cir.setReturnValue(cir.getReturnValue());
         }

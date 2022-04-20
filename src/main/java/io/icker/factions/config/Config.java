@@ -58,7 +58,7 @@ public class Config {
         REQUIRED_BYPASS_LEVEL = Parser.asInt(obj, "requiredBypassLevel", 2);
         HOME = Parser.asEnum(obj, "home", HomeOptions.class, HomeOptions.CLAIMS);
         ZONE_MESSAGE = Parser.asBool(obj, "zoneMessageEnabled", true);
-        FRIENDLY_FIRE = Parser.asBool(obj, "friendlyFireEnabled", true);
+        FRIENDLY_FIRE = Parser.asBool(obj, "friendlyFireEnabled", false);
     }
 
     public static Zone getZone(String dimension, int x, int z) {
