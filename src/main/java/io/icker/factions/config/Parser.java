@@ -16,12 +16,18 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public class Parser {
     private static final File factionDir = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
+    private static final File backupDir = FabricLoader.getInstance().getGameDir().resolve("config").toFile();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static final int version = 1;
 
     public static JsonObject load() {
         File config = new File(factionDir, "config.json");
+
+        if (!config.exists()) {
+            FactionsMod.LOGGER.warn("Factions config file not present using backup");
+            config = new File(backupDir, "factions.json");
+        }
 
         if (config.exists()) {
             try {
