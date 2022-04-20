@@ -71,8 +71,6 @@ public class InfoCommand  {
         int requiredPower = faction.getClaims().size() * Config.CLAIM_WEIGHT;
         int maxPower = Config.BASE_POWER + (members.size() * Config.MEMBER_POWER);
 
-        FactionsMod.LOGGER.info(alliesList);
-
         new Message("")
             .add(
                 new Message(memberText)

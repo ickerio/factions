@@ -45,7 +45,6 @@ public class DynmapWrapper {
       ArrayList<Claim> claims = faction.getClaims();
 
       if (faction.getHome() != null) {
-        FactionsMod.LOGGER.info("home found");
         Home home = faction.getHome();
         String markerId = faction.name + "-home";
         markerSet.createMarker(markerId, faction.name + "'s Home", dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
@@ -88,8 +87,6 @@ public class DynmapWrapper {
   public void addClaim(Claim claim) {
     Faction faction = claim.getFaction();
     ChunkPos pos = new ChunkPos(claim.x, claim.z);
-
-    FactionsMod.LOGGER.info(claim.level);
 
     String areaMarkerId = faction.name + "-" + claim.x + claim.z;
     AreaMarker marker = markerSet.createAreaMarker(areaMarkerId, getInfo(faction), true, dimensionTagToID(claim.level), new double[]{pos.getStartX(), pos.getEndX()+1}, new double[]{pos.getStartZ(), pos.getEndZ()+1}, true);

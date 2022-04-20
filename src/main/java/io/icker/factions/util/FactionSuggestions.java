@@ -30,4 +30,8 @@ public class FactionSuggestions {
     public static String[] openFaction(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         return Faction.all().stream().map(a -> a.open ? a.name : null).toArray(String[]::new);
     }
+
+    public static String[] all(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        return Faction.all().stream().map(a -> a.name).toArray(String[]::new);
+    }
 }

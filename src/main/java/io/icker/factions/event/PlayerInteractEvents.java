@@ -18,6 +18,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import java.util.UUID;
 import net.minecraft.world.World;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.RaycastContext.FluidHandling;
@@ -53,11 +54,18 @@ public class PlayerInteractEvents {
     }
 
     public static boolean preventFriendlyFire(ServerPlayerEntity player, ServerPlayerEntity target) {
+        return preventFriendlyFire(player, target.getUuid());
+    }
+
+    public static boolean preventFriendlyFire(ServerPlayerEntity player, UUID uuid) {
         Member playerMember = Member.get(player.getUuid());
-        Member targetMember = Member.get(target.getUuid());
+        Member targetMember = Member.get(uuid);
+
+        Faction sourceFaction = playerMember.getFaction();
+        Faction targetFaction = targetMember.getFaction();
 
         if (playerMember == null || targetMember == null) return false;
-        return playerMember.getFaction().name == targetMember.getFaction().name;
+        return (sourceFaction.name == targetFaction.name || Ally.checkIfAlly(sourceFaction.name, targetFaction.name)) && !Config.FRIENDLY_FIRE;
     }
 
     public static void warnPlayer(ServerPlayerEntity target, String action) {
