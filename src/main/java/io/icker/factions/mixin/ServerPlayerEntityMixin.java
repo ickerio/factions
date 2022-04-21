@@ -1,13 +1,11 @@
 package io.icker.factions.mixin;
 
-import io.icker.factions.FactionsMod;
 import io.icker.factions.util.Message;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
@@ -19,9 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.icker.factions.config.Config;
-import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.database.Member;
-import io.icker.factions.database.Ally;
 import io.icker.factions.database.Faction;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.event.PlayerInteractEvents;

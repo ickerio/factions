@@ -7,14 +7,12 @@ import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.AreaMarker;
 
-import io.icker.factions.FactionsMod;
 import io.icker.factions.database.Ally;
 
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Claim;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import net.minecraft.util.math.ChunkPos;
