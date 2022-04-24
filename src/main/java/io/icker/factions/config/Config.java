@@ -11,6 +11,7 @@ import java.io.IOException;
 public class Config {
     private static final String fileName = "config.json";
     private static final String[] directories = {"factions", "config"};
+    private static final Integer version = 1;
 
     public static enum HomeOptions {
         ANYWHERE,
@@ -59,7 +60,7 @@ public class Config {
     // }
 
     public static void init() throws IOException {
-        FileParser parser = new FileParser(1, fileName, directories);
+        FileParser parser = new FileParser(version, fileName, directories);
 
         // parser.getArray("zones").forEach(object -> {
         //     try {
