@@ -1,6 +1,9 @@
 package io.icker.factions;
 
 import net.minecraft.server.PlayerManager;
+
+import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +25,11 @@ public class FactionsMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Initalized Factions Mod for Minecraft v1.18");
-		Config.init();
+		try {
+			Config.init();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		if (PermissionsWrapper.exists()) {
 			LOGGER.info("Permissions Mod was found");
 		}
