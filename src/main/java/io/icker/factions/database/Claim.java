@@ -1,7 +1,6 @@
 package io.icker.factions.database;
 
 import io.icker.factions.FactionsMod;
-import io.icker.factions.util.DynmapWrapper;
 
 public class Claim {
     public int x;

@@ -1,127 +1,95 @@
 package io.icker.factions.config;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import io.icker.factions.FactionsMod;
-import net.fabricmc.loader.api.FabricLoader;
+public abstract class Parser {
+    protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    protected JsonObject object;
 
-public class Parser {
-    private static final File factionDir = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
-    private static final File backupDir = FabricLoader.getInstance().getGameDir().resolve("config").toFile();
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    protected void update() throws IOException {}
+    protected void create(String key, JsonElement fallback) throws IOException {
+        this.object.add(key, fallback);
+    }
 
-    private static final int version = 1;
-
-    public static JsonObject load() {
-        File config = new File(factionDir, "config.json");
-
-        if (!config.exists()) {
-            FactionsMod.LOGGER.warn("Factions config file not present using backup");
-            config = new File(backupDir, "factions.json");
-        }
-
-        if (config.exists()) {
-            try {
-                FileReader reader = new FileReader(config);
-                JsonObject obj = GSON.fromJson(reader, JsonObject.class);
-
-                if (Parser.asInt(obj, "version", 0) != version) {
-                    FactionsMod.LOGGER.warn(String.format("Factions config file incompatible or version not specified (Requires version %d)", version));
-                }
-                reader.close();
-
-                return obj;
-            } catch (IOException e) {
-                FactionsMod.LOGGER.error("Factions config file failed to load");
-                return new JsonObject();
+    public Integer getInteger(String key, Integer fallback) throws IOException {
+        try {
+            return this.object.get(key).getAsInt();
+        } catch (NullPointerException | UnsupportedOperationException e) {
+            if (fallback == null) {
+                return null;
             }
-        } else {
-            FactionsMod.LOGGER.warn("Factions config file not present, using default values");
-            return new JsonObject();
+            this.create(key, new JsonPrimitive(fallback));
+            return fallback;
         }
     }
 
-    public static Integer asInt(JsonObject obj, String key, Integer fallback) {
+    public Integer getInteger(String key) throws IOException {
+        return this.getInteger(key, 0);
+    }
+
+    public String getString(String key, String fallback) throws IOException {
         try {
-            return obj.get(key).getAsInt();
+            return this.object.get(key).getAsString();
         } catch (NullPointerException | UnsupportedOperationException e) {
+            if (fallback == null) {
+                return null;
+            }
+            this.create(key, new JsonPrimitive(fallback));
             return fallback;
         }
     }
 
-    public static String asString(JsonObject obj, String key, String fallback) {
+    public String getString(String key) throws IOException {
+        return this.getString(key, "");
+    }
+
+    public Boolean getBoolean(String key, Boolean fallback) throws IOException {
         try {
-            return obj.get(key).getAsString();
+            return this.object.get(key).getAsBoolean();
         } catch (NullPointerException | UnsupportedOperationException e) {
+            if (fallback == null) {
+                return null;
+            }
+            this.create(key, new JsonPrimitive(fallback));
             return fallback;
         }
     }
 
-    public static boolean asBool(JsonObject obj, String key, boolean fallback) {
+    public <T extends Enum<T>> T getEnum(String key, Class<T> c, String fallback) throws IOException {
         try {
-            return obj.get(key).getAsBoolean();
-        } catch (NullPointerException | UnsupportedOperationException e) {
-            return fallback;
+            return Enum.valueOf(c, this.getString(key, fallback).trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            if (fallback == null) {
+                return null;
+            }
+            this.create(key, new JsonPrimitive(fallback));
+            return Enum.valueOf(c, fallback.trim().toUpperCase());
         }
     }
 
-    public static <T extends Enum<T>> T asEnum(JsonObject obj, String key, Class<T> c, T fallback) {
+    public JsonArray getArray(String key) throws IOException {
         try {
-            return Enum.valueOf(c, obj.get(key).getAsString().trim().toUpperCase());
-        } catch (NullPointerException | UnsupportedOperationException | IllegalArgumentException e) {
-            return fallback;
-        }
-    }
-
-    public static JsonArray asArray(JsonObject obj, String key) {
-        try {
-            return obj.get(key).getAsJsonArray();
+            return this.object.get(key).getAsJsonArray();
         } catch (NullPointerException | UnsupportedOperationException | IllegalStateException e) {
+            create(key, new JsonArray());
             return new JsonArray();
         }
     }
 
-    public static JsonObject asObject(JsonObject obj, String key) {
+    public ObjectParser getParser(String key) throws IOException {
         try {
-            return obj.get(key).getAsJsonObject();
+            return new ObjectParser(this.object.get(key).getAsJsonObject(), this);
         } catch (NullPointerException | UnsupportedOperationException | IllegalStateException e) {
-            return new JsonObject();
+            JsonObject newObject = new JsonObject();
+            create(key, newObject);
+            return new ObjectParser(newObject, this);
         }
-    }
-
-    public static Constraint asConstraint(JsonObject obj, String key) {
-        JsonObject conObj = obj.getAsJsonObject(key);
-        Constraint con = new Constraint();
-
-        con.equal = Parser.asInt(conObj, "==", null);
-        con.notEqual = Parser.asInt(conObj, "!=", null);
-        con.lessThan = Parser.asInt(conObj, "<", null);
-        con.lessThanOrEqual = Parser.asInt(conObj, "<=", null);
-        con.greaterThan = Parser.asInt(conObj, ">", null);
-        con.greaterThanOrEqual = Parser.asInt(conObj, ">=", null);
-
-        return con;
-    }
-
-    public static ArrayList<String> asDimensionList(JsonObject obj, String key) {
-        ArrayList<String> list = new ArrayList<String>();
-
-        asArray(obj, key).forEach(e -> {
-            if (e.isJsonPrimitive()) {
-                JsonPrimitive primitive = e.getAsJsonPrimitive();
-                if (primitive.isString()) list.add(primitive.getAsString());
-            }
-        });
-
-        return list;
     }
 }

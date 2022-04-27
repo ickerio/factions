@@ -20,8 +20,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.UserCache;
 
-import io.icker.factions.FactionsMod;
-
 public class InfoCommand  {
 	public static int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();

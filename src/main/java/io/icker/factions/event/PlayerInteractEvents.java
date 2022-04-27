@@ -1,6 +1,5 @@
 package io.icker.factions.event;
 
-import io.icker.factions.FactionsMod;
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
@@ -28,7 +27,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import java.util.UUID;
 
 public class PlayerInteractEvents {
     public static boolean preventInteract(ServerPlayerEntity player, World world, BlockHitResult result) {
