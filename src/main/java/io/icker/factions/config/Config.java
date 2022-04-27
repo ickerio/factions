@@ -9,8 +9,7 @@ import java.io.IOException;
 // import java.util.ArrayList;
 
 public class Config {
-    private static final String fileName = "config.json";
-    private static final String[] directories = {"factions", "config"};
+    private static final String[] filePaths = {"factions/config.json", "config/factions.json"};
     private static final Integer version = 1;
 
     public static enum HomeOptions {
@@ -60,7 +59,7 @@ public class Config {
     // }
 
     public static void init() throws IOException {
-        FileParser parser = new FileParser(version, fileName, directories);
+        FileParser parser = new FileParser(version, filePaths);
 
         // parser.getArray("zones").forEach(object -> {
         //     try {
