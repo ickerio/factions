@@ -67,7 +67,7 @@ public class InfoCommand  {
 			.collect(Collectors.joining(", "));
 
         int requiredPower = faction.getClaims().size() * Config.CLAIM_WEIGHT;
-        int maxPower = Config.BASE_POWER + (members.size() * Config.MEMBER_POWER);
+        int maxPower = members.size() * Config.MEMBER_POWER + Config.BASE_POWER;
 
         new Message("")
             .add(

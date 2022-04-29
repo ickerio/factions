@@ -211,7 +211,11 @@ public class CommandRegistry {
 		LiteralCommandNode<ServerCommandSource> addClaim = CommandManager
 			.literal("add")
 			.requires(s -> PermissionsWrapper.require(s, "factions.claim.add"))
-			.executes(ClaimCommand::add)
+			.then(
+				CommandManager.literal("force")
+					.executes(ClaimCommand::add)
+			)
+			.executes(ClaimCommand::addCheck)
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> listClaim = CommandManager

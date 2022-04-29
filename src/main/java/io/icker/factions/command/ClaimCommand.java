@@ -2,6 +2,8 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+import io.icker.factions.config.Config;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
@@ -60,6 +62,21 @@ public class ClaimCommand {
 		
 		String owner = existingClaim.getFaction().name == member.getFaction().name ? "Your" : "Another";
 		new Message(owner + " faction already owns this chunk").fail().send(player, false);
+		return 0;
+	}
+
+	public static int addCheck(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+		ServerPlayerEntity player = context.getSource().getPlayer();
+		Faction faction = Member.get(player.getUuid()).getFaction();
+
+		int requiredPower = (faction.getClaims().size() + 1) * Config.CLAIM_WEIGHT;
+		int maxPower = faction.getMembers().size() * Config.MEMBER_POWER + Config.BASE_POWER;
+		
+		if (maxPower >= requiredPower) {
+			return add(context);
+		}
+		
+		new Message("Not enough faction power to claim chunk.").fail().send(player, false);
 		return 0;
 	}
 
