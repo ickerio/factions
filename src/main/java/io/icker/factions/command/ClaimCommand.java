@@ -16,6 +16,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ClaimCommand {
@@ -33,11 +35,29 @@ public class ClaimCommand {
 
 		if (count == 0) return 1;
 
-		String claimText = claims.stream() // TODO: show dimension
-			.map(claim -> String.format("(%d, %d)", claim.x, claim.z))
-			.collect(Collectors.joining(", "));
+		HashMap<String, ArrayList<Claim>> claimsMap = new HashMap<String, ArrayList<Claim>>();
 
-		new Message(claimText).format(Formatting.ITALIC).send(source.getPlayer(), false);
+		claims.forEach(claim -> {
+			claimsMap.putIfAbsent(claim.level, new ArrayList<Claim>());
+			claimsMap.get(claim.level).add(claim);
+		});
+
+		Message claimText = new Message("");
+		claimsMap.forEach((level, array) -> {
+			level = Pattern.compile("_([a-z])")
+					.matcher(level.split(":", 2)[1])
+					.replaceAll(m -> " " + m.group(1).toUpperCase());
+			level = level.substring(0, 1).toUpperCase() +
+					level.substring(1);
+			claimText.add("\n");
+			claimText.add(new Message(level).format(Formatting.GRAY));
+			claimText.filler("»");
+			claimText.add(array.stream()
+				.map(claim -> String.format("(%d,%d)", claim.x, claim.z))
+				.collect(Collectors.joining(", ")));
+		});
+
+		claimText.format(Formatting.ITALIC).send(source.getPlayer(), false);
 		return 1;
 	}
 
