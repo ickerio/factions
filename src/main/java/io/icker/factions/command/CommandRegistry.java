@@ -180,9 +180,9 @@ public class CommandRegistry {
 				.literal("accept")
 				.requires(s -> PermissionsWrapper.require(s, "factions.ally.accept"))
 				.then(
-						CommandManager.argument("faction", StringArgumentType.greedyString())
-								.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.allyInvites(ctx), builder))
-								.executes(AllyCommand::accept)
+					CommandManager.argument("faction", StringArgumentType.greedyString())
+						.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.allyInvites(ctx), builder))
+						.executes(AllyCommand::accept)
 				)
 				.build();
 		
@@ -196,9 +196,9 @@ public class CommandRegistry {
 				.literal("remove")
 				.requires(s -> PermissionsWrapper.require(s, "factions.ally.remove"))
 				.then(
-						CommandManager.argument("faction", StringArgumentType.greedyString())
-								.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.allies(ctx), builder))
-								.executes(AllyCommand::remove)
+					CommandManager.argument("faction", StringArgumentType.greedyString())
+						.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.allies(ctx), builder))
+						.executes(AllyCommand::remove)
 				)
 				.build();
 
@@ -206,6 +206,11 @@ public class CommandRegistry {
 			.literal("claim")
 			.requires(s -> PermissionsWrapper.require(s, "factions.claim"))
 			.requires(CommandRegistry::isRankAboveCivilian)
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> addClaim = CommandManager
+			.literal("add")
+			.requires(s -> PermissionsWrapper.require(s, "factions.claim.add"))
 			.executes(ClaimCommand::add)
 			.build();
 
@@ -268,9 +273,9 @@ public class CommandRegistry {
 			.literal("disband")
 			.requires(s -> PermissionsWrapper.require(s, "factions.admin.disband", Config.REQUIRED_BYPASS_LEVEL))
 			.then(
-					CommandManager.argument("faction", StringArgumentType.greedyString())
-							.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.all(ctx), builder))
-							.executes(AdminCommand::disband)
+				CommandManager.argument("faction", StringArgumentType.greedyString())
+					.suggests((ctx, builder) -> suggestMatching(FactionSuggestions.all(ctx), builder))
+					.executes(AdminCommand::disband)
 			)
 			.build();
 
@@ -351,6 +356,7 @@ public class CommandRegistry {
 		admin.addChild(adminDisband);
 
 		factions.addChild(claim);
+		claim.addChild(addClaim);
 		claim.addChild(listClaim);
 		claim.addChild(removeClaim);
 		removeClaim.addChild(removeAllClaims);
