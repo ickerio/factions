@@ -320,7 +320,7 @@ public class CommandRegistry {
 			.build();
 
 		LiteralCommandNode<ServerCommandSource> zoneMsg = CommandManager
-			.literal("zonemsg")
+			.literal("zoneMsg")
 			.requires(s -> Config.ZONE_MESSAGE)
 			.requires(s -> PermissionsWrapper.require(s, "factions.zonemsg"))
 			.executes(new ZoneMsgCommand())
