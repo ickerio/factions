@@ -1,5 +1,7 @@
 package io.icker.factions.database;
 
+import io.icker.factions.api.SetHomeEvent;
+
 public class Home {
     public String factionName;
     public double x;
@@ -27,6 +29,7 @@ public class Home {
             .executeUpdate();
 
         if (!query.success) return null;
+        SetHomeEvent.run(Faction.get(factionName), new Home(factionName, x, y, z, yaw, pitch, level));
         return new Home(factionName, x, y, z, yaw, pitch, level);
     }
     

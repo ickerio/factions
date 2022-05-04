@@ -1,9 +1,16 @@
 package io.icker.factions;
 
+import io.icker.factions.api.AddClaimEvent;
+import io.icker.factions.api.AddMemberEvent;
+import io.icker.factions.api.RemoveMemberEvent;
+import io.icker.factions.api.UpdateFactionEvent;
+import io.icker.factions.event.FactionEvents;
 import net.minecraft.server.PlayerManager;
 
 import java.io.IOException;
+import java.util.List;
 
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,12 +26,11 @@ import io.icker.factions.util.PermissionsWrapper;
 public class FactionsMod implements ModInitializer {
 	public static Logger LOGGER = LogManager.getLogger("Factions");
 	public static DynmapWrapper dynmap;
-	public static boolean dynmapEnabled;
 	public static PlayerManager playerManager;
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Initalized Factions Mod for Minecraft v1.18");
+		LOGGER.info("Initialized Factions Mod for Minecraft v1.18");
 		try {
 			Config.init();
 		} catch (IOException e) {
@@ -42,15 +48,26 @@ public class FactionsMod implements ModInitializer {
 			playerManager = server.getPlayerManager();
 			try {
 				dynmap = new DynmapWrapper();
-				dynmapEnabled = true;
 			} catch (java.lang.NoClassDefFoundError e) {
 				LOGGER.info("Dynmap not found");
-				dynmapEnabled = false;
 			}
 		});
 
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
 			ServerEvents.stopped(server);
+		});
+
+		UpdateFactionEvent.register((faction) -> {
+			List<ServerPlayerEntity> players = faction.getMembers().stream().map(member -> FactionsMod.playerManager.getPlayer(member.uuid)).toList();
+			FactionEvents.updatePlayerList(players);
+		});
+
+		AddMemberEvent.register((member) -> {
+			FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.uuid));
+		});
+
+		RemoveMemberEvent.register((member) -> {
+			FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.uuid));
 		});
 	}
 }

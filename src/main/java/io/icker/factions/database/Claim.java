@@ -1,6 +1,8 @@
 package io.icker.factions.database;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.AddClaimEvent;
+import io.icker.factions.api.RemoveClaimEvent;
 
 public class Claim {
     public int x;
@@ -24,9 +26,7 @@ public class Claim {
 
         if (!query.success) return null;
 
-        if (FactionsMod.dynmapEnabled) {
-            FactionsMod.dynmap.addClaim(new Claim(x, z, level, faction));
-        }
+        AddClaimEvent.run(new Claim(x, z, level, faction));
 
         return new Claim(x, z, level, faction);
     }
@@ -47,8 +47,6 @@ public class Claim {
             .set(x, z, level)
             .executeUpdate();
 
-        if (FactionsMod.dynmapEnabled) {
-            FactionsMod.dynmap.removeClaim(this);
-        }
+        RemoveClaimEvent.run(this);
     }
 }

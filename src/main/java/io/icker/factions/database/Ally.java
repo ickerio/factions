@@ -2,6 +2,8 @@ package io.icker.factions.database;
 
 import java.util.ArrayList;
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.AllyAcceptEvent;
+import io.icker.factions.api.AllyRemoveEvent;
 
 public class Ally {
   public String target;
@@ -37,10 +39,7 @@ public class Ally {
 
     if (!query.success) return null;
 
-    if (FactionsMod.dynmapEnabled) {
-      FactionsMod.dynmap.updateFaction(oldSource, Faction.get(source));
-      FactionsMod.dynmap.updateFaction(oldTarget, Faction.get(target));
-    }
+    AllyAcceptEvent.run(new Ally(source, target));
 
     return new Ally(source, target);
   }
@@ -62,10 +61,7 @@ public class Ally {
         .set(source, target, target, source)
         .executeUpdate();
 
-    if (FactionsMod.dynmapEnabled) {
-      FactionsMod.dynmap.updateFaction(oldSource, Faction.get(source));
-      FactionsMod.dynmap.updateFaction(oldTarget, Faction.get(target));
-    }
+    AllyRemoveEvent.run(new Ally(source, target));
   }
 
   public static boolean checkIfAlly(String source, String target) {

@@ -1,6 +1,7 @@
 package io.icker.factions.database;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.*;
 import io.icker.factions.event.FactionEvents;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
@@ -74,9 +75,7 @@ public class Faction {
             .set(description, name)
             .executeUpdate();
 
-        if (FactionsMod.dynmapEnabled) {
-            FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
-        }
+        UpdateFactionEvent.run(Faction.get(this.name));
     }
 
     public void setColor(Formatting color) {
@@ -84,11 +83,7 @@ public class Faction {
             .set(color.getName(), name)
             .executeUpdate();
 
-        if (FactionsMod.dynmapEnabled) {
-            FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
-        }
-        List<ServerPlayerEntity> players = this.getMembers().stream().map(member -> FactionsMod.playerManager.getPlayer(member.uuid)).toList();
-        FactionEvents.updatePlayerList(players);
+        UpdateFactionEvent.run(Faction.get(this.name));
     }
 
     public void setOpen(boolean open) {
@@ -102,9 +97,7 @@ public class Faction {
             .set(power, name)
             .executeUpdate();
 
-        if (FactionsMod.dynmapEnabled) {
-            FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
-        }
+        PowerChangeEvent.run(this);
     }
 
     public ArrayList<Member> getMembers() {
@@ -124,19 +117,11 @@ public class Faction {
     public Member addMember(UUID uuid) {
         Member member = Member.add(uuid, name);
 
-        if (FactionsMod.dynmapEnabled) {
-            FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
-        }
-
         return member;
     }
 
     public Member addMember(UUID uuid, Member.Rank rank) {
         Member member = Member.add(uuid, name, rank);
-
-        if (FactionsMod.dynmapEnabled) {
-            FactionsMod.dynmap.updateFaction(this, Faction.get(this.name));
-        }
 
         return member;
     }
@@ -156,13 +141,11 @@ public class Faction {
     }
 
     public void removeAllClaims() {
+        RemoveAllClaimsEvent.run(this);
+
         new Query("DELETE FROM Claim WHERE faction = ?;")
             .set(name)
             .executeUpdate();
-
-        if (FactionsMod.dynmapEnabled) {
-            FactionsMod.dynmap.removeAll(this);
-        }
     }
 
     public Claim addClaim(int x, int z, String level) {
@@ -180,25 +163,14 @@ public class Faction {
     public Home setHome(double x, double y, double z, float yaw, float pitch, String level) {
         Home home = Home.set(name, x, y, z, yaw, pitch, level);
 
-        if (FactionsMod.dynmapEnabled) {
-            FactionsMod.dynmap.setHome(this, home);
-        }
-
         return home;
     }
 
     public void remove() {
-        if (FactionsMod.dynmapEnabled) {
-            FactionsMod.dynmap.removeHome(this);
-            FactionsMod.dynmap.removeAll(this);
-        }
-
-        List<ServerPlayerEntity> players = this.getMembers().stream().map(member -> FactionsMod.playerManager.getPlayer(member.uuid)).toList();
+        RemoveFactionEvent.run(this);
 
         new Query("DELETE FROM Faction WHERE name = ?;")
             .set(name)
             .executeUpdate();
-
-        FactionEvents.updatePlayerList(players);
     }
 }

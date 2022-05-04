@@ -32,10 +32,10 @@ public class AdminCommand {
     }
     
     public static int reload(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        if (FactionsMod.dynmapEnabled) {
+        try {
             FactionsMod.dynmap.reloadAll();
             new Message("Reloaded dynmap marker").send(context.getSource().getPlayer(), false);
-        } else {
+        } catch (java.lang.NoClassDefFoundError e) {
             new Message("Dynmap not found").fail().send(context.getSource().getPlayer(), false);
         }
 

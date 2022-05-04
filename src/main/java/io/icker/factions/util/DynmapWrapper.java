@@ -1,5 +1,7 @@
 package io.icker.factions.util;
 
+import io.icker.factions.FactionsMod;
+import io.icker.factions.api.*;
 import io.icker.factions.database.Home;
 import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.DynmapCommonAPI;
@@ -35,12 +37,40 @@ public class DynmapWrapper {
         generateMarkers();
       }
     });
+
+    RemoveClaimEvent.register(this::removeClaim);
+    AddClaimEvent.register(this::addClaim);
+    RemoveAllClaimsEvent.register(this::removeAll);
+    SetHomeEvent.register(this::setHome);
+    RemoveFactionEvent.register((faction -> {
+      removeHome(faction);
+      removeAll(faction);
+    }));
+
+    UpdateFactionEvent.register((faction) -> {
+      updateFaction(faction);
+    });
+
+    AddMemberEvent.register(member -> updateFaction(member.getFaction()));
+    RemoveMemberEvent.register(member -> updateFaction(member.getFaction()));
+    PowerChangeEvent.register(this::updateFaction);
+    PowerChangeEvent.register(this::updateFaction);
+
+    AllyAcceptEvent.register((ally) -> {
+      updateFaction(Faction.get(ally.source));
+      updateFaction(Faction.get(ally.target));
+    });
+    AllyRemoveEvent.register((ally) -> {
+      updateFaction(Faction.get(ally.source));
+      updateFaction(Faction.get(ally.target));
+    });
   }
 
   private void generateMarkers() {
     ArrayList<Faction> factions = Faction.all();
     for (Faction faction : factions) {
       ArrayList<Claim> claims = faction.getClaims();
+      FactionsMod.LOGGER.info(faction.name);
 
       if (faction.getHome() != null) {
         Home home = faction.getHome();
@@ -102,16 +132,16 @@ public class DynmapWrapper {
     marker.deleteMarker();
   }
 
-  public void updateFaction(Faction oldFaction, Faction newFaction) {
-    ArrayList<Claim> claims = newFaction.getClaims();
+  public void updateFaction(Faction faction) {
+    ArrayList<Claim> claims = faction.getClaims();
 
     for (Claim claim : claims) {
-      String areaMarkerId = newFaction.name + "-" + claim.x + claim.z;
+      String areaMarkerId = faction.name + "-" + claim.x + claim.z;
       AreaMarker marker = markerSet.findAreaMarker(areaMarkerId);
 
-      marker.setFillStyle(marker.getFillOpacity(), newFaction.color.getColorValue());
-      marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(), newFaction.color.getColorValue());
-      marker.setDescription(getInfo(newFaction));
+      marker.setFillStyle(marker.getFillOpacity(), faction.color.getColorValue());
+      marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(), faction.color.getColorValue());
+      marker.setDescription(getInfo(faction));
     }
   }
 
