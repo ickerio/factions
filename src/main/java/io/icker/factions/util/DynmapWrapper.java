@@ -70,7 +70,6 @@ public class DynmapWrapper {
     ArrayList<Faction> factions = Faction.all();
     for (Faction faction : factions) {
       ArrayList<Claim> claims = faction.getClaims();
-      FactionsMod.LOGGER.info(faction.name);
 
       if (faction.getHome() != null) {
         Home home = faction.getHome();
