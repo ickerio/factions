@@ -127,7 +127,7 @@ public class PlayerInteractEvents {
     }
 
     public static void onMove(ServerPlayerEntity player) {
-        if (PlayerConfig.get(player.getUuid()).currentZoneMessage && Config.ZONE_MESSAGE) {
+        if (Config.ZONE_MESSAGE && PlayerConfig.get(player.getUuid()).currentZoneMessage) {
             ServerWorld world = player.getWorld();
             String dimension = world.getRegistryKey().getValue().toString();
 
