@@ -2,7 +2,6 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.database.PlayerConfig.ChatOption;
 import io.icker.factions.util.Message;
@@ -23,9 +22,9 @@ public class ChatCommand {
     }
 
     private static int set(ServerCommandSource source, ChatOption option) throws CommandSyntaxException {
-		ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayer();
         PlayerConfig.get(player.getUuid()).setChat(option);
-        
+
         new Message("Successfully updated your chat preference").send(player, false);
         return 1;
     }

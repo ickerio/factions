@@ -12,39 +12,39 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
 public class KickMemberCommand implements Command<ServerCommandSource> {
-	@Override
-	public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
+    @Override
+    public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
-		ServerCommandSource source = context.getSource();
-		ServerPlayerEntity player = source.getPlayer();
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
 
-		if (target.getUuid().equals(player.getUuid())) {
-			new Message("You cannot kick yourself").format(Formatting.RED).send(player, false);
+        if (target.getUuid().equals(player.getUuid())) {
+            new Message("You cannot kick yourself").format(Formatting.RED).send(player, false);
 
-			return 0;
-		}
+            return 0;
+        }
 
-		Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = Member.get(player.getUuid()).getFaction();
 
-		for(Member member : faction.getMembers())
-			if (member.uuid.equals(target.getUuid())) {
+        for (Member member : faction.getMembers())
+            if (member.uuid.equals(target.getUuid())) {
 
-				if (Member.get(player.getUuid()).getRank() == Member.Rank.CO_OWNER && (member.getRank() == Member.Rank.CO_OWNER || member.getRank() == Member.Rank.OWNER)) {
-					new Message("You can only kick members with a lower rank than yours").format(Formatting.RED).send(player, false);
+                if (Member.get(player.getUuid()).getRank() == Member.Rank.CO_OWNER && (member.getRank() == Member.Rank.CO_OWNER || member.getRank() == Member.Rank.OWNER)) {
+                    new Message("You can only kick members with a lower rank than yours").format(Formatting.RED).send(player, false);
 
-					return 0;
-				}
+                    return 0;
+                }
 
-				member.remove();
-				context.getSource().getServer().getPlayerManager().sendCommandTree(player);
-				new Message("Kicked " + target.getName().getString()).send(player, false);
+                member.remove();
+                context.getSource().getServer().getPlayerManager().sendCommandTree(player);
+                new Message("Kicked " + target.getName().getString()).send(player, false);
 
-				return 1;
-			}
+                return 1;
+            }
 
-		new Message("That player is not a member of your faction");
+        new Message("That player is not a member of your faction");
 
-		return 0;
-	}
+        return 0;
+    }
 }

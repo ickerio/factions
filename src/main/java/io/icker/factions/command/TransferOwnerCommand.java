@@ -12,36 +12,36 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
 public class TransferOwnerCommand implements Command<ServerCommandSource> {
-	@Override
-	public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
+    @Override
+    public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
-		ServerCommandSource source = context.getSource();
-		ServerPlayerEntity player = source.getPlayer();
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
 
-		if (target.getUuid().equals(player.getUuid())) {
-			new Message("You cannot transfer ownership to yourself").format(Formatting.RED).send(player, false);
+        if (target.getUuid().equals(player.getUuid())) {
+            new Message("You cannot transfer ownership to yourself").format(Formatting.RED).send(player, false);
 
-			return 0;
-		}
+            return 0;
+        }
 
-		Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = Member.get(player.getUuid()).getFaction();
 
-		for (Member member : faction.getMembers())
-			if (member.uuid.equals(target.getUuid())) {
+        for (Member member : faction.getMembers())
+            if (member.uuid.equals(target.getUuid())) {
 
-				member.updateRank(Member.Rank.OWNER);
-				Member.get(player.getUuid()).updateRank(Member.Rank.CO_OWNER);
+                member.updateRank(Member.Rank.OWNER);
+                Member.get(player.getUuid()).updateRank(Member.Rank.CO_OWNER);
 
-				context.getSource().getServer().getPlayerManager().sendCommandTree(player);
-				context.getSource().getServer().getPlayerManager().sendCommandTree(target);
+                context.getSource().getServer().getPlayerManager().sendCommandTree(player);
+                context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-				new Message("Transferred ownership to " + target.getName().getString()).send(player, false);
-				return 1;
-			}
+                new Message("Transferred ownership to " + target.getName().getString()).send(player, false);
+                return 1;
+            }
 
-		new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
+        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
 
-		return 0;
-	}
+        return 0;
+    }
 }

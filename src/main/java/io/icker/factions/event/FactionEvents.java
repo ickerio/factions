@@ -28,7 +28,8 @@ public class FactionEvents {
         Faction faction = member.getFaction();
 
         int adjusted = adjustPower(faction, Config.TICKS_FOR_POWER_REWARD);
-        if (adjusted != 0) new Message("%s gained %d power from surviving", player.getName().asString(), adjusted).send(faction);
+        if (adjusted != 0)
+            new Message("%s gained %d power from surviving", player.getName().asString(), adjusted).send(faction);
     }
 
     public static int adjustPower(Faction faction, int adjustment) {

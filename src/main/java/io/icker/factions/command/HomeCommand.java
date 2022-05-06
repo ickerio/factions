@@ -3,7 +3,6 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
@@ -43,9 +42,9 @@ public class HomeCommand {
         DamageTracker tracker = player.getDamageTracker();
         if (tracker.getMostRecentDamage() == null || tracker.getTimeSinceLastAttack() > Config.SAFE_TICKS_TO_WARP) {
             player.teleport(
-                world,
-                home.x, home.y, home.z,
-                home.yaw, home.pitch
+                    world,
+                    home.x, home.y, home.z,
+                    home.yaw, home.pitch
             );
             new Message("Warped to faction home").send(player, false);
         } else {
@@ -66,9 +65,9 @@ public class HomeCommand {
         }
 
         Home home = faction.setHome(
-            player.getX(), player.getY(), player.getZ(),
-            player.getHeadYaw(), player.getPitch(),
-            player.getWorld().getRegistryKey().getValue().toString()
+                player.getX(), player.getY(), player.getZ(),
+                player.getHeadYaw(), player.getPitch(),
+                player.getWorld().getRegistryKey().getValue().toString()
         );
 
         new Message("%s set home to %.2f, %.2f, %.2f", player.getName().asString(), home.x, home.y, home.z).send(faction);

@@ -1,13 +1,12 @@
 package io.icker.factions.database;
 
-import io.icker.factions.FactionsMod;
-import io.icker.factions.api.*;
-import io.icker.factions.event.FactionEvents;
-import net.minecraft.server.network.ServerPlayerEntity;
+import io.icker.factions.api.PowerChangeEvent;
+import io.icker.factions.api.RemoveAllClaimsEvent;
+import io.icker.factions.api.RemoveFactionEvent;
+import io.icker.factions.api.UpdateFactionEvent;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class Faction {
@@ -19,8 +18,8 @@ public class Faction {
 
     public static Faction get(String name) {
         Query query = new Query("SELECT * FROM Faction WHERE name = ?;")
-            .set(name)
-            .executeQuery();
+                .set(name)
+                .executeQuery();
 
         if (!query.success) return null;
         return new Faction(name, query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power"));
@@ -28,8 +27,8 @@ public class Faction {
 
     public static Faction add(String name, String description, String color, boolean open, int power) {
         Query query = new Query("INSERT INTO Faction (name, description, color, open, power) VALUES (?, ?, ?, ?, ?);")
-            .set(name, description, color, open, power)
-            .executeUpdate();
+                .set(name, description, color, open, power)
+                .executeUpdate();
 
         if (!query.success) return null;
         return new Faction(name, description, Formatting.byName(color), open, power);
@@ -37,7 +36,7 @@ public class Faction {
 
     public static ArrayList<Faction> all() {
         Query query = new Query("SELECT * FROM Faction;")
-            .executeQuery();
+                .executeQuery();
 
         ArrayList<Faction> factions = new ArrayList<Faction>();
         if (!query.success) return factions;
@@ -50,8 +49,8 @@ public class Faction {
 
     public static ArrayList<Faction> allBut(String faction) {
         Query query = new Query("SELECT * FROM Faction WHERE NOT name = ?;")
-            .set(faction)
-            .executeQuery();
+                .set(faction)
+                .executeQuery();
 
         ArrayList<Faction> factions = new ArrayList<Faction>();
         if (!query.success) return factions;
@@ -72,38 +71,38 @@ public class Faction {
 
     public void setDescription(String description) {
         new Query("UPDATE Faction SET description = ? WHERE name = ?;")
-            .set(description, name)
-            .executeUpdate();
+                .set(description, name)
+                .executeUpdate();
 
         UpdateFactionEvent.run(Faction.get(this.name));
     }
 
     public void setColor(Formatting color) {
         new Query("UPDATE Faction SET color = ? WHERE name = ?;")
-            .set(color.getName(), name)
-            .executeUpdate();
+                .set(color.getName(), name)
+                .executeUpdate();
 
         UpdateFactionEvent.run(Faction.get(this.name));
     }
 
     public void setOpen(boolean open) {
         new Query("UPDATE Faction SET open = ? WHERE name = ?;")
-            .set(open, name)
-            .executeUpdate();
+                .set(open, name)
+                .executeUpdate();
     }
 
     public void setPower(int power) {
         new Query("UPDATE Faction SET power = ? WHERE name = ?;")
-            .set(power, name)
-            .executeUpdate();
+                .set(power, name)
+                .executeUpdate();
 
         PowerChangeEvent.run(this);
     }
 
     public ArrayList<Member> getMembers() {
         Query query = new Query("SELECT uuid, rank FROM Member WHERE faction = ?;")
-            .set(name)
-            .executeQuery();
+                .set(name)
+                .executeQuery();
 
         ArrayList<Member> members = new ArrayList<Member>();
         if (!query.success) return members;
@@ -128,8 +127,8 @@ public class Faction {
 
     public ArrayList<Claim> getClaims() {
         Query query = new Query("SELECT * FROM Claim WHERE faction = ?;")
-            .set(name)
-            .executeQuery();
+                .set(name)
+                .executeQuery();
 
         ArrayList<Claim> claims = new ArrayList<Claim>();
         if (!query.success) return claims;
@@ -144,8 +143,8 @@ public class Faction {
         RemoveAllClaimsEvent.run(this);
 
         new Query("DELETE FROM Claim WHERE faction = ?;")
-            .set(name)
-            .executeUpdate();
+                .set(name)
+                .executeUpdate();
     }
 
     public Claim addClaim(int x, int z, String level) {
@@ -170,7 +169,7 @@ public class Faction {
         RemoveFactionEvent.run(this);
 
         new Query("DELETE FROM Faction WHERE name = ?;")
-            .set(name)
-            .executeUpdate();
+                .set(name)
+                .executeUpdate();
     }
 }

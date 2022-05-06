@@ -1,14 +1,13 @@
 package io.icker.factions.config;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import io.icker.factions.FactionsMod;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import io.icker.factions.FactionsMod;
 
 public final class FileParser extends Parser {
     protected File configFile;

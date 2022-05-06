@@ -11,90 +11,90 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
 public class RankCommand {
-	public static int promote(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
+    public static int promote(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
-		ServerCommandSource source = context.getSource();
-		ServerPlayerEntity player = source.getPlayer();
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
 
-		if (target.getUuid().equals(player.getUuid())) {
-			new Message("You cannot promote yourself").format(Formatting.RED).send(player, false);
+        if (target.getUuid().equals(player.getUuid())) {
+            new Message("You cannot promote yourself").format(Formatting.RED).send(player, false);
 
-			return 0;
-		}
+            return 0;
+        }
 
-		Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = Member.get(player.getUuid()).getFaction();
 
-		for (Member member : faction.getMembers())
-			if (member.uuid.equals(target.getUuid())) {
+        for (Member member : faction.getMembers())
+            if (member.uuid.equals(target.getUuid())) {
 
-				switch (member.getRank()) {
-					case CIVILIAN -> member.updateRank(Member.Rank.OFFICER);
-					case OFFICER -> member.updateRank(Member.Rank.CO_OWNER);
-					case CO_OWNER -> {
-						new Message("You cannot promote a member to owner").format(Formatting.RED).send(player, false);
-						return 0;
-					}
-					case OWNER -> {
-						new Message("You cannot promote the owner").format(Formatting.RED).send(player, false);
-						return 0;
-					}
-				}
+                switch (member.getRank()) {
+                    case CIVILIAN -> member.updateRank(Member.Rank.OFFICER);
+                    case OFFICER -> member.updateRank(Member.Rank.CO_OWNER);
+                    case CO_OWNER -> {
+                        new Message("You cannot promote a member to owner").format(Formatting.RED).send(player, false);
+                        return 0;
+                    }
+                    case OWNER -> {
+                        new Message("You cannot promote the owner").format(Formatting.RED).send(player, false);
+                        return 0;
+                    }
+                }
 
-				context.getSource().getServer().getPlayerManager().sendCommandTree(target);
+                context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-				new Message("Promoted " + target.getName().getString() + " to " + Member.get(target.getUuid()).getRank().name().toLowerCase().replace("_", " ")).send(player, false);
-				return 1;
-			}
+                new Message("Promoted " + target.getName().getString() + " to " + Member.get(target.getUuid()).getRank().name().toLowerCase().replace("_", " ")).send(player, false);
+                return 1;
+            }
 
-		new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
-		return 0;
-	}
+        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
+        return 0;
+    }
 
-	public static int demote(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
+    public static int demote(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
-		ServerCommandSource source = context.getSource();
-		ServerPlayerEntity player = source.getPlayer();
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
 
-		if (target.getUuid().equals(player.getUuid())) {
-			new Message("You cannot demote yourself").format(Formatting.RED).send(player, false);
+        if (target.getUuid().equals(player.getUuid())) {
+            new Message("You cannot demote yourself").format(Formatting.RED).send(player, false);
 
-			return 0;
-		}
+            return 0;
+        }
 
-		Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = Member.get(player.getUuid()).getFaction();
 
-		for (Member member : faction.getMembers())
-			if (member.uuid.equals(target.getUuid())) {
+        for (Member member : faction.getMembers())
+            if (member.uuid.equals(target.getUuid())) {
 
-				switch (member.getRank()) {
-					case CIVILIAN -> {
-						new Message("You cannot demote a civilian").format(Formatting.RED).send(player, false);
-						return 0;
-					}
-					case OFFICER -> member.updateRank(Member.Rank.CIVILIAN);
-					case CO_OWNER -> {
-						if (Member.get(player.getUuid()).getRank() == Member.Rank.CO_OWNER) {
-							new Message("You cannot demote a fellow co-owner").format(Formatting.RED).send(player, false);
-							return 0;
-						}
+                switch (member.getRank()) {
+                    case CIVILIAN -> {
+                        new Message("You cannot demote a civilian").format(Formatting.RED).send(player, false);
+                        return 0;
+                    }
+                    case OFFICER -> member.updateRank(Member.Rank.CIVILIAN);
+                    case CO_OWNER -> {
+                        if (Member.get(player.getUuid()).getRank() == Member.Rank.CO_OWNER) {
+                            new Message("You cannot demote a fellow co-owner").format(Formatting.RED).send(player, false);
+                            return 0;
+                        }
 
-						member.updateRank(Member.Rank.OFFICER);
-					}
-					case OWNER -> {
-						new Message("You cannot demote the owner").format(Formatting.RED).send(player, false);
-						return 0;
-					}
-				}
+                        member.updateRank(Member.Rank.OFFICER);
+                    }
+                    case OWNER -> {
+                        new Message("You cannot demote the owner").format(Formatting.RED).send(player, false);
+                        return 0;
+                    }
+                }
 
-				context.getSource().getServer().getPlayerManager().sendCommandTree(target);
+                context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-				new Message("Demoted " + target.getName().getString() + " to " + Member.get(target.getUuid()).getRank().name().toLowerCase().replace("_", " ")).send(player, false);
-				return 1;
-			}
+                new Message("Demoted " + target.getName().getString() + " to " + Member.get(target.getUuid()).getRank().name().toLowerCase().replace("_", " ")).send(player, false);
+                return 1;
+            }
 
-		new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
-		return 0;
-	}
+        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
+        return 0;
+    }
 }

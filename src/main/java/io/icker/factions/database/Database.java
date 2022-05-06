@@ -70,23 +70,23 @@ public class Database {
                         FOREIGN KEY(target) REFERENCES Faction(name) ON DELETE CASCADE
                     );
                     """)
-                .executeUpdate();
+                    .executeUpdate();
 
             Query query = new Query("SELECT EXISTS(SELECT * FROM INFORMATION_SCHEMA.columns WHERE table_name = 'PLAYERCONFIG' and column_name = 'ZONE');")
-                .executeQuery();
-            
+                    .executeQuery();
+
             if (!query.exists()) {
                 new Query("""
                         ALTER TABLE PlayerConfig ADD zone BOOLEAN;
                         UPDATE PlayerConfig SET zone = 0;
                         """)
-                    .executeUpdate();
-                
+                        .executeUpdate();
+
                 FactionsMod.LOGGER.info("Successfully migrated to newer version");
             }
             FactionsMod.LOGGER.info("Successfully connected to database");
         } catch (SQLException e) {
-            e.printStackTrace();    
+            e.printStackTrace();
             FactionsMod.LOGGER.error("Error connecting to and setting up database");
         }
     }

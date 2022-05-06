@@ -10,12 +10,12 @@ import java.util.UUID;
 public class Member {
     public final UUID uuid;
     private final String factionName;
-    private Rank rank;
+    private final Rank rank;
 
     public static Member get(UUID uuid) {
         Query query = new Query("SELECT faction, rank FROM Member WHERE uuid = ?;")
-            .set(uuid)
-            .executeQuery();
+                .set(uuid)
+                .executeQuery();
 
         if (!query.success) return null;
         return new Member(uuid, query.getString("faction"), Rank.valueOf(query.getString("rank").toUpperCase()));
@@ -58,16 +58,16 @@ public class Member {
 
     public void updateRank(Rank rank) {
         new Query("UPDATE Member SET rank = ? WHERE uuid = ?;")
-        .set(rank.name().toLowerCase(), uuid)
-        .executeUpdate();
+                .set(rank.name().toLowerCase(), uuid)
+                .executeUpdate();
     }
 
     public void remove() {
         Faction old = Faction.get(factionName);
 
         new Query("DELETE FROM Member WHERE uuid = ?;")
-            .set(uuid)
-            .executeUpdate();
+                .set(uuid)
+                .executeUpdate();
 
         RemoveMemberEvent.run(this);
     }
@@ -76,6 +76,6 @@ public class Member {
         OWNER,
         CO_OWNER,
         OFFICER,
-        CIVILIAN;
+        CIVILIAN
     }
 }
