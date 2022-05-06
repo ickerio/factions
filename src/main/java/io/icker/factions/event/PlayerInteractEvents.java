@@ -1,15 +1,16 @@
 package io.icker.factions.event;
 
 import io.icker.factions.config.Config;
-import io.icker.factions.database.Claim;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
-import io.icker.factions.database.Ally;
-import io.icker.factions.database.PlayerConfig;
-import io.icker.factions.util.Message;
+import io.icker.factions.database.*;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
-
+import io.icker.factions.util.Message;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.BucketItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
@@ -17,16 +18,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import java.util.UUID;
-import net.minecraft.world.World;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.RaycastContext.FluidHandling;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Item;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.world.World;
+
+import java.util.UUID;
 
 public class PlayerInteractEvents {
     public static boolean preventInteract(ServerPlayerEntity player, World world, BlockHitResult result) {
@@ -34,12 +30,12 @@ public class PlayerInteractEvents {
         BlockPos placePos = pos.add(result.getSide().getVector());
         return !actionPermitted(pos, world, player) || !actionPermitted(placePos, world, player);
     }
-    
+
     public static boolean preventUseItem(ServerPlayerEntity player, World world, ItemStack stack) {
         Item item = stack.getItem();
 
         if (item instanceof BucketItem) {
-            Fluid fluid = ((BucketItemMixin)item).getFluid();
+            Fluid fluid = ((BucketItemMixin) item).getFluid();
             FluidHandling handling = fluid == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
 
             BlockHitResult result = ItemMixin.invokeRaycast(world, player, handling);
@@ -61,13 +57,13 @@ public class PlayerInteractEvents {
         Member targetMember = Member.get(target);
 
         if (playerMember == null || targetMember == null) return false;
-        return ((playerMember.getFaction().name == targetMember.getFaction().name  || Ally.checkIfAlly(playerMember.getFaction().name, targetMember.getFaction().name))) && !Config.FRIENDLY_FIRE;
+        return ((playerMember.getFaction().name == targetMember.getFaction().name || Ally.checkIfAlly(playerMember.getFaction().name, targetMember.getFaction().name))) && !Config.FRIENDLY_FIRE;
     }
 
     public static void warnPlayer(ServerPlayerEntity target, String action) {
         new Message("Cannot %s in this claim", action)
-            .fail()
-            .send(target, true);
+                .fail()
+                .send(target, true);
     }
 
     public static boolean actionPermitted(BlockPos pos, World world, ServerPlayerEntity player) {
@@ -112,7 +108,7 @@ public class PlayerInteractEvents {
         }
 
         if (!player.isUsingItem()) {
-           player.playerScreenHandler.syncState();
+            player.playerScreenHandler.syncState();
         }
     }
 

@@ -1,16 +1,16 @@
 package io.icker.factions.command;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.icker.factions.FactionsMod;
+import io.icker.factions.database.Faction;
+import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.util.Message;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.PlayerConfig;
-import io.icker.factions.FactionsMod;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import net.minecraft.server.PlayerManager;
 
 public class AdminCommand {
     public static int bypass(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -22,15 +22,15 @@ public class AdminCommand {
         config.setBypass(bypass);
 
         new Message("Successfully toggled claim bypass")
-            .filler("·")
-            .add(
-                new Message(bypass ? "ON" : "OFF")
-                    .format(bypass ? Formatting.GREEN : Formatting.RED))
-            .send(player, false);
+                .filler("·")
+                .add(
+                        new Message(bypass ? "ON" : "OFF")
+                                .format(bypass ? Formatting.GREEN : Formatting.RED))
+                .send(player, false);
 
         return 1;
     }
-    
+
     public static int reload(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         try {
             FactionsMod.dynmap.reloadAll();
@@ -55,7 +55,7 @@ public class AdminCommand {
 
         PlayerManager manager = source.getServer().getPlayerManager();
         for (ServerPlayerEntity p : manager.getPlayerList()) {
-           manager.sendCommandTree(p);
+            manager.sendCommandTree(p);
         }
         return 1;
     }

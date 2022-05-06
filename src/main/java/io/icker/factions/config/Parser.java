@@ -1,19 +1,16 @@
 package io.icker.factions.config;
 
-import java.io.IOException;
+import com.google.gson.*;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import java.io.IOException;
 
 public abstract class Parser {
     protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     protected JsonObject object;
 
-    protected void update() throws IOException {}
+    protected void update() throws IOException {
+    }
+
     protected void create(String key, JsonElement fallback) throws IOException {
         this.object.add(key, fallback);
     }

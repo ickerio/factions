@@ -2,7 +2,6 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Claim;
 import io.icker.factions.database.Faction;
@@ -21,122 +20,122 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ClaimCommand {
-	public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerCommandSource source = context.getSource();
-		ServerPlayerEntity player = source.getPlayer();
+    public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
 
-		ArrayList<Claim> claims = Member.get(player.getUuid()).getFaction().getClaims();
-		int count = claims.size();
+        ArrayList<Claim> claims = Member.get(player.getUuid()).getFaction().getClaims();
+        int count = claims.size();
 
-		new Message("You have ")
-			.add(new Message(String.valueOf(count)).format(Formatting.YELLOW))
-			.add(" claim%s", count == 1 ? "" : "s")
-			.send(source.getPlayer(), false);
+        new Message("You have ")
+                .add(new Message(String.valueOf(count)).format(Formatting.YELLOW))
+                .add(" claim%s", count == 1 ? "" : "s")
+                .send(source.getPlayer(), false);
 
-		if (count == 0) return 1;
+        if (count == 0) return 1;
 
-		HashMap<String, ArrayList<Claim>> claimsMap = new HashMap<String, ArrayList<Claim>>();
+        HashMap<String, ArrayList<Claim>> claimsMap = new HashMap<String, ArrayList<Claim>>();
 
-		claims.forEach(claim -> {
-			claimsMap.putIfAbsent(claim.level, new ArrayList<Claim>());
-			claimsMap.get(claim.level).add(claim);
-		});
+        claims.forEach(claim -> {
+            claimsMap.putIfAbsent(claim.level, new ArrayList<Claim>());
+            claimsMap.get(claim.level).add(claim);
+        });
 
-		Message claimText = new Message("");
-		claimsMap.forEach((level, array) -> {
-			level = Pattern.compile("_([a-z])")
-					.matcher(level.split(":", 2)[1])
-					.replaceAll(m -> " " + m.group(1).toUpperCase());
-			level = level.substring(0, 1).toUpperCase() +
-					level.substring(1);
-			claimText.add("\n");
-			claimText.add(new Message(level).format(Formatting.GRAY));
-			claimText.filler("»");
-			claimText.add(array.stream()
-				.map(claim -> String.format("(%d,%d)", claim.x, claim.z))
-				.collect(Collectors.joining(", ")));
-		});
+        Message claimText = new Message("");
+        claimsMap.forEach((level, array) -> {
+            level = Pattern.compile("_([a-z])")
+                    .matcher(level.split(":", 2)[1])
+                    .replaceAll(m -> " " + m.group(1).toUpperCase());
+            level = level.substring(0, 1).toUpperCase() +
+                    level.substring(1);
+            claimText.add("\n");
+            claimText.add(new Message(level).format(Formatting.GRAY));
+            claimText.filler("»");
+            claimText.add(array.stream()
+                    .map(claim -> String.format("(%d,%d)", claim.x, claim.z))
+                    .collect(Collectors.joining(", ")));
+        });
 
-		claimText.format(Formatting.ITALIC).send(source.getPlayer(), false);
-		return 1;
-	}
+        claimText.format(Formatting.ITALIC).send(source.getPlayer(), false);
+        return 1;
+    }
 
-	public static int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerCommandSource source = context.getSource();
+    public static int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
 
-		ServerPlayerEntity player = source.getPlayer();
-		ServerWorld world = player.getWorld();
-		
-		ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
-		String dimension = world.getRegistryKey().getValue().toString();
+        ServerPlayerEntity player = source.getPlayer();
+        ServerWorld world = player.getWorld();
 
-		Member member = Member.get(player.getUuid());
-		Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
-		
-		if (existingClaim == null) {
-			Faction faction = member.getFaction();
-			faction.addClaim(chunkPos.x, chunkPos.z, dimension);
-			new Message("%s claimed chunk (%d, %d)", player.getName().asString(), chunkPos.x, chunkPos.z).send(faction);
-			return 1;
-		}
-		
-		String owner = existingClaim.getFaction().name == member.getFaction().name ? "Your" : "Another";
-		new Message(owner + " faction already owns this chunk").fail().send(player, false);
-		return 0;
-	}
+        ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
+        String dimension = world.getRegistryKey().getValue().toString();
 
-	public static int addCheck(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerPlayerEntity player = context.getSource().getPlayer();
-		Faction faction = Member.get(player.getUuid()).getFaction();
+        Member member = Member.get(player.getUuid());
+        Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
-		int requiredPower = (faction.getClaims().size() + 1) * Config.CLAIM_WEIGHT;
-		int maxPower = faction.getMembers().size() * Config.MEMBER_POWER + Config.BASE_POWER;
-		
-		if (maxPower >= requiredPower) {
-			return add(context);
-		}
-		
-		new Message("Not enough faction power to claim chunk.").fail().send(player, false);
-		return 0;
-	}
+        if (existingClaim == null) {
+            Faction faction = member.getFaction();
+            faction.addClaim(chunkPos.x, chunkPos.z, dimension);
+            new Message("%s claimed chunk (%d, %d)", player.getName().asString(), chunkPos.x, chunkPos.z).send(faction);
+            return 1;
+        }
 
-	public static int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerCommandSource source = context.getSource();
+        String owner = existingClaim.getFaction().name == member.getFaction().name ? "Your" : "Another";
+        new Message(owner + " faction already owns this chunk").fail().send(player, false);
+        return 0;
+    }
 
-		ServerPlayerEntity player = source.getPlayer();
-		ServerWorld world = player.getWorld();
+    public static int addCheck(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        Faction faction = Member.get(player.getUuid()).getFaction();
 
-		ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
-		String dimension = world.getRegistryKey().getValue().toString();
+        int requiredPower = (faction.getClaims().size() + 1) * Config.CLAIM_WEIGHT;
+        int maxPower = faction.getMembers().size() * Config.MEMBER_POWER + Config.BASE_POWER;
 
-		Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+        if (maxPower >= requiredPower) {
+            return add(context);
+        }
 
-		if (existingClaim == null) {
-			new Message("Cannot remove a claim on an unclaimed chunk").fail().send(player, false);
-			return 0;
-		}
+        new Message("Not enough faction power to claim chunk.").fail().send(player, false);
+        return 0;
+    }
 
-		Faction faction = Member.get(player.getUuid()).getFaction();
-		PlayerConfig config = PlayerConfig.get(player.getUuid());
+    public static int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
 
-		if (existingClaim.getFaction().name != faction.name && !config.bypass) {
-			new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
-			return 0;
-		}
+        ServerPlayerEntity player = source.getPlayer();
+        ServerWorld world = player.getWorld();
 
-		existingClaim.remove();
-		new Message("%s removed claim at chunk (%d, %d)", player.getName().asString(), existingClaim.x, existingClaim.z).send(faction);
-		return 1;
-	}
+        ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
+        String dimension = world.getRegistryKey().getValue().toString();
 
-	public static int removeAll(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerCommandSource source = context.getSource();
-		ServerPlayerEntity player = source.getPlayer();
+        Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
-		Faction faction = Member.get(player.getUuid()).getFaction();
+        if (existingClaim == null) {
+            new Message("Cannot remove a claim on an unclaimed chunk").fail().send(player, false);
+            return 0;
+        }
 
-		faction.removeAllClaims();
-		new Message("%s removed all claims", player.getName().asString()).send(faction);
-		return 1;
-	}
+        Faction faction = Member.get(player.getUuid()).getFaction();
+        PlayerConfig config = PlayerConfig.get(player.getUuid());
+
+        if (existingClaim.getFaction().name != faction.name && !config.bypass) {
+            new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
+            return 0;
+        }
+
+        existingClaim.remove();
+        new Message("%s removed claim at chunk (%d, %d)", player.getName().asString(), existingClaim.x, existingClaim.z).send(faction);
+        return 1;
+    }
+
+    public static int removeAll(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        Faction faction = Member.get(player.getUuid()).getFaction();
+
+        faction.removeAllClaims();
+        new Message("%s removed all claims", player.getName().asString()).send(faction);
+        return 1;
+    }
 }

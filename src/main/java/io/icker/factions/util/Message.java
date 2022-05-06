@@ -7,7 +7,10 @@ import io.icker.factions.database.PlayerConfig.ChatOption;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.*;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 
 public class Message {
@@ -87,15 +90,15 @@ public class Message {
 
     public Message prependFaction(Faction faction) {
         text = new Message("")
-            .add(new Message(faction.color.toString() + Formatting.BOLD + faction.name).hover(faction.description))
-            .filler("»")
-            .raw()
-            .append(text);
+                .add(new Message(faction.color.toString() + Formatting.BOLD + faction.name).hover(faction.description))
+                .filler("»")
+                .raw()
+                .append(text);
         return this;
     }
 
     public Message filler(String symbol) {
-        text.append(new LiteralText(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol +  Formatting.RESET +  " "));
+        text.append(new LiteralText(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol + Formatting.RESET + " "));
         return this;
     }
 

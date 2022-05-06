@@ -1,11 +1,11 @@
 package io.icker.factions.util;
 
-import io.icker.factions.database.Faction;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.server.command.ServerCommandSource;
-import io.icker.factions.database.Ally;
-import io.icker.factions.database.Member;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.icker.factions.database.Ally;
+import io.icker.factions.database.Faction;
+import io.icker.factions.database.Member;
+import net.minecraft.server.command.ServerCommandSource;
 
 public class FactionSuggestions {
     public static String[] general(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

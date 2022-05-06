@@ -18,66 +18,66 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class InviteCommand {
-	public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerCommandSource source = context.getSource();
+    public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
 
-		ArrayList<Invite> invites = Member.get(source.getPlayer().getUuid()).getFaction().getInvites();
-		int count = invites.size();
+        ArrayList<Invite> invites = Member.get(source.getPlayer().getUuid()).getFaction().getInvites();
+        int count = invites.size();
 
-		new Message("You have ")
-			.add(new Message(String.valueOf(count)).format(Formatting.YELLOW))
-			.add(" outgoing invite%s", count == 1 ? "" : "s")
-			.send(source.getPlayer(), false);
+        new Message("You have ")
+                .add(new Message(String.valueOf(count)).format(Formatting.YELLOW))
+                .add(" outgoing invite%s", count == 1 ? "" : "s")
+                .send(source.getPlayer(), false);
 
-		if (count == 0) return 1;
+        if (count == 0) return 1;
 
-		UserCache cache = source.getServer().getUserCache();
-		String players = invites.stream()
-			.map(invite -> cache.getByUuid(invite.playerId).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-			.collect(Collectors.joining(", "));
+        UserCache cache = source.getServer().getUserCache();
+        String players = invites.stream()
+                .map(invite -> cache.getByUuid(invite.playerId).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+                .collect(Collectors.joining(", "));
 
-		new Message(players).format(Formatting.ITALIC).send(source.getPlayer(), false);
-		return 1;
-	}
+        new Message(players).format(Formatting.ITALIC).send(source.getPlayer(), false);
+        return 1;
+    }
 
-	public static int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
+    public static int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
-		ServerCommandSource source = context.getSource();
-		ServerPlayerEntity player = source.getPlayer();
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
 
-		Faction faction = Member.get(source.getPlayer().getUuid()).getFaction();
-		Invite invite = Invite.get(target.getUuid(), faction.name);
-		if (invite != null) {
-			new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
-			return 0;
-		}
+        Faction faction = Member.get(source.getPlayer().getUuid()).getFaction();
+        Invite invite = Invite.get(target.getUuid(), faction.name);
+        if (invite != null) {
+            new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
+            return 0;
+        }
 
-		for (Member member : faction.getMembers())
-			if (member.uuid.equals(target.getUuid()))
-				new Message(target.getName().getString() + " is already in your faction").format(Formatting.RED).send(player, false);
+        for (Member member : faction.getMembers())
+            if (member.uuid.equals(target.getUuid()))
+                new Message(target.getName().getString() + " is already in your faction").format(Formatting.RED).send(player, false);
 
-		Invite.add(target.getUuid(), faction.name);
+        Invite.add(target.getUuid(), faction.name);
 
-		new Message(target.getName().getString() + " has been invited")
-			.send(faction);
-		new Message("You have been invited to join this faction").format(Formatting.YELLOW)
-			.hover("Click to join").click("/factions join " + faction.name)
-			.prependFaction(faction)
-			.send(target, false);
-		return 1;
-	}
+        new Message(target.getName().getString() + " has been invited")
+                .send(faction);
+        new Message("You have been invited to join this faction").format(Formatting.YELLOW)
+                .hover("Click to join").click("/factions join " + faction.name)
+                .prependFaction(faction)
+                .send(target, false);
+        return 1;
+    }
 
     public static int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
+        ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
-		ServerCommandSource source = context.getSource();
-		ServerPlayerEntity player = source.getPlayer();
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
 
-		Faction faction = Member.get(player.getUuid()).getFaction();
-		new Invite(target.getUuid(), faction.name).remove();
+        Faction faction = Member.get(player.getUuid()).getFaction();
+        new Invite(target.getUuid(), faction.name).remove();
 
-		new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);
-		return 1;
-	}
+        new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);
+        return 1;
+    }
 }

@@ -4,27 +4,25 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import io.icker.factions.config.Config;
+import io.icker.factions.database.Ally;
 import io.icker.factions.database.Faction;
 import io.icker.factions.database.Member;
-import io.icker.factions.database.Ally;
 import io.icker.factions.util.Message;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.UserCache;
+import net.minecraft.util.Util;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
-import net.minecraft.util.UserCache;
-
-public class InfoCommand  {
-	public static int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+public class InfoCommand {
+    public static int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
-        
+
         Member member = Member.get(player.getUuid());
         if (member == null) {
             new Message("Command can only be used whilst in a faction").fail().send(player, false);
@@ -35,11 +33,11 @@ public class InfoCommand  {
     }
 
     public static int any(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		String factionName = StringArgumentType.getString(context, "faction");
-        
+        String factionName = StringArgumentType.getString(context, "faction");
+
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
-        
+
         Faction faction = Faction.get(factionName);
         if (faction == null) {
             new Message("Faction does not exist").fail().send(player, false);
@@ -58,32 +56,32 @@ public class InfoCommand  {
         String allyText = allies.size() + (allies.size() != 1 ? " allies" : " ally");
 
         UserCache cache = player.getServer().getUserCache();
-		String membersList = members.stream()
-			.map(member -> cache.getByUuid(member.uuid).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-			.collect(Collectors.joining(", "));
+        String membersList = members.stream()
+                .map(member -> cache.getByUuid(member.uuid).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+                .collect(Collectors.joining(", "));
 
         String alliesList = allies.stream()
-			.map(ally -> ally.target)
-			.collect(Collectors.joining(", "));
+                .map(ally -> ally.target)
+                .collect(Collectors.joining(", "));
 
         int requiredPower = faction.getClaims().size() * Config.CLAIM_WEIGHT;
         int maxPower = members.size() * Config.MEMBER_POWER + Config.BASE_POWER;
 
         new Message("")
-            .add(
-                new Message(memberText)
-                .hover(membersList))
-            .filler("·")
-            .add(
-                new Message(allyText)
-                .hover(alliesList))
-            .filler("·")
-            .add(
-                new Message(Formatting.GREEN.toString() + faction.power + slash() + requiredPower + slash() + maxPower)
-                .hover("Current / Required / Max")
-            )
-            .prependFaction(faction)
-            .send(player, false);
+                .add(
+                        new Message(memberText)
+                                .hover(membersList))
+                .filler("·")
+                .add(
+                        new Message(allyText)
+                                .hover(alliesList))
+                .filler("·")
+                .add(
+                        new Message(Formatting.GREEN.toString() + faction.power + slash() + requiredPower + slash() + maxPower)
+                                .hover("Current / Required / Max")
+                )
+                .prependFaction(faction)
+                .send(player, false);
 
         return 1;
     }

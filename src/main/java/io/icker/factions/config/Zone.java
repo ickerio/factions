@@ -3,10 +3,10 @@ package io.icker.factions.config;
 import java.util.List;
 
 public class Zone {
-    public static enum Type {
+    public enum Type {
         DEFAULT,
         WILDERNESS,
-        ADMIN;
+        ADMIN
     }
 
     Type type;
@@ -27,7 +27,7 @@ public class Zone {
 
     public boolean matchDimension(String dimension) {
         boolean included = includedDimensions.contains("*") || includedDimensions.contains(dimension);
-        return excludedDimensions.contains(dimension) ? false : included;
+        return !excludedDimensions.contains(dimension) && included;
     }
 
     public boolean matchCoords(int xPos, int zPos) {

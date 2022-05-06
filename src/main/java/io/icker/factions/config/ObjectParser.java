@@ -1,9 +1,9 @@
 package io.icker.factions.config;
 
-import java.io.IOException;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import java.io.IOException;
 
 public final class ObjectParser extends Parser {
     protected Parser parent;

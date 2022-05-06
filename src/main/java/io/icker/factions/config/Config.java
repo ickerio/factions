@@ -12,7 +12,7 @@ public class Config {
     private static final String[] filePaths = {"factions/config.json", "config/factions.json"};
     private static final Integer version = 1;
 
-    public static enum HomeOptions {
+    public enum HomeOptions {
         ANYWHERE,
         CLAIMS,
         DISABLED
@@ -65,7 +65,7 @@ public class Config {
         //     try {
         //         if (!object.isJsonObject()) return;
         //         ObjectParser zoneParser = new ObjectParser(object.getAsJsonObject(), parser);
-                
+
         //         Type type = zoneParser.getEnum("type", Type.class, "DEFAULT");
         //         String message = zoneParser.getString("message", "No fail message set");
 

@@ -11,7 +11,7 @@ public class Query {
     private PreparedStatement statement;
     private ResultSet result;
 
-    private String query;
+    private final String query;
     private int paramIndex = 1;
     private boolean skippedNext = false;
 
@@ -21,58 +21,74 @@ public class Query {
         this.query = query;
         try {
             statement = Database.con.prepareStatement(query);
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
     }
 
-    public Query set(Object ...items) {
+    public Query set(Object... items) {
         try {
             for (Object item : items) {
                 statement.setObject(paramIndex, item);
                 paramIndex++;
             }
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         return this;
     }
 
     public String getString(String columnName) {
         try {
             return result.getString(columnName);
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         return null;
     }
 
     public int getInt(String columnName) {
         try {
             return result.getInt(columnName);
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         return 0;
     }
 
     public double getDouble(String columnName) {
         try {
             return result.getDouble(columnName);
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         return 0;
     }
 
     public float getFloat(String columnName) {
         try {
             return result.getFloat(columnName);
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         return 0;
     }
 
     public boolean getBool(String columnName) {
         try {
             return result.getBoolean(columnName);
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         return false;
     }
 
     public Object getObject(String columnName) {
         try {
             return result.getObject(columnName);
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         return false;
     }
 
@@ -81,7 +97,9 @@ public class Query {
         try {
             int affectedRows = statement.executeUpdate();
             success = affectedRows != 0;
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         return this;
     }
 
@@ -89,14 +107,18 @@ public class Query {
         try {
             result = statement.executeQuery();
             success = result.next();
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         return this;
     }
 
     public boolean next() {
         try {
             if (skippedNext) return result.next();
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         skippedNext = true;
         return success;
     }
@@ -104,7 +126,9 @@ public class Query {
     public boolean exists() {
         try {
             return result.getBoolean(1);
-        } catch (SQLException e) {error();}
+        } catch (SQLException e) {
+            error();
+        }
         return false;
     }
 

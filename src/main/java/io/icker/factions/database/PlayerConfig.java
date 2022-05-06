@@ -2,11 +2,11 @@ package io.icker.factions.database;
 
 import java.util.UUID;
 
-public class PlayerConfig { 
+public class PlayerConfig {
     public enum ChatOption {
         FOCUS,
         FACTION,
-        GLOBAL;
+        GLOBAL
     }
 
     public UUID uuid;
@@ -16,8 +16,8 @@ public class PlayerConfig {
 
     public static PlayerConfig get(UUID uuid) {
         Query query = new Query("SELECT * FROM PlayerConfig WHERE uuid = ?;")
-            .set(uuid)
-            .executeQuery();
+                .set(uuid)
+                .executeQuery();
 
         if (!query.success) return new PlayerConfig(uuid, ChatOption.GLOBAL, false, false);
 
@@ -40,19 +40,19 @@ public class PlayerConfig {
 
     public void setChat(ChatOption chat) {
         new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?, ?, ?);")
-            .set(uuid, chat.toString(), bypass, currentZoneMessage)
-            .executeUpdate();
+                .set(uuid, chat.toString(), bypass, currentZoneMessage)
+                .executeUpdate();
     }
 
     public void setBypass(boolean bypass) {
         new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?, ?, ?);")
-            .set(uuid, chat.toString(), bypass, currentZoneMessage)
-            .executeUpdate();
+                .set(uuid, chat.toString(), bypass, currentZoneMessage)
+                .executeUpdate();
     }
 
     public void setZoneMsg(boolean currentZoneMessage) {
         new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?, ?, ?);")
-            .set(uuid, chat.toString(), bypass, currentZoneMessage)
-            .executeUpdate();
+                .set(uuid, chat.toString(), bypass, currentZoneMessage)
+                .executeUpdate();
     }
 }

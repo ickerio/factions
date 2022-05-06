@@ -15,7 +15,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MapCommand {
 
@@ -59,8 +60,8 @@ public class MapCommand {
                             .formatted(owner.color)
                             .styled((style)
                                     -> style.withHoverEvent(
-                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                    new LiteralText(owner.name)))
+                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                            new LiteralText(owner.name)))
                             ));
                 }
             }
