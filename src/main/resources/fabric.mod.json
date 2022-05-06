@@ -17,7 +17,7 @@
   "license": "MIT",
   "icon": "assets/factions/icon.png",
 
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "main": [
       "io.icker.factions.FactionsMod"
