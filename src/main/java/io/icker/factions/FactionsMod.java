@@ -12,6 +12,7 @@ import io.icker.factions.util.PermissionsWrapper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
@@ -43,9 +44,9 @@ public class FactionsMod implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             ServerEvents.started(server);
             playerManager = server.getPlayerManager();
-            try {
+            if (FabricLoader.getInstance().isModLoaded("dynmap")) {
                 dynmap = new DynmapWrapper();
-            } catch (java.lang.NoClassDefFoundError e) {
+            } else {
                 LOGGER.info("Dynmap not found");
             }
         });
