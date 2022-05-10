@@ -30,9 +30,6 @@ public class FactionsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-
-        Database.test();
-
         LOGGER.info("Initialized Factions Mod for Minecraft v1.18");
         try {
             Config.init();
