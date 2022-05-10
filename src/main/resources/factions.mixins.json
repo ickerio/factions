@@ -9,7 +9,8 @@
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkManagerMixin",
     "ServerPlayerInteractionManagerMixin",
-    "ServerPlayNetworkHandlerMixin"
+    "ServerPlayNetworkHandlerMixin",
+    "ServerWorldMixin"
   ],
   "server": [],
   "injectors": {
