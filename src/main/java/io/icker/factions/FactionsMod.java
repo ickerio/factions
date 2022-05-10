@@ -5,6 +5,7 @@ import io.icker.factions.api.RemoveMemberEvent;
 import io.icker.factions.api.UpdateFactionEvent;
 import io.icker.factions.command.CommandRegistry;
 import io.icker.factions.config.Config;
+import io.icker.factions.database2.Database;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.event.ServerEvents;
 import io.icker.factions.util.DynmapWrapper;
@@ -14,6 +15,7 @@ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,8 +27,12 @@ public class FactionsMod implements ModInitializer {
     public static DynmapWrapper dynmap;
     public static PlayerManager playerManager;
 
+
     @Override
     public void onInitialize() {
+
+        Database.test();
+
         LOGGER.info("Initialized Factions Mod for Minecraft v1.18");
         try {
             Config.init();
