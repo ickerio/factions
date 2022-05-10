@@ -23,7 +23,7 @@ public class TypeSerializerRegistry {
         registry.put(boolean.class, new TypeSerializer<>(NbtCompound::putBoolean, NbtCompound::getBoolean, false));
     }
 
-    public static <T> TypeSerializer<T> get(Class<T> clazz) {
-        return (TypeSerializer<T>) registry.get(clazz); // TODO fix warning
+    public static TypeSerializer<?> get(Class<?> clazz) {
+        return registry.get(clazz);
     }
 }

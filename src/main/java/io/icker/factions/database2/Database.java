@@ -18,7 +18,7 @@ public class Database {
 
     public static <T extends Persistent> void setup(Class<T> clazz) {
         String name = clazz.getAnnotation(Persistent.Name.class).value();
-        File directory = new File(BASE_PATH + name);
+        File directory = new File(BASE_PATH, name);
 
         if (directory.isFile()) {
             FactionsMod.LOGGER.error("File already exists in database directory path " + directory.toString());
@@ -89,21 +89,21 @@ public class Database {
                     Class<?> type = field.getType();
                     Object data = field.get(item);
 
-                    write(type, data, key, compound);
+                    TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
+                    serializer.writeNbt(key, compound, parse(data));
                 }
 
                 File file = new File(path, item.getKey() + ".dat");
                 NbtIo.writeCompressed(compound, file);
 
-            } catch(IOException | ReflectiveOperationException e ) {
+            } catch (IOException | ReflectiveOperationException e ) {
                 FactionsMod.LOGGER.error("Failed to write NBT data");
             }
         }
     }
 
-    // TODO avoid this new function
-    private static <T> void write(Class<T> type, Object data, String key, NbtCompound compound) {
-        TypeSerializer<T> serializer = TypeSerializerRegistry.get(type);
-        serializer.writeNbt(key, compound, type.cast(data));
+    // TODO Safely remove this hacky cast
+    private static <T> T parse(Object key) {
+        return (T) key;
     }
 }
