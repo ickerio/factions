@@ -13,8 +13,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 
 public class Database {
-    public static final File BASE_PATH = new File("factions");
-    public static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<Class<?>, HashMap<String, Field>>();
+    private static final File BASE_PATH = new File("factions");
+    private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<Class<?>, HashMap<String, Field>>();
 
     public static <T extends Persistent> void setup(Class<T> clazz) {
         String name = clazz.getAnnotation(Persistent.Name.class).value();
