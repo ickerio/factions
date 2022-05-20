@@ -38,6 +38,8 @@ body:
           required: true
         - label: I have ensured the feature I'm requesting isn't already in the latest supported mod version.
           required: true
+        - label: I have ensured the feature I'm requesting is relevant and would provide a significantly better experience to the user.
+          required: true
 
   - type: textarea
     attributes:
