@@ -1,102 +1,109 @@
 package io.icker.factions.database;
 
-import io.icker.factions.FactionsMod;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import io.icker.factions.FactionsMod;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtIo;
 
 public class Database {
-    public static Connection con;
+    private static final File BASE_PATH = new File("factions");
+    private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<Class<?>, HashMap<String, Field>>();
 
-    public static void connect() {
-        try {
-            con = DriverManager.getConnection("jdbc:h2:./factions/factions");
-            new Query("""
-                    CREATE TABLE IF NOT EXISTS Faction (
-                        name VARCHAR(255) PRIMARY KEY,
-                        description VARCHAR(255),
-                        color VARCHAR(255),
-                        open BOOLEAN,
-                        power INTEGER
-                    );
+    public static <T extends Persistent> void setup(Class<T> clazz) {
+        String name = clazz.getAnnotation(Name.class).value();
+        File directory = new File(BASE_PATH, name);
 
-                    CREATE TABLE IF NOT EXISTS Member (
-                        uuid UUID PRIMARY KEY,
-                        faction VARCHAR(255),
-                        rank ENUM('owner', 'co_owner', 'officer', 'civilian'),
-                        FOREIGN KEY(faction) REFERENCES Faction(name) ON DELETE CASCADE
-                    );
+        if (directory.isFile()) {
+            FactionsMod.LOGGER.error("File already exists in database directory path " + directory.toString());
+            return;
+        }
 
-                    CREATE TABLE IF NOT EXISTS Claim (
-                        x INTEGER,
-                        z INTEGER,
-                        level VARCHAR(255),
-                        faction VARCHAR(255),
-                        PRIMARY KEY(x, z, level),
-                        FOREIGN KEY(faction) REFERENCES Faction(name) ON DELETE CASCADE
-                    );
-                                    
-                    CREATE TABLE IF NOT EXISTS Invite (
-                        player UUID,
-                        faction VARCHAR(255),
-                        PRIMARY KEY (player, faction),
-                        FOREIGN KEY(faction) REFERENCES Faction(name) ON DELETE CASCADE
-                    );
+        directory.mkdirs();
 
-                    CREATE TABLE IF NOT EXISTS Home (
-                        faction VARCHAR(255),
-                        x DOUBLE,
-                        y DOUBLE,
-                        z DOUBLE,
-                        yaw REAL,
-                        pitch REAL,
-                        level VARCHAR(255),
-                        FOREIGN KEY(faction) REFERENCES Faction(name) ON DELETE CASCADE
-                    );
+        HashMap<String, Field> fields = new HashMap<String, Field>();
 
-                    CREATE TABLE IF NOT EXISTS PlayerConfig (
-                        uuid UUID PRIMARY KEY,
-                        chat VARCHAR(255),
-                        bypass BOOLEAN,
-                        zone BOOLEAN
-                    );
-                                    
-                    CREATE TABLE IF NOT EXISTS Allies (
-                        source VARCHAR(255),
-                        target VARCHAR(255),
-                        accept BOOL,
-                        FOREIGN KEY(source) REFERENCES Faction(name) ON DELETE CASCADE,
-                        FOREIGN KEY(target) REFERENCES Faction(name) ON DELETE CASCADE
-                    );
-                    """)
-                    .executeUpdate();
-
-            Query query = new Query("SELECT EXISTS(SELECT * FROM INFORMATION_SCHEMA.columns WHERE table_name = 'PLAYERCONFIG' and column_name = 'ZONE');")
-                    .executeQuery();
-
-            if (!query.exists()) {
-                new Query("""
-                        ALTER TABLE PlayerConfig ADD zone BOOLEAN;
-                        UPDATE PlayerConfig SET zone = 0;
-                        """)
-                        .executeUpdate();
-
-                FactionsMod.LOGGER.info("Successfully migrated to newer version");
+        for (Field field : clazz.getDeclaredFields()) {
+            field.setAccessible(true);
+            if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
+                fields.put(field.getAnnotation(io.icker.factions.database.Field.class).value(), field);
             }
-            FactionsMod.LOGGER.info("Successfully connected to database");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            FactionsMod.LOGGER.error("Error connecting to and setting up database");
+        }
+
+        cache.put(clazz, fields);
+    }
+
+    public static <T extends Persistent> List<T> load(Class<T> clazz) {
+        String name = clazz.getAnnotation(Name.class).value();
+        HashMap<String, Field> fields = cache.get(clazz);
+
+        File directory = new File(BASE_PATH, name);
+        File files[] = directory.listFiles();
+
+        ArrayList<T> items = new ArrayList<T>();
+
+        for (File file : files) {
+            try {
+                NbtCompound compound = NbtIo.readCompressed(file);
+                T item = (T) clazz.getDeclaredConstructor().newInstance();
+
+                for (Map.Entry<String, Field> entry : fields.entrySet()) {
+                    String key = entry.getKey();
+                    Field field = entry.getValue();
+
+                    Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, compound);
+
+                    field.set(item, element);
+                }
+
+                items.add(item);
+
+            } catch (IOException | ReflectiveOperationException e) {
+                FactionsMod.LOGGER.error("Failed to read NBT data");
+            }
+        }
+
+        return items;
+    }
+
+    public static <T extends Persistent> void save(Class<T> clazz, List<T> items) {
+        String name = clazz.getAnnotation(Name.class).value();
+        HashMap<String, Field> fields = cache.get(clazz);
+
+        File path = new File(BASE_PATH, name);
+
+        for (T item : items) {
+            NbtCompound compound = new NbtCompound();
+
+            try {
+                for (Map.Entry<String, Field> entry : fields.entrySet()) {
+                    String key = entry.getKey();
+                    Field field = entry.getValue();
+
+                    Class<?> type = field.getType();
+                    Object data = field.get(item);
+
+                    TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
+                    serializer.writeNbt(key, compound, parse(data));
+                }
+
+                File file = new File(path, item.getKey() + ".dat");
+                NbtIo.writeCompressed(compound, file);
+
+            } catch (IOException | ReflectiveOperationException e ) {
+                FactionsMod.LOGGER.error("Failed to write NBT data");
+            }
         }
     }
 
-    public static void disconnect() {
-        try {
-            con.close();
-            FactionsMod.LOGGER.info("Successfully disconnected from database");
-        } catch (SQLException e) {
-            FactionsMod.LOGGER.error("Error disconnecting from database");
-        }
+    // TODO Safely remove this hacky cast
+    private static <T> T parse(Object key) {
+        return (T) key;
     }
 }

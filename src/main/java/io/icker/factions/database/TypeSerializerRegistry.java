@@ -1,4 +1,4 @@
-package io.icker.factions.database2;
+package io.icker.factions.database;
 
 import java.util.HashMap;
 import java.util.UUID;
