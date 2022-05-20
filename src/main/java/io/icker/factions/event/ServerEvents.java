@@ -13,4 +13,8 @@ public class ServerEvents {
     public static void stopped(MinecraftServer server) {
         Database.disconnect();
     }
+
+    public static void save() {
+        // TODO: Add save code
+    }
 }
