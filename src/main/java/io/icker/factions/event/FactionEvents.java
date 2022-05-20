@@ -1,9 +1,9 @@
 package io.icker.factions.event;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Member;
 import io.icker.factions.config.Config;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
 import io.icker.factions.util.Message;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;

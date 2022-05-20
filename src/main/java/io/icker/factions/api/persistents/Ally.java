@@ -1,22 +1,17 @@
-package io.icker.factions.database;
-
-import io.icker.factions.api.AllyAcceptEvent;
-import io.icker.factions.api.AllyRemoveEvent;
+package io.icker.factions.api.persistents;
 
 import java.util.ArrayList;
 
-public class Ally {
+import io.icker.factions.api.events.AllyAcceptEvent;
+import io.icker.factions.api.events.AllyRemoveEvent;
+import io.icker.factions.database.Persistent;
+
+public class Ally extends Persistent{
     public String target;
     public String source;
 
-    public static Ally get(String target, String source) {
-        Query query = new Query("SELECT * FROM Ally WHERE (source = ? AND target = ?) OR (source = ? AND target = ?);")
-                .set(source, target, target, source)
-                .executeQuery();
-
-        if (!query.success)
-            return null;
-        return new Ally(query.getString("source"), query.getString("target"));
+    public String getKey() {
+        return target + "-" + source;
     }
 
     public static Ally add(String source, String target) {

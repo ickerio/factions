@@ -1,8 +1,8 @@
-package io.icker.factions.database;
+package io.icker.factions.api.persistents;
 
 import java.util.UUID;
 
-public class PlayerConfig {
+public class Player {
     public enum ChatOption {
         FOCUS,
         FACTION,
@@ -14,12 +14,12 @@ public class PlayerConfig {
     public boolean bypass;
     public boolean currentZoneMessage;
 
-    public static PlayerConfig get(UUID uuid) {
+    public static Player get(UUID uuid) {
         Query query = new Query("SELECT * FROM PlayerConfig WHERE uuid = ?;")
                 .set(uuid)
                 .executeQuery();
 
-        if (!query.success) return new PlayerConfig(uuid, ChatOption.GLOBAL, false, false);
+        if (!query.success) return new Player(uuid, ChatOption.GLOBAL, false, false);
 
         ChatOption opt;
         try {
@@ -28,10 +28,10 @@ public class PlayerConfig {
             opt = ChatOption.GLOBAL;
         }
 
-        return new PlayerConfig(uuid, opt, query.getBool("bypass"), query.getBool("zone"));
+        return new Player(uuid, opt, query.getBool("bypass"), query.getBool("zone"));
     }
 
-    public PlayerConfig(UUID uuid, ChatOption chat, boolean bypass, boolean currentZoneMessage) {
+    public Player(UUID uuid, ChatOption chat, boolean bypass, boolean currentZoneMessage) {
         this.uuid = uuid;
         this.chat = chat;
         this.bypass = bypass;

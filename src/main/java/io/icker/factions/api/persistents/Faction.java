@@ -1,13 +1,14 @@
-package io.icker.factions.database;
+package io.icker.factions.api.persistents;
 
-import io.icker.factions.api.PowerChangeEvent;
-import io.icker.factions.api.RemoveAllClaimsEvent;
-import io.icker.factions.api.RemoveFactionEvent;
-import io.icker.factions.api.UpdateFactionEvent;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
+import io.icker.factions.api.events.PowerChangeEvent;
+import io.icker.factions.api.events.RemoveAllClaimsEvent;
+import io.icker.factions.api.events.RemoveFactionEvent;
+import io.icker.factions.api.events.UpdateFactionEvent;
 
 public class Faction {
     public String name;

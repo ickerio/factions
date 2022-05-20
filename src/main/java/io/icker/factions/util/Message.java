@@ -1,9 +1,9 @@
 package io.icker.factions.util;
 
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
-import io.icker.factions.database.PlayerConfig;
-import io.icker.factions.database.PlayerConfig.ChatOption;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.Player;
+import io.icker.factions.api.persistents.Player.ChatOption;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -76,7 +76,7 @@ public class Message {
 
     public void sendToGlobalChat() {
         for (ServerPlayerEntity player : manager.getPlayerList()) {
-            ChatOption option = PlayerConfig.get(player.getUuid()).chat;
+            ChatOption option = Player.get(player.getUuid()).chat;
             if (option != ChatOption.FOCUS) player.sendMessage(text, false);
         }
     }

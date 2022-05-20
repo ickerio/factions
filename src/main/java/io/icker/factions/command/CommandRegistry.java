@@ -5,8 +5,9 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
+import io.icker.factions.api.persistents.Member;
 import io.icker.factions.config.Config;
-import io.icker.factions.database.Member;
 import io.icker.factions.util.FactionSuggestions;
 import io.icker.factions.util.PermissionsWrapper;
 import net.minecraft.command.argument.ColorArgumentType;

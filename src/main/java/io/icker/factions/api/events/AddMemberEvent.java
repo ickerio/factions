@@ -1,8 +1,8 @@
-package io.icker.factions.api;
-
-import io.icker.factions.database.Member;
+package io.icker.factions.api.events;
 
 import java.util.ArrayList;
+
+import io.icker.factions.api.persistents.Member;
 
 public class AddMemberEvent {
     private static final ArrayList<AddMemberEventListener> listeners = new ArrayList<>();

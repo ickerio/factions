@@ -1,7 +1,7 @@
-package io.icker.factions.database;
+package io.icker.factions.api.persistents;
 
-import io.icker.factions.api.AddClaimEvent;
-import io.icker.factions.api.RemoveClaimEvent;
+import io.icker.factions.api.events.AddClaimEvent;
+import io.icker.factions.api.events.RemoveClaimEvent;
 
 public class Claim {
     public int x;

@@ -3,7 +3,8 @@ package io.icker.factions.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.icker.factions.database.PlayerConfig;
+
+import io.icker.factions.api.persistents.Player;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -15,7 +16,7 @@ public class ZoneMsgCommand implements Command<ServerCommandSource> {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        PlayerConfig config = PlayerConfig.get(player.getUuid());
+        Player config = Player.get(player.getUuid());
         boolean zoneMsg = !config.currentZoneMessage;
         config.setZoneMsg(zoneMsg);
 

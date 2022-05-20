@@ -4,7 +4,8 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.icker.factions.database.Member;
+
+import io.icker.factions.api.persistents.Member;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.server.command.ServerCommandSource;

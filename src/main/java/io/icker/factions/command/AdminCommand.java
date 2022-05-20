@@ -4,8 +4,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.icker.factions.FactionsMod;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.PlayerConfig;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Player;
 import io.icker.factions.util.Message;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -17,7 +17,7 @@ public class AdminCommand {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        PlayerConfig config = PlayerConfig.get(player.getUuid());
+        Player config = Player.get(player.getUuid());
         boolean bypass = !config.bypass;
         config.setBypass(bypass);
 

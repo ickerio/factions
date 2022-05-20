@@ -1,6 +1,6 @@
-package io.icker.factions.database;
+package io.icker.factions.api.persistents;
 
-import io.icker.factions.api.SetHomeEvent;
+import io.icker.factions.api.events.SetHomeEvent;
 
 public class Home {
     public String factionName;

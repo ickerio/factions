@@ -2,9 +2,10 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.icker.factions.database.Claim;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
+
+import io.icker.factions.api.persistents.Claim;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Member;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;

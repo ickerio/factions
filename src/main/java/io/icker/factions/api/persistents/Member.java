@@ -1,8 +1,8 @@
-package io.icker.factions.database;
+package io.icker.factions.api.persistents;
 
 import io.icker.factions.FactionsMod;
-import io.icker.factions.api.AddMemberEvent;
-import io.icker.factions.api.RemoveMemberEvent;
+import io.icker.factions.api.events.AddMemberEvent;
+import io.icker.factions.api.events.RemoveMemberEvent;
 import io.icker.factions.event.FactionEvents;
 
 import java.util.UUID;

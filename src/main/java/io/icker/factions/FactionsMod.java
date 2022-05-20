@@ -1,11 +1,12 @@
 package io.icker.factions;
 
-import io.icker.factions.api.AddMemberEvent;
-import io.icker.factions.api.RemoveMemberEvent;
-import io.icker.factions.api.UpdateFactionEvent;
+import io.icker.factions.api.events.AddMemberEvent;
+import io.icker.factions.api.events.RemoveMemberEvent;
+import io.icker.factions.api.events.UpdateFactionEvent;
 import io.icker.factions.command.CommandRegistry;
 import io.icker.factions.config.Config;
-import io.icker.factions.database2.Database;
+import io.icker.factions.database.Database;
+import io.icker.factions.database.TestPersistent;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.event.ServerEvents;
 import io.icker.factions.util.DynmapWrapper;
@@ -30,6 +31,20 @@ public class FactionsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        Database.setup(TestPersistent.class);
+
+        List<TestPersistent> items = Database.load(TestPersistent.class);
+        //TestPersistent a = new TestPersistent("David");
+       // a.setNumber(69);
+        //items.add(a);
+       // Database.save(TestPersistent.class, items);
+
+       for (TestPersistent item : items) {
+           LOGGER.info(item.getName(), item.getNumber());
+       }
+
+
+
         LOGGER.info("Initialized Factions Mod for Minecraft v1.18");
         try {
             Config.init();

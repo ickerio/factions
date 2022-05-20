@@ -1,8 +1,8 @@
-package io.icker.factions.api;
-
-import io.icker.factions.database.Ally;
+package io.icker.factions.api.events;
 
 import java.util.ArrayList;
+
+import io.icker.factions.api.persistents.Ally;
 
 public class AllyRemoveEvent {
     private static final ArrayList<AllyRemoveEventListener> listeners = new ArrayList<>();

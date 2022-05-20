@@ -1,4 +1,4 @@
-package io.icker.factions.database;
+package io.icker.factions.api.persistents;
 
 import java.util.ArrayList;
 import java.util.UUID;

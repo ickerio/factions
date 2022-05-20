@@ -1,8 +1,8 @@
 package io.icker.factions.mixin;
 
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Member;
 import io.icker.factions.config.Config;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.event.PlayerInteractEvents;
 import io.icker.factions.util.Message;

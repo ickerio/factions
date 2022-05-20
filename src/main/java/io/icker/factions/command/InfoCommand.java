@@ -4,10 +4,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+import io.icker.factions.api.persistents.Ally;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Member;
 import io.icker.factions.config.Config;
-import io.icker.factions.database.Ally;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;

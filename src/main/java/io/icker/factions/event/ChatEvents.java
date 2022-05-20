@@ -1,10 +1,10 @@
 package io.icker.factions.event;
 
 import io.icker.factions.FactionsMod;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
-import io.icker.factions.database.PlayerConfig;
-import io.icker.factions.database.PlayerConfig.ChatOption;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.Player;
+import io.icker.factions.api.persistents.Player.ChatOption;
 import io.icker.factions.util.Message;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
@@ -16,7 +16,7 @@ public class ChatEvents {
         UUID id = sender.getUuid();
         Member member = Member.get(id);
 
-        if (PlayerConfig.get(id).chat == ChatOption.GLOBAL) {
+        if (Player.get(id).chat == ChatOption.GLOBAL) {
             if (member == null) {
                 ChatEvents.global(sender, message);
             } else {

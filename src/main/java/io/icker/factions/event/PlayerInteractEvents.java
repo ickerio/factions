@@ -1,7 +1,11 @@
 package io.icker.factions.event;
 
+import io.icker.factions.api.persistents.Ally;
+import io.icker.factions.api.persistents.Claim;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.Player;
 import io.icker.factions.config.Config;
-import io.icker.factions.database.*;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
 import io.icker.factions.util.Message;
@@ -67,7 +71,7 @@ public class PlayerInteractEvents {
     }
 
     public static boolean actionPermitted(BlockPos pos, World world, ServerPlayerEntity player) {
-        PlayerConfig config = PlayerConfig.get(player.getUuid());
+        Player config = Player.get(player.getUuid());
         if (config.bypass) {
             if (player.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL)) {
                 return true;
@@ -123,7 +127,7 @@ public class PlayerInteractEvents {
     }
 
     public static void onMove(ServerPlayerEntity player) {
-        if (Config.ZONE_MESSAGE && PlayerConfig.get(player.getUuid()).currentZoneMessage) {
+        if (Config.ZONE_MESSAGE && Player.get(player.getUuid()).currentZoneMessage) {
             ServerWorld world = player.getWorld();
             String dimension = world.getRegistryKey().getValue().toString();
 
