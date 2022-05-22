@@ -1,70 +1,60 @@
 package io.icker.factions.api.persistents;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-public class Invite {
-    public UUID playerId;
-    private final String factionName;
+import io.icker.factions.database.Field;
+import io.icker.factions.database.Name;
+import io.icker.factions.database.Persistent;
 
-    public static Invite get(UUID playerId, String factionName) {
-        Query query = new Query("SELECT * FROM Invite WHERE player = ? AND faction = ?;")
-                .set(playerId, factionName)
-                .executeQuery();
+@Name("Invite")
+public class Invite implements Persistent {
+    private static final HashMap<String, Invite> STORE = new HashMap<String, Invite>();
 
-        if (!query.success) return null;
-        return new Invite(playerId, factionName);
+    @Field("PlayerID")
+    private UUID playerID;
+
+    @Field("FactionID")
+    private UUID factionID;
+
+    public Invite(UUID playerID, UUID factionID) {
+        this.playerID = playerID;
+        this.factionID = factionID;
     }
 
-    public static ArrayList<Invite> get(UUID playerId) {
-        Query query = new Query("SELECT faction FROM Invite WHERE player = ?;")
-                .set(playerId)
-                .executeQuery();
-
-        ArrayList<Invite> invites = new ArrayList<Invite>();
-        if (!query.success) return invites;
-
-        while (query.next()) {
-            invites.add(new Invite(playerId, query.getString("faction")));
-        }
-        return invites;
+    public String getKey() {
+        return playerID.toString() + "-" + factionID.toString();
     }
 
-    public static ArrayList<Invite> get(String factionName) {
-        Query query = new Query("SELECT player FROM Invite WHERE faction = ?;")
-                .set(factionName)
-                .executeQuery();
-
-        ArrayList<Invite> invites = new ArrayList<Invite>();
-        if (!query.success) return invites;
-
-        while (query.next()) {
-            invites.add(new Invite((UUID) query.getObject("player"), factionName));
-        }
-        return invites;
+    public static Invite get(UUID playerID, String factionID) {
+        return STORE.get(playerID.toString() + "-" + factionID.toString());
     }
 
-    public static Invite add(UUID playerId, String factionName) {
-        Query query = new Query("INSERT INTO Invite VALUES (?, ?);")
-                .set(playerId, factionName)
-                .executeUpdate();
-
-        if (!query.success) return null;
-        return new Invite(playerId, factionName);
+    public static List<Invite> getByPlayer(UUID playerID) {
+        return STORE.values()
+            .stream()
+            .filter(i -> i.playerID == playerID)
+            .collect(Collectors.toList());
     }
 
-    public Invite(UUID playerId, String factionName) {
-        this.playerId = playerId;
-        this.factionName = factionName;
+    public static List<Invite> getByFaction(UUID factionID) {
+        return STORE.values()
+            .stream()
+            .filter(i -> i.factionID == factionID)
+            .collect(Collectors.toList());
+    }
+
+    public static void add(Invite invite) {
+        STORE.put(invite.getKey(), invite);
     }
 
     public Faction getFaction() {
-        return Faction.get(factionName);
+        return Faction.get(factionID);
     }
 
     public void remove() {
-        new Query("DELETE FROM Invite WHERE player = ? AND faction = ?;")
-                .set(playerId, factionName)
-                .executeUpdate();
+        STORE.remove(getKey());
     }
 }

@@ -31,20 +31,6 @@ public class FactionsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Database.setup(TestPersistent.class);
-
-        List<TestPersistent> items = Database.load(TestPersistent.class);
-        //TestPersistent a = new TestPersistent("David");
-       // a.setNumber(69);
-        //items.add(a);
-       // Database.save(TestPersistent.class, items);
-
-       for (TestPersistent item : items) {
-           LOGGER.info(item.getName(), item.getNumber());
-       }
-
-
-
         LOGGER.info("Initialized Factions Mod for Minecraft v1.18");
         try {
             Config.init();

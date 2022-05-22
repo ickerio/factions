@@ -1,40 +1,53 @@
 package io.icker.factions.api.persistents;
 
-import io.icker.factions.api.events.SetHomeEvent;
+import java.util.HashMap;
+import java.util.UUID;
 
-public class Home {
-    public String factionName;
+import io.icker.factions.api.events.SetHomeEvent;
+import io.icker.factions.database.Field;
+import io.icker.factions.database.Name;
+import io.icker.factions.database.Persistent;
+
+@Name("Home")
+public class Home implements Persistent {
+    private static final HashMap<UUID, Home> STORE = new HashMap<UUID, Home>();
+
+    @Field("FactionID")
+    public UUID factionID;
+
+    @Field("X")
     public double x;
+
+    @Field("Y")
     public double y;
+
+    @Field("Z")
     public double z;
+
+    @Field("Yaw")
     public float yaw;
+
+    @Field("Pitch")
     public float pitch;
+
+    @Field("Level")
     public String level;
 
-    public static Home get(String factionName) {
-        Query query = new Query("SELECT * FROM Home WHERE faction = ?;")
-                .set(factionName)
-                .executeQuery();
-
-        if (!query.success) return null;
-        return new Home(factionName,
-                query.getDouble("x"), query.getDouble("y"), query.getDouble("z"),
-                query.getFloat("yaw"), query.getFloat("pitch"), query.getString("level")
-        );
+    public String getKey() {
+        return factionID.toString();
     }
 
-    public static Home set(String factionName, double x, double y, double z, float yaw, float pitch, String level) {
-        Query query = new Query("MERGE INTO Home KEY (faction) VALUES (?, ?, ?, ?, ?, ?, ?);")
-                .set(factionName, x, y, z, yaw, pitch, level)
-                .executeUpdate();
-
-        if (!query.success) return null;
-        SetHomeEvent.run(Faction.get(factionName), new Home(factionName, x, y, z, yaw, pitch, level));
-        return new Home(factionName, x, y, z, yaw, pitch, level);
+    public static Home get(UUID factionID) {
+        return STORE.get(factionID);
     }
 
-    public Home(String faction, double x, double y, double z, float yaw, float pitch, String level) {
-        this.factionName = faction;
+    public static void set(Home home) {
+        STORE.put(home.factionID, home);
+        SetHomeEvent.run(Faction.get(home.factionID), home);
+    }
+
+    public Home(UUID factionID, double x, double y, double z, float yaw, float pitch, String level) {
+        this.factionID = factionID;
         this.x = x;
         this.y = y;
         this.z = z;

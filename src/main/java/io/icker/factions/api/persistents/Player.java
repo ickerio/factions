@@ -1,58 +1,45 @@
 package io.icker.factions.api.persistents;
 
+import java.util.HashMap;
 import java.util.UUID;
 
+import io.icker.factions.database.Field;
+import io.icker.factions.database.Name;
+
+@Name("Player")
 public class Player {
+    private static final HashMap<UUID, Player> STORE = new HashMap<UUID, Player>();
+
     public enum ChatOption {
         FOCUS,
         FACTION,
         GLOBAL
     }
 
-    public UUID uuid;
+    @Field("ID")
+    public UUID id;
+
+    @Field("Chat")
     public ChatOption chat;
+
+    @Field("Bypass")
     public boolean bypass;
-    public boolean currentZoneMessage;
 
-    public static Player get(UUID uuid) {
-        Query query = new Query("SELECT * FROM PlayerConfig WHERE uuid = ?;")
-                .set(uuid)
-                .executeQuery();
+    @Field("ZoneMessage")
+    public boolean zoneMessage;
 
-        if (!query.success) return new Player(uuid, ChatOption.GLOBAL, false, false);
-
-        ChatOption opt;
-        try {
-            opt = Enum.valueOf(ChatOption.class, query.getString("chat"));
-        } catch (IllegalArgumentException e) {
-            opt = ChatOption.GLOBAL;
-        }
-
-        return new Player(uuid, opt, query.getBool("bypass"), query.getBool("zone"));
-    }
-
-    public Player(UUID uuid, ChatOption chat, boolean bypass, boolean currentZoneMessage) {
-        this.uuid = uuid;
+    public Player(UUID id, ChatOption chat, boolean bypass, boolean zoneMessage) {
+        this.id = id;
         this.chat = chat;
         this.bypass = bypass;
-        this.currentZoneMessage = currentZoneMessage;
+        this.zoneMessage = zoneMessage;
     }
 
-    public void setChat(ChatOption chat) {
-        new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?, ?, ?);")
-                .set(uuid, chat.toString(), bypass, currentZoneMessage)
-                .executeUpdate();
+    public static Player get(UUID id) {
+        return STORE.get(id);
     }
 
-    public void setBypass(boolean bypass) {
-        new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?, ?, ?);")
-                .set(uuid, chat.toString(), bypass, currentZoneMessage)
-                .executeUpdate();
-    }
-
-    public void setZoneMsg(boolean currentZoneMessage) {
-        new Query("MERGE INTO PlayerConfig KEY (uuid) VALUES (?, ?, ?, ?);")
-                .set(uuid, chat.toString(), bypass, currentZoneMessage)
-                .executeUpdate();
+    public static void add(Player player) {
+        STORE.put(player.id, player);
     }
 }

@@ -3,66 +3,44 @@ package io.icker.factions.api.persistents;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import io.icker.factions.api.events.PowerChangeEvent;
 import io.icker.factions.api.events.RemoveAllClaimsEvent;
 import io.icker.factions.api.events.RemoveFactionEvent;
 import io.icker.factions.api.events.UpdateFactionEvent;
+import io.icker.factions.database.Field;
+import io.icker.factions.database.Name;
+import io.icker.factions.database.Persistent;
 
-public class Faction {
-    public String name;
-    public String description;
-    public Formatting color;
-    public boolean open;
-    public int power;
+@Name("Faction")
+public class Faction implements Persistent {
+    private static final HashMap<UUID, Faction> STORE = new HashMap<UUID, Faction>();
 
-    public static Faction get(String name) {
-        Query query = new Query("SELECT * FROM Faction WHERE name = ?;")
-                .set(name)
-                .executeQuery();
+    @Field("ID")
+    private UUID id;
 
-        if (!query.success) return null;
-        return new Faction(name, query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power"));
-    }
+    @Field("Name")
+    private String name;
 
-    public static Faction add(String name, String description, String color, boolean open, int power) {
-        Query query = new Query("INSERT INTO Faction (name, description, color, open, power) VALUES (?, ?, ?, ?, ?);")
-                .set(name, description, color, open, power)
-                .executeUpdate();
+    @Field("Description")
+    private String description;
 
-        if (!query.success) return null;
-        return new Faction(name, description, Formatting.byName(color), open, power);
-    }
+    @Field("Color")
+    private String color;
 
-    public static ArrayList<Faction> all() {
-        Query query = new Query("SELECT * FROM Faction;")
-                .executeQuery();
+    @Field("Open")
+    private boolean open;
 
-        ArrayList<Faction> factions = new ArrayList<Faction>();
-        if (!query.success) return factions;
+    @Field("Power")
+    private int power;
 
-        while (query.next()) {
-            factions.add(new Faction(query.getString("name"), query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power")));
-        }
-        return factions;
-    }
-
-    public static ArrayList<Faction> allBut(String faction) {
-        Query query = new Query("SELECT * FROM Faction WHERE NOT name = ?;")
-                .set(faction)
-                .executeQuery();
-
-        ArrayList<Faction> factions = new ArrayList<Faction>();
-        if (!query.success) return factions;
-
-        while (query.next()) {
-            factions.add(new Faction(query.getString("name"), query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power")));
-        }
-        return factions;
-    }
-
-    public Faction(String name, String description, Formatting color, boolean open, int power) {
+    public Faction(String name, String description, String color, boolean open, int power) {
+        this.id = UUID.randomUUID();
         this.name = name;
         this.description = description;
         this.color = color;
@@ -70,107 +48,81 @@ public class Faction {
         this.power = power;
     }
 
-    public void setDescription(String description) {
-        new Query("UPDATE Faction SET description = ? WHERE name = ?;")
-                .set(description, name)
-                .executeUpdate();
+    public String getKey() {
+        return id.toString();
+    }
 
-        UpdateFactionEvent.run(Faction.get(this.name));
+    public static Faction get(UUID id) {
+        return STORE.get(id);
+    }
+
+    public static void add(Faction faction) {
+        STORE.put(faction.id, faction);
+    }
+
+    public static Collection<Faction> all() {
+        return STORE.values();
+    }
+
+    public static List<Faction> allBut(UUID id) {
+        return STORE.values()
+            .stream()
+            .filter(f -> f.id != id)
+            .collect(Collectors.toList());
+    }
+
+    public void setName(String name) {
+        this.name = name;
+        UpdateFactionEvent.run(this);
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+        UpdateFactionEvent.run(this);
     }
 
     public void setColor(Formatting color) {
-        new Query("UPDATE Faction SET color = ? WHERE name = ?;")
-                .set(color.getName(), name)
-                .executeUpdate();
-
-        UpdateFactionEvent.run(Faction.get(this.name));
+        this.color = color.getName();
+        UpdateFactionEvent.run(this);
     }
 
     public void setOpen(boolean open) {
-        new Query("UPDATE Faction SET open = ? WHERE name = ?;")
-                .set(open, name)
-                .executeUpdate();
+        this.open = open;
+        UpdateFactionEvent.run(this);
     }
 
     public void setPower(int power) {
-        new Query("UPDATE Faction SET power = ? WHERE name = ?;")
-                .set(power, name)
-                .executeUpdate();
-
+        this.power = power;
+        UpdateFactionEvent.run(this);
         PowerChangeEvent.run(this);
     }
 
-    public ArrayList<Member> getMembers() {
-        Query query = new Query("SELECT uuid, rank FROM Member WHERE faction = ?;")
-                .set(name)
-                .executeQuery();
-
-        ArrayList<Member> members = new ArrayList<Member>();
-        if (!query.success) return members;
-
-        while (query.next()) {
-            members.add(new Member((UUID) query.getObject("uuid"), name, Member.Rank.valueOf(query.getString("rank").toUpperCase())));
-        }
-        return members;
+    public List<Member> getMembers() {
+        return Member.getByFaction(id);
     }
 
-    public Member addMember(UUID uuid) {
-        Member member = Member.add(uuid, name);
-
-        return member;
+    public void addMember(UUID playerID, Member.Rank rank) {
+        Member.add(new Member(playerID, id, rank));
     }
 
-    public Member addMember(UUID uuid, Member.Rank rank) {
-        Member member = Member.add(uuid, name, rank);
-
-        return member;
-    }
-
-    public ArrayList<Claim> getClaims() {
-        Query query = new Query("SELECT * FROM Claim WHERE faction = ?;")
-                .set(name)
-                .executeQuery();
-
-        ArrayList<Claim> claims = new ArrayList<Claim>();
-        if (!query.success) return claims;
-
-        while (query.next()) {
-            claims.add(new Claim(query.getInt("x"), query.getInt("z"), query.getString("level"), name));
-        }
-        return claims;
+    public List<Claim> getClaims() {
+        return Claim.getByFaction(id);
     }
 
     public void removeAllClaims() {
-        RemoveAllClaimsEvent.run(this);
-
-        new Query("DELETE FROM Claim WHERE faction = ?;")
-                .set(name)
-                .executeUpdate();
+        // TODO
     }
 
-    public Claim addClaim(int x, int z, String level) {
-        return Claim.add(x, z, level, name);
+    public void addClaim(int x, int z, String level) {
+        Claim.add(new Claim(x, z, level, id));
     }
 
-    public ArrayList<Invite> getInvites() {
-        return Invite.get(name);
-    }
-
-    public Home getHome() {
-        return Home.get(name);
-    }
-
-    public Home setHome(double x, double y, double z, float yaw, float pitch, String level) {
-        Home home = Home.set(name, x, y, z, yaw, pitch, level);
-
-        return home;
+    public List<Invite> getInvites() {
+        return Invite.getByFaction(id);
     }
 
     public void remove() {
+        STORE.remove(id);
         RemoveFactionEvent.run(this);
-
-        new Query("DELETE FROM Faction WHERE name = ?;")
-                .set(name)
-                .executeUpdate();
     }
 }

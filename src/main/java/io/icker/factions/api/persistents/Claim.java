@@ -1,51 +1,65 @@
 package io.icker.factions.api.persistents;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import io.icker.factions.api.events.AddClaimEvent;
 import io.icker.factions.api.events.RemoveClaimEvent;
+import io.icker.factions.database.Field;
+import io.icker.factions.database.Name;
+import io.icker.factions.database.Persistent;
 
-public class Claim {
-    public int x;
-    public int z;
-    public String level;
-    private final String factionName;
+@Name("Claim")
+public class Claim implements Persistent {
+    private static final HashMap<String, Claim> STORE = new HashMap<String, Claim>();
 
-    public static Claim get(int x, int z, String level) {
-        Query query = new Query("SELECT faction FROM Claim WHERE x = ? AND z = ? AND level = ?;")
-                .set(x, z, level)
-                .executeQuery();
+    @Field("X")
+    private int x;
 
-        if (!query.success) return null;
-        return new Claim(x, z, level, query.getString("faction"));
-    }
+    @Field("Z")
+    private int z;
 
-    public static Claim add(int x, int z, String level, String faction) {
-        Query query = new Query("INSERT INTO Claim VALUES (?, ?, ?, ?);")
-                .set(x, z, level, faction)
-                .executeUpdate();
+    @Field("Level")
+    private String level;
 
-        if (!query.success) return null;
+    @Field("FactionID")
+    private UUID factionID;
 
-        AddClaimEvent.run(new Claim(x, z, level, faction));
-
-        return new Claim(x, z, level, faction);
-    }
-
-    public Claim(int x, int z, String level, String faction) {
+    public Claim(int x, int z, String level, UUID factionID) {
         this.x = x;
         this.z = z;
         this.level = level;
-        this.factionName = faction;
+        this.factionID = factionID;
+    }
+
+    public String getKey() {
+        return String.format("%s/%i-%i", level, x, z);
+    }
+
+    public static Claim get(int x, int z, String level) {
+        return STORE.get(String.format("%s/%i-%i", level, x, z));
+    }
+
+    public static List<Claim> getByFaction(UUID factionID) {
+        return STORE.values()
+            .stream()
+            .filter(c -> c.factionID == factionID)
+            .collect(Collectors.toList());
+    }
+
+    public static void add(Claim claim) {
+        STORE.put(claim.getKey(), claim);
+        AddClaimEvent.run(claim);
     }
 
     public Faction getFaction() {
-        return Faction.get(factionName);
+        return Faction.get(factionID);
     }
 
     public void remove() {
-        new Query("DELETE FROM Claim WHERE x = ? AND z = ? AND level = ?;")
-                .set(x, z, level)
-                .executeUpdate();
-
+        STORE.remove(getKey());
         RemoveClaimEvent.run(this);
     }
 }
