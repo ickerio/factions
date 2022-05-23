@@ -53,7 +53,7 @@ public class CommandRegistry {
                 .requires(CommandRegistry::isFactionless)
                 .then(
                         CommandManager.argument("name", StringArgumentType.greedyString())
-                                .suggests((ctx, builder) -> suggestMatching(FactionSuggestions.openFaction(ctx), builder))
+                                .suggests((ctx, builder) -> suggestMatching(FactionSuggestions.avaliableFactions(ctx), builder))
                                 .executes(new JoinCommand())
                 )
                 .build();

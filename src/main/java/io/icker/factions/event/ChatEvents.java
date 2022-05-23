@@ -25,7 +25,7 @@ public class ChatEvents {
             }
         } else {
             if (member == null) {
-                return ChatEvents.fail(sender);
+                return ChatEvents.global(sender, message);
             } else {
                 return ChatEvents.faction(sender, member.getFaction(), message);
             }
@@ -38,23 +38,10 @@ public class ChatEvents {
     }
 
     public static Text memberGlobal(ServerPlayerEntity sender, Faction faction, String message) {
-        String rank = "";
-        for (Member member : faction.getMembers())
-            if (member.uuid.equals(sender.getUuid()))
-                rank = member.getRank().name().toLowerCase().replace("_", " ");
-
         return new Message("")
                 .add(new Message(faction.name).format(Formatting.BOLD, faction.color))
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))
-                .raw();
-    }
-
-    public static Text fail(ServerPlayerEntity sender) {
-        return new Message("You must be in a faction to use faction chat")
-                .hover("Click to join global chat")
-                .click("/f chat global")
-                .fail()
                 .raw();
     }
 
