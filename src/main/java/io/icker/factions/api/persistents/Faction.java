@@ -105,10 +105,6 @@ public class Faction implements Persistent {
         return Member.getByFaction(id);
     }
 
-    public void addMember(UUID playerID, Member.Rank rank) {
-        Member.add(new Member(playerID, id, rank));
-    }
-
     public List<Claim> getClaims() {
         return Claim.getByFaction(id);
     }
