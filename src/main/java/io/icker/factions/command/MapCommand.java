@@ -2,11 +2,14 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Member;
+import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -19,9 +22,8 @@ import net.minecraft.util.math.ChunkPos;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapCommand {
-
-    public static int show(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+public class MapCommand implements Command{
+    private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
@@ -51,19 +53,16 @@ public class MapCommand {
                     row.append(new LiteralText(" ■").formatted(Formatting.YELLOW));
                 } else if (claim == null) {
                     row.append(new LiteralText(" ■").formatted(Formatting.GRAY));
-                } else if (faction != null && claim.getFaction().name.equals(faction.name)) {
+                } else if (faction != null && claim.getFaction().getID() == faction.getID()) {
                     row.append(new LiteralText(" ■").formatted(Formatting.GREEN));
                 } else {
                     Faction owner = claim.getFaction();
-                    factions.put(owner.name, owner.color);
+                    factions.put(owner.getName(), owner.getColor());
 
                     row.append(new LiteralText(" ■")
-                            .formatted(owner.color)
-                            .styled((style)
-                                    -> style.withHoverEvent(
-                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                            new LiteralText(owner.name)))
-                            ));
+                        .formatted(owner.getColor())
+                        .styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(owner.getName())))
+                    ));
                 }
             }
 
@@ -94,5 +93,14 @@ public class MapCommand {
                 .send(player, false);
 
         return 1;
+    }
+
+    @Override
+    public LiteralCommandNode<ServerCommandSource> getNode() {
+        return CommandManager
+            .literal("map")
+            .requires(Requires.hasPerms("factions.map", 0))
+            .executes(this::run)
+            .build();
     }
 }

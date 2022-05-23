@@ -56,6 +56,14 @@ public class Faction implements Persistent {
         return STORE.get(id);
     }
 
+    public static Faction getByName(String name) {
+        return STORE.values()
+            .stream()
+            .filter(f -> f.name == name)
+            .findFirst()
+            .get();
+    }
+
     public static void add(Faction faction) {
         STORE.put(faction.id, faction);
     }
@@ -73,6 +81,18 @@ public class Faction implements Persistent {
 
     public UUID getID() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Formatting getColor() {
+        return Formatting.byName(color);
+    }
+
+    public boolean isOpen() {
+        return open;
     }
 
     public void setName(String name) {
@@ -122,6 +142,10 @@ public class Faction implements Persistent {
 
     public List<Invite> getInvites() {
         return Invite.getByFaction(id);
+    }
+
+    public Home getHome() {
+        return Home.get(id);
     }
 
     public void remove() {

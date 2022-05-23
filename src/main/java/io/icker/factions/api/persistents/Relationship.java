@@ -49,15 +49,15 @@ public class Relationship implements Persistent {
         return get(target, source);
     }
 
-    public boolean areAllies() {
+    public boolean bothAllies() {
         return status == Status.ALLY && status == get(target, source).status;
     }
 
-    public boolean areNeutral() {
+    public boolean bothNeutral() {
         return status == Status.NEUTRAL && status == get(target, source).status;
     }
 
-    public boolean areEnemies() {
+    public boolean bothEnemies() {
         return status == Status.ENEMY && status == get(target, source).status;
     }
 }

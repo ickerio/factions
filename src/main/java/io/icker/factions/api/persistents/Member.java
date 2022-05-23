@@ -91,6 +91,10 @@ public class Member implements Persistent {
         return factionID != null;
     }
 
+    public Rank getRank() {
+        return rank;
+    }
+
     public Faction getFaction() {
         return Faction.get(factionID);
     }
@@ -117,5 +121,9 @@ public class Member implements Persistent {
         factionID = null;
         rank = null;
         // TODO RemoveMemberEvent -> LeaveFactionEvent
+    }
+
+    public void changeRank(Rank rank) {
+        this.rank = rank;
     }
 }

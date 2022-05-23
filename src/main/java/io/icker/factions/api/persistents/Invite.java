@@ -29,7 +29,7 @@ public class Invite implements Persistent {
         return playerID.toString() + "-" + factionID.toString();
     }
 
-    public static Invite get(UUID playerID, String factionID) {
+    public static Invite get(UUID playerID, UUID factionID) {
         return STORE.get(playerID.toString() + "-" + factionID.toString());
     }
 

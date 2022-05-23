@@ -3,18 +3,21 @@ package io.icker.factions;
 import io.icker.factions.api.events.AddMemberEvent;
 import io.icker.factions.api.events.RemoveMemberEvent;
 import io.icker.factions.api.events.UpdateFactionEvent;
+import io.icker.factions.command.ChatCommand;
 import io.icker.factions.command.CommandRegistry;
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Database;
-import io.icker.factions.database.TestPersistent;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.event.ServerEvents;
+import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.PermissionsWrapper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +25,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 
 public class FactionsMod implements ModInitializer {
     public static Logger LOGGER = LogManager.getLogger("Factions");
@@ -59,16 +65,38 @@ public class FactionsMod implements ModInitializer {
         });
 
         UpdateFactionEvent.register((faction) -> {
-            List<ServerPlayerEntity> players = faction.getMembers().stream().map(member -> FactionsMod.playerManager.getPlayer(member.uuid)).toList();
+            List<ServerPlayerEntity> players = faction.getMembers().stream().map(member -> FactionsMod.playerManager.getPlayer(member.getPlayerID())).toList();
             FactionEvents.updatePlayerList(players);
         });
 
         AddMemberEvent.register((member) -> {
-            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.uuid));
+            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.getPlayerID()));
         });
 
         RemoveMemberEvent.register((member) -> {
-            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.uuid));
+            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.getPlayerID()));
         });
+    }
+
+    public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+		LiteralCommandNode<ServerCommandSource> factions = CommandManager
+			.literal("factions")
+			.build();
+
+		LiteralCommandNode<ServerCommandSource> alias = CommandManager
+			.literal("f")
+			.redirect(factions)
+			.build();
+
+		dispatcher.getRoot().addChild(factions);
+		dispatcher.getRoot().addChild(alias);
+
+		Command[] commands = new Command[] {
+			new ChatCommand(),
+		};
+
+		for (Command command : commands) {
+			factions.addChild(command.getNode());
+		}
     }
 }

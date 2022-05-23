@@ -1,50 +1,65 @@
 package io.icker.factions.command;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Invite;
+import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.Member.Rank;
 import io.icker.factions.config.Config;
 import io.icker.factions.event.FactionEvents;
+import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-// TODO: Name suggestions of open factions
-public class JoinCommand implements Command<ServerCommandSource> {
-    @Override
-    public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+public class JoinCommand implements Command {
+    private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, "name");
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = Faction.get(name);
+        Faction faction = Faction.getByName(name);
 
         if (faction == null) {
             new Message("Cannot join faction as none exist with that name").fail().send(player, false);
             return 0;
         }
 
-        Invite invite = Invite.get(player.getUuid(), faction.name);
-        if (!faction.open && invite == null) {
+        Invite invite = Invite.get(player.getUuid(), faction.getID());
+        if (!faction.isOpen() && invite == null) {
             new Message("Cannot join faction as it is not open and you are not invited").fail().send(player, false);
             return 0;
         }
 
-        if (faction.getMembers().size() >= Config.MAX_FACTION_SIZE && Config.MAX_FACTION_SIZE != -1) {
+        if (Config.MAX_FACTION_SIZE != -1 && faction.getMembers().size() >= Config.MAX_FACTION_SIZE) {
             new Message("Cannot join faction as it is currently full").fail().send(player, false);
             return 0;
         }
 
         if (invite != null) invite.remove();
-        faction.addMember(player.getUuid());
+        Member.get(player.getUuid()).joinFaction(faction.getID(), Rank.MEMBER);
         source.getServer().getPlayerManager().sendCommandTree(player);
 
         new Message(player.getName().asString() + " joined").send(faction);
         FactionEvents.adjustPower(faction, Config.MEMBER_POWER); // TODO: change this, its ew
         return 1;
+    }
+
+    public LiteralCommandNode<ServerCommandSource> getNode() {
+        return CommandManager
+            .literal("join")
+            .requires(Requires.hasPerms("factions.join", 0))
+            .requires(Requires.isFactionless())
+            .then(
+                CommandManager.argument("name", StringArgumentType.greedyString())
+                .suggests(Suggests.openFactions())
+                .executes(this::run)
+            )
+            .build();
     }
 }
