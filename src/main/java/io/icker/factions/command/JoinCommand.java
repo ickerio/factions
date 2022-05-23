@@ -42,7 +42,7 @@ public class JoinCommand implements Command<ServerCommandSource> {
         faction.addMember(player.getUuid());
         source.getServer().getPlayerManager().sendCommandTree(player);
 
-        new Message(player.getName().asString() + " joined").send(faction);
+        new Message(player.getName().getContent().toString() + " joined").send(faction);
         FactionEvents.adjustPower(faction, Config.MEMBER_POWER); // TODO: change this, its ew
         return 1;
     }

@@ -380,12 +380,8 @@ public class CommandRegistry {
     }
 
     public static boolean isFactionMember(ServerCommandSource source) {
-        try {
-            ServerPlayerEntity player = source.getPlayer();
-            return Member.get(player.getUuid()) != null;
-        } catch (CommandSyntaxException e) {
-            return false;
-        }
+        ServerPlayerEntity player = source.getPlayer();
+        return Member.get(player.getUuid()) != null;
     }
 
     public static boolean isFactionless(ServerCommandSource source) {
@@ -393,39 +389,23 @@ public class CommandRegistry {
     }
 
     public static boolean isCivilian(ServerCommandSource source) {
-        try {
-            ServerPlayerEntity player = source.getPlayer();
-            return isFactionMember(source) && Member.get(player.getUuid()).getRank() == Member.Rank.CIVILIAN;
-        } catch (CommandSyntaxException e) {
-            return false;
-        }
+        ServerPlayerEntity player = source.getPlayer();
+        return isFactionMember(source) && Member.get(player.getUuid()).getRank() == Member.Rank.CIVILIAN;
     }
 
     public static boolean isOfficer(ServerCommandSource source) {
-        try {
-            ServerPlayerEntity player = source.getPlayer();
-            return isFactionMember(source) && Member.get(player.getUuid()).getRank() == Member.Rank.OFFICER;
-        } catch (CommandSyntaxException e) {
-            return false;
-        }
+        ServerPlayerEntity player = source.getPlayer();
+        return isFactionMember(source) && Member.get(player.getUuid()).getRank() == Member.Rank.OFFICER;
     }
 
     public static boolean isCoOwner(ServerCommandSource source) {
-        try {
-            ServerPlayerEntity player = source.getPlayer();
-            return isFactionMember(source) && Member.get(player.getUuid()).getRank() == Member.Rank.CO_OWNER;
-        } catch (CommandSyntaxException e) {
-            return false;
-        }
+        ServerPlayerEntity player = source.getPlayer();
+        return isFactionMember(source) && Member.get(player.getUuid()).getRank() == Member.Rank.CO_OWNER;
     }
 
     public static boolean isOwner(ServerCommandSource source) {
-        try {
-            ServerPlayerEntity player = source.getPlayer();
-            return isFactionMember(source) && Member.get(player.getUuid()).getRank() == Member.Rank.OWNER;
-        } catch (CommandSyntaxException e) {
-            return false;
-        }
+        ServerPlayerEntity player = source.getPlayer();
+        return isFactionMember(source) && Member.get(player.getUuid()).getRank() == Member.Rank.OWNER;
     }
 
     public static boolean isRankAboveOfficer(ServerCommandSource source) {

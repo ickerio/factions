@@ -32,15 +32,15 @@ public class ChatEvents {
     }
 
     public static void global(ServerPlayerEntity sender, String message) {
-        FactionsMod.LOGGER.info("[" + sender.getName().asString() + " -> All] " + message);
-        new Message(sender.getName().asString())
+        FactionsMod.LOGGER.info("[" + sender.getName().getContent().toString() + " -> All] " + message);
+        new Message(sender.getName().getContent().toString())
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))
                 .sendToGlobalChat();
     }
 
     public static void memberGlobal(ServerPlayerEntity sender, Faction faction, String message) {
-        FactionsMod.LOGGER.info("[" + faction.name + " " + sender.getName().asString() + " -> All] " + message);
+        FactionsMod.LOGGER.info("[" + faction.name + " " + sender.getName().getContent().toString() + " -> All] " + message);
         String rank = "";
         for (Member member : faction.getMembers())
             if (member.uuid.equals(sender.getUuid()))
@@ -49,7 +49,7 @@ public class ChatEvents {
         new Message("")
                 .add(new Message(faction.name).format(Formatting.BOLD, faction.color))
                 .add(" " + rank)
-                .add(" " + sender.getName().asString())
+                .add(" " + sender.getName().getContent().toString())
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))
                 .sendToGlobalChat();
@@ -64,8 +64,8 @@ public class ChatEvents {
     }
 
     public static void faction(ServerPlayerEntity sender, Faction faction, String message) {
-        FactionsMod.LOGGER.info("[" + faction.name + " " + sender.getName().asString() + " -> " + faction.name + "] " + message);
-        new Message(sender.getName().asString())
+        FactionsMod.LOGGER.info("[" + faction.name + " " + sender.getName().getContent().toString() + " -> " + faction.name + "] " + message);
+        new Message(sender.getName().getContent().toString())
                 .add(new Message(" F").format(Formatting.BOLD, faction.color))
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))

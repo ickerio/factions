@@ -9,7 +9,7 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 
@@ -18,11 +18,11 @@ public class Message {
     private MutableText text;
 
     public Message(String message) {
-        text = new LiteralText(message);
+        text = MutableText.of(new LiteralTextContent(message));
     }
 
     public Message(String message, Object... args) {
-        text = new LiteralText(String.format(message, args));
+        text = MutableText.of(new LiteralTextContent(String.format(message, args)));
     }
 
     public Message add(String message) {
@@ -51,7 +51,7 @@ public class Message {
     }
 
     public Message hover(String message) {
-        text.styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(message))));
+        text.styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, MutableText.of(new LiteralTextContent(message)))));
         return this;
     }
 
@@ -98,7 +98,7 @@ public class Message {
     }
 
     public Message filler(String symbol) {
-        text.append(new LiteralText(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol + Formatting.RESET + " "));
+        text.append(MutableText.of(new LiteralTextContent(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol + Formatting.RESET + " ")));
         return this;
     }
 

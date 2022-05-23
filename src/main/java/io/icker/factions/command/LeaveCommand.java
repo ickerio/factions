@@ -20,7 +20,7 @@ public class LeaveCommand implements Command<ServerCommandSource> {
         Member member = Member.get(player.getUuid());
         Faction faction = member.getFaction();
 
-        new Message(player.getName().asString() + " left").send(faction);
+        new Message(player.getName().getContent().toString() + " left").send(faction);
         member.remove();
         context.getSource().getServer().getPlayerManager().sendCommandTree(player);
 

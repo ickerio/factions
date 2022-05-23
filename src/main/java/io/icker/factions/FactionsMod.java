@@ -10,7 +10,7 @@ import io.icker.factions.event.ServerEvents;
 import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.PermissionsWrapper;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.PlayerManager;
@@ -37,7 +37,7 @@ public class FactionsMod implements ModInitializer {
         if (PermissionsWrapper.exists()) {
             LOGGER.info("Permissions Mod was found");
         }
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             CommandRegistry.register(dispatcher);
         });
 
