@@ -70,7 +70,7 @@ public class HomeCommand {
                 player.getWorld().getRegistryKey().getValue().toString()
         );
 
-        new Message("%s set home to %.2f, %.2f, %.2f", player.getName().getContent().toString(), home.x, home.y, home.z).send(faction);
+        new Message("%s set home to %.2f, %.2f, %.2f", player.getName().getString(), home.x, home.y, home.z).send(faction);
         return 1;
     }
 

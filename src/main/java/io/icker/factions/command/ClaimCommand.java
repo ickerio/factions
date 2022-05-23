@@ -75,7 +75,7 @@ public class ClaimCommand {
         if (existingClaim == null) {
             Faction faction = member.getFaction();
             faction.addClaim(chunkPos.x, chunkPos.z, dimension);
-            new Message("%s claimed chunk (%d, %d)", player.getName().getContent().toString(), chunkPos.x, chunkPos.z).send(faction);
+            new Message("%s claimed chunk (%d, %d)", player.getName().getString(), chunkPos.x, chunkPos.z).send(faction);
             return 1;
         }
 
@@ -124,7 +124,7 @@ public class ClaimCommand {
         }
 
         existingClaim.remove();
-        new Message("%s removed claim at chunk (%d, %d)", player.getName().getContent().toString(), existingClaim.x, existingClaim.z).send(faction);
+        new Message("%s removed claim at chunk (%d, %d)", player.getName().getString(), existingClaim.x, existingClaim.z).send(faction);
         return 1;
     }
 
@@ -135,7 +135,7 @@ public class ClaimCommand {
         Faction faction = Member.get(player.getUuid()).getFaction();
 
         faction.removeAllClaims();
-        new Message("%s removed all claims", player.getName().getContent().toString()).send(faction);
+        new Message("%s removed all claims", player.getName().getString()).send(faction);
         return 1;
     }
 }

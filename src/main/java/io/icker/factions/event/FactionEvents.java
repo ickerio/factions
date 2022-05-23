@@ -18,7 +18,7 @@ public class FactionEvents {
         Faction faction = member.getFaction();
 
         int adjusted = adjustPower(faction, -Config.POWER_DEATH_PENALTY);
-        new Message("%s lost %d power from dying", player.getName().getContent().toString(), adjusted).send(faction);
+        new Message("%s lost %d power from dying", player.getName().getString(), adjusted).send(faction);
     }
 
     public static void powerTick(ServerPlayerEntity player) {
@@ -29,7 +29,7 @@ public class FactionEvents {
 
         int adjusted = adjustPower(faction, Config.TICKS_FOR_POWER_REWARD);
         if (adjusted != 0)
-            new Message("%s gained %d power from surviving", player.getName().getContent().toString(), adjusted).send(faction);
+            new Message("%s gained %d power from surviving", player.getName().getString(), adjusted).send(faction);
     }
 
     public static int adjustPower(Faction faction, int adjustment) {

@@ -7,68 +7,62 @@ import io.icker.factions.database.PlayerConfig;
 import io.icker.factions.database.PlayerConfig.ChatOption;
 import io.icker.factions.util.Message;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.UUID;
 
 public class ChatEvents {
-    public static void handleMessage(ServerPlayerEntity sender, String message) {
+    public static Text handleMessage(ServerPlayerEntity sender, String message) {
         UUID id = sender.getUuid();
         Member member = Member.get(id);
 
         if (PlayerConfig.get(id).chat == ChatOption.GLOBAL) {
             if (member == null) {
-                ChatEvents.global(sender, message);
+                return ChatEvents.global(sender, message);
             } else {
-                ChatEvents.memberGlobal(sender, member.getFaction(), message);
+                return ChatEvents.memberGlobal(sender, member.getFaction(), message);
             }
         } else {
             if (member == null) {
-                ChatEvents.fail(sender);
+                return ChatEvents.fail(sender);
             } else {
-                ChatEvents.faction(sender, member.getFaction(), message);
+                return ChatEvents.faction(sender, member.getFaction(), message);
             }
         }
     }
 
-    public static void global(ServerPlayerEntity sender, String message) {
-        FactionsMod.LOGGER.info("[" + sender.getName().getContent().toString() + " -> All] " + message);
-        new Message(sender.getName().getContent().toString())
-                .filler("»")
-                .add(new Message(message).format(Formatting.GRAY))
-                .sendToGlobalChat();
+    public static Text global(ServerPlayerEntity sender, String message) {
+        return new Message(message).format(Formatting.GRAY)
+                .raw();
     }
 
-    public static void memberGlobal(ServerPlayerEntity sender, Faction faction, String message) {
-        FactionsMod.LOGGER.info("[" + faction.name + " " + sender.getName().getContent().toString() + " -> All] " + message);
+    public static Text memberGlobal(ServerPlayerEntity sender, Faction faction, String message) {
         String rank = "";
         for (Member member : faction.getMembers())
             if (member.uuid.equals(sender.getUuid()))
                 rank = member.getRank().name().toLowerCase().replace("_", " ");
 
-        new Message("")
+        return new Message("")
                 .add(new Message(faction.name).format(Formatting.BOLD, faction.color))
-                .add(" " + rank)
-                .add(" " + sender.getName().getContent().toString())
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))
-                .sendToGlobalChat();
+                .raw();
     }
 
-    public static void fail(ServerPlayerEntity sender) {
-        new Message("You must be in a faction to use faction chat")
+    public static Text fail(ServerPlayerEntity sender) {
+        return new Message("You must be in a faction to use faction chat")
                 .hover("Click to join global chat")
                 .click("/f chat global")
                 .fail()
-                .send(sender, false);
+                .raw();
     }
 
-    public static void faction(ServerPlayerEntity sender, Faction faction, String message) {
-        FactionsMod.LOGGER.info("[" + faction.name + " " + sender.getName().getContent().toString() + " -> " + faction.name + "] " + message);
-        new Message(sender.getName().getContent().toString())
-                .add(new Message(" F").format(Formatting.BOLD, faction.color))
+    public static Text faction(ServerPlayerEntity sender, Faction faction, String message) {
+        return new Message("")
+                .add(new Message("F").format(Formatting.BOLD, faction.color))
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))
-                .sendToFactionChat(faction);
+                .raw();
     }
 }
