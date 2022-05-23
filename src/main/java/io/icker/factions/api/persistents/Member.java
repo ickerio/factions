@@ -3,6 +3,7 @@ package io.icker.factions.api.persistents;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.AddMemberEvent;
 import io.icker.factions.api.events.RemoveMemberEvent;
+import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.database.Persistent;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Name("Member")
 public class Member implements Persistent {
-    private static final HashMap<UUID, Member> STORE = new HashMap<UUID, Member>();
+    private static final HashMap<UUID, Member> STORE = Database.load(Member.class, m -> m.getPlayerID());
 
     public enum Rank {
         OWNER,
@@ -60,6 +61,10 @@ public class Member implements Persistent {
         STORE.put(member.playerID, member);
         AddMemberEvent.run(member);
         FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.playerID));
+    }
+
+    public UUID getPlayerID() {
+        return playerID;
     }
 
     public Faction getFaction() {

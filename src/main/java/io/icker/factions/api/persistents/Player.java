@@ -3,12 +3,14 @@ package io.icker.factions.api.persistents;
 import java.util.HashMap;
 import java.util.UUID;
 
+import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
+import io.icker.factions.database.Persistent;
 
 @Name("Player")
-public class Player {
-    private static final HashMap<UUID, Player> STORE = new HashMap<UUID, Player>();
+public class Player implements Persistent {
+    private static final HashMap<UUID, Player> STORE = Database.load(Player.class, p -> p.getID());
 
     public enum ChatOption {
         FOCUS,
@@ -17,16 +19,16 @@ public class Player {
     }
 
     @Field("ID")
-    public UUID id;
+    private final UUID id;
 
     @Field("Chat")
-    public ChatOption chat;
+    private ChatOption chat;
 
     @Field("Bypass")
-    public boolean bypass;
+    private boolean bypass;
 
     @Field("ZoneMessage")
-    public boolean zoneMessage;
+    private boolean zoneMessage;
 
     public Player(UUID id, ChatOption chat, boolean bypass, boolean zoneMessage) {
         this.id = id;
@@ -35,11 +37,19 @@ public class Player {
         this.zoneMessage = zoneMessage;
     }
 
+    public String getKey() {
+        return id.toString();
+    }
+
     public static Player get(UUID id) {
         return STORE.get(id);
     }
 
     public static void add(Player player) {
         STORE.put(player.id, player);
+    }
+
+    public UUID getID() {
+        return id;
     }
 }

@@ -3,10 +3,10 @@ package io.icker.factions.database;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import io.icker.factions.FactionsMod;
 import net.minecraft.nbt.NbtCompound;
@@ -16,7 +16,7 @@ public class Database {
     private static final File BASE_PATH = new File("factions");
     private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<Class<?>, HashMap<String, Field>>();
 
-    public static <T extends Persistent> void setup(Class<T> clazz) {
+    private static <T extends Persistent> void setup(Class<T> clazz) {
         String name = clazz.getAnnotation(Name.class).value();
         File directory = new File(BASE_PATH, name);
 
@@ -39,14 +39,15 @@ public class Database {
         cache.put(clazz, fields);
     }
 
-    public static <T extends Persistent> List<T> load(Class<T> clazz) {
+    public static <T extends Persistent, E> HashMap<E, T> load(Class<T> clazz, Function<T, E> getStoreKey) {
         String name = clazz.getAnnotation(Name.class).value();
+        if (!cache.containsKey(clazz)) setup(clazz);
         HashMap<String, Field> fields = cache.get(clazz);
 
         File directory = new File(BASE_PATH, name);
         File files[] = directory.listFiles();
 
-        ArrayList<T> items = new ArrayList<T>();
+        HashMap<E, T> store = new HashMap<E, T>();
 
         for (File file : files) {
             try {
@@ -62,14 +63,14 @@ public class Database {
                     field.set(item, element);
                 }
 
-                items.add(item);
+                store.put(getStoreKey.apply(item), item);
 
             } catch (IOException | ReflectiveOperationException e) {
                 FactionsMod.LOGGER.error("Failed to read NBT data");
             }
         }
 
-        return items;
+        return store;
     }
 
     public static <T extends Persistent> void save(Class<T> clazz, List<T> items) {

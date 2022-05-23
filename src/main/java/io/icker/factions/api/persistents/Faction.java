@@ -2,7 +2,6 @@ package io.icker.factions.api.persistents;
 
 import net.minecraft.util.Formatting;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -13,16 +12,17 @@ import io.icker.factions.api.events.PowerChangeEvent;
 import io.icker.factions.api.events.RemoveAllClaimsEvent;
 import io.icker.factions.api.events.RemoveFactionEvent;
 import io.icker.factions.api.events.UpdateFactionEvent;
+import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.database.Persistent;
 
 @Name("Faction")
 public class Faction implements Persistent {
-    private static final HashMap<UUID, Faction> STORE = new HashMap<UUID, Faction>();
+    private static final HashMap<UUID, Faction> STORE = Database.load(Faction.class, f -> f.getID());
 
     @Field("ID")
-    private UUID id;
+    private final UUID id;
 
     @Field("Name")
     private String name;
@@ -71,6 +71,10 @@ public class Faction implements Persistent {
             .collect(Collectors.toList());
     }
 
+    public UUID getID() {
+        return id;
+    }
+
     public void setName(String name) {
         this.name = name;
         UpdateFactionEvent.run(this);
@@ -110,7 +114,8 @@ public class Faction implements Persistent {
     }
 
     public void removeAllClaims() {
-        // TODO
+        // TODO 
+        // RemoveAllClaimsEvent
     }
 
     public void addClaim(int x, int z, String level) {

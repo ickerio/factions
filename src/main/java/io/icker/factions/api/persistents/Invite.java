@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.database.Persistent;
 
 @Name("Invite")
 public class Invite implements Persistent {
-    private static final HashMap<String, Invite> STORE = new HashMap<String, Invite>();
+    private static final HashMap<String, Invite> STORE = Database.load(Invite.class, i -> i.getKey());
 
     @Field("PlayerID")
     private UUID playerID;

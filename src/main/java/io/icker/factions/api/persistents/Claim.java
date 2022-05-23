@@ -7,25 +7,26 @@ import java.util.stream.Collectors;
 
 import io.icker.factions.api.events.AddClaimEvent;
 import io.icker.factions.api.events.RemoveClaimEvent;
+import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.database.Persistent;
 
 @Name("Claim")
 public class Claim implements Persistent {
-    private static final HashMap<String, Claim> STORE = new HashMap<String, Claim>();
+    private static final HashMap<String, Claim> STORE = Database.load(Claim.class, c -> c.getKey());
 
     @Field("X")
-    private int x;
+    public final int x;
 
     @Field("Z")
-    private int z;
+    public final int z;
 
     @Field("Level")
-    private String level;
+    public final String level;
 
     @Field("FactionID")
-    private UUID factionID;
+    public final UUID factionID;
 
     public Claim(int x, int z, String level, UUID factionID) {
         this.x = x;
