@@ -114,8 +114,10 @@ public class Faction implements Persistent {
     }
 
     public void removeAllClaims() {
-        // TODO 
-        // RemoveAllClaimsEvent
+        Claim.getByFaction(id)
+            .stream()
+            .forEach(c -> c.remove());
+        RemoveAllClaimsEvent.run(this);
     }
 
     public void addClaim(int x, int z, String level) {

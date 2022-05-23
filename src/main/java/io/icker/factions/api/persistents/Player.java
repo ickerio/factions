@@ -52,4 +52,28 @@ public class Player implements Persistent {
     public UUID getID() {
         return id;
     }
+
+    public ChatOption getChatOption() {
+        return chat;
+    }
+
+    public boolean isBypassOn() {
+        return bypass;
+    }
+
+    public boolean isZoneOn() {
+        return zoneMessage;
+    }
+
+    public void setChatOption(ChatOption chat) {
+        this.chat = chat;
+    }
+
+    public void setBypass(boolean bypass) {
+        this.bypass = bypass;
+    }
+
+    public void setZoneMessage(boolean zoneMessage) {
+        this.zoneMessage = zoneMessage;
+    }
 }
