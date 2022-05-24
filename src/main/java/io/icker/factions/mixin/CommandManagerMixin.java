@@ -18,6 +18,7 @@ public abstract class CommandManagerMixin {
     @Final
     private CommandDispatcher<ServerCommandSource> dispatcher;
 
+    // TODO delete... is this even used anymore?
     @Inject(at = @At("RETURN"), method = "<init>")
     private void onRegister(CommandManager.RegistrationEnvironment arg, CallbackInfo info) {
         FactionsMod.registerCommands(dispatcher);

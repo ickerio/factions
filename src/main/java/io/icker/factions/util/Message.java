@@ -74,8 +74,8 @@ public class Message {
 
     public void sendToGlobalChat() {
         for (ServerPlayerEntity player : manager.getPlayerList()) {
-            Member.ChatOption option = Member.get(player.getUuid()).getChatOption();
-            if (option != Member.ChatOption.FOCUS) player.sendMessage(text, false);
+            Member.ChatMode option = Member.get(player.getUuid()).getChatMode();
+            if (option != Member.ChatMode.FOCUS) player.sendMessage(text, false);
         }
     }
 

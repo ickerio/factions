@@ -46,7 +46,7 @@ public class FactionsMod implements ModInitializer {
             LOGGER.info("Permissions Mod was found");
         }
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-            CommandRegistry.register(dispatcher);
+            registerCommands(dispatcher);
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
@@ -60,20 +60,20 @@ public class FactionsMod implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            ServerEvents.stopped(server);
+            //ServerEvents.stopped(server);
         });
 
         UpdateFactionEvent.register((faction) -> {
-            List<ServerPlayerEntity> players = faction.getMembers().stream().map(member -> FactionsMod.playerManager.getPlayer(member.getPlayerID())).toList();
+            List<ServerPlayerEntity> players = faction.getMembers().stream().map(member -> FactionsMod.playerManager.getPlayer(member.getID())).toList();
             FactionEvents.updatePlayerList(players);
         });
 
         AddMemberEvent.register((member) -> {
-            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.getPlayerID()));
+            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.getID()));
         });
 
         RemoveMemberEvent.register((member) -> {
-            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.getPlayerID()));
+            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.getID()));
         });
     }
 
