@@ -6,11 +6,13 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 import io.icker.factions.FactionsMod;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
+import org.apache.commons.io.FilenameUtils;
 
 public class Database {
     private static final File BASE_PATH = new File("factions");
@@ -66,9 +68,11 @@ public class Database {
                 store.put(getStoreKey.apply(item), item);
 
             } catch (IOException | ReflectiveOperationException e) {
-                FactionsMod.LOGGER.error("Failed to read NBT data");
+                FactionsMod.LOGGER.error("Failed to read NBT data", e);
             }
         }
+
+        FactionsMod.LOGGER.info(store.toString());
 
         return store;
     }

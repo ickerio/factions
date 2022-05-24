@@ -1,7 +1,5 @@
 package io.icker.factions.util;
 
-import io.icker.factions.FactionsMod;
-import io.icker.factions.api.*;
 import io.icker.factions.api.events.AddClaimEvent;
 import io.icker.factions.api.events.AddMemberEvent;
 import io.icker.factions.api.events.PowerChangeEvent;

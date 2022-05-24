@@ -17,16 +17,16 @@ public class Claim implements Persistent {
     private static final HashMap<String, Claim> STORE = Database.load(Claim.class, c -> c.getKey());
 
     @Field("X")
-    public final int x;
+    public int x;
 
     @Field("Z")
-    public final int z;
+    public int z;
 
     @Field("Level")
-    public final String level;
+    public String level;
 
     @Field("FactionID")
-    public final UUID factionID;
+    public UUID factionID;
 
     public Claim(int x, int z, String level, UUID factionID) {
         this.x = x;
@@ -35,12 +35,14 @@ public class Claim implements Persistent {
         this.factionID = factionID;
     }
 
+    public Claim() { ; }
+
     public String getKey() {
-        return String.format("%s/%i-%i", level, x, z);
+        return String.format("%s/%d-%d", level, x, z);
     }
 
     public static Claim get(int x, int z, String level) {
-        return STORE.get(String.format("%s/%i-%i", level, x, z));
+        return STORE.get(String.format("%s/%d-%d", level, x, z));
     }
 
     public static List<Claim> getByFaction(UUID factionID) {
@@ -62,5 +64,9 @@ public class Claim implements Persistent {
     public void remove() {
         STORE.remove(getKey());
         RemoveClaimEvent.run(this);
+    }
+
+    public static void save() {
+        Database.save(Claim.class, STORE.values().stream().toList());
     }
 }

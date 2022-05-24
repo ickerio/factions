@@ -1,5 +1,6 @@
 package io.icker.factions.event;
 
+import io.icker.factions.api.persistents.*;
 import io.icker.factions.util.Message;
 import net.minecraft.server.MinecraftServer;
 
@@ -10,6 +11,11 @@ public class ServerEvents {
     }
 
     public static void save() {
-        // TODO: Add save code
+        Claim.save();
+        Faction.save();
+        Home.save();
+        Invite.save();
+        Member.save();
+        Relationship.save();
     }
 }

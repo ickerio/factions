@@ -1,17 +1,11 @@
 package io.icker.factions.api.persistents;
 
+import io.icker.factions.api.events.*;
 import net.minecraft.util.Formatting;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import io.icker.factions.api.events.PowerChangeEvent;
-import io.icker.factions.api.events.RemoveAllClaimsEvent;
-import io.icker.factions.api.events.RemoveFactionEvent;
-import io.icker.factions.api.events.UpdateFactionEvent;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -22,7 +16,7 @@ public class Faction implements Persistent {
     private static final HashMap<UUID, Faction> STORE = Database.load(Faction.class, f -> f.getID());
 
     @Field("ID")
-    private final UUID id;
+    private UUID id;
 
     @Field("Name")
     private String name;
@@ -48,6 +42,8 @@ public class Faction implements Persistent {
         this.power = power;
     }
 
+    public Faction() { ; }
+
     public String getKey() {
         return id.toString();
     }
@@ -57,11 +53,11 @@ public class Faction implements Persistent {
     }
 
     public static Faction getByName(String name) {
-        return STORE.values()
+        Optional<Faction> faction = STORE.values()
             .stream()
-            .filter(f -> f.name == name)
-            .findFirst()
-            .get();
+            .filter(f -> f.name.equals(name))
+            .findFirst();
+        return faction.orElse(null);
     }
 
     public static void add(Faction faction) {
@@ -159,5 +155,9 @@ public class Faction implements Persistent {
     public void remove() {
         STORE.remove(id);
         RemoveFactionEvent.run(this);
+    }
+
+    public static void save() {
+        Database.save(Faction.class, STORE.values().stream().toList());
     }
 }

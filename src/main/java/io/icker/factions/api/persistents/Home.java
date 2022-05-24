@@ -14,25 +14,25 @@ public class Home implements Persistent {
     private static final HashMap<UUID, Home> STORE = Database.load(Home.class, h -> h.factionID);
 
     @Field("FactionID")
-    public final UUID factionID;
+    public UUID factionID;
 
     @Field("X")
-    public final double x;
+    public double x;
 
     @Field("Y")
-    public final double y;
+    public double y;
 
     @Field("Z")
-    public final double z;
+    public double z;
 
     @Field("Yaw")
-    public final float yaw;
+    public float yaw;
 
     @Field("Pitch")
-    public final float pitch;
+    public float pitch;
 
     @Field("Level")
-    public final String level;
+    public String level;
 
     public Home(UUID factionID, double x, double y, double z, float yaw, float pitch, String level) {
         this.factionID = factionID;
@@ -43,6 +43,8 @@ public class Home implements Persistent {
         this.pitch = pitch;
         this.level = level;
     }
+
+    public Home() { ; }
 
     public String getKey() {
         return factionID.toString();
@@ -55,5 +57,9 @@ public class Home implements Persistent {
     public static void set(Home home) {
         STORE.put(home.factionID, home);
         SetHomeEvent.run(Faction.get(home.factionID), home);
+    }
+
+    public static void save() {
+        Database.save(Home.class, STORE.values().stream().toList());
     }
 }

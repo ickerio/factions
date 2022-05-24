@@ -25,6 +25,8 @@ public class Invite implements Persistent {
         this.factionID = factionID;
     }
 
+    public Invite() { ; }
+
     public String getKey() {
         return playerID.toString() + "-" + factionID.toString();
     }
@@ -61,5 +63,9 @@ public class Invite implements Persistent {
 
     public void remove() {
         STORE.remove(getKey());
+    }
+
+    public static void save() {
+        Database.save(Invite.class, STORE.values().stream().toList());
     }
 }

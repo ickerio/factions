@@ -33,6 +33,7 @@ public class Relationship implements Persistent {
         this.status = status;
     }
 
+    public Relationship() { ; }
     public String getKey() {
         return source.toString() + "-" + target.toString();   
     }
@@ -51,5 +52,9 @@ public class Relationship implements Persistent {
 
     public boolean mutuallyAllies() {
         return status == Status.ALLY && status == getReverse().status;
+    }
+
+    public static void save() {
+        Database.save(Relationship.class, STORE.values().stream().toList());
     }
 }

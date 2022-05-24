@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import io.icker.factions.api.events.AddMemberEvent;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -52,11 +53,16 @@ public class Member implements Persistent {
         this.zoneMessage = zoneMessage;
     }
 
+    public Member() { ; }
+
     public String getKey() {
         return id.toString();
     }
 
     public static Member get(UUID id) {
+        if (!STORE.containsKey(id)) {
+            Member.add(new Member(id, ChatMode.GLOBAL, false, false));
+        }
         return STORE.get(id);
     }
 
@@ -114,16 +120,22 @@ public class Member implements Persistent {
     public void joinFaction(UUID factionID, Rank rank) {
         this.factionID = factionID;
         this.rank = rank;
+        AddMemberEvent.run(this);
         // TODO AddMemberEvent -> JoinFactionEvent
     }
 
     public void leaveFaction() {
         factionID = null;
         rank = null;
+        AddMemberEvent.run(this);
         // TODO RemoveMemberEvent -> LeaveFactionEvent
     }
 
     public void changeRank(Rank rank) {
         this.rank = rank;
+    }
+
+    public static void save() {
+        Database.save(Member.class, STORE.values().stream().toList());
     }
 }
