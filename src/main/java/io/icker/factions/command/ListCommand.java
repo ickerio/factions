@@ -25,15 +25,21 @@ public class ListCommand implements Command {
         new Message("There %s ", size == 1 ? "is" : "are")
                 .add(new Message(String.valueOf(size)).format(Formatting.YELLOW))
                 .add(" faction%s", size == 1 ? "" : "s")
-                .send(source.getPlayer(), false);
+                .send(player, false);
 
-        factions.forEach(f -> InfoCommand.info(player, f));
-        // TODO, rewrite to just show a comma seperated
-        // and when clicked, it runs the full info command
+        if (size == 0) return 1;
+
+        Message list = new Message("");
+        for (Faction faction : factions) {
+            String name = faction.getName();
+            list.add(new Message(name).click("/factions info " + name).format(faction.getColor())).add(", ");
+        }
+
+        list.send(player, false);
         return 1;
     }
 
-    @Override
+    // TODO list, list allies, list neutral, list enemies
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("list")

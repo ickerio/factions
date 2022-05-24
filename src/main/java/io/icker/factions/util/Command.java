@@ -20,19 +20,19 @@ public interface Command {
         boolean run(Member member);
 
         public static Predicate<ServerCommandSource> isFactionless() {
-            return require(player -> !player.isInFaction());
+            return require(member -> !member.isInFaction());
         }
 
         public static Predicate<ServerCommandSource> isMember() {
-            return require(member -> member.getRank() == Rank.MEMBER);
+            return require(member -> member.isInFaction());
         }
 
         public static Predicate<ServerCommandSource> isCommander() {
-            return require(member -> member.getRank() == Rank.COMMANDER);
+            return require(member -> member.getRank() == Rank.COMMANDER || member.getRank() == Rank.LEADER || member.getRank() == Rank.OWNER);
         }
 
         public static Predicate<ServerCommandSource> isLeader() {
-            return require(member -> member.getRank() == Rank.LEADER);
+            return require(member -> member.getRank() == Rank.LEADER || member.getRank() == Rank.OWNER);
         }
 
         public static Predicate<ServerCommandSource> isOwner() {

@@ -3,8 +3,7 @@ package io.icker.factions.event;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Member;
-import io.icker.factions.api.persistents.Player;
-import io.icker.factions.api.persistents.Player.ChatOption;
+import io.icker.factions.api.persistents.Member.ChatMode;
 import io.icker.factions.util.Message;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
@@ -16,20 +15,22 @@ public class ChatEvents {
         UUID id = sender.getUuid();
         Member member = Member.get(id);
 
-        if (Player.get(id).chat == ChatOption.GLOBAL) {
-            if (member == null) {
-                ChatEvents.global(sender, message);
+        if (member.getChatMode() == ChatMode.GLOBAL) {
+            if (member.isInFaction()) {
+                ChatEvents.inFactionGlobal(sender, member.getFaction(), message);
             } else {
-                ChatEvents.memberGlobal(sender, member.getFaction(), message);
+                ChatEvents.global(sender, message);
             }
         } else {
-            if (member == null) {
-                ChatEvents.fail(sender);
-            } else {
+            if (member.isInFaction()) {
                 ChatEvents.faction(sender, member.getFaction(), message);
+            } else {
+                ChatEvents.fail(sender);
             }
         }
     }
+
+    
 
     public static void global(ServerPlayerEntity sender, String message) {
         FactionsMod.LOGGER.info("[" + sender.getName().asString() + " -> All] " + message);
@@ -39,15 +40,15 @@ public class ChatEvents {
                 .sendToGlobalChat();
     }
 
-    public static void memberGlobal(ServerPlayerEntity sender, Faction faction, String message) {
-        FactionsMod.LOGGER.info("[" + faction.name + " " + sender.getName().asString() + " -> All] " + message);
+    public static void inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
+        FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> All] " + message);
         String rank = "";
         for (Member member : faction.getMembers())
-            if (member.uuid.equals(sender.getUuid()))
+            if (member.getID().equals(sender.getUuid()))
                 rank = member.getRank().name().toLowerCase().replace("_", " ");
 
         new Message("")
-                .add(new Message(faction.name).format(Formatting.BOLD, faction.color))
+                .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
                 .add(" " + rank)
                 .add(" " + sender.getName().asString())
                 .filler("»")
@@ -64,9 +65,9 @@ public class ChatEvents {
     }
 
     public static void faction(ServerPlayerEntity sender, Faction faction, String message) {
-        FactionsMod.LOGGER.info("[" + faction.name + " " + sender.getName().asString() + " -> " + faction.name + "] " + message);
+        FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> " + faction.getName() + "] " + message);
         new Message(sender.getName().asString())
-                .add(new Message(" F").format(Formatting.BOLD, faction.color))
+                .add(new Message(" F").format(Formatting.BOLD, faction.getColor()))
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))
                 .sendToFactionChat(faction);

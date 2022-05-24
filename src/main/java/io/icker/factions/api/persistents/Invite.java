@@ -33,7 +33,7 @@ public class Invite implements Persistent {
         return STORE.get(playerID.toString() + "-" + factionID.toString());
     }
 
-    public UUID getPlayer() {
+    public UUID getPlayerID() {
         return playerID;
     }
 

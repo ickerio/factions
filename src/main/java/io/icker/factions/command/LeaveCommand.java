@@ -36,7 +36,6 @@ public class LeaveCommand implements Command {
         return 1;
     }
 
-    @Override
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("leave")

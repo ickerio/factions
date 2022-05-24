@@ -3,8 +3,7 @@ package io.icker.factions;
 import io.icker.factions.api.events.AddMemberEvent;
 import io.icker.factions.api.events.RemoveMemberEvent;
 import io.icker.factions.api.events.UpdateFactionEvent;
-import io.icker.factions.command.ChatCommand;
-import io.icker.factions.command.CommandRegistry;
+import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
 import io.icker.factions.database.Database;
 import io.icker.factions.event.FactionEvents;
@@ -92,7 +91,24 @@ public class FactionsMod implements ModInitializer {
 		dispatcher.getRoot().addChild(alias);
 
 		Command[] commands = new Command[] {
+            new AdminCommand(),
 			new ChatCommand(),
+            new ClaimCommand(),
+            new CreateCommand(),
+            new DeclareCommand(),
+            new DisbandCommand(),
+            new HomeCommand(),
+            new InfoCommand(),
+            new InviteCommand(),
+            new JoinCommand(),
+            new KickCommand(),
+            new LeaveCommand(),
+            new ListCommand(),
+            new MapCommand(),
+            new ModifyCommand(),
+            new RankCommand(),
+            new TransferOwnerCommand(),
+            new ZoneMsgCommand()
 		};
 
 		for (Command command : commands) {

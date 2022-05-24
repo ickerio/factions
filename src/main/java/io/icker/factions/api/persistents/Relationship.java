@@ -48,4 +48,8 @@ public class Relationship implements Persistent {
     public Relationship getReverse() {
         return get(target, source);
     }
+
+    public boolean mutuallyAllies() {
+        return status == Status.ALLY && status == getReverse().status;
+    }
 }

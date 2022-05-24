@@ -1,7 +1,8 @@
 package io.icker.factions.mixin;
 
 import com.mojang.brigadier.CommandDispatcher;
-import io.icker.factions.command.CommandRegistry;
+
+import io.icker.factions.FactionsMod;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.spongepowered.asm.mixin.Final;
@@ -19,6 +20,6 @@ public abstract class CommandManagerMixin {
 
     @Inject(at = @At("RETURN"), method = "<init>")
     private void onRegister(CommandManager.RegistrationEnvironment arg, CallbackInfo info) {
-        CommandRegistry.register(dispatcher);
+        FactionsMod.registerCommands(dispatcher);
     }
 }

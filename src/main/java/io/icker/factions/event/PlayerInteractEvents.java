@@ -1,10 +1,9 @@
 package io.icker.factions.event;
 
-import io.icker.factions.api.persistents.Ally;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Member;
-import io.icker.factions.api.persistents.Player;
+import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.config.Config;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
@@ -56,12 +55,12 @@ public class PlayerInteractEvents {
         return PlayerInteractEvents.preventFriendlyFire(player, target.getUuid());
     }
 
-    public static boolean preventFriendlyFire(ServerPlayerEntity player, UUID target) {
-        Member playerMember = Member.get(player.getUuid());
-        Member targetMember = Member.get(target);
+    public static boolean preventFriendlyFire(ServerPlayerEntity player, UUID targetID) {
+        Member source = Member.get(player.getUuid());
+        Member target = Member.get(targetID);
 
-        if (playerMember == null || targetMember == null) return false;
-        return ((playerMember.getFaction().name == targetMember.getFaction().name || Ally.checkIfAlly(playerMember.getFaction().name, targetMember.getFaction().name))) && !Config.FRIENDLY_FIRE;
+        if (source.isInFaction() && target.isInFaction()) return false; // TODO check this isn't broken
+        return (source.getFaction().getID() == target.getFaction().getID() || Relationship.get(source.getFaction().getID(), target.getFaction().getID()).mutuallyAllies()) && !Config.FRIENDLY_FIRE;
     }
 
     public static void warnPlayer(ServerPlayerEntity target, String action) {
@@ -71,12 +70,12 @@ public class PlayerInteractEvents {
     }
 
     public static boolean actionPermitted(BlockPos pos, World world, ServerPlayerEntity player) {
-        Player config = Player.get(player.getUuid());
-        if (config.bypass) {
+        Member member = Member.get(player.getUuid());
+        if (member.isBypassOn()) {
             if (player.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL)) {
                 return true;
             } else {
-                config.setBypass(false);
+                member.setBypass(false);
             }
         }
 
@@ -86,22 +85,21 @@ public class PlayerInteractEvents {
         Claim claim = Claim.get(actionPos.x, actionPos.z, dimension);
         if (claim == null) return true;
 
-        Member member = Member.get(player.getUuid());
-        Faction owner = claim.getFaction();
-
-        if (member != null) {
-            String factionName = member.getFaction().name;
-            boolean overclaimed = owner.getClaims().size() * Config.CLAIM_WEIGHT > owner.power;
-            boolean validMember = factionName == owner.name;
-            boolean allied = Ally.checkIfAlly(owner.name, factionName);
-
-            boolean permitted = overclaimed || validMember || allied;
-            if (!permitted) syncBlocks(player, world, pos);
-            return permitted;
-        } else {
+        if (!member.isInFaction()) {
             syncBlocks(player, world, pos);
             return false;
         }
+
+        Faction claimOwner = claim.getFaction();
+        Faction memberFaction = member.getFaction();
+
+        boolean overclaimed = claimOwner.getClaims().size() * Config.CLAIM_WEIGHT > claimOwner.getPower();
+        boolean validMember = claimOwner.getID() == memberFaction.getID();
+        boolean allied = Relationship.get(claimOwner.getID(), memberFaction.getID()).mutuallyAllies();
+
+        boolean permitted = overclaimed || validMember || allied;
+        if (!permitted) syncBlocks(player, world, pos);
+        return permitted;
     }
 
     public static void syncItem(ServerPlayerEntity player, ItemStack itemStack, Hand hand) {
@@ -127,7 +125,7 @@ public class PlayerInteractEvents {
     }
 
     public static void onMove(ServerPlayerEntity player) {
-        if (Config.ZONE_MESSAGE && Player.get(player.getUuid()).currentZoneMessage) {
+        if (Config.ZONE_MESSAGE && Member.get(player.getUuid()).isZoneOn()) {
             ServerWorld world = player.getWorld();
             String dimension = world.getRegistryKey().getValue().toString();
 
@@ -136,8 +134,8 @@ public class PlayerInteractEvents {
             Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
             if (claim != null) {
-                new Message(claim.getFaction().name)
-                        .format(claim.getFaction().color)
+                new Message(claim.getFaction().getName())
+                        .format(claim.getFaction().getColor())
                         .send(player, true);
             } else {
                 new Message("Wilderness")

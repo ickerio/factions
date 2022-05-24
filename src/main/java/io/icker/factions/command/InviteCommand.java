@@ -3,24 +3,26 @@ package io.icker.factions.command;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Invite;
 import io.icker.factions.api.persistents.Member;
+import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class InviteCommand {
-    public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+public class InviteCommand implements Command {
+    private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
         List<Invite> invites = Member.get(source.getPlayer().getUuid()).getFaction().getInvites();
@@ -35,14 +37,14 @@ public class InviteCommand {
 
         UserCache cache = source.getServer().getUserCache();
         String players = invites.stream()
-                .map(invite -> cache.getByUuid(invite.getPlayer()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                .collect(Collectors.joining(", "));
+            .map(invite -> cache.getByUuid(invite.getPlayerID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+            .collect(Collectors.joining(", "));
 
         new Message(players).format(Formatting.ITALIC).send(source.getPlayer(), false);
         return 1;
     }
 
-    public static int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
         ServerCommandSource source = context.getSource();
@@ -70,7 +72,7 @@ public class InviteCommand {
         return 1;
     }
 
-    public static int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
         ServerCommandSource source = context.getSource();
@@ -81,5 +83,37 @@ public class InviteCommand {
 
         new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);
         return 1;
+    }
+
+    public LiteralCommandNode<ServerCommandSource> getNode() {
+        return CommandManager
+            .literal("invite")
+            .requires(Requires.hasPerms("factions.invite", 0))
+            .requires(Requires.isCommander())
+            .then(
+                CommandManager
+                .literal("list")
+                .requires(Requires.hasPerms("factions.invite.list", 0))
+                .executes(this::list)
+            )
+            .then(
+                CommandManager
+                .literal("add")
+                .requires(Requires.hasPerms("factions.invite.add", 0))
+                .then(
+                    CommandManager.argument("player", EntityArgumentType.player())
+                    .executes(this::add)
+                )
+            )
+            .then(
+                CommandManager
+                .literal("remove")
+                .requires(Requires.hasPerms("factions.invite.remove", 0))
+                .then(
+                    CommandManager.argument("player", EntityArgumentType.player())
+                    .executes(this::remove)
+                )
+            )
+            .build();
     }
 }

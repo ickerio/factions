@@ -13,7 +13,7 @@ import java.util.Collection;
 public class FactionEvents {
     public static void playerDeath(ServerPlayerEntity player) {
         Member member = Member.get(player.getUuid());
-        if (member == null) return;
+        if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();
 
@@ -23,7 +23,7 @@ public class FactionEvents {
 
     public static void powerTick(ServerPlayerEntity player) {
         Member member = Member.get(player.getUuid());
-        if (member == null) return;
+        if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();
 
@@ -35,9 +35,9 @@ public class FactionEvents {
     public static int adjustPower(Faction faction, int adjustment) {
         int maxPower = Config.BASE_POWER + (faction.getMembers().size() * Config.MEMBER_POWER);
 
-        int updated = Math.min(Math.max(0, faction.power + adjustment), maxPower);
+        int updated = Math.min(Math.max(0, faction.getPower() + adjustment), maxPower);
         faction.setPower(updated);
-        return Math.abs(updated - faction.power);
+        return Math.abs(updated - faction.getPower());
     }
 
     public static void updatePlayerList(ServerPlayerEntity player) {
