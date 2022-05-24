@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.AddClaimEvent;
 import io.icker.factions.api.events.RemoveClaimEvent;
 import io.icker.factions.database.Database;
@@ -38,11 +39,11 @@ public class Claim implements Persistent {
     public Claim() { ; }
 
     public String getKey() {
-        return String.format("%s/%d-%d", level, x, z);
+        return String.format("%s-%d-%d", level, x, z);
     }
 
     public static Claim get(int x, int z, String level) {
-        return STORE.get(String.format("%s/%d-%d", level, x, z));
+        return STORE.get(String.format("%s-%d-%d", level, x, z));
     }
 
     public static List<Claim> getByFaction(UUID factionID) {
@@ -67,6 +68,7 @@ public class Claim implements Persistent {
     }
 
     public static void save() {
+        FactionsMod.LOGGER.info(STORE);
         Database.save(Claim.class, STORE.values().stream().toList());
     }
 }

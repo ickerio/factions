@@ -102,7 +102,7 @@ public class Database {
                 NbtIo.writeCompressed(compound, file);
 
             } catch (IOException | ReflectiveOperationException e ) {
-                FactionsMod.LOGGER.error("Failed to write NBT data");
+                FactionsMod.LOGGER.error("Failed to write NBT data", e);
             }
         }
     }
