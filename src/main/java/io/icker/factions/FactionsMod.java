@@ -107,7 +107,6 @@ public class FactionsMod implements ModInitializer {
             new MapCommand(),
             new ModifyCommand(),
             new RankCommand(),
-            new TransferOwnerCommand(),
             new ZoneMsgCommand()
 		};
 
