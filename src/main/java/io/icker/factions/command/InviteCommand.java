@@ -16,13 +16,14 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class InviteCommand {
     public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        ArrayList<Invite> invites = Member.get(source.getPlayer().getUuid()).getFaction().getInvites();
+        List<Invite> invites = Member.get(source.getPlayer().getUuid()).getFaction().getInvites();
         int count = invites.size();
 
         new Message("You have ")
@@ -34,7 +35,7 @@ public class InviteCommand {
 
         UserCache cache = source.getServer().getUserCache();
         String players = invites.stream()
-                .map(invite -> cache.getByUuid(invite.playerId).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+                .map(invite -> cache.getByUuid(invite.getPlayer()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
                 .collect(Collectors.joining(", "));
 
         new Message(players).format(Formatting.ITALIC).send(source.getPlayer(), false);
@@ -48,22 +49,22 @@ public class InviteCommand {
         ServerPlayerEntity player = source.getPlayer();
 
         Faction faction = Member.get(source.getPlayer().getUuid()).getFaction();
-        Invite invite = Invite.get(target.getUuid(), faction.name);
+        Invite invite = Invite.get(target.getUuid(), faction.getID());
         if (invite != null) {
             new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
             return 0;
         }
 
         for (Member member : faction.getMembers())
-            if (member.uuid.equals(target.getUuid()))
+            if (member.getID().equals(target.getUuid()))
                 new Message(target.getName().getString() + " is already in your faction").format(Formatting.RED).send(player, false);
 
-        Invite.add(target.getUuid(), faction.name);
+        Invite.add(new Invite(target.getUuid(), faction.getID()));
 
         new Message(target.getName().getString() + " has been invited")
                 .send(faction);
         new Message("You have been invited to join this faction").format(Formatting.YELLOW)
-                .hover("Click to join").click("/factions join " + faction.name)
+                .hover("Click to join").click("/factions join " + faction.getName())
                 .prependFaction(faction)
                 .send(target, false);
         return 1;
@@ -76,7 +77,7 @@ public class InviteCommand {
         ServerPlayerEntity player = source.getPlayer();
 
         Faction faction = Member.get(player.getUuid()).getFaction();
-        new Invite(target.getUuid(), faction.name).remove();
+        new Invite(target.getUuid(), faction.getID()).remove();
 
         new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);
         return 1;

@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import io.icker.factions.api.persistents.Ally;
+import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Member;
 import io.icker.factions.config.Config;
@@ -17,6 +17,7 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class InfoCommand {
@@ -39,7 +40,7 @@ public class InfoCommand {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = Faction.get(factionName);
+        Faction faction = Faction.getByName(factionName);
         if (faction == null) {
             new Message("Faction does not exist").fail().send(player, false);
             return 0;
@@ -49,21 +50,21 @@ public class InfoCommand {
     }
 
     public static int info(ServerPlayerEntity player, Faction faction) {
-        ArrayList<Member> members = faction.getMembers();
+        List<Member> members = faction.getMembers();
 
-        ArrayList<Ally> allies = Ally.getAllies(faction.name);
+        //ArrayList<Ally> allies = Ally.getAllies(faction.name);
 
         String memberText = members.size() + (Config.MAX_FACTION_SIZE != -1 ? "/" + Config.MAX_FACTION_SIZE : (" member" + (members.size() != 1 ? "s" : "")));
-        String allyText = allies.size() + (allies.size() != 1 ? " allies" : " ally");
+        //String allyText = allies.size() + (allies.size() != 1 ? " allies" : " ally");
 
         UserCache cache = player.getServer().getUserCache();
         String membersList = members.stream()
-                .map(member -> cache.getByUuid(member.uuid).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+                .map(member -> cache.getByUuid(member.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
                 .collect(Collectors.joining(", "));
 
-        String alliesList = allies.stream()
-                .map(ally -> ally.target)
-                .collect(Collectors.joining(", "));
+        //String alliesList = allies.stream()
+        //        .map(ally -> ally.target)
+        //        .collect(Collectors.joining(", "));
 
         int requiredPower = faction.getClaims().size() * Config.CLAIM_WEIGHT;
         int maxPower = members.size() * Config.MEMBER_POWER + Config.BASE_POWER;
@@ -73,12 +74,12 @@ public class InfoCommand {
                         new Message(memberText)
                                 .hover(membersList))
                 .filler("·")
-                .add(
-                        new Message(allyText)
-                                .hover(alliesList))
+                .add("")
+                        //new Message(allyText)
+                        //        .hover(alliesList))
                 .filler("·")
                 .add(
-                        new Message(Formatting.GREEN.toString() + faction.power + slash() + requiredPower + slash() + maxPower)
+                        new Message(Formatting.GREEN.toString() + faction.getPower() + slash() + requiredPower + slash() + maxPower)
                                 .hover("Current / Required / Max")
                 )
                 .prependFaction(faction)

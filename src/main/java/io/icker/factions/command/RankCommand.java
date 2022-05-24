@@ -27,12 +27,12 @@ public class RankCommand {
         Faction faction = Member.get(player.getUuid()).getFaction();
 
         for (Member member : faction.getMembers())
-            if (member.uuid.equals(target.getUuid())) {
+            if (member.getID().equals(target.getUuid())) {
 
                 switch (member.getRank()) {
-                    case CIVILIAN -> member.updateRank(Member.Rank.OFFICER);
-                    case OFFICER -> member.updateRank(Member.Rank.CO_OWNER);
-                    case CO_OWNER -> {
+                    case MEMBER -> member.changeRank(Member.Rank.COMMANDER);
+                    case COMMANDER -> member.changeRank(Member.Rank.LEADER);
+                    case LEADER -> {
                         new Message("You cannot promote a member to owner").format(Formatting.RED).send(player, false);
                         return 0;
                     }
@@ -67,21 +67,21 @@ public class RankCommand {
         Faction faction = Member.get(player.getUuid()).getFaction();
 
         for (Member member : faction.getMembers())
-            if (member.uuid.equals(target.getUuid())) {
+            if (member.getID().equals(target.getUuid())) {
 
                 switch (member.getRank()) {
-                    case CIVILIAN -> {
+                    case MEMBER -> {
                         new Message("You cannot demote a civilian").format(Formatting.RED).send(player, false);
                         return 0;
                     }
-                    case OFFICER -> member.updateRank(Member.Rank.CIVILIAN);
-                    case CO_OWNER -> {
-                        if (Member.get(player.getUuid()).getRank() == Member.Rank.CO_OWNER) {
+                    case COMMANDER -> member.changeRank(Member.Rank.MEMBER);
+                    case LEADER -> {
+                        if (Member.get(player.getUuid()).getRank() == Member.Rank.LEADER) {
                             new Message("You cannot demote a fellow co-owner").format(Formatting.RED).send(player, false);
                             return 0;
                         }
 
-                        member.updateRank(Member.Rank.OFFICER);
+                        member.changeRank(Member.Rank.COMMANDER);
                     }
                     case OWNER -> {
                         new Message("You cannot demote the owner").format(Formatting.RED).send(player, false);

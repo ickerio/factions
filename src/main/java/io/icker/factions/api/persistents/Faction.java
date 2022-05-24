@@ -91,6 +91,14 @@ public class Faction implements Persistent {
         return Formatting.byName(color);
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public int getPower() {
+        return power;
+    }
+
     public boolean isOpen() {
         return open;
     }
