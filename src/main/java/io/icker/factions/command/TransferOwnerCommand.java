@@ -29,10 +29,10 @@ public class TransferOwnerCommand implements Command<ServerCommandSource> {
         Faction faction = Member.get(player.getUuid()).getFaction();
 
         for (Member member : faction.getMembers())
-            if (member.uuid.equals(target.getUuid())) {
+            if (member.getID().equals(target.getUuid())) {
 
-                member.updateRank(Member.Rank.OWNER);
-                Member.get(player.getUuid()).updateRank(Member.Rank.CO_OWNER);
+                member.changeRank(Member.Rank.OWNER);
+                Member.get(player.getUuid()).changeRank(Member.Rank.LEADER);
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(player);
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
