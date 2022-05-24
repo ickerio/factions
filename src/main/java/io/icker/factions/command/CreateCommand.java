@@ -28,7 +28,7 @@ public class CreateCommand implements Command {
             return 0;
         }
 
-        Faction faction = new Faction(name, "No description set", Formatting.WHITE.getName(), false, Config.BASE_POWER + Config.MEMBER_POWER);
+        Faction faction = new Faction(name, "No description set", Formatting.WHITE, false, Config.BASE_POWER + Config.MEMBER_POWER);
         Faction.add(faction);
         Member.get(player.getUuid()).joinFaction(faction.getID(), Rank.OWNER);
 

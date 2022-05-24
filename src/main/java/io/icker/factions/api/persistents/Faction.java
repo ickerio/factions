@@ -39,11 +39,11 @@ public class Faction implements Persistent {
     @Field("Power")
     private int power;
 
-    public Faction(String name, String description, String color, boolean open, int power) {
+    public Faction(String name, String description, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.description = description;
-        this.color = color;
+        this.color = color.getName();
         this.open = open;
         this.power = power;
     }

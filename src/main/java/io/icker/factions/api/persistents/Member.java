@@ -14,7 +14,7 @@ import io.icker.factions.database.Persistent;
 public class Member implements Persistent {
     private static final HashMap<UUID, Member> STORE = Database.load(Member.class, p -> p.getID());
 
-    public enum ChatOption {
+    public enum ChatMode {
         FOCUS,
         FACTION,
         GLOBAL
@@ -31,7 +31,7 @@ public class Member implements Persistent {
     private UUID id;
 
     @Field("Chat")
-    private ChatOption chat;
+    private ChatMode chat;
 
     @Field("Bypass")
     private boolean bypass;
@@ -45,7 +45,7 @@ public class Member implements Persistent {
     @Field("Rank")
     private Rank rank;
 
-    public Member(UUID id, ChatOption chat, boolean bypass, boolean zoneMessage) {
+    public Member(UUID id, ChatMode chat, boolean bypass, boolean zoneMessage) {
         this.id = id;
         this.chat = chat;
         this.bypass = bypass;
@@ -75,7 +75,7 @@ public class Member implements Persistent {
         return id;
     }
 
-    public ChatOption getChatOption() {
+    public ChatMode getChatMode() {
         return chat;
     }
 
@@ -99,7 +99,7 @@ public class Member implements Persistent {
         return Faction.get(factionID);
     }
 
-    public void setChatOption(ChatOption chat) {
+    public void setChatMode(ChatMode chat) {
         this.chat = chat;
     }
 

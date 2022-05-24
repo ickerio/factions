@@ -3,6 +3,9 @@ package io.icker.factions.database;
 import java.util.HashMap;
 import java.util.UUID;
 
+import io.icker.factions.api.persistents.Member.ChatMode;
+import io.icker.factions.api.persistents.Member.Rank;
+import io.icker.factions.api.persistents.Relationship.Status;
 import net.minecraft.nbt.NbtCompound;
 
 public class TypeSerializerRegistry {
@@ -21,9 +24,21 @@ public class TypeSerializerRegistry {
         registry.put(int[].class, new TypeSerializer<>(NbtCompound::putIntArray, NbtCompound::getIntArray, new int[0]));
         registry.put(long[].class, new TypeSerializer<>(NbtCompound::putLongArray, NbtCompound::getLongArray, new long[0]));
         registry.put(boolean.class, new TypeSerializer<>(NbtCompound::putBoolean, NbtCompound::getBoolean, false));
+        
+        registry.put(ChatMode.class, createEnumSerializer(ChatMode.class, ChatMode.GLOBAL));
+        registry.put(Rank.class, createEnumSerializer(Rank.class, Rank.MEMBER));
+        registry.put(Status.class, createEnumSerializer(Status.class, Status.NEUTRAL));
     }
 
     public static TypeSerializer<?> get(Class<?> clazz) {
         return registry.get(clazz);
+    }
+
+    private static <T extends java.lang.Enum<T>> TypeSerializer<T> createEnumSerializer(Class<T> clazz, T fallback) {
+        return new TypeSerializer<T>(
+            (compound, key, item) -> compound.putString(key, item.toString()),
+            (compound, key) -> Enum.valueOf(clazz, compound.getString(key)),
+            fallback
+        );
     }
 }
