@@ -19,7 +19,7 @@ public class Database {
 
     private static <T extends Persistent> void setup(Class<T> clazz) {
         String name = clazz.getAnnotation(Name.class).value();
-        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".nbt");
+        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".dat");
 
         if (!file.exists()) {
             try {
@@ -46,7 +46,7 @@ public class Database {
         if (!cache.containsKey(clazz)) setup(clazz);
         HashMap<String, Field> fields = cache.get(clazz);
 
-        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".nbt");
+        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".dat");
 
         HashMap<E, T> store = new HashMap<E, T>();
 
@@ -70,8 +70,6 @@ public class Database {
             FactionsMod.LOGGER.error("Failed to read NBT data", e);
         }
 
-        FactionsMod.LOGGER.info(store.toString());
-
         return store;
     }
 
@@ -79,7 +77,7 @@ public class Database {
         String name = clazz.getAnnotation(Name.class).value();
         HashMap<String, Field> fields = cache.get(clazz);
 
-        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".nbt");
+        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".dat");
 
         NbtCompound fileData = new NbtCompound();
 
