@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import io.icker.factions.api.persistents.Member;
 
-public class RemoveMemberEvent {
+public class LeaveFactionEvent {
     private static final ArrayList<RemoveMemberEventListener> listeners = new ArrayList<>();
 
     public static void register(RemoveMemberEventListener listener) {

@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import io.icker.factions.FactionsMod;
-import io.icker.factions.api.events.AddMemberEvent;
+import io.icker.factions.api.events.JoinFactionEvent;
+import io.icker.factions.api.events.LeaveFactionEvent;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -121,15 +121,13 @@ public class Member implements Persistent {
     public void joinFaction(UUID factionID, Rank rank) {
         this.factionID = factionID;
         this.rank = rank;
-        AddMemberEvent.run(this);
-        // TODO AddMemberEvent -> JoinFactionEvent
+        JoinFactionEvent.run(this);
     }
 
     public void leaveFaction() {
         factionID = null;
         rank = null;
-        AddMemberEvent.run(this);
-        // TODO RemoveMemberEvent -> LeaveFactionEvent
+        LeaveFactionEvent.run(this);
     }
 
     public void changeRank(Rank rank) {

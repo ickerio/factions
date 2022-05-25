@@ -3,6 +3,7 @@ package io.icker.factions.api.persistents;
 import java.util.HashMap;
 import java.util.UUID;
 
+import io.icker.factions.api.events.MutualRelationshipEvent;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -44,6 +45,12 @@ public class Relationship implements Persistent {
 
     public static void set(Relationship relationship) {
         STORE.put(relationship.getKey(), relationship);
+
+        if (relationship.status == Status.NEUTRAL) {
+            MutualRelationshipEvent.run(relationship);
+        } else if (relationship.getReverse().status == relationship.status) {
+            MutualRelationshipEvent.run(relationship);
+        }
     }
 
     public Relationship getReverse() {

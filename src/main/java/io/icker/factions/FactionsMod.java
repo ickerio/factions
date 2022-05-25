@@ -1,11 +1,10 @@
 package io.icker.factions;
 
-import io.icker.factions.api.events.AddMemberEvent;
-import io.icker.factions.api.events.RemoveMemberEvent;
+import io.icker.factions.api.events.JoinFactionEvent;
+import io.icker.factions.api.events.LeaveFactionEvent;
 import io.icker.factions.api.events.UpdateFactionEvent;
 import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
-import io.icker.factions.database.Database;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.event.ServerEvents;
 import io.icker.factions.util.Command;
@@ -68,11 +67,11 @@ public class FactionsMod implements ModInitializer {
             FactionEvents.updatePlayerList(players);
         });
 
-        AddMemberEvent.register((member) -> {
+        JoinFactionEvent.register((member) -> {
             FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.getID()));
         });
 
-        RemoveMemberEvent.register((member) -> {
+        LeaveFactionEvent.register((member) -> {
             FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.getID()));
         });
     }

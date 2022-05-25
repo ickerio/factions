@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import io.icker.factions.api.persistents.Member;
 
-public class AddMemberEvent {
+public class JoinFactionEvent {
     private static final ArrayList<AddMemberEventListener> listeners = new ArrayList<>();
 
     public static void register(AddMemberEventListener listener) {

@@ -1,12 +1,12 @@
 package io.icker.factions.util;
 
 import io.icker.factions.api.events.AddClaimEvent;
-import io.icker.factions.api.events.AddMemberEvent;
+import io.icker.factions.api.events.JoinFactionEvent;
 import io.icker.factions.api.events.PowerChangeEvent;
 import io.icker.factions.api.events.RemoveAllClaimsEvent;
 import io.icker.factions.api.events.RemoveClaimEvent;
 import io.icker.factions.api.events.RemoveFactionEvent;
-import io.icker.factions.api.events.RemoveMemberEvent;
+import io.icker.factions.api.events.LeaveFactionEvent;
 import io.icker.factions.api.events.SetHomeEvent;
 import io.icker.factions.api.events.UpdateFactionEvent;
 import io.icker.factions.api.persistents.Claim;
@@ -19,10 +19,8 @@ import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.AreaMarker;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import net.minecraft.util.math.ChunkPos;
 
@@ -58,8 +56,8 @@ public class DynmapWrapper {
       updateFaction(faction);
     });
 
-    AddMemberEvent.register(member -> updateFaction(member.getFaction()));
-    RemoveMemberEvent.register(member -> updateFaction(member.getFaction()));
+    JoinFactionEvent.register(member -> updateFaction(member.getFaction()));
+    LeaveFactionEvent.register(member -> updateFaction(member.getFaction()));
     PowerChangeEvent.register(this::updateFaction);
     PowerChangeEvent.register(this::updateFaction);
 
