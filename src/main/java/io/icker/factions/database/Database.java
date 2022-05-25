@@ -5,14 +5,13 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
 import io.icker.factions.FactionsMod;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
-import org.apache.commons.io.FilenameUtils;
 
 public class Database {
     private static final File BASE_PATH = new File("factions");
@@ -20,14 +19,15 @@ public class Database {
 
     private static <T extends Persistent> void setup(Class<T> clazz) {
         String name = clazz.getAnnotation(Name.class).value();
-        File directory = new File(BASE_PATH, name);
+        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".nbt");
 
-        if (directory.isFile()) {
-            FactionsMod.LOGGER.error("File already exists in database directory path " + directory.toString());
-            return;
+        if (!file.exists()) {
+            try {
+                NbtIo.writeCompressed(new NbtCompound(), file);
+            } catch (IOException e) {
+                FactionsMod.LOGGER.info("File creation failed", e);
+            }
         }
-
-        directory.mkdirs();
 
         HashMap<String, Field> fields = new HashMap<String, Field>();
 
@@ -46,30 +46,28 @@ public class Database {
         if (!cache.containsKey(clazz)) setup(clazz);
         HashMap<String, Field> fields = cache.get(clazz);
 
-        File directory = new File(BASE_PATH, name);
-        File files[] = directory.listFiles();
+        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".nbt");
 
         HashMap<E, T> store = new HashMap<E, T>();
 
-        for (File file : files) {
-            try {
-                NbtCompound compound = NbtIo.readCompressed(file);
+        try {
+            NbtCompound fileData = NbtIo.readCompressed(file);
+            for (String id : fileData.getKeys()) {
                 T item = (T) clazz.getDeclaredConstructor().newInstance();
 
                 for (Map.Entry<String, Field> entry : fields.entrySet()) {
                     String key = entry.getKey();
                     Field field = entry.getValue();
 
-                    Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, compound);
+                    Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, fileData.getCompound(id));
 
                     field.set(item, element);
                 }
 
                 store.put(getStoreKey.apply(item), item);
-
-            } catch (IOException | ReflectiveOperationException e) {
-                FactionsMod.LOGGER.error("Failed to read NBT data", e);
             }
+        } catch (IOException | ReflectiveOperationException e) {
+            FactionsMod.LOGGER.error("Failed to read NBT data", e);
         }
 
         FactionsMod.LOGGER.info(store.toString());
@@ -81,11 +79,12 @@ public class Database {
         String name = clazz.getAnnotation(Name.class).value();
         HashMap<String, Field> fields = cache.get(clazz);
 
-        File path = new File(BASE_PATH, name);
+        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".nbt");
+
+        NbtCompound fileData = new NbtCompound();
 
         for (T item : items) {
             NbtCompound compound = new NbtCompound();
-
             try {
                 for (Map.Entry<String, Field> entry : fields.entrySet()) {
                     String key = entry.getKey();
@@ -98,12 +97,16 @@ public class Database {
                     serializer.writeNbt(key, compound, parse(data));
                 }
 
-                File file = new File(path, item.getKey() + ".dat");
-                NbtIo.writeCompressed(compound, file);
-
-            } catch (IOException | ReflectiveOperationException e ) {
+                fileData.put(item.getKey(), compound);
+            } catch (ReflectiveOperationException e ) {
                 FactionsMod.LOGGER.error("Failed to write NBT data", e);
             }
+        }
+
+        try {
+            NbtIo.writeCompressed(fileData, file);
+        } catch (IOException e) {
+            FactionsMod.LOGGER.error("Failed to write NBT data", e);
         }
     }
 
