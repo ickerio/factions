@@ -68,7 +68,6 @@ public class Claim implements Persistent {
     }
 
     public static void save() {
-        FactionsMod.LOGGER.info(STORE);
         Database.save(Claim.class, STORE.values().stream().toList());
     }
 }

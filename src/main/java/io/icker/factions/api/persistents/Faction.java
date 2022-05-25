@@ -156,6 +156,7 @@ public class Faction implements Persistent {
         for (Member member : getMembers()) {
             member.leaveFaction();
         }
+        removeAllClaims();
         STORE.remove(id);
         RemoveFactionEvent.run(this);
     }

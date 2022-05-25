@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.AddMemberEvent;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
@@ -69,7 +70,7 @@ public class Member implements Persistent {
     public static List<Member> getByFaction(UUID factionID) {
         return STORE.values()
             .stream()
-            .filter(m -> m.factionID == factionID)
+            .filter(m -> m.factionID.equals(factionID))
             .collect(Collectors.toList());
     }
 

@@ -129,7 +129,7 @@ public class ClaimCommand implements Command {
         }
 
         existingClaim.remove();
-        new Message("Claim (%d, %d) removed by %s", player.getName().asString(), existingClaim.x, existingClaim.z).send(faction);
+        new Message("Claim (%d, %d) removed by %s", existingClaim.x, existingClaim.z, player.getName().asString()).send(faction);
         return 1;
     }
 
