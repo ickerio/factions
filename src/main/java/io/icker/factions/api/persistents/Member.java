@@ -70,7 +70,7 @@ public class Member implements Persistent {
     public static List<Member> getByFaction(UUID factionID) {
         return STORE.values()
             .stream()
-            .filter(m -> m.factionID.equals(factionID))
+            .filter(m -> m.isInFaction() && m.factionID.equals(factionID))
             .collect(Collectors.toList());
     }
 

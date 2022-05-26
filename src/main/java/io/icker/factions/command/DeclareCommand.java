@@ -65,7 +65,7 @@ public class DeclareCommand implements Command {
         }
 
         new Message("You have declared " + targetFaction.getName() + " as ").add(msgStatus).send(sourceFaction);
-        new Message(sourceFaction.getName() + " have declared you as").add(msgStatus).send(targetFaction);
+        new Message(sourceFaction.getName() + " have declared you as ").add(msgStatus).send(targetFaction);
         return 1;
     }
 

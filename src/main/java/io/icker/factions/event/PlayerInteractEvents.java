@@ -59,7 +59,12 @@ public class PlayerInteractEvents {
         Member source = Member.get(player.getUuid());
         Member target = Member.get(targetID);
 
-        if (source.isInFaction() && target.isInFaction()) return false; // TODO check this isn't broken
+        if (!source.isInFaction() && !target.isInFaction()) {
+            return false;
+        }
+        if (!source.isInFaction() || !target.isInFaction()) {
+            return true;
+        }
         return (source.getFaction().getID() == target.getFaction().getID() || Relationship.get(source.getFaction().getID(), target.getFaction().getID()).mutuallyAllies()) && !Config.FRIENDLY_FIRE;
     }
 
