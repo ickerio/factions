@@ -2,7 +2,7 @@ package io.icker.factions.event;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.config.Config;
 import io.icker.factions.util.Message;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
@@ -12,7 +12,7 @@ import java.util.Collection;
 
 public class FactionEvents {
     public static void playerDeath(ServerPlayerEntity player) {
-        Member member = Member.get(player.getUuid());
+        User member = User.get(player.getUuid());
         if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();
@@ -22,7 +22,7 @@ public class FactionEvents {
     }
 
     public static void powerTick(ServerPlayerEntity player) {
-        Member member = Member.get(player.getUuid());
+        User member = User.get(player.getUuid());
         if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();

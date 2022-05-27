@@ -6,7 +6,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -32,7 +32,7 @@ public class MapCommand implements Command{
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
         String dimension = world.getRegistryKey().getValue().toString();
 
-        Member member = Member.get(player.getUuid());
+        User member = User.get(player.getUuid());
         Faction faction = member == null ? null : member.getFaction();
 
         // Print the header of the faction map.

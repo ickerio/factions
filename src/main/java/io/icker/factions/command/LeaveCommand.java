@@ -5,8 +5,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
-import io.icker.factions.api.persistents.Member.Rank;
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.config.Config;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.util.Command;
@@ -20,7 +20,7 @@ public class LeaveCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Member member = Member.get(player.getUuid());
+        User member = User.get(player.getUuid());
         Faction faction = member.getFaction();
 
         member.leaveFaction();

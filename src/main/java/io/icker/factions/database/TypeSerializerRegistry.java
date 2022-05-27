@@ -3,8 +3,8 @@ package io.icker.factions.database;
 import java.util.HashMap;
 import java.util.UUID;
 
-import io.icker.factions.api.persistents.Member.ChatMode;
-import io.icker.factions.api.persistents.Member.Rank;
+import io.icker.factions.api.persistents.User.ChatMode;
+import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.api.persistents.Relationship.Status;
 import net.minecraft.nbt.NbtCompound;
 

@@ -2,7 +2,7 @@ package io.icker.factions.api.events;
 
 import java.util.ArrayList;
 
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 
 public class JoinFactionEvent {
     private static final ArrayList<AddMemberEventListener> listeners = new ArrayList<>();
@@ -11,13 +11,13 @@ public class JoinFactionEvent {
         listeners.add(listener);
     }
 
-    public static void run(Member member) {
+    public static void run(User member) {
         for (AddMemberEventListener listener : listeners) {
             listener.run(member);
         }
     }
 
     public interface AddMemberEventListener {
-        void run(Member member);
+        void run(User member);
     }
 }

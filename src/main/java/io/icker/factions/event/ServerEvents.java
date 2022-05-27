@@ -15,7 +15,7 @@ public class ServerEvents {
         Faction.save();
         Home.save();
         Invite.save();
-        Member.save();
+        User.save();
         Relationship.save();
     }
 }

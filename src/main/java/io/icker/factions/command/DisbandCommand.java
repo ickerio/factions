@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.PlayerManager;
@@ -18,8 +18,8 @@ public class DisbandCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Member member = Member.get(player.getUuid());
-        Faction faction = member.getFaction();
+        User user = User.get(player.getUuid());
+        Faction faction = user.getFaction();
 
         new Message(player.getName().asString() + " disbanded the faction").send(faction);
         faction.remove();

@@ -7,8 +7,8 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Invite;
-import io.icker.factions.api.persistents.Member;
-import io.icker.factions.api.persistents.Member.Rank;
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.config.Config;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.util.Command;
@@ -36,13 +36,13 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        if (Config.MAX_FACTION_SIZE != -1 && faction.getMembers().size() >= Config.MAX_FACTION_SIZE) {
+        if (Config.MAX_FACTION_SIZE != -1 && faction.getUsers().size() >= Config.MAX_FACTION_SIZE) {
             new Message("Cannot join faction as it is currently full").fail().send(player, false);
             return 0;
         }
 
         if (invite != null) invite.remove();
-        Member.get(player.getUuid()).joinFaction(faction.getID(), Rank.MEMBER);
+        User.get(player.getUuid()).joinFaction(faction.getID(), Rank.MEMBER);
         source.getServer().getPlayerManager().sendCommandTree(player);
 
         new Message(player.getName().asString() + " joined").send(faction);

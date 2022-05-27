@@ -7,7 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Invite;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -25,7 +25,7 @@ public class InviteCommand implements Command {
     private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        List<Invite> invites = Member.get(source.getPlayer().getUuid()).getFaction().getInvites();
+        List<Invite> invites = User.get(source.getPlayer().getUuid()).getFaction().getInvites();
         int count = invites.size();
 
         new Message("You have ")
@@ -50,15 +50,15 @@ public class InviteCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = Member.get(source.getPlayer().getUuid()).getFaction();
+        Faction faction = User.get(source.getPlayer().getUuid()).getFaction();
         Invite invite = Invite.get(target.getUuid(), faction.getID());
         if (invite != null) {
             new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
             return 0;
         }
 
-        for (Member member : faction.getMembers())
-            if (member.getID().equals(target.getUuid()))
+        for (User user : faction.getUsers())
+            if (user.getID().equals(target.getUuid()))
                 new Message(target.getName().getString() + " is already in your faction").format(Formatting.RED).send(player, false);
 
         Invite.add(new Invite(target.getUuid(), faction.getID()));
@@ -78,7 +78,7 @@ public class InviteCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getUuid()).getFaction();
         new Invite(target.getUuid(), faction.getID()).remove();
 
         new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);

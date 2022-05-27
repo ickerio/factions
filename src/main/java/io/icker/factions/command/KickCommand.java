@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -26,8 +26,8 @@ public class KickCommand implements Command {
             return 0;
         }
 
-        Member selfMember = Member.get(player.getUuid());
-        Member targetMember = Member.get(target.getUuid());
+        User selfMember = User.get(player.getUuid());
+        User targetMember = User.get(target.getUuid());
         Faction faction = selfMember.getFaction();
 
         if (targetMember.getFaction().getID() != faction.getID()) {
@@ -35,7 +35,7 @@ public class KickCommand implements Command {
             return 0;
         }
 
-        if (selfMember.getRank() == Member.Rank.LEADER && (targetMember.getRank() == Member.Rank.LEADER || targetMember.getRank() == Member.Rank.OWNER)) {
+        if (selfMember.getRank() == User.Rank.LEADER && (targetMember.getRank() == User.Rank.LEADER || targetMember.getRank() == User.Rank.OWNER)) {
             new Message("Cannot kick members with a higher of equivalent rank").format(Formatting.RED).send(player, false);
             return 0;
         }

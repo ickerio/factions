@@ -8,7 +8,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -28,7 +28,7 @@ public class HomeCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getUuid()).getFaction();
         Home home = faction.getHome();
 
         if (home == null) {
@@ -61,7 +61,7 @@ public class HomeCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getUuid()).getFaction();
 
         if (checkLimitToClaim(faction, player.getWorld(), player.getBlockPos())) {
             new Message("Cannot set home to an unclaimed chunk").fail().send(player, false);

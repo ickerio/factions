@@ -7,7 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -22,15 +22,15 @@ public class AdminCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Member member = Member.get(player.getUuid());
-        boolean bypass = !member.isBypassOn();
-        member.setBypass(bypass);
+        User user = User.get(player.getUuid());
+        boolean bypass = !user.isBypassOn();
+        user.setBypass(bypass);
 
         new Message("Successfully toggled claim bypass")
                 .filler("·")
                 .add(
-                        new Message(member.isBypassOn() ? "ON" : "OFF")
-                                .format(member.isBypassOn() ? Formatting.GREEN : Formatting.RED))
+                        new Message(user.isBypassOn() ? "ON" : "OFF")
+                                .format(user.isBypassOn() ? Formatting.GREEN : Formatting.RED))
                 .send(player, false);
 
         return 1;

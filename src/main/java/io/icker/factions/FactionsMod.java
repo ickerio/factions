@@ -62,17 +62,17 @@ public class FactionsMod implements ModInitializer {
             //ServerEvents.stopped(server);
         });
 
-        UpdateFactionEvent.register((faction) -> {
-            List<ServerPlayerEntity> players = faction.getMembers().stream().map(member -> FactionsMod.playerManager.getPlayer(member.getID())).toList();
+        UpdateFactionEvent.register(faction -> {
+            List<ServerPlayerEntity> players = faction.getUsers().stream().map(user -> FactionsMod.playerManager.getPlayer(user.getID())).toList();
             FactionEvents.updatePlayerList(players);
         });
 
-        JoinFactionEvent.register((member) -> {
-            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.getID()));
+        JoinFactionEvent.register(user -> {
+            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(user.getID()));
         });
 
-        LeaveFactionEvent.register((member) -> {
-            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(member.getID()));
+        LeaveFactionEvent.register(user -> {
+            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(user.getID()));
         });
     }
 

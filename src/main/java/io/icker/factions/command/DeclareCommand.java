@@ -7,7 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.events.MutualRelationshipEvent;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -41,7 +41,7 @@ public class DeclareCommand implements Command {
             return 0;
         }
         
-        Faction sourceFaction = Member.get(player.getUuid()).getFaction();
+        Faction sourceFaction = User.get(player.getUuid()).getFaction();
 
         if (Relationship.get(sourceFaction.getID(), targetFaction.getID()).status == status) {
             new Message("That faction relationship has already been declared with this faction").fail().send(player, false);

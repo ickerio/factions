@@ -7,8 +7,8 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
-import io.icker.factions.api.persistents.Member.Rank;
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.config.Config;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,7 +17,7 @@ public interface Command {
     public LiteralCommandNode<ServerCommandSource> getNode();
 
     public interface Requires {
-        boolean run(Member member);
+        boolean run(User member);
 
         public static Predicate<ServerCommandSource> isFactionless() {
             return require(member -> !member.isInFaction());
@@ -51,7 +51,7 @@ public interface Command {
             return source -> {
                 try {
                     ServerPlayerEntity entity = source.getPlayer();
-                    Member member = Member.get(entity.getUuid());
+                    User member = User.get(entity.getUuid());
                     return req.run(member);
                 } catch (CommandSyntaxException e) {
                     return false;
@@ -61,7 +61,7 @@ public interface Command {
     }
 
     public interface Suggests {
-        String[] run(Member member);
+        String[] run(User member);
 
         public static SuggestionProvider<ServerCommandSource> allFactions() {
             return suggest(member -> 
@@ -86,7 +86,7 @@ public interface Command {
             return (context, builder) -> {
                 try {
                     ServerPlayerEntity entity = context.getSource().getPlayer();
-                    Member member = Member.get(entity.getUuid());
+                    User member = User.get(entity.getUuid());
                     for (String suggestion : sug.run(member)) {
                         builder.suggest(suggestion);
                     }

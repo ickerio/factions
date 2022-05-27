@@ -4,8 +4,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-import io.icker.factions.api.persistents.Member;
-import io.icker.factions.api.persistents.Member.ChatMode;
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -27,7 +27,7 @@ public class ChatCommand implements Command{
 
     private int set(ServerCommandSource source, ChatMode option) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayer();
-        Member.get(player.getUuid()).setChatMode(option);   
+        User.get(player.getUuid()).setChatMode(option);   
 
         new Message("Successfully updated your chat preference").send(player, false);
         return 1;

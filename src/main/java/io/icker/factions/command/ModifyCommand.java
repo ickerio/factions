@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.ColorArgumentType;
@@ -22,7 +22,7 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Member.get(player.getUuid()).getFaction().setDescription(description);
+        User.get(player.getUuid()).getFaction().setDescription(description);
         new Message("Successfully updated faction description").send(player, false);
         return 1;
     }
@@ -33,7 +33,7 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Member.get(player.getUuid()).getFaction().setColor(color);
+        User.get(player.getUuid()).getFaction().setColor(color);
         new Message("Successfully updated faction color").send(player, false);
         return 1;
     }
@@ -44,7 +44,7 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Member.get(player.getUuid()).getFaction().setOpen(open);
+        User.get(player.getUuid()).getFaction().setOpen(open);
         new Message("Successfully updated faction to  " + (open ? "open" : "closed")).send(player, false);
         return 1;
     }

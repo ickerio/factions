@@ -2,7 +2,7 @@ package io.icker.factions.event;
 
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.config.Config;
 import io.icker.factions.mixin.BucketItemMixin;
@@ -56,8 +56,8 @@ public class PlayerInteractEvents {
     }
 
     public static boolean preventFriendlyFire(ServerPlayerEntity player, UUID targetID) {
-        Member source = Member.get(player.getUuid());
-        Member target = Member.get(targetID);
+        User source = User.get(player.getUuid());
+        User target = User.get(targetID);
 
         if (!source.isInFaction() && !target.isInFaction()) {
             return false;
@@ -75,7 +75,7 @@ public class PlayerInteractEvents {
     }
 
     public static boolean actionPermitted(BlockPos pos, World world, ServerPlayerEntity player) {
-        Member member = Member.get(player.getUuid());
+        User member = User.get(player.getUuid());
         if (member.isBypassOn()) {
             if (player.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL)) {
                 return true;
@@ -130,7 +130,7 @@ public class PlayerInteractEvents {
     }
 
     public static void onMove(ServerPlayerEntity player) {
-        if (Config.ZONE_MESSAGE && Member.get(player.getUuid()).isZoneOn()) {
+        if (Config.ZONE_MESSAGE && User.get(player.getUuid()).isZoneOn()) {
             ServerWorld world = player.getWorld();
             String dimension = world.getRegistryKey().getValue().toString();
 

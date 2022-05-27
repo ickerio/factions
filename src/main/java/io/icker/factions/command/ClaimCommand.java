@@ -7,7 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -29,7 +29,7 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        List<Claim> claims = Member.get(player.getUuid()).getFaction().getClaims();
+        List<Claim> claims = User.get(player.getUuid()).getFaction().getClaims();
         int count = claims.size();
 
         new Message("You have ")
@@ -74,16 +74,16 @@ public class ClaimCommand implements Command {
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
         String dimension = world.getRegistryKey().getValue().toString();
 
-        Member member = Member.get(player.getUuid());
+        User user = User.get(player.getUuid());
         Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
         if (existingClaim != null) {
-            String owner = existingClaim.getFaction().getID() == member.getFaction().getID() ? "Your" : "Another";
+            String owner = existingClaim.getFaction().getID() == user.getFaction().getID() ? "Your" : "Another";
             new Message(owner + " faction already owns this chunk").fail().send(player, false);
             return 0;
         }
 
-        Faction faction = member.getFaction();
+        Faction faction = user.getFaction();
         faction.addClaim(chunkPos.x, chunkPos.z, dimension);
         new Message("Chunk (%d, %d) claimed by %s ", chunkPos.x, chunkPos.z, player.getName().asString()).send(faction);
         return 1;
@@ -91,10 +91,10 @@ public class ClaimCommand implements Command {
 
     private int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getUuid()).getFaction();
 
         int requiredPower = (faction.getClaims().size() + 1) * Config.CLAIM_WEIGHT;
-        int maxPower = faction.getMembers().size() * Config.MEMBER_POWER + Config.BASE_POWER;
+        int maxPower = faction.getUsers().size() * Config.MEMBER_POWER + Config.BASE_POWER;
 
         if (maxPower < requiredPower) {
             new Message("Not enough faction power to claim chunk.").fail().send(player, false);
@@ -120,10 +120,10 @@ public class ClaimCommand implements Command {
             return 0;
         }
 
-        Member member = Member.get(player.getUuid());
-        Faction faction = member.getFaction();
+        User user = User.get(player.getUuid());
+        Faction faction = user.getFaction();
 
-        if (!member.isBypassOn() && existingClaim.getFaction().getID() != faction.getID()) {
+        if (!user.isBypassOn() && existingClaim.getFaction().getID() != faction.getID()) {
             new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
             return 0;
         }
@@ -137,7 +137,7 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getUuid()).getFaction();
 
         faction.removeAllClaims();
         new Message("All claims removed by %s", player.getName().asString()).send(faction);

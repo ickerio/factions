@@ -46,7 +46,7 @@ public class Database {
         if (!cache.containsKey(clazz)) setup(clazz);
         HashMap<String, Field> fields = cache.get(clazz);
 
-        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".dat");
+        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT) + ".dat");
 
         HashMap<E, T> store = new HashMap<E, T>();
 
@@ -77,13 +77,13 @@ public class Database {
         String name = clazz.getAnnotation(Name.class).value();
         HashMap<String, Field> fields = cache.get(clazz);
 
-        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".dat");
+        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT) + ".dat");
 
         NbtCompound fileData = new NbtCompound();
 
-        for (T item : items) {
-            NbtCompound compound = new NbtCompound();
-            try {
+        try {
+            for (T item : items) {
+                NbtCompound compound = new NbtCompound();
                 for (Map.Entry<String, Field> entry : fields.entrySet()) {
                     String key = entry.getKey();
                     Field field = entry.getValue();
@@ -94,16 +94,11 @@ public class Database {
                     TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
                     serializer.writeNbt(key, compound, parse(data));
                 }
-
                 fileData.put(item.getKey(), compound);
-            } catch (ReflectiveOperationException e ) {
-                FactionsMod.LOGGER.error("Failed to write NBT data", e);
             }
-        }
 
-        try {
             NbtIo.writeCompressed(fileData, file);
-        } catch (IOException e) {
+        } catch (IOException | ReflectiveOperationException e) {
             FactionsMod.LOGGER.error("Failed to write NBT data", e);
         }
     }

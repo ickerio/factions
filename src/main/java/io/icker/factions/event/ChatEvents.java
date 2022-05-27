@@ -2,8 +2,8 @@ package io.icker.factions.event;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
-import io.icker.factions.api.persistents.Member.ChatMode;
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.util.Message;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public class ChatEvents {
     public static void handleMessage(ServerPlayerEntity sender, String message) {
         UUID id = sender.getUuid();
-        Member member = Member.get(id);
+        User member = User.get(id);
 
         if (member.getChatMode() == ChatMode.GLOBAL) {
             if (member.isInFaction()) {
@@ -43,7 +43,7 @@ public class ChatEvents {
     public static void inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
         FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> All] " + message);
         String rank = "";
-        for (Member member : faction.getMembers())
+        for (User member : faction.getMembers())
             if (member.getID().equals(sender.getUuid()))
                 rank = member.getRank().name().toLowerCase().replace("_", " ");
 

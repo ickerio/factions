@@ -1,7 +1,7 @@
 package io.icker.factions.util;
 
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -65,7 +65,7 @@ public class Message {
 
     public Message send(Faction faction) {
         Message message = this.prependFaction(faction);
-        for (Member member : faction.getMembers()) {
+        for (User member : faction.getMembers()) {
             ServerPlayerEntity player = manager.getPlayer(member.getID());
             if (player != null) message.send(player, false);
         }
@@ -74,13 +74,13 @@ public class Message {
 
     public void sendToGlobalChat() {
         for (ServerPlayerEntity player : manager.getPlayerList()) {
-            Member.ChatMode option = Member.get(player.getUuid()).getChatMode();
-            if (option != Member.ChatMode.FOCUS) player.sendMessage(text, false);
+            User.ChatMode option = User.get(player.getUuid()).getChatMode();
+            if (option != User.ChatMode.FOCUS) player.sendMessage(text, false);
         }
     }
 
     public void sendToFactionChat(Faction faction) {
-        for (Member member : faction.getMembers()) {
+        for (User member : faction.getMembers()) {
             ServerPlayerEntity player = manager.getPlayer(member.getID());
             player.sendMessage(text, false);
         }

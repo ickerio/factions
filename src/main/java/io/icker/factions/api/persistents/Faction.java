@@ -125,8 +125,8 @@ public class Faction implements Persistent {
         PowerChangeEvent.run(this);
     }
 
-    public List<Member> getMembers() {
-        return Member.getByFaction(id);
+    public List<User> getUsers() {
+        return User.getByFaction(id);
     }
 
     public List<Claim> getClaims() {
@@ -153,8 +153,8 @@ public class Faction implements Persistent {
     }
 
     public void remove() {
-        for (Member member : getMembers()) {
-            member.leaveFaction();
+        for (User user : getUsers()) {
+            user.leaveFaction();
         }
         for (Relationship rel : Relationship.getByFaction(id)) {
             rel.getReverse().remove();

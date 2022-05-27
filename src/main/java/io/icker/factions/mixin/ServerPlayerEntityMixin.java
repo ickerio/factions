@@ -1,7 +1,7 @@
 package io.icker.factions.mixin;
 
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Member;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.config.Config;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.event.PlayerInteractEvents;
@@ -65,7 +65,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "getPlayerListName", at = @At("HEAD"), cancellable = true)
     public void getPlayerListName(CallbackInfoReturnable<Text> cir) {
-        Member member = Member.get(((ServerPlayerEntity)(Object) this).getUuid());
+        User member = User.get(((ServerPlayerEntity)(Object) this).getUuid());
         if (member.isInFaction()) {
             Faction faction = member.getFaction();
             cir.setReturnValue(new Message(String.format("[%s] ", faction.getName())).format(faction.getColor()).add(
