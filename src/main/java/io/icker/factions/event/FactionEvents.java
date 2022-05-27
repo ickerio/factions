@@ -33,7 +33,7 @@ public class FactionEvents {
     }
 
     public static int adjustPower(Faction faction, int adjustment) {
-        int maxPower = Config.BASE_POWER + (faction.getMembers().size() * Config.MEMBER_POWER);
+        int maxPower = Config.BASE_POWER + (faction.getUsers().size() * Config.MEMBER_POWER);
 
         int updated = Math.min(Math.max(0, faction.getPower() + adjustment), maxPower);
         faction.setPower(updated);

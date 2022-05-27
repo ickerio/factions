@@ -3,7 +3,6 @@ package io.icker.factions.api.persistents;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.AddClaimEvent;
@@ -50,7 +49,7 @@ public class Claim implements Persistent {
         return STORE.values()
             .stream()
             .filter(c -> c.factionID == factionID)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public static void add(Claim claim) {

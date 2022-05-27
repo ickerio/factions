@@ -26,21 +26,21 @@ public class KickCommand implements Command {
             return 0;
         }
 
-        User selfMember = User.get(player.getUuid());
-        User targetMember = User.get(target.getUuid());
-        Faction faction = selfMember.getFaction();
+        User selfUser = User.get(player.getUuid());
+        User targetUser = User.get(target.getUuid());
+        Faction faction = selfUser.getFaction();
 
-        if (targetMember.getFaction().getID() != faction.getID()) {
+        if (targetUser.getFaction().getID() != faction.getID()) {
             new Message("Cannot kick someone that is not in your faction");
             return 0;
         }
 
-        if (selfMember.getRank() == User.Rank.LEADER && (targetMember.getRank() == User.Rank.LEADER || targetMember.getRank() == User.Rank.OWNER)) {
+        if (selfUser.getRank() == User.Rank.LEADER && (targetUser.getRank() == User.Rank.LEADER || targetUser.getRank() == User.Rank.OWNER)) {
             new Message("Cannot kick members with a higher of equivalent rank").format(Formatting.RED).send(player, false);
             return 0;
         }
 
-        targetMember.leaveFaction();
+        targetUser.leaveFaction();
         context.getSource().getServer().getPlayerManager().sendCommandTree(target);
         new Message("Kicked " + target.getName().getString()).send(player, false);
 

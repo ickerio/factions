@@ -43,7 +43,7 @@ public class ChatEvents {
     public static void inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
         FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> All] " + message);
         String rank = "";
-        for (User member : faction.getMembers())
+        for (User member : faction.getUsers())
             if (member.getID().equals(sender.getUuid()))
                 rank = member.getRank().name().toLowerCase().replace("_", " ");
 

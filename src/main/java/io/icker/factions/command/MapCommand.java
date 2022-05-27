@@ -32,8 +32,8 @@ public class MapCommand implements Command{
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
         String dimension = world.getRegistryKey().getValue().toString();
 
-        User member = User.get(player.getUuid());
-        Faction faction = member == null ? null : member.getFaction();
+        User user = User.get(player.getUuid());
+        Faction faction = user.getFaction();
 
         // Print the header of the faction map.
         new Message("---------------[").format(Formatting.GRAY)

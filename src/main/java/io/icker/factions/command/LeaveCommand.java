@@ -20,14 +20,14 @@ public class LeaveCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        User member = User.get(player.getUuid());
-        Faction faction = member.getFaction();
+        User user = User.get(player.getUuid());
+        Faction faction = user.getFaction();
 
-        member.leaveFaction();
+        user.leaveFaction();
         new Message(player.getName().asString() + " left").send(faction);
         context.getSource().getServer().getPlayerManager().sendCommandTree(player);
 
-        if (faction.getMembers().size() == 0) {
+        if (faction.getUsers().size() == 0) {
             faction.remove();
         } else {
             FactionEvents.adjustPower(faction, -Config.MEMBER_POWER);

@@ -3,7 +3,6 @@ package io.icker.factions.api.persistents;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import io.icker.factions.api.events.MutualRelationshipEvent;
 import io.icker.factions.database.Database;
@@ -48,9 +47,9 @@ public class Relationship implements Persistent {
 
     public static List<Relationship> getByFaction(UUID factionID) {
         return STORE.values()
-                .stream()
-                .filter(i -> i.source == factionID)
-                .collect(Collectors.toList());
+            .stream()
+            .filter(i -> i.source == factionID)
+            .toList();
     }
 
     public static void set(Relationship relationship) {

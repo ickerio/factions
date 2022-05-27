@@ -5,19 +5,19 @@ import java.util.ArrayList;
 import io.icker.factions.api.persistents.User;
 
 public class JoinFactionEvent {
-    private static final ArrayList<AddMemberEventListener> listeners = new ArrayList<>();
+    private static final ArrayList<JoinFactionEventListener> listeners = new ArrayList<>();
 
-    public static void register(AddMemberEventListener listener) {
+    public static void register(JoinFactionEventListener listener) {
         listeners.add(listener);
     }
 
-    public static void run(User member) {
-        for (AddMemberEventListener listener : listeners) {
-            listener.run(member);
+    public static void run(User user) {
+        for (JoinFactionEventListener listener : listeners) {
+            listener.run(user);
         }
     }
 
-    public interface AddMemberEventListener {
-        void run(User member);
+    public interface JoinFactionEventListener {
+        void run(User user);
     }
 }

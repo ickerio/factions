@@ -29,12 +29,12 @@ public class RankCommand implements Command {
 
         Faction faction = User.get(player.getUuid()).getFaction();
 
-        for (User member : faction.getMembers())
-            if (member.getID().equals(target.getUuid())) {
+        for (User users : faction.getUsers())
+            if (users.getID().equals(target.getUuid())) {
 
-                switch (member.getRank()) {
-                    case MEMBER -> member.changeRank(User.Rank.COMMANDER);
-                    case COMMANDER -> member.changeRank(User.Rank.LEADER);
+                switch (users.getRank()) {
+                    case MEMBER -> users.changeRank(User.Rank.COMMANDER);
+                    case COMMANDER -> users.changeRank(User.Rank.LEADER);
                     case LEADER -> {
                         new Message("You cannot promote a member to owner").format(Formatting.RED).send(player, false);
                         return 0;
@@ -69,22 +69,22 @@ public class RankCommand implements Command {
 
         Faction faction = User.get(player.getUuid()).getFaction();
 
-        for (User member : faction.getMembers())
-            if (member.getID().equals(target.getUuid())) {
+        for (User user : faction.getUsers())
+            if (user.getID().equals(target.getUuid())) {
 
-                switch (member.getRank()) {
+                switch (user.getRank()) {
                     case MEMBER -> {
                         new Message("You cannot demote a civilian").format(Formatting.RED).send(player, false);
                         return 0;
                     }
-                    case COMMANDER -> member.changeRank(User.Rank.MEMBER);
+                    case COMMANDER -> user.changeRank(User.Rank.MEMBER);
                     case LEADER -> {
                         if (User.get(player.getUuid()).getRank() == User.Rank.LEADER) {
                             new Message("You cannot demote a fellow co-owner").format(Formatting.RED).send(player, false);
                             return 0;
                         }
 
-                        member.changeRank(User.Rank.COMMANDER);
+                        user.changeRank(User.Rank.COMMANDER);
                     }
                     case OWNER -> {
                         new Message("You cannot demote the owner").format(Formatting.RED).send(player, false);
@@ -116,10 +116,10 @@ public class RankCommand implements Command {
 
         Faction faction = User.get(player.getUuid()).getFaction();
 
-        for (User member : faction.getMembers())
-            if (member.getID().equals(target.getUuid())) {
+        for (User user : faction.getUsers()) // TODO change this. Why do we need to iterate a factions users?? so inefficent 
+            if (user.getID().equals(target.getUuid())) {
 
-                member.changeRank(User.Rank.OWNER);
+                user.changeRank(User.Rank.OWNER);
                 User.get(player.getUuid()).changeRank(User.Rank.LEADER);
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(player);

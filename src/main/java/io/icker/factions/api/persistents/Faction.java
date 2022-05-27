@@ -1,10 +1,12 @@
 package io.icker.factions.api.persistents;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
 import io.icker.factions.api.events.*;
 import net.minecraft.util.Formatting;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
@@ -53,11 +55,11 @@ public class Faction implements Persistent {
     }
 
     public static Faction getByName(String name) {
-        Optional<Faction> faction = STORE.values()
+        return STORE.values()
             .stream()
             .filter(f -> f.name.equals(name))
-            .findFirst();
-        return faction.orElse(null);
+            .findFirst()
+            .orElse(null);
     }
 
     public static void add(Faction faction) {
@@ -72,7 +74,7 @@ public class Faction implements Persistent {
         return STORE.values()
             .stream()
             .filter(f -> f.id != id)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public UUID getID() {

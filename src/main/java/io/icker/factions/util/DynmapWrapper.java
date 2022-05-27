@@ -112,7 +112,7 @@ public class DynmapWrapper {
     return "Name: " + faction.getName() + "<br>"
             + "Description: " + faction.getDescription() + "<br>"
             + "Power: " + faction.getPower() + "<br>"
-            + "Number of members: " + faction.getMembers().size();// + "<br>"
+            + "Number of members: " + faction.getUsers().size();// + "<br>"
             //+ "Allies: " + Ally.getAllies(faction.getName).stream().map(ally -> ally.target).collect(Collectors.joining(", "));
   }
 

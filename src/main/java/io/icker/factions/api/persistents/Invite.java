@@ -3,7 +3,6 @@ package io.icker.factions.api.persistents;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
@@ -43,14 +42,14 @@ public class Invite implements Persistent {
         return STORE.values()
             .stream()
             .filter(i -> i.playerID == playerID)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public static List<Invite> getByFaction(UUID factionID) {
         return STORE.values()
             .stream()
             .filter(i -> i.factionID == factionID)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public static void add(Invite invite) {

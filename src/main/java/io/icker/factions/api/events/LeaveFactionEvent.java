@@ -5,19 +5,19 @@ import java.util.ArrayList;
 import io.icker.factions.api.persistents.User;
 
 public class LeaveFactionEvent {
-    private static final ArrayList<RemoveMemberEventListener> listeners = new ArrayList<>();
+    private static final ArrayList<LeaveFactionEventListener> listeners = new ArrayList<>();
 
-    public static void register(RemoveMemberEventListener listener) {
+    public static void register(LeaveFactionEventListener listener) {
         listeners.add(listener);
     }
 
-    public static void run(User member) {
-        for (RemoveMemberEventListener listener : listeners) {
-            listener.run(member);
+    public static void run(User user) {
+        for (LeaveFactionEventListener listener : listeners) {
+            listener.run(user);
         }
     }
 
-    public interface RemoveMemberEventListener {
-        void run(User member);
+    public interface LeaveFactionEventListener {
+        void run(User user);
     }
 }

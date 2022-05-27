@@ -65,7 +65,7 @@ public class Message {
 
     public Message send(Faction faction) {
         Message message = this.prependFaction(faction);
-        for (User member : faction.getMembers()) {
+        for (User member : faction.getUsers()) {
             ServerPlayerEntity player = manager.getPlayer(member.getID());
             if (player != null) message.send(player, false);
         }
@@ -80,7 +80,7 @@ public class Message {
     }
 
     public void sendToFactionChat(Faction faction) {
-        for (User member : faction.getMembers()) {
+        for (User member : faction.getUsers()) {
             ServerPlayerEntity player = manager.getPlayer(member.getID());
             player.sendMessage(text, false);
         }
