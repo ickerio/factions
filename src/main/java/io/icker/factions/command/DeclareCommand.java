@@ -16,6 +16,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
+import java.util.Locale;
+
 public class DeclareCommand implements Command {
     private int ally(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         return updateRelationship(context, Relationship.Status.ALLY);
@@ -65,7 +67,7 @@ public class DeclareCommand implements Command {
         }
 
         new Message("You have declared " + targetFaction.getName() + " as ").add(msgStatus).send(sourceFaction);
-        new Message(sourceFaction.getName() + " have declared you as ").add(msgStatus).send(targetFaction);
+        new Message(sourceFaction.getName() + " have declared you as ").add(msgStatus).hover("Click to add them back").click(String.format("/factions %s %s", rel.status.toString().toLowerCase(Locale.ROOT), sourceFaction.getName())).send(targetFaction);
         return 1;
     }
 
