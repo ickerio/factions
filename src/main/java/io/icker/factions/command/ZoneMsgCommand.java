@@ -4,8 +4,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -36,7 +36,7 @@ public class ZoneMsgCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("zoneMessage")
-            .requires(s -> Config.ZONE_MESSAGE)
+            .requires(s -> FactionsMod.CONFIG.ZONE_MESSAGE)
             .requires(Requires.hasPerms("actions.zonemessage", 0))
             .executes(this::run)
             .build();

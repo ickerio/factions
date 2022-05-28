@@ -6,9 +6,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -53,15 +53,15 @@ public class InfoCommand implements Command {
     public static int info(ServerPlayerEntity player, Faction faction) {
         List<User> users = faction.getUsers();
 
-        String userText = users.size() + (Config.MAX_FACTION_SIZE != -1 ? "/" + Config.MAX_FACTION_SIZE : (" member" + (users.size() != 1 ? "s" : "")));
+        String userText = users.size() + (FactionsMod.CONFIG.MAX_FACTION_SIZE != -1 ? "/" + FactionsMod.CONFIG.MAX_FACTION_SIZE : (" member" + (users.size() != 1 ? "s" : "")));
 
         UserCache cache = player.getServer().getUserCache();
         String usersList = users.stream()
                 .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
                 .collect(Collectors.joining(", "));
 
-        int requiredPower = faction.getClaims().size() * Config.CLAIM_WEIGHT;
-        int maxPower = users.size() * Config.MEMBER_POWER + Config.BASE_POWER;
+        int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT;
+        int maxPower = users.size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
 
         new Message("")
                 .add(new Message(userText).hover(usersList))

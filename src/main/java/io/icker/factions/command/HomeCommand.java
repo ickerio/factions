@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
@@ -44,7 +45,7 @@ public class HomeCommand implements Command {
         }
 
         DamageTracker tracker = player.getDamageTracker();
-        if (tracker.getMostRecentDamage() == null || tracker.getTimeSinceLastAttack() > Config.SAFE_TICKS_TO_WARP) {
+        if (tracker.getMostRecentDamage() == null || tracker.getTimeSinceLastAttack() > FactionsMod.CONFIG.SAFE_TICKS_TO_WARP) {
             player.teleport(
                     world,
                     home.x, home.y, home.z,
@@ -81,7 +82,7 @@ public class HomeCommand implements Command {
     }
 
     private static boolean checkLimitToClaim(Faction faction, ServerWorld world, BlockPos pos) {
-        if (Config.HOME == Config.HomeOptions.ANYWHERE) return false;
+        if (FactionsMod.CONFIG.HOME == Config.HomeOptions.ANYWHERE) return false;
 
         ChunkPos chunkPos = world.getChunk(pos).getPos();
         String dimension = world.getRegistryKey().getValue().toString();
@@ -95,7 +96,7 @@ public class HomeCommand implements Command {
         return CommandManager
             .literal("home")
             .requires(Requires.hasPerms("factions.home", 0))
-            .requires(s -> Config.HOME != Config.HomeOptions.DISABLED)
+            .requires(s -> FactionsMod.CONFIG.HOME != Config.HomeOptions.DISABLED)
             .requires(Requires.isMember())
             .executes(this::go)
             .then(

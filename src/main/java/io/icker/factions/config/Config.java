@@ -1,101 +1,90 @@
 package io.icker.factions.config;
 
-// import com.google.gson.JsonArray;
-// import com.google.gson.JsonPrimitive;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 
-// import io.icker.factions.config.Zone.Type;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 
-import java.io.IOException;
-// import java.util.ArrayList;
+import io.icker.factions.FactionsMod;
+import net.fabricmc.loader.api.FabricLoader;
 
 public class Config {
-    private static final String[] filePaths = {"factions/config.json", "config/factions.json"};
-    private static final Integer version = 1;
+    private static final int REQUIRED_VERSION = 1;
+    private static final File file = FabricLoader.getInstance().getGameDir().resolve("factions").resolve("config.json").toFile();
+
+    public static Config load() {
+        Gson gson = new GsonBuilder().create(); 
+
+        try {
+            if (!file.exists()) {
+                Config defaults = new Config();
+                gson.toJson(defaults, new FileWriter(file));
+                return defaults;
+            }
+    
+            Config config = gson.fromJson(new FileReader(file), Config.class);
+    
+            if (config.VERSION != REQUIRED_VERSION) {
+                FactionsMod.LOGGER.error(String.format("Config file incompatible (requires version %d)"));
+            }
+
+            return config;
+        } catch (Exception e) {
+            FactionsMod.LOGGER.error("An error occoured reading the factions config file");
+            return new Config();
+        }
+    }
 
     public enum HomeOptions {
+        @SerializedName("ANYWHERE")
         ANYWHERE,
+
+        @SerializedName("CLAIMS")
         CLAIMS,
+
+        @SerializedName("DISABLED")
         DISABLED
     }
 
-    // public static ArrayList<Zone> ZONES = new ArrayList<Zone>();
-    public static int BASE_POWER;
-    public static int MEMBER_POWER;
-    public static int CLAIM_WEIGHT;
-    public static int MAX_FACTION_SIZE;
-    public static int SAFE_TICKS_TO_WARP;
-    public static int POWER_DEATH_PENALTY;
-    public static int TICKS_FOR_POWER;
-    public static int TICKS_FOR_POWER_REWARD;
-    public static int REQUIRED_BYPASS_LEVEL;
-    public static HomeOptions HOME;
-    public static boolean ZONE_MESSAGE;
-    public static boolean FRIENDLY_FIRE;
+    @SerializedName("version")
+    public int VERSION = REQUIRED_VERSION;
 
-    // private static final Constraint asConstraint(ObjectParser parser) throws IOException {
-    //     Constraint con = new Constraint();
+    @SerializedName("basePower")
+    public int BASE_POWER = 20;
 
-    //     con.equal = parser.getInteger("==", null);
-    //     con.notEqual = parser.getInteger("!=", null);
-    //     con.lessThan = parser.getInteger("<", null);
-    //     con.lessThanOrEqual = parser.getInteger("<=", null);
-    //     con.greaterThan = parser.getInteger(">", null);
-    //     con.greaterThanOrEqual = parser.getInteger(">=", null);
+    @SerializedName("memberPower")
+    public int MEMBER_POWER = 20;
+    
+    @SerializedName("claimWeight")
+    public int CLAIM_WEIGHT = 5;
 
-    //     return con;
-    // }
+    @SerializedName("maxFactionSize")
+    public int MAX_FACTION_SIZE = -1;
+    
+    @SerializedName("safeTicksToWarp")
+    public int SAFE_TICKS_TO_WARP = 1000;
 
-    // private static final ArrayList<String> asDimensionList(JsonArray array) {
-    //     ArrayList<String> list = new ArrayList<String>();
+    @SerializedName("powerDeathPenalty")
+    public int POWER_DEATH_PENALTY = 10;
 
-    //     array.forEach(e -> {
-    //         if (e.isJsonPrimitive()) {
-    //             JsonPrimitive primitive = e.getAsJsonPrimitive();
-    //             if (primitive.isString()) list.add(primitive.getAsString());
-    //         }
-    //     });
+    @SerializedName("ticksForPower")
+    public int TICKS_FOR_POWER = 12000;
 
-    //     return list;
-    // }
+    @SerializedName("ticksForPowerReward")
+    public int TICKS_FOR_POWER_REWARD = 1;
 
-    public static void init() throws IOException {
-        FileParser parser = new FileParser(version, filePaths);
+    @SerializedName("requiredBypassLevel")
+    public int REQUIRED_BYPASS_LEVEL = 2;
 
-        // parser.getArray("zones").forEach(object -> {
-        //     try {
-        //         if (!object.isJsonObject()) return;
-        //         ObjectParser zoneParser = new ObjectParser(object.getAsJsonObject(), parser);
+    @SerializedName("home")
+    public HomeOptions HOME = HomeOptions.CLAIMS;
 
-        //         Type type = zoneParser.getEnum("type", Type.class, "DEFAULT");
-        //         String message = zoneParser.getString("message", "No fail message set");
+    @SerializedName("zoneMessageEnabled")
+    public boolean ZONE_MESSAGE = true;
 
-        //         Zone zone = new Zone(type, message);
-        //         zone.x = asConstraint(zoneParser.getParser("x"));
-        //         zone.z = asConstraint(zoneParser.getParser("z"));
-
-        //         ObjectParser dimensions = zoneParser.getParser("dimensions");
-        //         zone.includedDimensions = asDimensionList(dimensions.getArray("include"));
-        //         zone.excludedDimensions = asDimensionList(dimensions.getArray("exclude"));
-
-        //         ZONES.add(zone);
-        //     } catch (IOException e) {}
-        // });
-
-        BASE_POWER = parser.getInteger("basePower", 20);
-        MEMBER_POWER = parser.getInteger("memberPower", 20);
-        CLAIM_WEIGHT = parser.getInteger("claimWeight", 5);
-        MAX_FACTION_SIZE = parser.getInteger("maxFactionSize", -1);
-        SAFE_TICKS_TO_WARP = parser.getInteger("safeTicksToWarp", 1000);
-        POWER_DEATH_PENALTY = parser.getInteger("powerDeathPenalty", 10);
-        TICKS_FOR_POWER = parser.getInteger("ticksForPower", 12000);
-        TICKS_FOR_POWER_REWARD = parser.getInteger("ticksForPowerReward", 1);
-        REQUIRED_BYPASS_LEVEL = parser.getInteger("requiredBypassLevel", 2);
-        HOME = parser.getEnum("home", HomeOptions.class, "CLAIMS");
-        ZONE_MESSAGE = parser.getBoolean("zoneMessageEnabled", true);
-        FRIENDLY_FIRE = parser.getBoolean("friendlyFireEnabled", false);
-    }
-
-    // public static Zone getZone(String dimension, int x, int z) {
-    //     return ZONES.stream().filter(zone -> zone.isApplicable(dimension, x, z)).findFirst().orElse(new Zone(Type.DEFAULT, "No Zones Set"));
-    // };
+    @SerializedName("friendlyFireEnabled")
+    public boolean FRIENDLY_FIRE = false;
 }

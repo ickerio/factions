@@ -4,10 +4,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -92,8 +92,8 @@ public class ClaimCommand implements Command {
         ServerPlayerEntity player = context.getSource().getPlayer();
         Faction faction = User.get(player.getUuid()).getFaction();
 
-        int requiredPower = (faction.getClaims().size() + 1) * Config.CLAIM_WEIGHT;
-        int maxPower = faction.getUsers().size() * Config.MEMBER_POWER + Config.BASE_POWER;
+        int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.CLAIM_WEIGHT;
+        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
 
         if (maxPower < requiredPower) {
             new Message("Not enough faction power to claim chunk.").fail().send(player, false);

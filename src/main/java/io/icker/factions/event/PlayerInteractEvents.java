@@ -1,10 +1,10 @@
 package io.icker.factions.event;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.Relationship;
-import io.icker.factions.config.Config;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
 import io.icker.factions.util.Message;
@@ -65,7 +65,7 @@ public class PlayerInteractEvents {
         if (!source.isInFaction() || !target.isInFaction()) {
             return true;
         }
-        return (source.getFaction().getID() == target.getFaction().getID() || Relationship.get(source.getFaction().getID(), target.getFaction().getID()).mutuallyAllies()) && !Config.FRIENDLY_FIRE;
+        return (source.getFaction().getID() == target.getFaction().getID() || Relationship.get(source.getFaction().getID(), target.getFaction().getID()).mutuallyAllies()) && !FactionsMod.CONFIG.FRIENDLY_FIRE;
     }
 
     public static void warnPlayer(ServerPlayerEntity target, String action) {
@@ -77,7 +77,7 @@ public class PlayerInteractEvents {
     public static boolean actionPermitted(BlockPos pos, World world, ServerPlayerEntity player) {
         User member = User.get(player.getUuid());
         if (member.isBypassOn()) {
-            if (player.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL)) {
+            if (player.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL)) {
                 return true;
             } else {
                 member.setBypass(false);
@@ -98,7 +98,7 @@ public class PlayerInteractEvents {
         Faction claimOwner = claim.getFaction();
         Faction memberFaction = member.getFaction();
 
-        boolean overclaimed = claimOwner.getClaims().size() * Config.CLAIM_WEIGHT > claimOwner.getPower();
+        boolean overclaimed = claimOwner.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT > claimOwner.getPower();
         boolean validMember = claimOwner.getID() == memberFaction.getID();
         boolean allied = Relationship.get(claimOwner.getID(), memberFaction.getID()).mutuallyAllies();
 
@@ -130,7 +130,7 @@ public class PlayerInteractEvents {
     }
 
     public static void onMove(ServerPlayerEntity player) {
-        if (Config.ZONE_MESSAGE && User.get(player.getUuid()).isZoneOn()) {
+        if (FactionsMod.CONFIG.ZONE_MESSAGE && User.get(player.getUuid()).isZoneOn()) {
             ServerWorld world = player.getWorld();
             String dimension = world.getRegistryKey().getValue().toString();
 

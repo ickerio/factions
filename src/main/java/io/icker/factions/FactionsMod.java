@@ -22,7 +22,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.List;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -30,6 +29,8 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 public class FactionsMod implements ModInitializer {
     public static Logger LOGGER = LogManager.getLogger("Factions");
+    
+    public static Config CONFIG;
     public static DynmapWrapper dynmap;
     public static PlayerManager playerManager;
 
@@ -37,11 +38,8 @@ public class FactionsMod implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Initialized Factions Mod for Minecraft v1.18");
-        try {
-            Config.init();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        CONFIG = Config.load();
+
         if (PermissionsWrapper.exists()) {
             LOGGER.info("Permissions Mod was found");
         }

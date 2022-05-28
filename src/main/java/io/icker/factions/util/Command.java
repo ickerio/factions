@@ -6,10 +6,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.User.Rank;
-import io.icker.factions.config.Config;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -40,7 +40,7 @@ public interface Command {
         }
         
         public static Predicate<ServerCommandSource> isAdmin() {
-            return source -> source.hasPermissionLevel(Config.REQUIRED_BYPASS_LEVEL);
+            return source -> source.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL);
         }
 
         public static Predicate<ServerCommandSource> hasPerms(String permission, int defaultValue) {

@@ -5,11 +5,11 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Invite;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.User.Rank;
-import io.icker.factions.config.Config;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -36,7 +36,7 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        if (Config.MAX_FACTION_SIZE != -1 && faction.getUsers().size() >= Config.MAX_FACTION_SIZE) {
+        if (FactionsMod.CONFIG.MAX_FACTION_SIZE != -1 && faction.getUsers().size() >= FactionsMod.CONFIG.MAX_FACTION_SIZE) {
             new Message("Cannot join faction as it is currently full").fail().send(player, false);
             return 0;
         }
@@ -46,7 +46,7 @@ public class JoinCommand implements Command {
         source.getServer().getPlayerManager().sendCommandTree(player);
 
         new Message(player.getName().asString() + " joined").send(faction);
-        FactionEvents.adjustPower(faction, Config.MEMBER_POWER); // TODO: change this, its ew
+        FactionEvents.adjustPower(faction, FactionsMod.CONFIG.MEMBER_POWER); // TODO: change this, its ew
         return 1;
     }
 

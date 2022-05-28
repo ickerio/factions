@@ -8,7 +8,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.PlayerManager;
@@ -68,20 +67,20 @@ public class AdminCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("admin")
-            .requires(Requires.hasPerms("factions.admin", Config.REQUIRED_BYPASS_LEVEL))
+            .requires(Requires.hasPerms("factions.admin", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
             .then(
                 CommandManager.literal("bypass")
-                .requires(Requires.hasPerms("factions.admin.bypass", Config.REQUIRED_BYPASS_LEVEL))
+                .requires(Requires.hasPerms("factions.admin.bypass", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
                 .executes(this::bypass)
             )
             .then(
                 CommandManager.literal("reload")
-                .requires(Requires.hasPerms("factions.admin.reload", Config.REQUIRED_BYPASS_LEVEL))
+                .requires(Requires.hasPerms("factions.admin.reload", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
                 .executes(this::reload)
             )
             .then(
                 CommandManager.literal("disband")
-                .requires(Requires.hasPerms("factions.admin.disband", Config.REQUIRED_BYPASS_LEVEL))
+                .requires(Requires.hasPerms("factions.admin.disband", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
                 .then(
                     CommandManager.argument("faction", StringArgumentType.greedyString())
                     .suggests(Suggests.allFactions())
