@@ -3,25 +3,29 @@ package io.icker.factions.command;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Invite;
-import io.icker.factions.database.Member;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Invite;
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class InviteCommand {
-    public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+public class InviteCommand implements Command {
+    private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        ArrayList<Invite> invites = Member.get(source.getPlayer().getUuid()).getFaction().getInvites();
+        List<Invite> invites = User.get(source.getPlayer().getUuid()).getFaction().getInvites();
         int count = invites.size();
 
         new Message("You have ")
@@ -33,51 +37,83 @@ public class InviteCommand {
 
         UserCache cache = source.getServer().getUserCache();
         String players = invites.stream()
-                .map(invite -> cache.getByUuid(invite.playerId).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                .collect(Collectors.joining(", "));
+            .map(invite -> cache.getByUuid(invite.getPlayerID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+            .collect(Collectors.joining(", "));
 
         new Message(players).format(Formatting.ITALIC).send(source.getPlayer(), false);
         return 1;
     }
 
-    public static int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = Member.get(source.getPlayer().getUuid()).getFaction();
-        Invite invite = Invite.get(target.getUuid(), faction.name);
+        Faction faction = User.get(source.getPlayer().getUuid()).getFaction();
+        Invite invite = Invite.get(target.getUuid(), faction.getID());
         if (invite != null) {
             new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
             return 0;
         }
 
-        for (Member member : faction.getMembers())
-            if (member.uuid.equals(target.getUuid()))
+        for (User user : faction.getUsers())
+            if (user.getID().equals(target.getUuid()))
                 new Message(target.getName().getString() + " is already in your faction").format(Formatting.RED).send(player, false);
 
-        Invite.add(target.getUuid(), faction.name);
+        Invite.add(new Invite(target.getUuid(), faction.getID()));
 
         new Message(target.getName().getString() + " has been invited")
                 .send(faction);
         new Message("You have been invited to join this faction").format(Formatting.YELLOW)
-                .hover("Click to join").click("/factions join " + faction.name)
+                .hover("Click to join").click("/factions join " + faction.getName())
                 .prependFaction(faction)
                 .send(target, false);
         return 1;
     }
 
-    public static int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = Member.get(player.getUuid()).getFaction();
-        new Invite(target.getUuid(), faction.name).remove();
+        Faction faction = User.get(player.getUuid()).getFaction();
+        new Invite(target.getUuid(), faction.getID()).remove();
 
         new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);
         return 1;
+    }
+
+    public LiteralCommandNode<ServerCommandSource> getNode() {
+        return CommandManager
+            .literal("invite")
+            .requires(Requires.hasPerms("factions.invite", 0))
+            .requires(Requires.isCommander())
+            .then(
+                CommandManager
+                .literal("list")
+                .requires(Requires.hasPerms("factions.invite.list", 0))
+                .executes(this::list)
+            )
+            .then(
+                CommandManager
+                .literal("add")
+                .requires(Requires.hasPerms("factions.invite.add", 0))
+                .then(
+                    CommandManager.argument("player", EntityArgumentType.player())
+                    .executes(this::add)
+                )
+            )
+            .then(
+                CommandManager
+                .literal("remove")
+                .requires(Requires.hasPerms("factions.invite.remove", 0))
+                .then(
+                    CommandManager.argument("player", EntityArgumentType.player())
+                    .executes(this::remove)
+                )
+            )
+            .build();
     }
 }

@@ -4,44 +4,83 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.icker.factions.database.Member;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.ColorArgumentType;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
-public class ModifyCommand {
-    public static int description(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+public class ModifyCommand implements Command {
+    private int description(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         String description = StringArgumentType.getString(context, "description");
 
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Member.get(player.getUuid()).getFaction().setDescription(description);
+        User.get(player.getUuid()).getFaction().setDescription(description);
         new Message("Successfully updated faction description").send(player, false);
         return 1;
     }
 
-    public static int color(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int color(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         Formatting color = ColorArgumentType.getColor(context, "color");
 
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Member.get(player.getUuid()).getFaction().setColor(color);
+        User.get(player.getUuid()).getFaction().setColor(color);
         new Message("Successfully updated faction color").send(player, false);
         return 1;
     }
 
-    public static int open(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int open(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         boolean open = BoolArgumentType.getBool(context, "open");
 
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Member.get(player.getUuid()).getFaction().setOpen(open);
+        User.get(player.getUuid()).getFaction().setOpen(open);
         new Message("Successfully updated faction to  " + (open ? "open" : "closed")).send(player, false);
         return 1;
+    }
+
+    public LiteralCommandNode<ServerCommandSource> getNode() {
+        return CommandManager
+            .literal("modify")
+            .requires(Requires.hasPerms("factions.modify", 0))
+            .requires(Requires.isLeader())
+            .then(
+                CommandManager
+                .literal("description")
+                .requires(Requires.hasPerms("factions.modify.description", 0))
+                .then(
+                    CommandManager.argument("description", StringArgumentType.greedyString())
+                    .executes(this::description)
+                )
+            )
+            .then(
+                CommandManager
+                .literal("color")
+                .requires(Requires.hasPerms("factions.modify.color", 0))
+                .then(
+                    CommandManager.argument("color", ColorArgumentType.color())
+                    .executes(this::color)
+                )
+            )
+            .then(
+                CommandManager
+                .literal("open")
+                .requires(Requires.hasPerms("factions.modify.open", 0))
+                .then(
+                    CommandManager.argument("open", BoolArgumentType.bool())
+                    .executes(this::open)
+                )
+            )
+            .build();
     }
 }

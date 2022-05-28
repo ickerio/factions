@@ -1,8 +1,8 @@
-package io.icker.factions.api;
-
-import io.icker.factions.database.Claim;
+package io.icker.factions.api.events;
 
 import java.util.ArrayList;
+
+import io.icker.factions.api.persistents.Claim;
 
 public class RemoveClaimEvent {
     private static final ArrayList<RemoveClaimEventListener> listeners = new ArrayList<>();

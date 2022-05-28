@@ -1,9 +1,7 @@
 package io.icker.factions.util;
 
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
-import io.icker.factions.database.PlayerConfig;
-import io.icker.factions.database.PlayerConfig.ChatOption;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.User;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -67,8 +65,8 @@ public class Message {
 
     public Message send(Faction faction) {
         Message message = this.prependFaction(faction);
-        for (Member member : faction.getMembers()) {
-            ServerPlayerEntity player = manager.getPlayer(member.uuid);
+        for (User member : faction.getUsers()) {
+            ServerPlayerEntity player = manager.getPlayer(member.getID());
             if (player != null) message.send(player, false);
         }
         return this;
@@ -76,21 +74,21 @@ public class Message {
 
     public void sendToGlobalChat() {
         for (ServerPlayerEntity player : manager.getPlayerList()) {
-            ChatOption option = PlayerConfig.get(player.getUuid()).chat;
-            if (option != ChatOption.FOCUS) player.sendMessage(text, false);
+            User.ChatMode option = User.get(player.getUuid()).getChatMode();
+            if (option != User.ChatMode.FOCUS) player.sendMessage(text, false);
         }
     }
 
     public void sendToFactionChat(Faction faction) {
-        for (Member member : faction.getMembers()) {
-            ServerPlayerEntity player = manager.getPlayer(member.uuid);
+        for (User member : faction.getUsers()) {
+            ServerPlayerEntity player = manager.getPlayer(member.getID());
             player.sendMessage(text, false);
         }
     }
 
     public Message prependFaction(Faction faction) {
         text = new Message("")
-                .add(new Message(faction.color.toString() + Formatting.BOLD + faction.name).hover(faction.description))
+                .add(new Message(faction.getColor().toString() + Formatting.BOLD + faction.getName()).hover(faction.getDescription()))
                 .filler("»")
                 .raw()
                 .append(text);

@@ -1,8 +1,8 @@
-package io.icker.factions.api;
-
-import io.icker.factions.database.Faction;
+package io.icker.factions.api.events;
 
 import java.util.ArrayList;
+
+import io.icker.factions.api.persistents.Faction;
 
 public class PowerChangeEvent {
     private static final ArrayList<PowerChangeListener> listeners = new ArrayList<>();

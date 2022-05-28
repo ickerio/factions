@@ -1,9 +1,9 @@
 package io.icker.factions.event;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.config.Config;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
 import io.icker.factions.util.Message;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -12,8 +12,8 @@ import java.util.Collection;
 
 public class FactionEvents {
     public static void playerDeath(ServerPlayerEntity player) {
-        Member member = Member.get(player.getUuid());
-        if (member == null) return;
+        User member = User.get(player.getUuid());
+        if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();
 
@@ -22,8 +22,8 @@ public class FactionEvents {
     }
 
     public static void powerTick(ServerPlayerEntity player) {
-        Member member = Member.get(player.getUuid());
-        if (member == null) return;
+        User member = User.get(player.getUuid());
+        if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();
 
@@ -33,11 +33,11 @@ public class FactionEvents {
     }
 
     public static int adjustPower(Faction faction, int adjustment) {
-        int maxPower = Config.BASE_POWER + (faction.getMembers().size() * Config.MEMBER_POWER);
+        int maxPower = Config.BASE_POWER + (faction.getUsers().size() * Config.MEMBER_POWER);
 
-        int updated = Math.min(Math.max(0, faction.power + adjustment), maxPower);
+        int updated = Math.min(Math.max(0, faction.getPower() + adjustment), maxPower);
         faction.setPower(updated);
-        return Math.abs(updated - faction.power);
+        return Math.abs(updated - faction.getPower());
     }
 
     public static void updatePlayerList(ServerPlayerEntity player) {
