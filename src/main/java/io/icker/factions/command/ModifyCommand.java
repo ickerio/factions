@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -16,6 +17,24 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
 public class ModifyCommand implements Command {
+    private int name(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        String name = StringArgumentType.getString(context, "name");
+
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (Faction.getByName(name) != null) {
+            new Message("A faction with that name already exists").fail().send(player, false);
+            return 0;
+        }
+
+
+        User.get(player.getUuid()).getFaction().setName(name);
+
+        new Message("Successfully renamed faction").send(player, false);
+        return 1;
+    }
+
     private int description(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         String description = StringArgumentType.getString(context, "description");
 
@@ -54,6 +73,16 @@ public class ModifyCommand implements Command {
             .literal("modify")
             .requires(Requires.hasPerms("factions.modify", 0))
             .requires(Requires.isLeader())
+            .then(
+                CommandManager
+                .literal("name")
+                .requires(Requires.isOwner())
+                .requires(Requires.hasPerms("factions.modify.name", 0))
+                .then(
+                    CommandManager.argument("name", StringArgumentType.greedyString())
+                    .executes(this::name)
+                )
+            )
             .then(
                 CommandManager
                 .literal("description")
