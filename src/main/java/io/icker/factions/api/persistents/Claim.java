@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.AddClaimEvent;
 import io.icker.factions.api.events.RemoveClaimEvent;
 import io.icker.factions.database.Database;
