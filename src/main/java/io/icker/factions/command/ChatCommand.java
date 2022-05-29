@@ -2,31 +2,45 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.icker.factions.database.PlayerConfig;
-import io.icker.factions.database.PlayerConfig.ChatOption;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.User.ChatMode;
+import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class ChatCommand {
-    public static int global(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        return set(context.getSource(), ChatOption.GLOBAL);
+public class ChatCommand implements Command{
+    private int global(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        return set(context.getSource(), ChatMode.GLOBAL);
     }
 
-    public static int faction(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        return set(context.getSource(), ChatOption.FACTION);
+    private int faction(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        return set(context.getSource(), ChatMode.FACTION);
     }
 
-    public static int focus(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        return set(context.getSource(), ChatOption.FOCUS);
+    private int focus(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        return set(context.getSource(), ChatMode.FOCUS);
     }
 
-    private static int set(ServerCommandSource source, ChatOption option) throws CommandSyntaxException {
+    private int set(ServerCommandSource source, ChatMode option) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getPlayer();
-        PlayerConfig.get(player.getUuid()).setChat(option);
+        User.get(player.getUuid()).setChatMode(option);   
 
         new Message("Successfully updated your chat preference").send(player, false);
         return 1;
+    }
+
+    public LiteralCommandNode<ServerCommandSource> getNode() {
+        return CommandManager
+            .literal("chat")
+            .requires(Requires.hasPerms("factions.chat", 0))
+            .then(CommandManager.literal("global").executes(this::global))
+            .then(CommandManager.literal("faction").executes(this::faction))
+            .then(CommandManager.literal("focus").executes(this::focus))
+            .build();
     }
 
 }

@@ -1,16 +1,21 @@
 package io.icker.factions.event;
 
-import io.icker.factions.database.Database;
+import io.icker.factions.api.persistents.*;
 import io.icker.factions.util.Message;
 import net.minecraft.server.MinecraftServer;
 
 public class ServerEvents {
     public static void started(MinecraftServer server) {
-        Database.connect();
+        // Do new database setup things here
         Message.manager = server.getPlayerManager();
     }
 
-    public static void stopped(MinecraftServer server) {
-        Database.disconnect();
+    public static void save() {
+        Claim.save();
+        Faction.save();
+        Home.save();
+        Invite.save();
+        User.save();
+        Relationship.save();
     }
 }

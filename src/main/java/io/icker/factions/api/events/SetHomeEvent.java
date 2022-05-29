@@ -1,9 +1,9 @@
-package io.icker.factions.api;
-
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Home;
+package io.icker.factions.api.events;
 
 import java.util.ArrayList;
+
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Home;
 
 public class SetHomeEvent {
     private static final ArrayList<SetHomeEventListener> listeners = new ArrayList<>();

@@ -1,8 +1,8 @@
 package io.icker.factions.mixin;
 
-import io.icker.factions.config.Config;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
+import io.icker.factions.FactionsMod;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.event.PlayerInteractEvents;
 import io.icker.factions.util.Message;
@@ -36,7 +36,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void tick(CallbackInfo info) {
-        if (age % Config.TICKS_FOR_POWER != 0 || age == 0) return;
+        if (age % FactionsMod.CONFIG.TICKS_FOR_POWER != 0 || age == 0) return;
         FactionEvents.powerTick((ServerPlayerEntity) (Object) this);
     }
 
@@ -65,10 +65,10 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "getPlayerListName", at = @At("HEAD"), cancellable = true)
     public void getPlayerListName(CallbackInfoReturnable<Text> cir) {
-        Member player = Member.get(((ServerPlayerEntity)(Object) this).getUuid());
-        if (player != null) {
-            Faction faction = player.getFaction();
-            cir.setReturnValue(new Message(String.format("[%s] ", faction.name)).format(faction.color).add(
+        User member = User.get(((ServerPlayerEntity)(Object) this).getUuid());
+        if (member.isInFaction()) {
+            Faction faction = member.getFaction();
+            cir.setReturnValue(new Message(String.format("[%s] ", faction.getName())).format(faction.getColor()).add(
                     new Message(((ServerPlayerEntity)(Object) this).getName().getString()).format(Formatting.WHITE)
             ).raw());
         } else {

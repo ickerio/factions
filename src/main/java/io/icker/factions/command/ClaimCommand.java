@@ -2,12 +2,15 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.icker.factions.config.Config;
-import io.icker.factions.database.Claim;
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
-import io.icker.factions.database.PlayerConfig;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+
+import io.icker.factions.FactionsMod;
+import io.icker.factions.api.persistents.Claim;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -16,15 +19,16 @@ import net.minecraft.util.math.ChunkPos;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ClaimCommand {
-    public static int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+public class ClaimCommand implements Command {
+    private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        ArrayList<Claim> claims = Member.get(player.getUuid()).getFaction().getClaims();
+        List<Claim> claims = User.get(player.getUuid()).getFaction().getClaims();
         int count = claims.size();
 
         new Message("You have ")
@@ -60,7 +64,7 @@ public class ClaimCommand {
         return 1;
     }
 
-    public static int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int addForced(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
@@ -69,37 +73,37 @@ public class ClaimCommand {
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
         String dimension = world.getRegistryKey().getValue().toString();
 
-        Member member = Member.get(player.getUuid());
+        User user = User.get(player.getUuid());
         Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
-        if (existingClaim == null) {
-            Faction faction = member.getFaction();
-            faction.addClaim(chunkPos.x, chunkPos.z, dimension);
-            new Message("%s claimed chunk (%d, %d)", player.getName().getString(), chunkPos.x, chunkPos.z).send(faction);
-            return 1;
+        if (existingClaim != null) {
+            String owner = existingClaim.getFaction().getID() == user.getFaction().getID() ? "Your" : "Another";
+            new Message(owner + " faction already owns this chunk").fail().send(player, false);
+            return 0;
         }
 
-        String owner = existingClaim.getFaction().name == member.getFaction().name ? "Your" : "Another";
-        new Message(owner + " faction already owns this chunk").fail().send(player, false);
-        return 0;
+        Faction faction = user.getFaction();
+        faction.addClaim(chunkPos.x, chunkPos.z, dimension);
+        new Message("Chunk (%d, %d) claimed by %s ", chunkPos.x, chunkPos.z, player.getName().getString()).send(faction);
+        return 1;
     }
 
-    public static int addCheck(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getUuid()).getFaction();
 
-        int requiredPower = (faction.getClaims().size() + 1) * Config.CLAIM_WEIGHT;
-        int maxPower = faction.getMembers().size() * Config.MEMBER_POWER + Config.BASE_POWER;
+        int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.CLAIM_WEIGHT;
+        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
 
-        if (maxPower >= requiredPower) {
-            return add(context);
+        if (maxPower < requiredPower) {
+            new Message("Not enough faction power to claim chunk.").fail().send(player, false);
+            return 0;
         }
 
-        new Message("Not enough faction power to claim chunk.").fail().send(player, false);
-        return 0;
+        return addForced(context);
     }
 
-    public static int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
@@ -115,27 +119,57 @@ public class ClaimCommand {
             return 0;
         }
 
-        Faction faction = Member.get(player.getUuid()).getFaction();
-        PlayerConfig config = PlayerConfig.get(player.getUuid());
+        User user = User.get(player.getUuid());
+        Faction faction = user.getFaction();
 
-        if (existingClaim.getFaction().name != faction.name && !config.bypass) {
+        if (!user.isBypassOn() && existingClaim.getFaction().getID() != faction.getID()) {
             new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
             return 0;
         }
 
         existingClaim.remove();
-        new Message("%s removed claim at chunk (%d, %d)", player.getName().getString(), existingClaim.x, existingClaim.z).send(faction);
+        new Message("Claim (%d, %d) removed by %s", existingClaim.x, existingClaim.z, player.getName().getString()).send(faction);
         return 1;
     }
 
-    public static int removeAll(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int removeAll(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = Member.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getUuid()).getFaction();
 
         faction.removeAllClaims();
-        new Message("%s removed all claims", player.getName().getString()).send(faction);
+        new Message("All claims removed by %s", player.getName().getString()).send(faction);
         return 1;
+    }
+
+    @Override
+    public LiteralCommandNode<ServerCommandSource> getNode() {
+        return CommandManager
+            .literal("claim")
+            .requires(Requires.hasPerms("factions.claim", 0))
+            .requires(Requires.isCommander())
+            .then(
+                CommandManager.literal("add")
+                .requires(Requires.hasPerms("factions.claim.add", 0))
+                .then(CommandManager.literal("force").executes(this::addForced))
+                .executes(this::add)
+            )
+            .then(
+                CommandManager.literal("list")
+                .requires(Requires.hasPerms("factions.claim.list", 0))
+                .executes(this::list)
+            )
+            .then(
+                CommandManager.literal("remove")
+                .requires(Requires.hasPerms("factions.claim.remove", 0))
+                .then(
+                    CommandManager.literal("all")
+                    .requires(Requires.hasPerms("factions.claim.remove.all", 0))
+                    .executes(this::removeAll)
+                )
+                .executes(this::remove)
+            )
+            .build();
     }
 }
