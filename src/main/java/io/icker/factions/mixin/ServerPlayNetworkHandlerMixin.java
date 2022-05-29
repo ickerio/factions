@@ -1,8 +1,8 @@
 package io.icker.factions.mixin;
 
-import io.icker.factions.database.Faction;
-import io.icker.factions.database.Member;
-import io.icker.factions.database.PlayerConfig;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.event.PlayerInteractEvents;
 import io.icker.factions.util.Message;
 import net.minecraft.network.MessageType;
@@ -33,24 +33,23 @@ public class ServerPlayNetworkHandlerMixin {
 
     @Redirect(method = "handleDecoratedMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/server/filter/FilteredMessage;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/util/registry/RegistryKey;)V"))
     private void replaceChatMessage(PlayerManager instance, FilteredMessage<SignedChatMessage> message, ServerPlayerEntity sender, RegistryKey<MessageType> typeKey) {
-        Member member = Member.get(sender.getUuid());
+        User member = User.get(sender.getUuid());
         Faction faction = member != null ? member.getFaction() : null;
-        PlayerConfig.ChatOption chatOption = PlayerConfig.get(sender.getUuid()).chat;
 
-        boolean factionChat = chatOption == PlayerConfig.ChatOption.FACTION || chatOption == PlayerConfig.ChatOption.FOCUS;
+        boolean factionChat = member.getChatMode() == ChatMode.FACTION || member.getChatMode() == ChatMode.FOCUS;
 
         if (factionChat && faction == null) {
             new Message("You can't send a message to faction chat if you aren't in a faction").fail().hover("Click to switch to global chat").click("/factions chat global").send(sender, false);
         } else {
             instance.broadcast(message.raw(), (player) -> {
-                Member targetMember = Member.get(player.getUuid());
+                User targetMember = User.get(player.getUuid());
                 Faction target = targetMember != null ? targetMember.getFaction() : null;
 
-                if (chatOption == PlayerConfig.ChatOption.GLOBAL && PlayerConfig.get(player.getUuid()).chat != PlayerConfig.ChatOption.FOCUS) {
+                if (member.getChatMode() == ChatMode.GLOBAL && targetMember.getChatMode() != ChatMode.FOCUS) {
                     return message.getFilterableFor(sender, player);
                 }
 
-                if (factionChat && target != null && target.name.equals(faction.name)) {
+                if (factionChat && target != null && target.getName().equals(faction.getName())) {
                     return message.getFilterableFor(sender, player);
                 }
 
