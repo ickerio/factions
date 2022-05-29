@@ -19,13 +19,13 @@ public class Database {
 
     private static <T extends Persistent> void setup(Class<T> clazz) {
         String name = clazz.getAnnotation(Name.class).value();
-        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT)+".dat");
+        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT) + ".dat");
 
         if (!file.exists()) {
             try {
                 NbtIo.writeCompressed(new NbtCompound(), file);
             } catch (IOException e) {
-                FactionsMod.LOGGER.info("File creation failed", e);
+                FactionsMod.LOGGER.error("Failed to create NBT file", e);
             }
         }
 
