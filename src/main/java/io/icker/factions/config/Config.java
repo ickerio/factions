@@ -28,12 +28,12 @@ public class Config {
             Config config = gson.fromJson(new FileReader(file), Config.class);
     
             if (config.VERSION != REQUIRED_VERSION) {
-                FactionsMod.LOGGER.error(String.format("Config file incompatible (requires version %d)"));
+                FactionsMod.LOGGER.error(String.format("Config file incompatible (requires version %d)", REQUIRED_VERSION));
             }
 
             return config;
         } catch (Exception e) {
-            FactionsMod.LOGGER.error("An error occoured reading the factions config file");
+            FactionsMod.LOGGER.error("An error occurred reading the factions config file");
             return new Config();
         }
     }
