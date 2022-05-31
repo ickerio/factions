@@ -1,4 +1,4 @@
-package io.icker.factions.event;
+package io.icker.factions.core;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Collection;
 
-public class FactionEvents {
+public class FactionsManager {
     public static void playerDeath(ServerPlayerEntity player) {
         User member = User.get(player.getUuid());
         if (!member.isInFaction()) return;

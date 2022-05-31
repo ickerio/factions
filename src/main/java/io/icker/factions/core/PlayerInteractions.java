@@ -1,4 +1,4 @@
-package io.icker.factions.event;
+package io.icker.factions.core;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 import java.util.UUID;
 
-public class PlayerInteractEvents {
+public class PlayerInteractions {
     public static boolean preventInteract(ServerPlayerEntity player, World world, BlockHitResult result) {
         BlockPos pos = result.getBlockPos();
         BlockPos placePos = pos.add(result.getSide().getVector());
@@ -52,7 +52,7 @@ public class PlayerInteractEvents {
     }
 
     public static boolean preventFriendlyFire(ServerPlayerEntity player, ServerPlayerEntity target) {
-        return PlayerInteractEvents.preventFriendlyFire(player, target.getUuid());
+        return PlayerInteractions.preventFriendlyFire(player, target.getUuid());
     }
 
     public static boolean preventFriendlyFire(ServerPlayerEntity player, UUID targetID) {

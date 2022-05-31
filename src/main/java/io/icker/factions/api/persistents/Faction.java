@@ -112,33 +112,34 @@ public class Faction implements Persistent {
 
     public void setName(String name) {
         this.name = name;
-        UpdateFactionEvent.run(this);
+        FactionEvents.MODIFY.invoker().onModify(this);
     }
 
     public void setDescription(String description) {
         this.description = description;
-        UpdateFactionEvent.run(this);
+        FactionEvents.MODIFY.invoker().onModify(this);
     }
 
     public void setMOTD(String motd) {
         this.motd = motd;
-        UpdateFactionEvent.run(this);
+        FactionEvents.MODIFY.invoker().onModify(this);
     }
 
     public void setColor(Formatting color) {
         this.color = color.getName();
-        UpdateFactionEvent.run(this);
+        FactionEvents.MODIFY.invoker().onModify(this);
     }
 
     public void setOpen(boolean open) {
         this.open = open;
-        UpdateFactionEvent.run(this);
+        FactionEvents.MODIFY.invoker().onModify(this);
     }
 
     public void setPower(int power) {
+        int oldPower = this.power;
         this.power = power;
-        UpdateFactionEvent.run(this);
-        PowerChangeEvent.run(this);
+        FactionEvents.MODIFY.invoker().onModify(this);
+        FactionEvents.POWER_CHANGE.invoker().onPowerChange(this, oldPower);
     }
 
     public List<User> getUsers() {
@@ -153,7 +154,7 @@ public class Faction implements Persistent {
         Claim.getByFaction(id)
             .stream()
             .forEach(c -> c.remove());
-        RemoveAllClaimsEvent.run(this);
+        FactionEvents.REMOVE_ALL_CLAIMS.invoker().onRemoveAllClaims(this);
     }
 
     public void addClaim(int x, int z, String level) {
@@ -178,7 +179,7 @@ public class Faction implements Persistent {
         }
         removeAllClaims();
         STORE.remove(id);
-        RemoveFactionEvent.run(this);
+        FactionEvents.DISBAND.invoker().onDisband(this);
     }
 
     public static void save() {

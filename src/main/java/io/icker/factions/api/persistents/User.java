@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.icker.factions.api.events.JoinFactionEvent;
-import io.icker.factions.api.events.LeaveFactionEvent;
+import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -120,13 +119,14 @@ public class User implements Persistent {
     public void joinFaction(UUID factionID, Rank rank) {
         this.factionID = factionID;
         this.rank = rank;
-        JoinFactionEvent.run(this);
+        FactionEvents.MEMBER_JOIN.invoker().onMemberJoin(Faction.get(factionID), this);
     }
 
     public void leaveFaction() {
+        UUID oldFactionID = factionID;
         factionID = null;
         rank = null;
-        LeaveFactionEvent.run(this);
+        FactionEvents.MEMBER_LEAVE.invoker().onMemberLeave(Faction.get(oldFactionID), this);
     }
 
     public void changeRank(Rank rank) {

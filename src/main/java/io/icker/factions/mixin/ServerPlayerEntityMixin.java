@@ -3,8 +3,8 @@ package io.icker.factions.mixin;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.event.FactionEvents;
-import io.icker.factions.event.PlayerInteractEvents;
+import io.icker.factions.core.FactionsManager;
+import io.icker.factions.core.PlayerInteractions;
 import io.icker.factions.util.Message;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -31,13 +31,13 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
     public void onDeath(DamageSource source, CallbackInfo info) {
         Entity entity = source.getSource();
         if (entity == null || !entity.isPlayer()) return;
-        FactionEvents.playerDeath((ServerPlayerEntity) (Object) this);
+        FactionsManager.playerDeath((ServerPlayerEntity) (Object) this);
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void tick(CallbackInfo info) {
         if (age % FactionsMod.CONFIG.TICKS_FOR_POWER != 0 || age == 0) return;
-        FactionEvents.powerTick((ServerPlayerEntity) (Object) this);
+        FactionsManager.powerTick((ServerPlayerEntity) (Object) this);
     }
 
 
@@ -45,11 +45,11 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
     private void attack(Entity target, CallbackInfo info) {
         ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
 
-        if (target.isPlayer() && PlayerInteractEvents.preventFriendlyFire(player, (ServerPlayerEntity) target)) {
+        if (target.isPlayer() && PlayerInteractions.preventFriendlyFire(player, (ServerPlayerEntity) target)) {
             info.cancel();
         }
 
-        if (!target.isLiving() && !PlayerInteractEvents.actionPermitted(target.getBlockPos(), world, player)) {
+        if (!target.isLiving() && !PlayerInteractions.actionPermitted(target.getBlockPos(), world, player)) {
             info.cancel();
         }
     }
@@ -57,7 +57,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
     @Inject(method = "isInvulnerableTo", at = @At("RETURN"), cancellable = true)
     private void damage(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
         if (damageSource.getAttacker() != null && damageSource.getAttacker().isPlayer()) {
-            cir.setReturnValue(cir.getReturnValue() || PlayerInteractEvents.preventFriendlyFire(((ServerPlayerEntity) (Object) this), damageSource.getAttacker().getUuid()));
+            cir.setReturnValue(cir.getReturnValue() || PlayerInteractions.preventFriendlyFire(((ServerPlayerEntity) (Object) this), damageSource.getAttacker().getUuid()));
         } else {
             cir.setReturnValue(cir.getReturnValue());
         }

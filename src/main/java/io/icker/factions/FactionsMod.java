@@ -1,12 +1,10 @@
 package io.icker.factions;
 
-import io.icker.factions.api.events.JoinFactionEvent;
-import io.icker.factions.api.events.LeaveFactionEvent;
-import io.icker.factions.api.events.UpdateFactionEvent;
+import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
-import io.icker.factions.event.FactionEvents;
-import io.icker.factions.event.ServerEvents;
+import io.icker.factions.core.FactionsManager;
+import io.icker.factions.core.ServerEvents;
 import io.icker.factions.util.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -58,19 +56,20 @@ public class FactionsMod implements ModInitializer {
             Message.manager = server.getPlayerManager();
             Migrator.migrate();
         });
+        
 
-        UpdateFactionEvent.register(faction -> {
+        FactionEvents.MODIFY.register(faction -> {
             List<ServerPlayerEntity> players = faction.getUsers().stream().map(user -> FactionsMod.playerManager.getPlayer(user.getID())).toList();
             players.removeAll(Collections.singletonList(null));
-            FactionEvents.updatePlayerList(players);
+            FactionsManager.updatePlayerList(players);
         });
 
-        JoinFactionEvent.register(user -> {
-            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(user.getID()));
+        FactionEvents.MEMBER_JOIN.register((faction, user) -> {
+            FactionsManager.updatePlayerList(FactionsMod.playerManager.getPlayer(user.getID()));
         });
 
-        LeaveFactionEvent.register(user -> {
-            FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(user.getID()));
+        FactionEvents.MEMBER_LEAVE.register((faction, user) -> {
+            FactionsManager.updatePlayerList(FactionsMod.playerManager.getPlayer(user.getID()));
         });
 
         ServerPlayConnectionEvents.JOIN.register(ServerEvents::playerJoin);

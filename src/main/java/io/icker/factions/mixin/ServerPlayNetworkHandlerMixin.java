@@ -1,7 +1,5 @@
 package io.icker.factions.mixin;
 
-import io.icker.factions.event.ChatEvents;
-import io.icker.factions.event.PlayerInteractEvents;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.server.PlayerManager;
@@ -16,6 +14,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import io.icker.factions.core.Chat;
+import io.icker.factions.core.PlayerInteractions;
+
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -26,11 +27,11 @@ public class ServerPlayNetworkHandlerMixin {
 
     @Inject(method = "onPlayerMove", at = @At("HEAD"))
     public void onPlayerMove(PlayerMoveC2SPacket packet, CallbackInfo ci) {
-        PlayerInteractEvents.onMove(((ServerPlayNetworkHandler) (Object) this).player);
+        PlayerInteractions.onMove(((ServerPlayNetworkHandler) (Object) this).player);
     }
 
     @Redirect(method = "handleMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Ljava/util/function/Function;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"))
     private void replaceChatMessage(PlayerManager playerManager, Text serverMessage, Function<ServerPlayerEntity, Text> playerMessageFactory, MessageType playerMessageType, UUID sender, TextStream.Message message) {
-        ChatEvents.handleMessage(player, message.getRaw());
+        Chat.handleMessage(player, message.getRaw());
     }
 }

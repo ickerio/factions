@@ -1,4 +1,4 @@
-package io.icker.factions.event;
+package io.icker.factions.core;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
@@ -10,22 +10,22 @@ import net.minecraft.util.Formatting;
 
 import java.util.UUID;
 
-public class ChatEvents {
+public class Chat {
     public static void handleMessage(ServerPlayerEntity sender, String message) {
         UUID id = sender.getUuid();
         User member = User.get(id);
 
         if (member.getChatMode() == ChatMode.GLOBAL) {
             if (member.isInFaction()) {
-                ChatEvents.inFactionGlobal(sender, member.getFaction(), message);
+                Chat.inFactionGlobal(sender, member.getFaction(), message);
             } else {
-                ChatEvents.global(sender, message);
+                Chat.global(sender, message);
             }
         } else {
             if (member.isInFaction()) {
-                ChatEvents.faction(sender, member.getFaction(), message);
+                Chat.faction(sender, member.getFaction(), message);
             } else {
-                ChatEvents.fail(sender);
+                Chat.fail(sender);
             }
         }
     }

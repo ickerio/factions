@@ -1,4 +1,4 @@
-package io.icker.factions.event;
+package io.icker.factions.core;
 
 import io.icker.factions.api.persistents.*;
 import io.icker.factions.util.Message;
