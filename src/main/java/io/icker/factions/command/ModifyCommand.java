@@ -46,6 +46,17 @@ public class ModifyCommand implements Command {
         return 1;
     }
 
+    private int motd(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        String motd = StringArgumentType.getString(context, "motd");
+
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        User.get(player.getUuid()).getFaction().setMOTD(motd);
+        new Message("Successfully updated faction MOTD").send(player, false);
+        return 1;
+    }
+
     private int color(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         Formatting color = ColorArgumentType.getColor(context, "color");
 
@@ -90,6 +101,15 @@ public class ModifyCommand implements Command {
                 .then(
                     CommandManager.argument("description", StringArgumentType.greedyString())
                     .executes(this::description)
+                )
+            )
+            .then(
+                CommandManager
+                .literal("motd")
+                .requires(Requires.hasPerms("factions.modify.motd", 0))
+                .then(
+                    CommandManager.argument("motd", StringArgumentType.greedyString())
+                    .executes(this::motd)
                 )
             )
             .then(

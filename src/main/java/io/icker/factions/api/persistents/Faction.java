@@ -26,6 +26,9 @@ public class Faction implements Persistent {
     @Field("Description")
     private String description;
 
+    @Field("MOTD")
+    private String motd;
+
     @Field("Color")
     private String color;
 
@@ -35,9 +38,10 @@ public class Faction implements Persistent {
     @Field("Power")
     private int power;
 
-    public Faction(String name, String description, Formatting color, boolean open, int power) {
+    public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
         this.name = name;
+        this.motd = motd;
         this.description = description;
         this.color = color.getName();
         this.open = open;
@@ -93,6 +97,11 @@ public class Faction implements Persistent {
         return description;
     }
 
+    public String getMOTD() {
+        return motd;
+    }
+
+
     public int getPower() {
         return power;
     }
@@ -108,6 +117,11 @@ public class Faction implements Persistent {
 
     public void setDescription(String description) {
         this.description = description;
+        UpdateFactionEvent.run(this);
+    }
+
+    public void setMOTD(String motd) {
+        this.motd = motd;
         UpdateFactionEvent.run(this);
     }
 

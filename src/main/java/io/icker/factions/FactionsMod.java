@@ -6,10 +6,12 @@ import io.icker.factions.api.events.UpdateFactionEvent;
 import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
 import io.icker.factions.event.FactionEvents;
+import io.icker.factions.event.ServerEvents;
 import io.icker.factions.util.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
@@ -70,6 +72,8 @@ public class FactionsMod implements ModInitializer {
         LeaveFactionEvent.register(user -> {
             FactionEvents.updatePlayerList(FactionsMod.playerManager.getPlayer(user.getID()));
         });
+
+        ServerPlayConnectionEvents.JOIN.register(ServerEvents::playerJoin);
     }
 
     public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {

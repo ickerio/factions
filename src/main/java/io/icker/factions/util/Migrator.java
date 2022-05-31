@@ -27,7 +27,7 @@ public class Migrator {
 
             Query query = new Query("SELECT * FROM Faction;").executeQuery();
             while (query.next()) {
-                Faction faction = new Faction(query.getString("name"), query.getString("description"), Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power"));
+                Faction faction = new Faction(query.getString("name"), query.getString("description"), "No faction MOTD set", Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power"));
                 Faction.add(faction);
 
                 Query homeQuery = new Query("SELECT * FROM Home WHERE faction = ?;").set(faction.getName()).executeQuery();
