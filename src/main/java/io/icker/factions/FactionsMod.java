@@ -51,7 +51,6 @@ public class FactionsMod implements ModInitializer {
 
 		LiteralCommandNode<ServerCommandSource> alias = CommandManager
 			.literal("f")
-			.redirect(factions)
 			.build();
 
 		dispatcher.getRoot().addChild(factions);
@@ -73,12 +72,13 @@ public class FactionsMod implements ModInitializer {
             new ListCommand(),
             new MapCommand(),
             new ModifyCommand(),
-            new Radar(),
+            new RadarCommand(),
             new RankCommand(),
 		};
 
 		for (Command command : commands) {
 			factions.addChild(command.getNode());
+            alias.addChild(command.getNode());
 		}
     }
 }

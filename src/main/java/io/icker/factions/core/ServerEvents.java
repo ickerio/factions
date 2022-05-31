@@ -22,7 +22,7 @@ public class ServerEvents {
         User user = User.get(player.getUuid());
 
         if (user.isInFaction()) {
-            new Message("Welcome back " + player.getName().toString() + "!").send(player, false);
+            new Message("Welcome back " + player.getName().asString() + "!").send(player, false);
             new Message(user.getFaction().getMOTD()).send(player, false);
         }
     }
