@@ -36,8 +36,8 @@ public class User implements Persistent {
     @Field("Bypass")
     private boolean bypass;
 
-    @Field("ZoneMessage")
-    private boolean zoneMessage;
+    @Field("Radar")
+    private boolean radar;
 
     @Field("FactionID")
     private UUID factionID;
@@ -45,11 +45,11 @@ public class User implements Persistent {
     @Field("Rank")
     private Rank rank;
 
-    public User(UUID id, ChatMode chat, boolean bypass, boolean zoneMessage) {
+    public User(UUID id, ChatMode chat, boolean bypass, boolean radar) {
         this.id = id;
         this.chat = chat;
         this.bypass = bypass;
-        this.zoneMessage = zoneMessage;
+        this.radar = radar;
     }
 
     public User() { ; }
@@ -88,8 +88,8 @@ public class User implements Persistent {
         return bypass;
     }
 
-    public boolean isZoneOn() {
-        return zoneMessage;
+    public boolean isRadarOn() {
+        return radar;
     }
 
     public boolean isInFaction() {
@@ -112,8 +112,8 @@ public class User implements Persistent {
         this.bypass = bypass;
     }
 
-    public void setZoneMessage(boolean zoneMessage) {
-        this.zoneMessage = zoneMessage;
+    public void setRadar(boolean radar) {
+        this.radar = radar;
     }
 
     public void joinFaction(UUID factionID, Rank rank) {

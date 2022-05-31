@@ -130,7 +130,7 @@ public class PlayerInteractions {
     }
 
     public static void onMove(ServerPlayerEntity player) {
-        if (FactionsMod.CONFIG.ZONE_MESSAGE && User.get(player.getUuid()).isZoneOn()) {
+        if (FactionsMod.CONFIG.ZONE_MESSAGE && User.get(player.getUuid()).isRadarOn()) {
             ServerWorld world = player.getWorld();
             String dimension = world.getRegistryKey().getValue().toString();
 

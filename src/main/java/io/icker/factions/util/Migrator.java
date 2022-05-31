@@ -75,7 +75,7 @@ public class Migrator {
                 User user = User.get(query.getUUID("uuid"));
                 user.setBypass(query.getBool("bypass"));
                 user.setChatMode(opt);
-                user.setZoneMessage(query.getBool("zone"));
+                user.setRadar(query.getBool("zone"));
             }
 
             query = new Query("SELECT * FROM Allies;").executeQuery();

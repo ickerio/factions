@@ -10,29 +10,27 @@ import net.minecraft.util.Formatting;
 
 import java.util.UUID;
 
-public class Chat {
+public class ChatManager {
     public static void handleMessage(ServerPlayerEntity sender, String message) {
         UUID id = sender.getUuid();
         User member = User.get(id);
 
         if (member.getChatMode() == ChatMode.GLOBAL) {
             if (member.isInFaction()) {
-                Chat.inFactionGlobal(sender, member.getFaction(), message);
+                ChatManager.inFactionGlobal(sender, member.getFaction(), message);
             } else {
-                Chat.global(sender, message);
+                ChatManager.global(sender, message);
             }
         } else {
             if (member.isInFaction()) {
-                Chat.faction(sender, member.getFaction(), message);
+                ChatManager.faction(sender, member.getFaction(), message);
             } else {
-                Chat.fail(sender);
+                ChatManager.fail(sender);
             }
         }
     }
-
     
-
-    public static void global(ServerPlayerEntity sender, String message) {
+    private static void global(ServerPlayerEntity sender, String message) {
         FactionsMod.LOGGER.info("[" + sender.getName().asString() + " -> All] " + message);
         new Message(sender.getName().asString())
                 .filler("»")
@@ -40,7 +38,7 @@ public class Chat {
                 .sendToGlobalChat();
     }
 
-    public static void inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
+    private static void inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
         FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> All] " + message);
         String rank = "";
         for (User member : faction.getUsers())
@@ -56,7 +54,7 @@ public class Chat {
                 .sendToGlobalChat();
     }
 
-    public static void fail(ServerPlayerEntity sender) {
+    private static void fail(ServerPlayerEntity sender) {
         new Message("You must be in a faction to use faction chat")
                 .hover("Click to join global chat")
                 .click("/f chat global")
@@ -64,7 +62,7 @@ public class Chat {
                 .send(sender, false);
     }
 
-    public static void faction(ServerPlayerEntity sender, Faction faction, String message) {
+    private static void faction(ServerPlayerEntity sender, Faction faction, String message) {
         FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> " + faction.getName() + "] " + message);
         new Message(sender.getName().asString())
                 .add(new Message(" F").format(Formatting.BOLD, faction.getColor()))

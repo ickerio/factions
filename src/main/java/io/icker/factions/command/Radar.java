@@ -13,20 +13,20 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
-public class ZoneMsgCommand implements Command {
+public class Radar implements Command {
     public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
         User config = User.get(player.getUuid());
-        boolean zoneMsg = !config.isZoneOn();
-        config.setZoneMessage(zoneMsg);
+        boolean zoneMsg = !config.isRadarOn();
+        config.setRadar(zoneMsg);
 
-        new Message("Successfully toggled zone messages")
+        new Message("Successfully toggled claim radar")
                 .filler("·")
                 .add(
-                        new Message(zoneMsg ? "ON" : "OFF")
-                                .format(zoneMsg ? Formatting.GREEN : Formatting.RED)
+                    new Message(zoneMsg ? "ON" : "OFF")
+                    .format(zoneMsg ? Formatting.GREEN : Formatting.RED)
                 )
                 .send(player, false);
 
@@ -35,9 +35,9 @@ public class ZoneMsgCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-            .literal("zoneMessage")
+            .literal("radar")
             .requires(s -> FactionsMod.CONFIG.ZONE_MESSAGE)
-            .requires(Requires.hasPerms("actions.zonemessage", 0))
+            .requires(Requires.hasPerms("factions.radar", 0))
             .executes(this::run)
             .build();
     }

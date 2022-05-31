@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.*;
 import net.minecraft.util.Formatting;
 
@@ -135,11 +136,15 @@ public class Faction implements Persistent {
         FactionEvents.MODIFY.invoker().onModify(this);
     }
 
-    public void setPower(int power) {
+    public int adjustPower(int adjustment) {
+        int maxPower = FactionsMod.CONFIG.BASE_POWER + (getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER);
+        int newPower = Math.min(Math.max(0, power + adjustment), maxPower);
         int oldPower = this.power;
-        this.power = power;
+
+        power = newPower;
         FactionEvents.MODIFY.invoker().onModify(this);
         FactionEvents.POWER_CHANGE.invoker().onPowerChange(this, oldPower);
+        return Math.abs(newPower - oldPower);
     }
 
     public List<User> getUsers() {

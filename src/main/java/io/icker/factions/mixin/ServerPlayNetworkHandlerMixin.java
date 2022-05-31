@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import io.icker.factions.core.Chat;
+import io.icker.factions.core.ChatManager;
 import io.icker.factions.core.PlayerInteractions;
 
 import java.util.UUID;
@@ -32,6 +32,6 @@ public class ServerPlayNetworkHandlerMixin {
 
     @Redirect(method = "handleMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Ljava/util/function/Function;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"))
     private void replaceChatMessage(PlayerManager playerManager, Text serverMessage, Function<ServerPlayerEntity, Text> playerMessageFactory, MessageType playerMessageType, UUID sender, TextStream.Message message) {
-        Chat.handleMessage(player, message.getRaw());
+        ChatManager.handleMessage(player, message.getRaw());
     }
 }

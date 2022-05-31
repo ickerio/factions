@@ -5,18 +5,39 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class FactionsManager {
+    public static PlayerManager playerManager;
+
+    public static void serverStarted(MinecraftServer server) {
+        playerManager = server.getPlayerManager();
+        Message.manager = server.getPlayerManager();
+    }
+
+    public static void factionModified(Faction faction) {
+        List<ServerPlayerEntity> players = faction.getUsers().stream().map(user -> FactionsMod.playerManager.getPlayer(user.getID())).toList();
+        players.removeAll(Collections.singletonList(null));
+        updatePlayerList(players);
+    }
+
+    public static void memberChange(Faction faction, User user) {
+        updatePlayerList(FactionsMod.playerManager.getPlayer(user.getID()));
+    }
+
     public static void playerDeath(ServerPlayerEntity player) {
         User member = User.get(player.getUuid());
         if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();
 
-        int adjusted = adjustPower(faction, -FactionsMod.CONFIG.POWER_DEATH_PENALTY);
+        int adjusted = faction.adjustPower(-FactionsMod.CONFIG.POWER_DEATH_PENALTY);
         new Message("%s lost %d power from dying", player.getName().asString(), adjusted).send(faction);
     }
 
@@ -26,17 +47,9 @@ public class FactionsManager {
 
         Faction faction = member.getFaction();
 
-        int adjusted = adjustPower(faction, FactionsMod.CONFIG.TICKS_FOR_POWER_REWARD);
+        int adjusted = faction.adjustPower(FactionsMod.CONFIG.TICKS_FOR_POWER_REWARD);
         if (adjusted != 0)
             new Message("%s gained %d power from surviving", player.getName().asString(), adjusted).send(faction);
-    }
-
-    public static int adjustPower(Faction faction, int adjustment) {
-        int maxPower = FactionsMod.CONFIG.BASE_POWER + (faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER);
-
-        int updated = Math.min(Math.max(0, faction.getPower() + adjustment), maxPower);
-        faction.setPower(updated);
-        return Math.abs(updated - faction.getPower());
     }
 
     public static void updatePlayerList(ServerPlayerEntity player) {

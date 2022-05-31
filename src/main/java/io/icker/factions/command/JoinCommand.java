@@ -10,7 +10,6 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Invite;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.User.Rank;
-import io.icker.factions.core.FactionsManager;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -46,7 +45,7 @@ public class JoinCommand implements Command {
         source.getServer().getPlayerManager().sendCommandTree(player);
 
         new Message(player.getName().asString() + " joined").send(faction);
-        FactionsManager.adjustPower(faction, FactionsMod.CONFIG.MEMBER_POWER); // TODO: change this, its ew
+        faction.adjustPower(FactionsMod.CONFIG.MEMBER_POWER);
         return 1;
     }
 
