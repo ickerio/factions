@@ -13,15 +13,21 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public class Config {
     private static final int REQUIRED_VERSION = 1;
-    private static final File file = FabricLoader.getInstance().getGameDir().resolve("factions").resolve("config.json").toFile();
+    private static final File file = FabricLoader.getInstance().getGameDir().resolve("config").resolve("factions.json").toFile();
 
     public static Config load() {
         Gson gson = new GsonBuilder().create(); 
 
         try {
             if (!file.exists()) {
+                file.getParentFile().mkdir();
+
                 Config defaults = new Config();
-                gson.toJson(defaults, new FileWriter(file));
+
+                FileWriter writer = new FileWriter(file);
+                gson.toJson(defaults, writer);
+                writer.close();
+
                 return defaults;
             }
     
@@ -33,7 +39,7 @@ public class Config {
 
             return config;
         } catch (Exception e) {
-            FactionsMod.LOGGER.error("An error occurred reading the factions config file");
+            FactionsMod.LOGGER.error("An error occurred reading the factions config file", e);
             return new Config();
         }
     }
