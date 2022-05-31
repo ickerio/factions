@@ -6,7 +6,6 @@ import io.icker.factions.api.events.UpdateFactionEvent;
 import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
 import io.icker.factions.event.FactionEvents;
-import io.icker.factions.event.ServerEvents;
 import io.icker.factions.util.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -55,7 +54,7 @@ public class FactionsMod implements ModInitializer {
             }
 
             Message.manager = server.getPlayerManager();
-            new Migrator();
+            Migrator.migrate();
         });
 
         UpdateFactionEvent.register(faction -> {

@@ -1,9 +1,9 @@
 package io.icker.factions.util;
 
+import java.io.File;
 import java.sql.*;
 import java.util.UUID;
 
-import com.sun.jna.platform.unix.Resource;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.*;
 import io.icker.factions.api.persistents.User.*;
@@ -12,7 +12,16 @@ import net.minecraft.util.Formatting;
 
 public class Migrator {
     public static Connection con;
-    public Migrator() {
+    public static void migrate() {
+        File file = new File("./factions/factions.mv.db");
+        if (file.isFile()) {
+            moveData();
+            file.delete();
+            FactionsMod.LOGGER.info("Migration complete");
+        }
+    }
+
+    private static void moveData() {
         try {
             con = DriverManager.getConnection("jdbc:h2:./factions/factions");
 
@@ -86,11 +95,11 @@ public class Migrator {
         try {
             con.close();
         } catch (SQLException err) {
-            FactionsMod.LOGGER.error("An error occurred during data migration", err);
+            FactionsMod.LOGGER.warn("An error occurred while closing the database", err);
         }
     }
 
-    private Rank migrateRank(OldRank rank) {
+    private static Rank migrateRank(OldRank rank) {
         switch (rank) {
             case OWNER -> {
                 return Rank.OWNER;
@@ -201,26 +210,6 @@ public class Migrator {
             return false;
         }
 
-        public Object getObject(String columnName) {
-            try {
-                return result.getObject(columnName);
-            } catch (SQLException e) {
-                error(e);
-            }
-            return false;
-        }
-
-
-        public Query executeUpdate() {
-            try {
-                int affectedRows = statement.executeUpdate();
-                success = affectedRows != 0;
-            } catch (SQLException e) {
-                error(e);
-            }
-            return this;
-        }
-
         public Query executeQuery() {
             try {
                 result = statement.executeQuery();
@@ -239,15 +228,6 @@ public class Migrator {
             }
             skippedNext = true;
             return success;
-        }
-
-        public boolean exists() {
-            try {
-                return result.getBoolean(1);
-            } catch (SQLException e) {
-                error(e);
-            }
-            return false;
         }
 
         private void error(SQLException e) {
