@@ -7,7 +7,6 @@
     "ItemMixin",
     "BucketItemMixin",
     "ServerPlayerEntityMixin",
-    "ServerPlayNetworkManagerMixin",
     "ServerPlayerInteractionManagerMixin",
     "ServerPlayNetworkHandlerMixin",
     "MinecraftServerMixin"
