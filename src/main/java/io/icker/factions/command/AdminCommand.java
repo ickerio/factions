@@ -36,13 +36,8 @@ public class AdminCommand implements Command {
     }
 
     private int reload(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        try {
-            FactionsMod.dynmap.reloadAll();
-            new Message("Reloaded dynmap marker").send(context.getSource().getPlayer(), false);
-        } catch (java.lang.NoClassDefFoundError e) {
-            new Message("Dynmap not found").fail().send(context.getSource().getPlayer(), false);
-        }
-
+        FactionsMod.dynmap.reloadAll();
+        new Message("Reloaded dynmap marker").send(context.getSource().getPlayer(), false);
         return 1;
     }
 
@@ -75,6 +70,7 @@ public class AdminCommand implements Command {
             )
             .then(
                 CommandManager.literal("reload")
+                .requires(source -> FactionsMod.dynmap != null)
                 .requires(Requires.hasPerms("factions.admin.reload", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
                 .executes(this::reload)
             )
