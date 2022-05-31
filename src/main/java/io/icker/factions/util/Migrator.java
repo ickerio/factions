@@ -16,7 +16,7 @@ public class Migrator {
         File file = new File("./factions/factions.mv.db");
         if (file.isFile()) {
             moveData();
-            file.delete();
+            file.renameTo(new File("./factions/factions.mv.db.OLD"));
             FactionsMod.LOGGER.info("Migration complete");
         }
     }
