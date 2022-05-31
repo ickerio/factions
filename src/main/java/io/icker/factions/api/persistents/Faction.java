@@ -102,7 +102,6 @@ public class Faction implements Persistent {
         return motd;
     }
 
-
     public int getPower() {
         return power;
     }
@@ -142,7 +141,6 @@ public class Faction implements Persistent {
         int oldPower = this.power;
 
         power = newPower;
-        FactionEvents.MODIFY.invoker().onModify(this);
         FactionEvents.POWER_CHANGE.invoker().onPowerChange(this, oldPower);
         return Math.abs(newPower - oldPower);
     }

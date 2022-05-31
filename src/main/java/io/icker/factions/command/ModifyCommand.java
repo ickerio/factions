@@ -28,9 +28,7 @@ public class ModifyCommand implements Command {
             return 0;
         }
 
-
         User.get(player.getUuid()).getFaction().setName(name);
-
         new Message("Successfully renamed faction").send(player, false);
         return 1;
     }

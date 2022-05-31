@@ -33,9 +33,9 @@ public class ChatManager {
     private static void global(ServerPlayerEntity sender, String message) {
         FactionsMod.LOGGER.info("[" + sender.getName().asString() + " -> All] " + message);
         new Message(sender.getName().asString())
-                .filler("»")
-                .add(new Message(message).format(Formatting.GRAY))
-                .sendToGlobalChat();
+            .filler("»")
+            .add(new Message(message).format(Formatting.GRAY))
+            .sendToGlobalChat();
     }
 
     private static void inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
@@ -46,28 +46,28 @@ public class ChatManager {
                 rank = member.getRank().name().toLowerCase().replace("_", " ");
 
         new Message("")
-                .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
-                .add(" " + rank)
-                .add(" " + sender.getName().asString())
-                .filler("»")
-                .add(new Message(message).format(Formatting.GRAY))
-                .sendToGlobalChat();
+            .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
+            .add(" " + rank)
+            .add(" " + sender.getName().asString())
+            .filler("»")
+            .add(new Message(message).format(Formatting.GRAY))
+            .sendToGlobalChat();
     }
 
     private static void fail(ServerPlayerEntity sender) {
         new Message("You must be in a faction to use faction chat")
-                .hover("Click to join global chat")
-                .click("/f chat global")
-                .fail()
-                .send(sender, false);
+            .hover("Click to join global chat")
+            .click("/f chat global")
+            .fail()
+            .send(sender, false);
     }
 
     private static void faction(ServerPlayerEntity sender, Faction faction, String message) {
         FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> " + faction.getName() + "] " + message);
         new Message(sender.getName().asString())
-                .add(new Message(" F").format(Formatting.BOLD, faction.getColor()))
-                .filler("»")
-                .add(new Message(message).format(Formatting.GRAY))
-                .sendToFactionChat(faction);
+            .add(new Message(" F").format(Formatting.BOLD, faction.getColor()))
+            .filler("»")
+            .add(new Message(message).format(Formatting.GRAY))
+            .sendToFactionChat(faction);
     }
 }

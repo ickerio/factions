@@ -41,14 +41,14 @@ public class Invite implements Persistent {
     public static List<Invite> getByPlayer(UUID playerID) {
         return STORE.values()
             .stream()
-            .filter(i -> i.playerID == playerID)
+            .filter(i -> i.playerID.equals(playerID))
             .toList();
     }
 
     public static List<Invite> getByFaction(UUID factionID) {
         return STORE.values()
             .stream()
-            .filter(i -> i.factionID == factionID)
+            .filter(i -> i.factionID.equals(factionID))
             .toList();
     }
 

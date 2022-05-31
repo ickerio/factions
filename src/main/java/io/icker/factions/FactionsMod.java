@@ -19,7 +19,6 @@ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -28,7 +27,6 @@ public class FactionsMod implements ModInitializer {
     
     public static Config CONFIG;
     public static DynmapWrapper dynmap;
-    public static PlayerManager playerManager;
 
     @Override
     public void onInitialize() {

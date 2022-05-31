@@ -48,7 +48,7 @@ public class Relationship implements Persistent {
     public static List<Relationship> getByFaction(UUID factionID) {
         return STORE.values()
             .stream()
-            .filter(i -> i.source == factionID)
+            .filter(r -> r.source.equals(factionID))
             .toList();
     }
 

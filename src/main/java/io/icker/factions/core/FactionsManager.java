@@ -10,7 +10,6 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class FactionsManager {
@@ -22,13 +21,12 @@ public class FactionsManager {
     }
 
     public static void factionModified(Faction faction) {
-        List<ServerPlayerEntity> players = faction.getUsers().stream().map(user -> FactionsMod.playerManager.getPlayer(user.getID())).toList();
-        players.removeAll(Collections.singletonList(null));
+        List<ServerPlayerEntity> players = faction.getUsers().stream().map(user -> playerManager.getPlayer(user.getID())).toList();
         updatePlayerList(players);
     }
 
     public static void memberChange(Faction faction, User user) {
-        updatePlayerList(FactionsMod.playerManager.getPlayer(user.getID()));
+        updatePlayerList(playerManager.getPlayer(user.getID()));
     }
 
     public static void playerDeath(ServerPlayerEntity player) {
@@ -54,11 +52,11 @@ public class FactionsManager {
 
     public static void updatePlayerList(ServerPlayerEntity player) {
         if (player != null) {
-            FactionsMod.playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));
+            playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));
         }
     }
 
     public static void updatePlayerList(Collection<ServerPlayerEntity> players) {
-        FactionsMod.playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, players));
+        playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, players));
     }
 }
