@@ -38,9 +38,6 @@ public class FactionsMod implements ModInitializer {
         LOGGER.info("Initialized Factions Mod for Minecraft v1.18");
         CONFIG = Config.load();
 
-        if (PermissionsWrapper.exists()) {
-            LOGGER.info("Permissions Mod was found");
-        }
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             registerCommands(dispatcher);
         });
