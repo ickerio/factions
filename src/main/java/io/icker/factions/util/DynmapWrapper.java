@@ -66,7 +66,7 @@ public class DynmapWrapper {
         ChunkPos pos = new ChunkPos(claim.x, claim.z);
 
         AreaMarker marker = markerSet.createAreaMarker(
-            claim.getKey(), getInfo(faction), 
+            claim.getKey(), factionInfo, 
             true, dimensionTagToID(claim.level), 
             new double[]{pos.getStartX(), pos.getEndX() + 1}, 
             new double[]{pos.getStartZ(), pos.getEndZ() + 1},
