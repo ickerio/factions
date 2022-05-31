@@ -1,176 +1,136 @@
 package io.icker.factions.util;
 
+import java.util.Date;
+import java.util.HashMap;
+
+import org.dynmap.DynmapCommonAPI;
+import org.dynmap.DynmapCommonAPIListener;
+import org.dynmap.markers.AreaMarker;
+import org.dynmap.markers.Marker;
+import org.dynmap.markers.MarkerAPI;
+import org.dynmap.markers.MarkerSet;
+
 import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.events.HomeEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
-
-import org.dynmap.DynmapCommonAPIListener;
-import org.dynmap.DynmapCommonAPI;
-import org.dynmap.markers.MarkerAPI;
-import org.dynmap.markers.MarkerSet;
-import org.dynmap.markers.AreaMarker;
-
-import java.util.Collection;
-import java.util.List;
-
 import net.minecraft.util.math.ChunkPos;
 
 public class DynmapWrapper {
-public DynmapCommonAPI dynmapCommonAPI;
-public MarkerAPI markerApi;
-public MarkerSet markerSet;
+    private final int PERIOD = 30 * 1000;
+    private HashMap<Faction, Long> ratelimiter = new HashMap<Faction, Long>();
+    
+    private DynmapCommonAPI api;
+    private MarkerAPI markerApi;
+    private MarkerSet markerSet;
 
-public DynmapWrapper() {
-    DynmapCommonAPIListener.register(new DynmapCommonAPIListener() {
-        @Override
-        public void apiEnabled(DynmapCommonAPI dCAPI) {
-            dynmapCommonAPI = dCAPI;
-            markerApi = dynmapCommonAPI.getMarkerAPI();
-            markerSet = markerApi.createMarkerSet("dynmap-factions", "The Dynmap Factions integration", null, true);
-            if (markerSet == null) {
+    public DynmapWrapper() {
+        DynmapCommonAPIListener.register(new DynmapCommonAPIListener() {
+            @Override
+            public void apiEnabled(DynmapCommonAPI dCAPI) {
+                api = dCAPI;
+                markerApi = api.getMarkerAPI();
                 markerSet = markerApi.getMarkerSet("dynmap-factions");
+                if (markerSet == null) {
+                    markerSet = markerApi.createMarkerSet("dynmap-factions", "The Dynmap Factions integration", null, true);
+                }
+                generateMarkers();
             }
-            generateMarkers();
-        }
-    });
+        });
 
-    //ClaimEvents.ADD.register(this::addClaim);
-    //ClaimEvents.REMOVE.register(this::removeClaim);
-    //FactionEvents.REMOVE_ALL_CLAIMS.register(this::removeAll);
-    //HomeEvents.SET.register(this::setHome);
-    //FactionEvents.DISBAND.register((faction -> {
-    //    removeHome(faction);
-    //    removeAll(faction);
-    //}));
+        ClaimEvents.ADD.register(this::addClaim);
+        ClaimEvents.REMOVE.register(this::removeClaim);
+        HomeEvents.SET.register(this::setHome);
 
-    //UpdateFactionEvent.register((faction) -> {
-    //updateFaction(faction);
-    //});
-
-    //JoinFactionEvent.register(member -> updateFaction(member.getFaction()));
-    //LeaveFactionEvent.register(member -> updateFaction(member.getFaction()));
-    //PowerChangeEvent.register(this::updateFaction);
-    //PowerChangeEvent.register(this::updateFaction);
-
-    //AllyAcceptEvent.register((ally) -> {
-    //  updateFaction(Faction.get(ally.source));
-    //  updateFaction(Faction.get(ally.target));
-    //});
-    //AllyRemoveEvent.register((ally) -> {
-    //  updateFaction(Faction.get(ally.source));
-    //  updateFaction(Faction.get(ally.target));
-    //});
+        FactionEvents.MODIFY.register((faction) -> updateFaction(faction));
+        FactionEvents.MEMBER_JOIN.register((faction, user) -> updateFaction(faction));
+        FactionEvents.MEMBER_LEAVE.register((faction, user) -> updateFaction(faction));
+        FactionEvents.POWER_CHANGE.register((faction, oldPower) -> updateFaction(faction));
     }
 
     private void generateMarkers() {
-        Collection<Faction> factions = Faction.all();
-        for (Faction faction : factions) {
-            List<Claim> claims = faction.getClaims();
-
-            if (faction.getHome() != null) {
-                Home home = faction.getHome();
-                String markerId = faction.getName() + "-home";
-                markerSet.createMarker(markerId, faction.getName() + "'s Home", dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
+        for (Faction faction : Faction.all()) {
+            setHome(faction.getHome());
+            String info = getInfo(faction);
+            for (Claim claim : faction.getClaims()) {
+                addClaim(claim, info);
             }
-
-            for (Claim claim : claims) {
-                ChunkPos pos = new ChunkPos(claim.x, claim.z);
-
-                String areaMarkerId = faction.getName() + "-" + claim.x + claim.z;
-                AreaMarker marker = markerSet.createAreaMarker(areaMarkerId, getInfo(faction), true, dimensionTagToID(claim.level), new double[]{pos.getStartX(), pos.getEndX() + 1}, new double[]{pos.getStartZ(), pos.getEndZ() + 1}, true);
-                if (marker != null) {
-                    marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColorValue());
-                    marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(), faction.getColor().getColorValue());
-                }
-            }
+            ratelimiter.put(faction, new Date().getTime());
         }
     }
 
-    private String dimensionTagToID(String level) { // FIXME: allow custom dimensions
-        if (level.equals("minecraft:overworld")) {
-            return "world";
-        }
-        if (level.equals("minecraft:the_nether")) {
-            return "DIM-1";
-        }
-        if (level.equals("minecraft:the_end")) {
-            return "DIM1";
-        }
-        return level;
-    }
-
-    private String getInfo(Faction faction) {
-        return "Name: " + faction.getName() + "<br>"
-        + "Description: " + faction.getDescription() + "<br>"
-        + "Power: " + faction.getPower() + "<br>"
-        + "Number of members: " + faction.getUsers().size();// + "<br>"
-        //+ "Allies: " + Ally.getAllies(faction.getName).stream().map(ally -> ally.target).collect(Collectors.joining(", "));
-    }
-
-    public void addClaim(Claim claim) {
-        Faction faction = claim.getFaction();
+    private void addClaim(Claim claim, String factionInfo) {
+        Faction faction = claim.getFaction(); 
         ChunkPos pos = new ChunkPos(claim.x, claim.z);
 
-        String areaMarkerId = faction.getName() + "-" + claim.x + claim.z;
-        AreaMarker marker = markerSet.createAreaMarker(areaMarkerId, getInfo(faction), true, dimensionTagToID(claim.level), new double[]{pos.getStartX(), pos.getEndX()+1}, new double[]{pos.getStartZ(), pos.getEndZ()+1}, true);
+        AreaMarker marker = markerSet.createAreaMarker(
+            claim.getKey(), getInfo(faction), 
+            true, dimensionTagToID(claim.level), 
+            new double[]{pos.getStartX(), pos.getEndX() + 1}, 
+            new double[]{pos.getStartZ(), pos.getEndZ() + 1},
+            true
+        );
         if (marker != null) {
             marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColorValue());
             marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(), faction.getColor().getColorValue());
         }
     }
 
-    public void removeClaim(Claim claim) {
-        Faction faction = claim.getFaction();
-        String areaMarkerId = faction.getName() + "-" + claim.x + claim.z;
-
-        AreaMarker marker = markerSet.findAreaMarker(areaMarkerId);
-        marker.deleteMarker();
+    private void addClaim(Claim claim) {
+        addClaim(claim, getInfo(claim.getFaction()));
     }
 
-    public void updateFaction(Faction faction) {
-        List<Claim> claims = faction.getClaims();
+    private void removeClaim(int x, int z, String level, Faction faction) {
+        String areaMarkerId = String.format("%s-%d-%d", level, x, z);
+        markerSet.findAreaMarker(areaMarkerId).deleteMarker();
+    }
 
-        for (Claim claim : claims) {
-            String areaMarkerId = faction.getName() + "-" + claim.x + claim.z;
-            AreaMarker marker = markerSet.findAreaMarker(areaMarkerId);
+    private void updateFaction(Faction faction) {
+        Long now = new Date().getTime();
+        if (ratelimiter.get(faction) + PERIOD > now) return;
+
+        ratelimiter.put(faction, now);
+        String info = getInfo(faction);
+
+        for (Claim claim : faction.getClaims()) {
+            AreaMarker marker = markerSet.findAreaMarker(claim.getKey());
 
             marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColorValue());
             marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(), faction.getColor().getColorValue());
-            marker.setDescription(getInfo(faction));
+            marker.setDescription(info);
         }
     }
 
-    public void removeAll(Faction faction) {
-        List<Claim> claims = faction.getClaims();
-
-        for (Claim claim : claims) {
-            String areaMarkerId = faction.getName() + "-" + claim.x + claim.z;
-            markerSet.findAreaMarker(areaMarkerId).deleteMarker();
-        }
-    }
-
-    public void setHome(Faction faction, Home newHome) {
-        String markerId = faction.getName() + "-home";
-        if (markerSet.findMarker(markerId) == null) {
-            markerSet.createMarker(markerId, faction.getName() + "'s Home", dimensionTagToID(newHome.level), newHome.x, newHome.y, newHome.z, null, true);
+    private void setHome(Home home) {
+        Marker marker = markerSet.findMarker(home.getKey());
+        if (marker == null) {
+            markerSet.createMarker(home.getKey(), home.getFaction().getName() + "'s Home", dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
         } else {
-            markerSet.findMarker(markerId).setLocation(dimensionTagToID(newHome.level), newHome.x, newHome.y, newHome.z);
+            marker.setLocation(dimensionTagToID(home.level), home.x, home.y, home.z);
         }
     }
 
-    public void removeHome(Faction faction) {
-        String markerId = faction.getName() + "-home";
-        if (markerSet.findMarker(markerId) != null) {
-            markerSet.findMarker(markerId).deleteMarker();
-        }
+    private String dimensionTagToID(String level) { // TODO: allow custom dimensions
+        if (level.equals("minecraft:overworld")) return "world";
+        if (level.equals("minecraft:the_nether")) return "DIM-1";
+        if (level.equals("minecraft:the_end")) return "DIM1";
+        return level;
+    }
+
+    private String getInfo(Faction faction) {
+        return "Name: " + faction.getName() + "<br>"
+            + "Description: " + faction.getDescription() + "<br>"
+            + "Power: " + faction.getPower() + "<br>"
+            + "Number of members: " + faction.getUsers().size();// + "<br>"
+            //+ "Allies: " + Ally.getAllies(faction.getName).stream().map(ally -> ally.target).collect(Collectors.joining(", "));
     }
 
     public void reloadAll() {
         markerSet.deleteMarkerSet();
         markerSet = markerApi.createMarkerSet("dynmap-factions", "The Dynmap Factions integration", null, true);
+        ratelimiter.clear();
         generateMarkers();
     }
 }
