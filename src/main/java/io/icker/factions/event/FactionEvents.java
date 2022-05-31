@@ -40,7 +40,9 @@ public class FactionEvents {
     }
 
     public static void updatePlayerList(ServerPlayerEntity player) {
-        FactionsMod.playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));
+        if (player != null) {
+            FactionsMod.playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));
+        }
     }
 
     public static void updatePlayerList(Collection<ServerPlayerEntity> players) {

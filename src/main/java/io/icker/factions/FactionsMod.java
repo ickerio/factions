@@ -7,9 +7,7 @@ import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
 import io.icker.factions.event.FactionEvents;
 import io.icker.factions.event.ServerEvents;
-import io.icker.factions.util.Command;
-import io.icker.factions.util.DynmapWrapper;
-import io.icker.factions.util.PermissionsWrapper;
+import io.icker.factions.util.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -22,6 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -48,21 +47,20 @@ public class FactionsMod implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            ServerEvents.started(server);
             playerManager = server.getPlayerManager();
             if (FabricLoader.getInstance().isModLoaded("dynmap")) {
                 dynmap = new DynmapWrapper();
             } else {
                 LOGGER.info("Dynmap not found");
             }
-        });
 
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            //ServerEvents.stopped(server);
+            Message.manager = server.getPlayerManager();
+            new Migrator();
         });
 
         UpdateFactionEvent.register(faction -> {
             List<ServerPlayerEntity> players = faction.getUsers().stream().map(user -> FactionsMod.playerManager.getPlayer(user.getID())).toList();
+            players.removeAll(Collections.singletonList(null));
             FactionEvents.updatePlayerList(players);
         });
 
