@@ -58,6 +58,10 @@ public class Home implements Persistent {
         STORE.put(home.factionID, home);
         HomeEvents.SET.invoker().onSet(home);
     }
+    
+    public Faction getFaction() {
+        return Faction.get(factionID);
+    }
 
     public static void save() {
         Database.save(Home.class, STORE.values().stream().toList());
