@@ -12,7 +12,7 @@ import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class Config {
-    private static final int REQUIRED_VERSION = 1;
+    private static final int REQUIRED_VERSION = 2;
     private static final File file = FabricLoader.getInstance().getGameDir().resolve("config").resolve("factions.json").toFile();
 
     public static Config load() {
@@ -88,8 +88,8 @@ public class Config {
     @SerializedName("home")
     public HomeOptions HOME = HomeOptions.CLAIMS;
 
-    @SerializedName("zoneMessageEnabled")
-    public boolean ZONE_MESSAGE = true;
+    @SerializedName("radarEnabled")
+    public boolean RADAR = true;
 
     @SerializedName("friendlyFireEnabled")
     public boolean FRIENDLY_FIRE = false;
