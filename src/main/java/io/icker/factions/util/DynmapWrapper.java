@@ -19,9 +19,6 @@ import io.icker.factions.api.persistents.Home;
 import net.minecraft.util.math.ChunkPos;
 
 public class DynmapWrapper {
-    private final int PERIOD = 30 * 1000;
-    private HashMap<Faction, Long> ratelimiter = new HashMap<Faction, Long>();
-    
     private DynmapCommonAPI api;
     private MarkerAPI markerApi;
     private MarkerSet markerSet;
@@ -52,12 +49,15 @@ public class DynmapWrapper {
 
     private void generateMarkers() {
         for (Faction faction : Faction.all()) {
-            setHome(faction.getHome());
+            Home home = faction.getHome();
+            if (home != null) {
+                setHome(home);
+            }
+
             String info = getInfo(faction);
             for (Claim claim : faction.getClaims()) {
                 addClaim(claim, info);
             }
-            ratelimiter.put(faction, new Date().getTime());
         }
     }
 
@@ -88,10 +88,6 @@ public class DynmapWrapper {
     }
 
     private void updateFaction(Faction faction) {
-        Long now = new Date().getTime();
-        if (ratelimiter.get(faction) + PERIOD > now) return;
-
-        ratelimiter.put(faction, now);
         String info = getInfo(faction);
 
         for (Claim claim : faction.getClaims()) {
@@ -130,7 +126,6 @@ public class DynmapWrapper {
     public void reloadAll() {
         markerSet.deleteMarkerSet();
         markerSet = markerApi.createMarkerSet("dynmap-factions", "The Dynmap Factions integration", null, true);
-        ratelimiter.clear();
         generateMarkers();
     }
 }
