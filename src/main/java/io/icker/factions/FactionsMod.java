@@ -3,6 +3,8 @@ package io.icker.factions;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import io.icker.factions.core.ChatManager;
+import net.minecraft.command.CommandRegistryAccess;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,11 +29,14 @@ public class FactionsMod implements ModInitializer {
 
     public static Config CONFIG;
     public static DynmapWrapper dynmap;
+    public ChatManager chatManager;
 
     @Override
     public void onInitialize() {
         LOGGER.info("Initialized Factions Mod for Minecraft v1.18");
         CONFIG = Config.load();
+
+        chatManager = new ChatManager();
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         Migrator.migrate();
@@ -44,7 +49,7 @@ public class FactionsMod implements ModInitializer {
         FactionEvents.MEMBER_LEAVE.register(FactionsManager::memberChange);
     }
 
-    private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, String registryAccess, boolean dedicated) {
+    private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
 		LiteralCommandNode<ServerCommandSource> factions = CommandManager
 			.literal("factions")
 			.build();
