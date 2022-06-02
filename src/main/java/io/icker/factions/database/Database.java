@@ -58,10 +58,12 @@ public class Database {
                 for (Map.Entry<String, Field> entry : fields.entrySet()) {
                     String key = entry.getKey();
                     Field field = entry.getValue();
+                    NbtCompound itemData = fileData.getCompound(id);
 
-                    Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, fileData.getCompound(id));
-
-                    field.set(item, element);
+                    if (itemData.contains(key) && !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
+                        Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, itemData);
+                        field.set(item, element);
+                    }
                 }
 
                 store.put(getStoreKey.apply(item), item);
@@ -90,9 +92,10 @@ public class Database {
 
                     Class<?> type = field.getType();
                     Object data = field.get(item);
-
-                    TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
-                    serializer.writeNbt(key, compound, parse(data));
+                    if (data != null || !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
+                        TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
+                        serializer.writeNbt(key, compound, parse(data));
+                    }
                 }
                 fileData.put(item.getKey(), compound);
             }

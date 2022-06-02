@@ -39,10 +39,10 @@ public class User implements Persistent {
     @Field("Radar")
     private boolean radar;
 
-    @Field("FactionID")
+    @Field(value = "FactionID", nullable = true)
     private UUID factionID;
     
-    @Field("Rank")
+    @Field(value = "Rank", nullable = true)
     private Rank rank;
 
     public User(UUID id, ChatMode chat, boolean bypass, boolean radar) {
