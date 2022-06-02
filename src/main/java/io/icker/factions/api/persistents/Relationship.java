@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.icker.factions.api.events.MutualRelationshipEvent;
+import io.icker.factions.api.events.RelationshipEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -48,17 +48,21 @@ public class Relationship implements Persistent {
     public static List<Relationship> getByFaction(UUID factionID) {
         return STORE.values()
             .stream()
-            .filter(i -> i.source == factionID)
+            .filter(r -> r.source.equals(factionID))
             .toList();
     }
 
     public static void set(Relationship relationship) {
+        Status oldStatus = STORE.get(relationship.getKey()).status;
+        
         STORE.put(relationship.getKey(), relationship);
+        RelationshipEvents.NEW_DECLARATION.invoker().onNewDecleration(relationship);
 
-        if (relationship.status == Status.NEUTRAL) {
-            MutualRelationshipEvent.run(relationship);
-        } else if (relationship.getReverse().status == relationship.status) {
-            MutualRelationshipEvent.run(relationship);
+        Status reverseStatus = relationship.getReverse().status;
+        if (relationship.status == reverseStatus) {
+            RelationshipEvents.NEW_MUTUAL.invoker().onNewMutual(relationship);
+        } else if (oldStatus == reverseStatus) {
+            RelationshipEvents.END_MUTUAL.invoker().onEndMutual(relationship, oldStatus);
         }
     }
 

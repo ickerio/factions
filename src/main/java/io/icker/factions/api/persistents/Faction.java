@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.*;
 import net.minecraft.util.Formatting;
 
@@ -26,6 +27,9 @@ public class Faction implements Persistent {
     @Field("Description")
     private String description;
 
+    @Field("MOTD")
+    private String motd;
+
     @Field("Color")
     private String color;
 
@@ -35,9 +39,10 @@ public class Faction implements Persistent {
     @Field("Power")
     private int power;
 
-    public Faction(String name, String description, Formatting color, boolean open, int power) {
+    public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
         this.name = name;
+        this.motd = motd;
         this.description = description;
         this.color = color.getName();
         this.open = open;
@@ -93,6 +98,10 @@ public class Faction implements Persistent {
         return description;
     }
 
+    public String getMOTD() {
+        return motd;
+    }
+
     public int getPower() {
         return power;
     }
@@ -103,28 +112,37 @@ public class Faction implements Persistent {
 
     public void setName(String name) {
         this.name = name;
-        UpdateFactionEvent.run(this);
+        FactionEvents.MODIFY.invoker().onModify(this);
     }
 
     public void setDescription(String description) {
         this.description = description;
-        UpdateFactionEvent.run(this);
+        FactionEvents.MODIFY.invoker().onModify(this);
+    }
+
+    public void setMOTD(String motd) {
+        this.motd = motd;
+        FactionEvents.MODIFY.invoker().onModify(this);
     }
 
     public void setColor(Formatting color) {
         this.color = color.getName();
-        UpdateFactionEvent.run(this);
+        FactionEvents.MODIFY.invoker().onModify(this);
     }
 
     public void setOpen(boolean open) {
         this.open = open;
-        UpdateFactionEvent.run(this);
+        FactionEvents.MODIFY.invoker().onModify(this);
     }
 
-    public void setPower(int power) {
-        this.power = power;
-        UpdateFactionEvent.run(this);
-        PowerChangeEvent.run(this);
+    public int adjustPower(int adjustment) {
+        int maxPower = FactionsMod.CONFIG.BASE_POWER + (getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER);
+        int newPower = Math.min(Math.max(0, power + adjustment), maxPower);
+        int oldPower = this.power;
+
+        power = newPower;
+        FactionEvents.POWER_CHANGE.invoker().onPowerChange(this, oldPower);
+        return Math.abs(newPower - oldPower);
     }
 
     public List<User> getUsers() {
@@ -139,7 +157,7 @@ public class Faction implements Persistent {
         Claim.getByFaction(id)
             .stream()
             .forEach(c -> c.remove());
-        RemoveAllClaimsEvent.run(this);
+        FactionEvents.REMOVE_ALL_CLAIMS.invoker().onRemoveAllClaims(this);
     }
 
     public void addClaim(int x, int z, String level) {
@@ -164,7 +182,7 @@ public class Faction implements Persistent {
         }
         removeAllClaims();
         STORE.remove(id);
-        RemoveFactionEvent.run(this);
+        FactionEvents.DISBAND.invoker().onDisband(this);
     }
 
     public static void save() {

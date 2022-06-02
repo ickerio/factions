@@ -10,11 +10,15 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.User.Rank;
+import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+
 public interface Command {
     public LiteralCommandNode<ServerCommandSource> getNode();
+    public static final boolean permissions = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
 
     public interface Requires {
         boolean run(User member);
@@ -44,7 +48,7 @@ public interface Command {
         }
 
         public static Predicate<ServerCommandSource> hasPerms(String permission, int defaultValue) {
-            return source -> PermissionsInnerWrapper.check(source, permission, defaultValue);
+            return source -> !permissions || Permissions.check(source, permission, defaultValue);
         }
 
         public static Predicate<ServerCommandSource> require(Requires req) {

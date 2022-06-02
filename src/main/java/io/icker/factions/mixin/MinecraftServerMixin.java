@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.concurrent.CompletableFuture;
 
+import io.icker.factions.core.ServerEvents;
+
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
     @Inject(method = "getChatDecorator", at = @At("HEAD"), cancellable = true)

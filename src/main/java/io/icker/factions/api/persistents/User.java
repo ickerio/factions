@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.icker.factions.api.events.JoinFactionEvent;
-import io.icker.factions.api.events.LeaveFactionEvent;
+import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -37,20 +36,20 @@ public class User implements Persistent {
     @Field("Bypass")
     private boolean bypass;
 
-    @Field("ZoneMessage")
-    private boolean zoneMessage;
+    @Field("Radar")
+    private boolean radar;
 
-    @Field("FactionID")
+    @Field(value = "FactionID", nullable = true)
     private UUID factionID;
     
-    @Field("Rank")
+    @Field(value = "Rank", nullable = true)
     private Rank rank;
 
-    public User(UUID id, ChatMode chat, boolean bypass, boolean zoneMessage) {
+    public User(UUID id, ChatMode chat, boolean bypass, boolean radar) {
         this.id = id;
         this.chat = chat;
         this.bypass = bypass;
-        this.zoneMessage = zoneMessage;
+        this.radar = radar;
     }
 
     public User() { ; }
@@ -89,8 +88,8 @@ public class User implements Persistent {
         return bypass;
     }
 
-    public boolean isZoneOn() {
-        return zoneMessage;
+    public boolean isRadarOn() {
+        return radar;
     }
 
     public boolean isInFaction() {
@@ -113,20 +112,21 @@ public class User implements Persistent {
         this.bypass = bypass;
     }
 
-    public void setZoneMessage(boolean zoneMessage) {
-        this.zoneMessage = zoneMessage;
+    public void setRadar(boolean radar) {
+        this.radar = radar;
     }
 
     public void joinFaction(UUID factionID, Rank rank) {
         this.factionID = factionID;
         this.rank = rank;
-        JoinFactionEvent.run(this);
+        FactionEvents.MEMBER_JOIN.invoker().onMemberJoin(Faction.get(factionID), this);
     }
 
     public void leaveFaction() {
+        UUID oldFactionID = factionID;
         factionID = null;
         rank = null;
-        LeaveFactionEvent.run(this);
+        FactionEvents.MEMBER_LEAVE.invoker().onMemberLeave(Faction.get(oldFactionID), this);
     }
 
     public void changeRank(Rank rank) {

@@ -28,9 +28,7 @@ public class ModifyCommand implements Command {
             return 0;
         }
 
-
         User.get(player.getUuid()).getFaction().setName(name);
-
         new Message("Successfully renamed faction").send(player, false);
         return 1;
     }
@@ -43,6 +41,17 @@ public class ModifyCommand implements Command {
 
         User.get(player.getUuid()).getFaction().setDescription(description);
         new Message("Successfully updated faction description").send(player, false);
+        return 1;
+    }
+
+    private int motd(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        String motd = StringArgumentType.getString(context, "motd");
+
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        User.get(player.getUuid()).getFaction().setMOTD(motd);
+        new Message("Successfully updated faction MOTD").send(player, false);
         return 1;
     }
 
@@ -90,6 +99,15 @@ public class ModifyCommand implements Command {
                 .then(
                     CommandManager.argument("description", StringArgumentType.greedyString())
                     .executes(this::description)
+                )
+            )
+            .then(
+                CommandManager
+                .literal("motd")
+                .requires(Requires.hasPerms("factions.modify.motd", 0))
+                .then(
+                    CommandManager.argument("motd", StringArgumentType.greedyString())
+                    .executes(this::motd)
                 )
             )
             .then(

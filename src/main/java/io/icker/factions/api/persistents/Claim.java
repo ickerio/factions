@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.icker.factions.FactionsMod;
-import io.icker.factions.api.events.AddClaimEvent;
-import io.icker.factions.api.events.RemoveClaimEvent;
+import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -48,13 +46,13 @@ public class Claim implements Persistent {
     public static List<Claim> getByFaction(UUID factionID) {
         return STORE.values()
             .stream()
-            .filter(c -> c.factionID == factionID)
+            .filter(c -> c.factionID.equals(factionID))
             .toList();
     }
 
     public static void add(Claim claim) {
         STORE.put(claim.getKey(), claim);
-        AddClaimEvent.run(claim);
+        ClaimEvents.ADD.invoker().onAdd(claim);
     }
 
     public Faction getFaction() {
@@ -63,7 +61,8 @@ public class Claim implements Persistent {
 
     public void remove() {
         STORE.remove(getKey());
-        RemoveClaimEvent.run(this);
+        System.out.println("Removing claim");
+        ClaimEvents.REMOVE.invoker().onRemove(x, z, level, Faction.get(factionID));
     }
 
     public static void save() {

@@ -1,4 +1,4 @@
-package io.icker.factions.event;
+package io.icker.factions.core;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
@@ -11,32 +11,32 @@ import net.minecraft.util.Formatting;
 
 import java.util.UUID;
 
-public class ChatEvents {
+public class ChatManager {
     public static Text handleMessage(ServerPlayerEntity sender, String message) {
         UUID id = sender.getUuid();
         User member = User.get(id);
 
         if (member.getChatMode() == ChatMode.GLOBAL) {
             if (member.isInFaction()) {
-                return ChatEvents.inFactionGlobal(sender, member.getFaction(), message);
+                return ChatManager.inFactionGlobal(sender, member.getFaction(), message);
             } else {
-                return ChatEvents.global(sender, message);
+                return ChatManager.global(sender, message);
             }
         } else {
             if (member.isInFaction()) {
-                return ChatEvents.faction(sender, member.getFaction(), message);
+                return ChatManager.faction(sender, member.getFaction(), message);
             } else {
-                return ChatEvents.global(sender, message);
+                return ChatManager.global(sender, message);
             }
         }
     }
 
-    public static Text global(ServerPlayerEntity sender, String message) {
+    private static Text global(ServerPlayerEntity sender, String message) {
         return new Message(message).format(Formatting.GRAY)
                 .raw();
     }
 
-    public static Text inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
+    private static Text inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
         return new Message("")
                 .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
                 .filler("»")
@@ -44,7 +44,7 @@ public class ChatEvents {
                 .raw();
     }
 
-    public static Text faction(ServerPlayerEntity sender, Faction faction, String message) {
+    private static Text faction(ServerPlayerEntity sender, Faction faction, String message) {
         return new Message("")
                 .add(new Message("F").format(Formatting.BOLD, faction.getColor()))
                 .filler("»")

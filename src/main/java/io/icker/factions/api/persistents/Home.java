@@ -3,7 +3,7 @@ package io.icker.factions.api.persistents;
 import java.util.HashMap;
 import java.util.UUID;
 
-import io.icker.factions.api.events.SetHomeEvent;
+import io.icker.factions.api.events.HomeEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -56,7 +56,11 @@ public class Home implements Persistent {
 
     public static void set(Home home) {
         STORE.put(home.factionID, home);
-        SetHomeEvent.run(Faction.get(home.factionID), home);
+        HomeEvents.SET.invoker().onSet(home);
+    }
+    
+    public Faction getFaction() {
+        return Faction.get(factionID);
     }
 
     public static void save() {

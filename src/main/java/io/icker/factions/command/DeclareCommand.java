@@ -5,7 +5,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-import io.icker.factions.api.events.MutualRelationshipEvent;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.Relationship;
@@ -61,8 +60,6 @@ public class DeclareCommand implements Command {
         if (rel.status == rev.status) {
             new Message("You are now mutually ").add(msgStatus).add(" with " + targetFaction.getName()).send(sourceFaction);
             new Message("You are now mutually ").add(msgStatus).add(" with " + sourceFaction.getName()).send(targetFaction);
-
-            MutualRelationshipEvent.run(rel);
             return 1;
         }
 
