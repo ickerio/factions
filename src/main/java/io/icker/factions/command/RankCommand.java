@@ -1,5 +1,7 @@
 package io.icker.factions.command;
 
+import java.util.UUID;
+
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -47,11 +49,11 @@ public class RankCommand implements Command {
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message("Promoted " + target.getName().getString() + " to " + User.get(target.getUuid()).getRank().name().toLowerCase().replace("_", " ")).send(player, false);
+                new Message("Promoted " + target.getName().asString() + " to " + User.get(target.getUuid()).getRank().name().toLowerCase().replace("_", " ")).send(player, false);
                 return 1;
             }
 
-        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
+        new Message(target.getName().asString() + " is not in your faction").format(Formatting.RED).send(player, false);
         return 0;
     }
 
@@ -94,11 +96,11 @@ public class RankCommand implements Command {
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message("Demoted " + target.getName().getString() + " to " + User.get(target.getUuid()).getRank().name().toLowerCase().replace("_", " ")).send(player, false);
+                new Message("Demoted " + target.getName().asString() + " to " + User.get(target.getUuid()).getRank().name().toLowerCase().replace("_", " ")).send(player, false);
                 return 1;
             }
 
-        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
+        new Message(target.getName().asString() + " is not in your faction").format(Formatting.RED).send(player, false);
         return 0;
     }
 
@@ -114,23 +116,20 @@ public class RankCommand implements Command {
             return 0;
         }
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        User targetUser = User.get(target.getUuid());
+        UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
+        if (User.get(player.getUuid()).getFaction().getID().equals(targetFaction)) {
+            targetUser.changeRank(User.Rank.OWNER);
+            User.get(player.getUuid()).changeRank(User.Rank.LEADER);
 
-        for (User user : faction.getUsers()) // TODO change this. Why do we need to iterate a factions users?? so inefficent 
-            if (user.getID().equals(target.getUuid())) {
+            context.getSource().getServer().getPlayerManager().sendCommandTree(player);
+            context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                user.changeRank(User.Rank.OWNER);
-                User.get(player.getUuid()).changeRank(User.Rank.LEADER);
+            new Message("Transferred ownership to " + target.getName().asString()).send(player, false);
+            return 1;
+        }
 
-                context.getSource().getServer().getPlayerManager().sendCommandTree(player);
-                context.getSource().getServer().getPlayerManager().sendCommandTree(target);
-
-                new Message("Transferred ownership to " + target.getName().getString()).send(player, false);
-                return 1;
-            }
-
-        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
-
+        new Message(target.getName().asString() + " is not in your faction").format(Formatting.RED).send(player, false);
         return 0;
     }
 
