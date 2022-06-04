@@ -55,14 +55,14 @@ public class InfoCommand implements Command {
     public static int info(ServerPlayerEntity player, Faction faction) {
         List<User> users = faction.getUsers();
 
-        String userText = Formatting.GRAY.toString() + users.size() + Formatting.WHITE + 
+        String userText = Formatting.WHITE.toString() + users.size() + Formatting.GRAY + 
             (FactionsMod.CONFIG.MAX_FACTION_SIZE != -1 ? "/" + FactionsMod.CONFIG.MAX_FACTION_SIZE : (" Member" + (users.size() != 1 ? "s" : "")));
 
-        String commanderText = Formatting.GRAY + 
-            String.valueOf(users.stream().filter(u -> u.getRank() == Rank.COMMANDER).count()) + Formatting.WHITE + " Commanders";
+        String commanderText = Formatting.WHITE + 
+            String.valueOf(users.stream().filter(u -> u.getRank() == Rank.COMMANDER).count()) + Formatting.GRAY + " Commanders";
         
-        String leaderText = Formatting.GRAY + 
-            String.valueOf(users.stream().filter(u -> u.getRank() == Rank.LEADER).count()) + Formatting.WHITE + " Leaders";
+        String leaderText = Formatting.WHITE + 
+            String.valueOf(users.stream().filter(u -> u.getRank() == Rank.LEADER).count()) + Formatting.GRAY + " Leaders";
 
         UserCache cache = player.getServer().getUserCache();
         String usersList = users.stream()
