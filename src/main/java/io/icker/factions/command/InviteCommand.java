@@ -19,6 +19,7 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class InviteCommand implements Command {
@@ -57,9 +58,12 @@ public class InviteCommand implements Command {
             return 0;
         }
 
-        for (User user : faction.getUsers())
-            if (user.getID().equals(target.getUuid()))
-                new Message(target.getName().asString() + " is already in your faction").format(Formatting.RED).send(player, false);
+        User targetUser = User.get(target.getUuid());
+        UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
+        if (faction.getID().equals(targetFaction)) {
+            new Message(target.getName().asString() + " is already in your faction").format(Formatting.RED).send(player, false);
+            return 0;
+        }
 
         Invite.add(new Invite(target.getUuid(), faction.getID()));
 

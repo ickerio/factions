@@ -19,6 +19,7 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class InfoCommand implements Command {
@@ -63,16 +64,22 @@ public class InfoCommand implements Command {
         int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT;
         int maxPower = users.size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
 
-        new Message("")
+        Message message = new Message("")
                 .add(new Message(userText).hover(usersList))
                 .filler("·")
                 .add(
                     new Message(Formatting.GREEN.toString() + faction.getPower() + slash() + requiredPower + slash() + maxPower)
                     .hover("Current / Required / Max")
                 )
-                .prependFaction(faction)
-                .send(player, false);
+                .prependFaction(faction);
 
+        User user = User.get(player.getUuid());
+        UUID userFaction = user.isInFaction() ? user.getFaction().getID() : null;
+        if (faction.getID().equals(userFaction)) {
+            message = message.filler("·").add(user.getRankName());
+        }
+
+        message.send(player, false);
         return 1;
     }
 
@@ -87,6 +94,7 @@ public class InfoCommand implements Command {
             .executes(this::self)
             .then(
                 CommandManager.argument("faction", StringArgumentType.greedyString())
+                .suggests(Suggests.allFactions())
                 .executes(this::any)
             )
             .build();

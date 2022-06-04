@@ -1,8 +1,10 @@
 package io.icker.factions.api.persistents;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
@@ -98,6 +100,15 @@ public class User implements Persistent {
 
     public Rank getRank() {
         return rank;
+    }
+
+    public String getRankName() {
+        return Arrays
+            .stream(rank.name().split("_"))
+            .map(word -> word.isEmpty() ? word :
+                Character.toTitleCase(word.charAt(0)) +
+                word.substring(1).toLowerCase())
+            .collect(Collectors.joining(" "));
     }
 
     public Faction getFaction() {

@@ -38,18 +38,21 @@ public class RankCommand implements Command {
                     case MEMBER -> users.changeRank(User.Rank.COMMANDER);
                     case COMMANDER -> users.changeRank(User.Rank.LEADER);
                     case LEADER -> {
-                        new Message("You cannot promote a member to owner").format(Formatting.RED).send(player, false);
+                        new Message("You cannot promote a Leader to Owner").format(Formatting.RED).send(player, false);
                         return 0;
                     }
                     case OWNER -> {
-                        new Message("You cannot promote the owner").format(Formatting.RED).send(player, false);
+                        new Message("You cannot promote the Owner").format(Formatting.RED).send(player, false);
                         return 0;
                     }
                 }
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message("Promoted " + target.getName().asString() + " to " + User.get(target.getUuid()).getRank().name().toLowerCase().replace("_", " ")).send(player, false);
+                new Message("Promoted " + target.getName().asString() + " to " + User.get(target.getUuid()).getRankName())
+                    .prependFaction(faction)
+                    .send(player, false);
+                
                 return 1;
             }
 
@@ -65,7 +68,6 @@ public class RankCommand implements Command {
 
         if (target.getUuid().equals(player.getUuid())) {
             new Message("You cannot demote yourself").format(Formatting.RED).send(player, false);
-
             return 0;
         }
 
@@ -76,27 +78,30 @@ public class RankCommand implements Command {
 
                 switch (user.getRank()) {
                     case MEMBER -> {
-                        new Message("You cannot demote a civilian").format(Formatting.RED).send(player, false);
+                        new Message("You cannot demote a Member").format(Formatting.RED).send(player, false);
                         return 0;
                     }
                     case COMMANDER -> user.changeRank(User.Rank.MEMBER);
                     case LEADER -> {
                         if (User.get(player.getUuid()).getRank() == User.Rank.LEADER) {
-                            new Message("You cannot demote a fellow co-owner").format(Formatting.RED).send(player, false);
+                            new Message("You cannot demote a fellow Co-Owner").format(Formatting.RED).send(player, false);
                             return 0;
                         }
 
                         user.changeRank(User.Rank.COMMANDER);
                     }
                     case OWNER -> {
-                        new Message("You cannot demote the owner").format(Formatting.RED).send(player, false);
+                        new Message("You cannot demote the Owner").format(Formatting.RED).send(player, false);
                         return 0;
                     }
                 }
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message("Demoted " + target.getName().asString() + " to " + User.get(target.getUuid()).getRank().name().toLowerCase().replace("_", " ")).send(player, false);
+                new Message("Demoted " + target.getName().asString() + " to " + User.get(target.getUuid()).getRankName())
+                    .prependFaction(faction)
+                    .send(player, false);
+                
                 return 1;
             }
 
@@ -125,7 +130,10 @@ public class RankCommand implements Command {
             context.getSource().getServer().getPlayerManager().sendCommandTree(player);
             context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-            new Message("Transferred ownership to " + target.getName().asString()).send(player, false);
+            new Message("Transferred ownership to " + target.getName().asString())
+                .prependFaction(Faction.get(targetFaction))
+                .send(player, false);
+
             return 1;
         }
 
