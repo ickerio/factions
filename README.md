@@ -1,6 +1,8 @@
 <div align="center">
 
-<img alt="Factions Mod Icon" src="https://user-images.githubusercontent.com/14541442/171985998-8ab6d2b2-45cd-4bf8-81c2-d964ff6c4be5.png">
+<img alt="Factions Mod Icon" src="src/main/resources/assets/factions/icon.png">
+
+# Factions Mod
 
 Highly customizable, lightweight and elegant factions mod for the [Fabric loader][fabric] in Minecraft 1.18
 
@@ -16,6 +18,8 @@ Factions Mod is an ultra lightweight, fast, and elegant solution to factions in 
 
 A faction's power cap increases as new members join, expanding their ability to claim more land. For each claim they make, it requires that faction to sustain more power. Dying to other players will temporarily lose faction power and if it drops below the required threshold, all their claims will be vulnerable to being overtaken.
 
+&nbsp;
+
 ### **FEATURES**
 
 - 🎯 Fully featured factions mod with over 30 [commands][wiki:commands]
@@ -27,6 +31,7 @@ A faction's power cap increases as new members join, expanding their ability to 
 - 🚀 Event driven API for further extensibility 
 - 💬 Strong [community][discord] and active developer support
 
+&nbsp;
 
 ### **GET STARTED**
 
