@@ -22,8 +22,9 @@ public class ServerEvents {
         User user = User.get(player.getUuid());
 
         if (user.isInFaction()) {
+            Faction faction = user.getFaction();
             new Message("Welcome back " + player.getName().asString() + "!").send(player, false);
-            new Message(user.getFaction().getMOTD()).send(player, false);
+            new Message(faction.getMOTD()).prependFaction(faction).send(player, false);
         }
     }
 }

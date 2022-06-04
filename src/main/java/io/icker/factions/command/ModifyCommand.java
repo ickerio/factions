@@ -73,7 +73,7 @@ public class ModifyCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         User.get(player.getUuid()).getFaction().setOpen(open);
-        new Message("Successfully updated faction to  " + (open ? "open" : "closed")).send(player, false);
+        new Message("Successfully updated faction to " + (open ? "open" : "closed")).send(player, false);
         return 1;
     }
 

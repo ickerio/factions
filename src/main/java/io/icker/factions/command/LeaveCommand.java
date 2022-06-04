@@ -24,6 +24,10 @@ public class LeaveCommand implements Command {
 
         user.leaveFaction();
         new Message(player.getName().asString() + " left").send(faction);
+        new Message("You have left this faction.")
+            .prependFaction(faction)
+            .send(player, false);
+
         context.getSource().getServer().getPlayerManager().sendCommandTree(player);
 
         if (faction.getUsers().size() == 0) {
@@ -31,7 +35,7 @@ public class LeaveCommand implements Command {
         } else {
             faction.adjustPower(-FactionsMod.CONFIG.MEMBER_POWER);
         }
-
+        
         return 1;
     }
 

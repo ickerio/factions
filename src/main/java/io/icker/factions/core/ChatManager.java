@@ -43,7 +43,7 @@ public class ChatManager {
         String rank = "";
         for (User member : faction.getUsers())
             if (member.getID().equals(sender.getUuid()))
-                rank = member.getRank().name().toLowerCase().replace("_", " ");
+                rank = member.getRankName();
 
         new Message("")
             .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))

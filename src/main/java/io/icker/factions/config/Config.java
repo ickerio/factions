@@ -16,7 +16,7 @@ public class Config {
     private static final File file = FabricLoader.getInstance().getGameDir().resolve("config").resolve("factions.json").toFile();
 
     public static Config load() {
-        Gson gson = new GsonBuilder().create(); 
+        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create(); 
 
         try {
             if (!file.exists()) {

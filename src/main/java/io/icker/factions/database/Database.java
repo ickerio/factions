@@ -60,7 +60,7 @@ public class Database {
                     Field field = entry.getValue();
                     NbtCompound itemData = fileData.getCompound(id);
 
-                    if (itemData.contains(key) && !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
+                    if (itemData.contains(key) || !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
                         Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, itemData);
                         field.set(item, element);
                     }

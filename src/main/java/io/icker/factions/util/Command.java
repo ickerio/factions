@@ -8,6 +8,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Invite;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.User.Rank;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -81,6 +82,16 @@ public interface Command {
                 Faction.all()
                     .stream()
                     .filter(f -> f.isOpen())
+                    .map(f -> f.getName())
+                    .toArray(String[]::new)
+            );
+        }
+
+        public static SuggestionProvider<ServerCommandSource> openInvitedFactions() {
+            return suggest(member -> 
+                Faction.all()
+                    .stream()
+                    .filter(f -> f.isOpen() || Invite.get(member.getID(), f.getID()) != null)
                     .map(f -> f.getName())
                     .toArray(String[]::new)
             );
