@@ -29,18 +29,6 @@ body:
     validations:
       required: true
 
-  - type: checkboxes
-    attributes:
-      label: Agreements
-      description: Please agree to the following.
-      options:
-        - label: I have searched for and ensured there isn't already an open issue regarding this.
-          required: true
-        - label: I have ensured the feature I'm requesting isn't already in the latest supported mod version.
-          required: true
-        - label: I have ensured the feature I'm requesting is relevant and would provide a significantly better experience to the user.
-          required: true
-
   - type: textarea
     attributes:
       label: Other
