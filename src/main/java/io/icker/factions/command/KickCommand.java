@@ -42,7 +42,7 @@ public class KickCommand implements Command {
 
         targetUser.leaveFaction();
         context.getSource().getServer().getPlayerManager().sendCommandTree(target);
-        new Message("Kicked " + target.getName().asString()).send(player, false);
+        new Message("Kicked " + target.getName().getString()).send(player, false);
 
         return 1;
     }

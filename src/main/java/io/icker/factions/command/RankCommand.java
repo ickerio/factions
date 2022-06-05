@@ -49,14 +49,14 @@ public class RankCommand implements Command {
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message("Promoted " + target.getName().asString() + " to " + User.get(target.getUuid()).getRankName())
+                new Message("Promoted " + target.getName().getString() + " to " + User.get(target.getUuid()).getRankName())
                     .prependFaction(faction)
                     .send(player, false);
                 
                 return 1;
             }
 
-        new Message(target.getName().asString() + " is not in your faction").format(Formatting.RED).send(player, false);
+        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
         return 0;
     }
 
@@ -98,14 +98,14 @@ public class RankCommand implements Command {
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message("Demoted " + target.getName().asString() + " to " + User.get(target.getUuid()).getRankName())
+                new Message("Demoted " + target.getName().getString() + " to " + User.get(target.getUuid()).getRankName())
                     .prependFaction(faction)
                     .send(player, false);
                 
                 return 1;
             }
 
-        new Message(target.getName().asString() + " is not in your faction").format(Formatting.RED).send(player, false);
+        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
         return 0;
     }
 
@@ -130,14 +130,14 @@ public class RankCommand implements Command {
             context.getSource().getServer().getPlayerManager().sendCommandTree(player);
             context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-            new Message("Transferred ownership to " + target.getName().asString())
+            new Message("Transferred ownership to " + target.getName().getString())
                 .prependFaction(Faction.get(targetFaction))
                 .send(player, false);
 
             return 1;
         }
 
-        new Message(target.getName().asString() + " is not in your faction").format(Formatting.RED).send(player, false);
+        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED).send(player, false);
         return 0;
     }
 

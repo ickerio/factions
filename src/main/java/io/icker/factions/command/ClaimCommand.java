@@ -190,7 +190,7 @@ public class ClaimCommand implements Command {
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos().add((-size + 1) * 16, 0, (-size + 1) * 16)).getPos();
         new Message("Claims (%d, %d) to (%d, %d) removed by %s ", chunkPos.x, chunkPos.z,
-                chunkPos.x + size - 1, chunkPos.z + size - 1, player.getName().asString())
+                chunkPos.x + size - 1, chunkPos.z + size - 1, player.getName().getString())
             .send(faction);
 
         return 1;

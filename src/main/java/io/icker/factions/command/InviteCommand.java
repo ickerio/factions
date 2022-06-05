@@ -54,20 +54,20 @@ public class InviteCommand implements Command {
         Faction faction = User.get(source.getPlayer().getUuid()).getFaction();
         Invite invite = Invite.get(target.getUuid(), faction.getID());
         if (invite != null) {
-            new Message(target.getName().asString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
+            new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
             return 0;
         }
 
         User targetUser = User.get(target.getUuid());
         UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
         if (faction.getID().equals(targetFaction)) {
-            new Message(target.getName().asString() + " is already in your faction").format(Formatting.RED).send(player, false);
+            new Message(target.getName().getString() + " is already in your faction").format(Formatting.RED).send(player, false);
             return 0;
         }
 
         Invite.add(new Invite(target.getUuid(), faction.getID()));
 
-        new Message(target.getName().asString() + " has been invited")
+        new Message(target.getName().getString() + " has been invited")
                 .send(faction);
         new Message("You have been invited to join this faction").format(Formatting.YELLOW)
                 .hover("Click to join").click("/factions join " + faction.getName())
@@ -85,7 +85,7 @@ public class InviteCommand implements Command {
         Faction faction = User.get(player.getUuid()).getFaction();
         new Invite(target.getUuid(), faction.getID()).remove();
 
-        new Message(target.getName().asString() + " is no longer invited to your faction").send(player, false);
+        new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);
         return 1;
     }
 
