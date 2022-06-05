@@ -130,14 +130,29 @@ public class PlayerInteractions {
     }
 
     public static void onMove(ServerPlayerEntity player) {
-        if (FactionsMod.CONFIG.RADAR && User.get(player.getUuid()).isRadarOn()) {
-            ServerWorld world = player.getWorld();
-            String dimension = world.getRegistryKey().getValue().toString();
+        User user = User.get(player.getUuid());
+        ServerWorld world = player.getWorld();
+        String dimension = world.getRegistryKey().getValue().toString();
 
-            ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
+        ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
 
-            Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+        Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+        if (user.getAutoclaim() && claim == null) {
+            Faction faction = user.getFaction();
+            int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.CLAIM_WEIGHT;
+            int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
 
+            if (maxPower < requiredPower) {
+                new Message("Not enough faction power to claim chunk, autoclaim toggled off").fail().send(player, false);
+                user.toggleAutoclaim();
+            } else {
+                faction.addClaim(chunkPos.x, chunkPos.z, dimension);
+                claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+                new Message("Chunk (%d, %d) claimed by %s", chunkPos.x, chunkPos.z, player.getName().asString())
+                    .send(faction);
+            }
+        }
+        if (FactionsMod.CONFIG.RADAR && user.isRadarOn()) {
             if (claim != null) {
                 new Message(claim.getFaction().getName())
                         .format(claim.getFaction().getColor())

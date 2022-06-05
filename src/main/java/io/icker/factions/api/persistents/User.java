@@ -47,6 +47,9 @@ public class User implements Persistent {
     @Field(value = "Rank", nullable = true)
     private Rank rank;
 
+    @Field("Autoclaim")
+    private boolean autoclaim;
+
     public User(UUID id, ChatMode chat, boolean bypass, boolean radar) {
         this.id = id;
         this.chat = chat;
@@ -138,6 +141,14 @@ public class User implements Persistent {
         factionID = null;
         rank = null;
         FactionEvents.MEMBER_LEAVE.invoker().onMemberLeave(Faction.get(oldFactionID), this);
+    }
+
+    public boolean getAutoclaim() {
+        return autoclaim;
+    }
+
+    public void toggleAutoclaim() {
+        this.autoclaim = !autoclaim;
     }
 
     public void changeRank(Rank rank) {
