@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
+import io.icker.factions.core.ClaimManager;
 import io.icker.factions.core.FactionsManager;
 import io.icker.factions.core.ServerEvents;
 import io.icker.factions.util.Command;
@@ -35,6 +36,8 @@ public class FactionsMod implements ModInitializer {
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         Migrator.migrate();
+
+        ClaimManager.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
         ServerPlayConnectionEvents.JOIN.register(ServerEvents::playerJoin);

@@ -1,6 +1,7 @@
 package io.icker.factions.mixin;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.core.FactionsManager;
@@ -40,27 +41,10 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         FactionsManager.powerTick((ServerPlayerEntity) (Object) this);
     }
 
-
-    @Inject(at = @At("HEAD"), method = "attack", cancellable = true)
-    private void attack(Entity target, CallbackInfo info) {
-        ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
-
-        if (target.isPlayer() && PlayerInteractions.preventFriendlyFire(player, (ServerPlayerEntity) target)) {
-            info.cancel();
-        }
-
-        if (!target.isLiving() && !PlayerInteractions.actionPermitted(target.getBlockPos(), world, player)) {
-            info.cancel();
-        }
-    }
-
     @Inject(method = "isInvulnerableTo", at = @At("RETURN"), cancellable = true)
-    private void damage(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
-        if (damageSource.getAttacker() != null && damageSource.getAttacker().isPlayer()) {
-            cir.setReturnValue(cir.getReturnValue() || PlayerInteractions.preventFriendlyFire(((ServerPlayerEntity) (Object) this), damageSource.getAttacker().getUuid()));
-        } else {
-            cir.setReturnValue(cir.getReturnValue());
-        }
+    private void isInvulnerableTo(DamageSource damageSource, CallbackInfoReturnable<Boolean> info) {
+        boolean result = PlayerEvents.IS_INVULNERABLE.invoker().isInvulnerable(damageSource.getAttacker(), (ServerPlayerEntity) (Object) this);
+        if (result) info.setReturnValue(result);
     }
 
     @Inject(method = "getPlayerListName", at = @At("HEAD"), cancellable = true)

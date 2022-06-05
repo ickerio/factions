@@ -53,7 +53,7 @@ public class Relationship implements Persistent {
     }
 
     public static void set(Relationship relationship) {
-        Status oldStatus = STORE.get(relationship.getKey()).status;
+        Status oldStatus = STORE.containsKey(relationship.getKey()) ? STORE.get(relationship.getKey()).status : Status.NEUTRAL;
         
         STORE.put(relationship.getKey(), relationship);
         RelationshipEvents.NEW_DECLARATION.invoker().onNewDecleration(relationship);
