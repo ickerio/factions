@@ -93,4 +93,7 @@ public class Config {
 
     @SerializedName("friendlyFireEnabled")
     public boolean FRIENDLY_FIRE = false;
+
+    @SerializedName("chatModificationEnabled")
+    public boolean MODIFY_CHAT = true;
 }
