@@ -44,8 +44,8 @@ public class DeclareCommand implements Command {
         
         Faction sourceFaction = User.get(player.getUuid()).getFaction();
 
-        if (sourceFaction == targetFaction) {
-            new Message("Cannot change faction relationship your own faction").fail().send(player, false);
+        if (sourceFaction.equals(targetFaction)) {
+            new Message("Cannot use the declare command on your own faction").fail().send(player, false);
             return 0;
         }
 
