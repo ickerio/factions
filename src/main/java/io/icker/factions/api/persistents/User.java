@@ -32,23 +32,20 @@ public class User implements Persistent {
     @Field("ID")
     private UUID id;
 
-    @Field("Chat")
-    private ChatMode chat;
-
-    @Field("Bypass")
-    private boolean bypass;
-
-    @Field("Radar")
-    private boolean radar;
-
     @Field(value = "FactionID", nullable = true)
     private UUID factionID;
     
     @Field(value = "Rank", nullable = true)
     private Rank rank;
 
-    @Field("Autoclaim")
-    private boolean autoclaim;
+    @Field("Radar")
+    private boolean radar;
+
+    @Field("Chat")
+    private ChatMode chat;
+
+    private boolean autoclaim = false;
+    private boolean bypass = false;
 
     public User(UUID id, ChatMode chat, boolean bypass, boolean radar) {
         this.id = id;
