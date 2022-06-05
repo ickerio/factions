@@ -94,7 +94,7 @@ public class Database {
                     Object data = field.get(item);
                     if (data != null || !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
                         TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
-                        serializer.writeNbt(key, compound, parse(data));
+                        serializer.writeNbt(key, compound, cast(data));
                     }
                 }
                 fileData.put(item.getKey(), compound);
@@ -106,8 +106,8 @@ public class Database {
         }
     }
 
-    // TODO Safely remove this hacky cast
-    private static <T> T parse(Object key) {
+    @SuppressWarnings("unchecked")
+    private static <T> T cast(Object key) {
         return (T) key;
     }
 }
