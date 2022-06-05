@@ -4,7 +4,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Before reporting a crash here, please make sure you are on the latest supported version.
+        Thank you for filling out a bug report! We ask that you search all the issues to avoid a duplicate bug report. If one exists, please reply with as much information as possible.
+        Before reporting a bug here, please make sure you are on the latest supported version. 
 
   - type: textarea
     attributes:
@@ -33,18 +34,6 @@ body:
       description: Please provide the version of the mod you're running. This can be found in the file name of the mod jar.
     validations:
       required: true
-
-  - type: checkboxes
-    attributes:
-      label: Agreements
-      description: Please agree to the following.
-      options:
-        - label: I am running the latest version of the mod.
-          required: true
-        - label: My version of Minecraft is supported.
-          required: true
-        - label: I have searched for and ensured there isn't already an open issue regarding this.
-          required: true
 
   - type: textarea
     attributes:

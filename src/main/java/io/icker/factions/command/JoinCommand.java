@@ -56,7 +56,7 @@ public class JoinCommand implements Command {
             .requires(Requires.isFactionless())
             .then(
                 CommandManager.argument("name", StringArgumentType.greedyString())
-                .suggests(Suggests.openFactions())
+                .suggests(Suggests.openInvitedFactions())
                 .executes(this::run)
             )
             .build();

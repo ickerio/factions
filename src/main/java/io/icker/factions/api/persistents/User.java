@@ -1,8 +1,10 @@
 package io.icker.factions.api.persistents;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
@@ -30,20 +32,20 @@ public class User implements Persistent {
     @Field("ID")
     private UUID id;
 
-    @Field("Chat")
-    private ChatMode chat;
-
-    @Field("Bypass")
-    private boolean bypass;
-
-    @Field("Radar")
-    private boolean radar;
-
     @Field(value = "FactionID", nullable = true)
     private UUID factionID;
     
     @Field(value = "Rank", nullable = true)
     private Rank rank;
+
+    @Field("Radar")
+    private boolean radar;
+
+    @Field("Chat")
+    private ChatMode chat;
+
+    private boolean autoclaim = false;
+    private boolean bypass = false;
 
     public User(UUID id, ChatMode chat, boolean bypass, boolean radar) {
         this.id = id;
@@ -100,6 +102,15 @@ public class User implements Persistent {
         return rank;
     }
 
+    public String getRankName() {
+        return Arrays
+            .stream(rank.name().split("_"))
+            .map(word -> word.isEmpty() ? word :
+                Character.toTitleCase(word.charAt(0)) +
+                word.substring(1).toLowerCase())
+            .collect(Collectors.joining(" "));
+    }
+
     public Faction getFaction() {
         return Faction.get(factionID);
     }
@@ -127,6 +138,14 @@ public class User implements Persistent {
         factionID = null;
         rank = null;
         FactionEvents.MEMBER_LEAVE.invoker().onMemberLeave(Faction.get(oldFactionID), this);
+    }
+
+    public boolean getAutoclaim() {
+        return autoclaim;
+    }
+
+    public void toggleAutoclaim() {
+        this.autoclaim = !autoclaim;
     }
 
     public void changeRank(Rank rank) {

@@ -41,4 +41,23 @@ public class TypeSerializerRegistry {
             fallback
         );
     }
+
+    // private static TypeSerializer<String[]> createStringArray() {
+    //     return new TypeSerializer<String[]>(
+    //         (compound, key, items) -> {
+    //             NbtList list = new NbtList();
+    //             for (String item : items) list.add(NbtString.of(item));
+    //             compound.put(key, list);
+    //         },
+    //         (compound, key) -> {
+    //             NbtList list = (NbtList)compound.get(key);
+    //             String[] items = new String[list.size()];
+    //             for (int i = 0; i < list.size(); i++) {
+    //                 items[i] = list.getString(i);
+    //             }
+    //             return items;
+    //         },
+    //         new String[0]
+    //     );
+    // }
 }

@@ -73,7 +73,6 @@ public class Migrator {
                 }
 
                 User user = User.get(query.getUUID("uuid"));
-                user.setBypass(query.getBool("bypass"));
                 user.setChatMode(opt);
                 user.setRadar(query.getBool("zone"));
             }

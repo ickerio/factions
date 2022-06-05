@@ -24,6 +24,10 @@ public class LeaveCommand implements Command {
 
         user.leaveFaction();
         new Message(player.getName().getString() + " left").send(faction);
+        new Message("You have left this faction.")
+            .prependFaction(faction)
+            .send(player, false);
+
         context.getSource().getServer().getPlayerManager().sendCommandTree(player);
 
         if (faction.getUsers().size() == 0) {

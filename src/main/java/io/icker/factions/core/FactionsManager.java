@@ -21,7 +21,7 @@ public class FactionsManager {
     }
 
     public static void factionModified(Faction faction) {
-        List<ServerPlayerEntity> players = faction.getUsers().stream().map(user -> playerManager.getPlayer(user.getID())).toList();
+        List<ServerPlayerEntity> players = faction.getUsers().stream().map(user -> playerManager.getPlayer(user.getID())).filter(player -> player != null).toList();
         updatePlayerList(players);
     }
 

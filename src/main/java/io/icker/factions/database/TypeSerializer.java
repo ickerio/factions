@@ -18,6 +18,7 @@ public class TypeSerializer<T> {
     }
 
     public T readNbt(String key, NbtCompound nbt) {
+        if (!nbt.contains(key)) return fallback;
         return reader.apply(nbt, key);
     }
 

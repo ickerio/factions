@@ -28,8 +28,13 @@ public class ModifyCommand implements Command {
             return 0;
         }
 
-        User.get(player.getUuid()).getFaction().setName(name);
-        new Message("Successfully renamed faction").send(player, false);
+        Faction faction = User.get(player.getUuid()).getFaction();
+
+        faction.setName(name);
+        new Message("Successfully renamed faction to '" + name + "'")
+            .prependFaction(faction)
+            .send(player, false);
+
         return 1;
     }
 
@@ -39,8 +44,13 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        User.get(player.getUuid()).getFaction().setDescription(description);
-        new Message("Successfully updated faction description").send(player, false);
+        Faction faction = User.get(player.getUuid()).getFaction();
+
+        faction.setDescription(description);
+        new Message("Successfully updated faction description to '" + description + "'")
+            .prependFaction(faction)
+            .send(player, false);
+
         return 1;
     }
 
@@ -50,8 +60,13 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        User.get(player.getUuid()).getFaction().setMOTD(motd);
-        new Message("Successfully updated faction MOTD").send(player, false);
+        Faction faction = User.get(player.getUuid()).getFaction();
+
+        faction.setMOTD(motd);
+        new Message("Successfully updated faction MOTD to '" + motd + "'")
+            .prependFaction(faction)
+            .send(player, false);
+
         return 1;
     }
 
@@ -61,8 +76,13 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        User.get(player.getUuid()).getFaction().setColor(color);
-        new Message("Successfully updated faction color").send(player, false);
+        Faction faction = User.get(player.getUuid()).getFaction();
+
+        faction.setColor(color);
+        new Message("Successfully updated faction color to " + Formatting.BOLD + color + color.name())
+            .prependFaction(faction)
+            .send(player, false);
+
         return 1;
     }
 
@@ -72,8 +92,13 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        User.get(player.getUuid()).getFaction().setOpen(open);
-        new Message("Successfully updated faction to  " + (open ? "open" : "closed")).send(player, false);
+        Faction faction = User.get(player.getUuid()).getFaction();
+
+        faction.setOpen(open);
+        new Message("Successfully updated faction to " + (open ? "Open" : "Closed"))
+            .prependFaction(faction)
+            .send(player, false);
+            
         return 1;
     }
 
