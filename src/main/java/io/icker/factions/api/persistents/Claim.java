@@ -61,7 +61,6 @@ public class Claim implements Persistent {
 
     public void remove() {
         STORE.remove(getKey());
-        System.out.println("Removing claim");
         ClaimEvents.REMOVE.invoker().onRemove(x, z, level, Faction.get(factionID));
     }
 
