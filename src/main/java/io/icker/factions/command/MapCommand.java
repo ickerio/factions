@@ -36,14 +36,14 @@ public class MapCommand implements Command{
                 Claim claim = Claim.get(chunkPos.x + x, chunkPos.z + z, dimension);
                 if (x == 0 && z == 0) { // Check if middle (your chunk)
                     if (claim == null) {
-                        row.add(new Message("□").format(Formatting.DARK_GRAY).hover("<You> <Wilderness>"));
+                        row.add(new Message("⏺").format(Formatting.DARK_GRAY).hover("<You> <Wilderness>"));
                     } else {
                         Faction owner = claim.getFaction();
-                        row.add(new Message("□").format(owner.getColor()).hover("<You> " + owner.getName()));
+                        row.add(new Message("⏺").format(owner.getColor()).hover("<You> " + owner.getName()));
                     }
                 } else {
                     if (claim == null) {
-                        row.add("⬚").format(Formatting.DARK_GRAY);
+                        row.add("□").format(Formatting.DARK_GRAY);
                     } else {
                         Faction owner = claim.getFaction();
                         row.add(new Message("■").format(owner.getColor()).hover(owner.getName()));
