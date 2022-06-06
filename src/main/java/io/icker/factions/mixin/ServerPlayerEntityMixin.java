@@ -5,7 +5,6 @@ import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.core.FactionsManager;
-import io.icker.factions.core.PlayerInteractions;
 import io.icker.factions.util.Message;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -43,6 +42,8 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "isInvulnerableTo", at = @At("RETURN"), cancellable = true)
     private void isInvulnerableTo(DamageSource damageSource, CallbackInfoReturnable<Boolean> info) {
+        Entity source = damageSource.getAttacker();
+        if (source == null) return;
         boolean result = PlayerEvents.IS_INVULNERABLE.invoker().isInvulnerable(damageSource.getAttacker(), (ServerPlayerEntity) (Object) this);
         if (result) info.setReturnValue(result);
     }

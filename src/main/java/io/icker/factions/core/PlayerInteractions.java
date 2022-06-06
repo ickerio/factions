@@ -5,40 +5,14 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
 
 
 public class PlayerInteractions {
-    public static void syncItem(ServerPlayerEntity player, ItemStack itemStack, Hand hand) {
-        player.setStackInHand(hand, itemStack);
-        itemStack.setCount(itemStack.getCount());
-        if (itemStack.isDamageable()) {
-            itemStack.setDamage(itemStack.getDamage());
-        }
-
-        if (!player.isUsingItem()) {
-            player.playerScreenHandler.syncState();
-        }
-    }
-
-    public static void syncBlocks(ServerPlayerEntity player, World world, BlockPos pos) {
-        for (int x = -1; x < 2; x++) { // TODO: this is slighty inefficent as it may do some blocks twice
-            for (int y = -1; y < 2; y++) {
-                for (int z = -1; z < 2; z++) {
-                    player.networkHandler.sendPacket(new BlockUpdateS2CPacket(world, pos.add(x, y, z)));
-                }
-            }
-        }
-    }
-
+    // TODO: Move this into a player event (if fabric doesn't already have one) and into InteractionManager
     public static void onMove(ServerPlayerEntity player) {
         User user = User.get(player.getUuid());
         ServerWorld world = player.getWorld();

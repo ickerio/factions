@@ -1,12 +1,12 @@
 package io.icker.factions.mixin;
 
-import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.icker.factions.core.ServerEvents;
+import net.minecraft.server.MinecraftServer;
 
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
