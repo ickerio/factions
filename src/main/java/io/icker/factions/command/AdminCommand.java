@@ -62,7 +62,6 @@ public class AdminCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("admin")
-            .requires(Requires.hasPerms("factions.admin", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
             .then(
                 CommandManager.literal("bypass")
                 .requires(Requires.hasPerms("factions.admin.bypass", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))

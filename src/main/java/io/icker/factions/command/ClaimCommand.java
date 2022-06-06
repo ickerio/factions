@@ -222,7 +222,6 @@ public class ClaimCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("claim")
-            .requires(Requires.hasPerms("factions.claim", 0))
             .requires(Requires.isCommander())
             .then(
                 CommandManager.literal("add")

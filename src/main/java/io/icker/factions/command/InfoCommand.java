@@ -110,6 +110,7 @@ public class InfoCommand implements Command {
             .executes(this::self)
             .then(
                 CommandManager.argument("faction", StringArgumentType.greedyString())
+                .requires(Requires.hasPerms("factions.info.other", 0))
                 .suggests(Suggests.allFactions())
                 .executes(this::any)
             )

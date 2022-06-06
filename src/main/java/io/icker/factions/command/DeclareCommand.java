@@ -77,7 +77,6 @@ public class DeclareCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("declare")
-            .requires(Requires.hasPerms("factions.declare", 0))
             .requires(Requires.isLeader())
             .then(
                 CommandManager.literal("ally")

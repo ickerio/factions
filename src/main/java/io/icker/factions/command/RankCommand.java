@@ -144,7 +144,6 @@ public class RankCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("rank")
-            .requires(Requires.hasPerms("factions.rank", 0))
             .requires(Requires.isLeader())
             .then(
                 CommandManager
