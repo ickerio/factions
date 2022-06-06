@@ -12,6 +12,7 @@ import io.icker.factions.config.Config;
 import io.icker.factions.core.InteractionManager;
 import io.icker.factions.core.FactionsManager;
 import io.icker.factions.core.ServerEvents;
+import io.icker.factions.core.WorldManager;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.Migrator;
@@ -38,6 +39,7 @@ public class FactionsMod implements ModInitializer {
         Migrator.migrate();
 
         InteractionManager.register();
+        WorldManager.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
         ServerPlayConnectionEvents.JOIN.register(ServerEvents::playerJoin);

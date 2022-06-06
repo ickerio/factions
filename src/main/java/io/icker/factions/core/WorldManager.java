@@ -11,8 +11,15 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 
 
-public class PlayerInteractions {
-    // TODO: Move this into a player event (if fabric doesn't already have one) and into InteractionManager
+public class WorldManager {
+    public static void register() {
+        // TODO register event handlers
+    }
+
+    public static void onMobSpawnAttempt() {
+        // TODO  (and be private)
+    }
+ 
     public static void onMove(ServerPlayerEntity player) {
         User user = User.get(player.getUuid());
         ServerWorld world = player.getWorld();

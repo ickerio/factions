@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import io.icker.factions.core.ChatManager;
-import io.icker.factions.core.PlayerInteractions;
+import io.icker.factions.core.WorldManager;
 
 import java.util.UUID;
 import java.util.function.Function;
@@ -27,7 +27,7 @@ public class ServerPlayNetworkHandlerMixin {
 
     @Inject(method = "onPlayerMove", at = @At("HEAD"))
     public void onPlayerMove(PlayerMoveC2SPacket packet, CallbackInfo ci) {
-        PlayerInteractions.onMove(((ServerPlayNetworkHandler) (Object) this).player);
+        WorldManager.onMove(((ServerPlayNetworkHandler) (Object) this).player);
     }
 
     @Redirect(method = "handleMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Ljava/util/function/Function;Lnet/minecraft/network/MessageType;Ljava/util/UUID;)V"))
