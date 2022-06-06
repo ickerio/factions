@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.config.zones.Zone;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class Config {
@@ -93,4 +94,7 @@ public class Config {
 
     @SerializedName("friendlyFireEnabled")
     public boolean FRIENDLY_FIRE = false;
+
+    @SerializedName("zones")
+    public Zone[] ZONES = {};
 }
