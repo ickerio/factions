@@ -79,12 +79,15 @@ public class Migrator {
 
             query = new Query("SELECT * FROM Allies;").executeQuery();
             while (query.next()) {
-                Relationship rel = new Relationship(Faction.getByName(query.getString("source")).getID(), Faction.getByName(query.getString("target")).getID(), Status.ALLY);
-                Relationship.set(rel);
+                Faction source = Faction.getByName(query.getString("source"));
+                Faction target = Faction.getByName(query.getString("target"));
+
+                Relationship rel = new Relationship(source.getID(), target.getID(), Status.ALLY);
+                source.setRelationship(rel);
 
                 if (query.getBool("accept")) {
-                    rel = new Relationship(Faction.getByName(query.getString("target")).getID(), Faction.getByName(query.getString("source")).getID(), Status.ALLY);
-                    Relationship.set(rel);
+                    Relationship rev = new Relationship(target.getID(), source.getID(), Status.ALLY);
+                    source.setRelationship(rev);
                 }
             }
         } catch (SQLException err) {

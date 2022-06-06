@@ -10,10 +10,8 @@ import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.database.Persistent;
 
-@Name("Relationship")
+@Name(value = "Relationship", child = true)
 public class Relationship implements Persistent {
-    private static final HashMap<String, Relationship> STORE = Database.load(Relationship.class, c -> c.getKey());
-
     public enum Status {
         ALLY,
         NEUTRAL,
@@ -41,44 +39,11 @@ public class Relationship implements Persistent {
         return source.toString() + "-" + target.toString();   
     }
 
-    public static Relationship get(UUID source, UUID target) {
-        return STORE.getOrDefault(source.toString() + "-" + target.toString(), new Relationship(source, target, Status.NEUTRAL));
-    }
-
-    public static List<Relationship> getByFaction(UUID factionID) {
-        return STORE.values()
-            .stream()
-            .filter(r -> r.source.equals(factionID))
-            .toList();
-    }
-
-    public static void set(Relationship relationship) {
-        Status oldStatus = STORE.containsKey(relationship.getKey()) ? STORE.get(relationship.getKey()).status : Status.NEUTRAL;
-        
-        STORE.put(relationship.getKey(), relationship);
-        RelationshipEvents.NEW_DECLARATION.invoker().onNewDecleration(relationship);
-
-        Status reverseStatus = relationship.getReverse().status;
-        if (relationship.status == reverseStatus) {
-            RelationshipEvents.NEW_MUTUAL.invoker().onNewMutual(relationship);
-        } else if (oldStatus == reverseStatus) {
-            RelationshipEvents.END_MUTUAL.invoker().onEndMutual(relationship, oldStatus);
-        }
-    }
-
-    public void remove() {
-        STORE.remove(getKey());
-    }
-
     public Relationship getReverse() {
-        return get(target, source);
+        return Faction.get(target).getRelationship(source);
     }
 
     public boolean mutuallyAllies() {
         return status == Status.ALLY && status == getReverse().status;
-    }
-
-    public static void save() {
-        Database.save(Relationship.class, STORE.values().stream().toList());
     }
 }

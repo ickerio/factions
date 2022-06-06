@@ -38,6 +38,9 @@ public class Faction implements Persistent {
     @Child(value = Invite.class, list = true)
     private ArrayList<Invite> invites = new ArrayList<>();
 
+    @Child(value = Relationship.class, list = true)
+    private ArrayList<Relationship> relationships = new ArrayList<>();
+
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
         this.name = name;
@@ -187,15 +190,27 @@ public class Faction implements Persistent {
 
     public void setHome(Home home) {
         this.home = home;
+        HomeEvents.SET.invoker().onSet(home);
+    }
+
+    public Relationship getRelationship(UUID target) {
+        return relationships.stream().filter((rel) -> rel.target.equals(target)).findFirst().orElse(new Relationship(id, target, Relationship.Status.NEUTRAL));
+    }
+
+    public void removeRelationship(UUID target) {
+        relationships = new ArrayList<>(relationships.stream().filter((rel) -> !rel.target.equals(target)).toList());
+    }
+
+    public void setRelationship(Relationship relationship) {
+        if (getRelationship(relationship.target) != null) {
+            removeRelationship(relationship.target);
+        }
+        relationships.add(relationship);
     }
 
     public void remove() {
         for (User user : getUsers()) {
             user.leaveFaction();
-        }
-        for (Relationship rel : Relationship.getByFaction(id)) {
-            rel.getReverse().remove();
-            rel.remove();
         }
         removeAllClaims();
         STORE.remove(id);

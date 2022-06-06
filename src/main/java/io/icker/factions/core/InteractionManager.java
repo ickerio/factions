@@ -115,7 +115,7 @@ public class InteractionManager {
             return ActionResult.SUCCESS;
         }
 
-        if (Relationship.get(sourceUser.getFaction().getID(), targetUser.getFaction().getID()).mutuallyAllies()) {
+        if (sourceUser.getFaction().getRelationship(targetUser.getFaction().getID()).mutuallyAllies()) {
             return ActionResult.SUCCESS;
         }
 
@@ -145,7 +145,7 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
-        if (Relationship.get(claimFaction.getID(), userFaction.getID()).mutuallyAllies()) {
+        if (claimFaction.getRelationship(userFaction.getID()).mutuallyAllies()) {
             return ActionResult.PASS;
         }
 
