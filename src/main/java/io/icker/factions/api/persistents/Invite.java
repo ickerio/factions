@@ -9,7 +9,7 @@ import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.database.Persistent;
 
-@Name("Invite")
+@Name(value = "Invite", child = true)
 public class Invite implements Persistent {
     @Field("PlayerID")
     private UUID playerID;

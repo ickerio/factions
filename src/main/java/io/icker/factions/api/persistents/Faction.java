@@ -36,7 +36,7 @@ public class Faction implements Persistent {
     private Home home;
 
     @Child(value = Invite.class, list = true)
-    private ArrayList<Invite> invites;
+    private ArrayList<Invite> invites = new ArrayList<>();
 
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
@@ -170,7 +170,7 @@ public class Faction implements Persistent {
     }
 
     public Invite getInvite(UUID playerID) {
-        return invites.stream().filter((invite) -> invite.getPlayerID() == playerID).findFirst().get();
+        return invites.stream().filter((invite) -> invite.getPlayerID() == playerID).findFirst().orElse(null);
     }
 
     public void addInvite(Invite invite) {

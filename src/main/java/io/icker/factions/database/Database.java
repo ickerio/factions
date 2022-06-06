@@ -25,7 +25,7 @@ public class Database {
 
         File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT) + ".dat");
 
-        if (!file.exists() && clazz.getAnnotation(Name.class).child()) {
+        if (!file.exists() && !clazz.getAnnotation(Name.class).child()) {
             try {
                 NbtIo.writeCompressed(new NbtCompound(), file);
             } catch (IOException e) {
