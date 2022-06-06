@@ -45,7 +45,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         Entity source = damageSource.getAttacker();
         if (source == null) return;
         ActionResult result = PlayerEvents.IS_INVULNERABLE.invoker().isInvulnerable(damageSource.getAttacker(), (ServerPlayerEntity) (Object) this);
-        if (result == ActionResult.SUCCESS) info.setReturnValue(true);
+        if (result != ActionResult.PASS) info.setReturnValue(result == ActionResult.SUCCESS ? true : false);
     }
 
     @Inject(method = "getPlayerListName", at = @At("HEAD"), cancellable = true)
