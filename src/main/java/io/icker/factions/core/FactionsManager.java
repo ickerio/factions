@@ -1,9 +1,11 @@
 package io.icker.factions.core;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -14,6 +16,13 @@ import java.util.List;
 
 public class FactionsManager {
     public static PlayerManager playerManager;
+
+    public static void register() {
+        ServerLifecycleEvents.SERVER_STARTED.register(FactionsManager::serverStarted);
+        FactionEvents.MODIFY.register(FactionsManager::factionModified);
+        FactionEvents.MEMBER_JOIN.register(FactionsManager::memberChange);
+        FactionEvents.MEMBER_LEAVE.register(FactionsManager::memberChange);
+    }
 
     public static void serverStarted(MinecraftServer server) {
         playerManager = server.getPlayerManager();
