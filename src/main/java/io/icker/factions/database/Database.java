@@ -10,15 +10,21 @@ import java.util.Map;
 import java.util.function.Function;
 
 import io.icker.factions.FactionsMod;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 
 public class Database {
-    private static final File BASE_PATH = new File("factions");
+    private static final File BASE_PATH = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
     private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<Class<?>, HashMap<String, Field>>();
 
     private static <T extends Persistent> void setup(Class<T> clazz) {
         String name = clazz.getAnnotation(Name.class).value();
+
+        if (!BASE_PATH.exists()) {
+            BASE_PATH.mkdir();
+        }
+
         File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT) + ".dat");
 
         if (!file.exists()) {
