@@ -6,7 +6,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
 import io.icker.factions.core.InteractionManager;

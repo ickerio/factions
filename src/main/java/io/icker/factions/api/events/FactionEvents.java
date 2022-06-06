@@ -80,7 +80,6 @@ public final class FactionEvents {
 		void onModify(Faction faction);
 	}
 
-    // TODO add Reason: PowerTick, Death
     @FunctionalInterface
     public interface PowerChange {
 		void onPowerChange(Faction faction, int oldPower);

@@ -2,10 +2,12 @@ package io.icker.factions.core;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
+import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -22,23 +24,25 @@ public class FactionsManager {
         FactionEvents.MODIFY.register(FactionsManager::factionModified);
         FactionEvents.MEMBER_JOIN.register(FactionsManager::memberChange);
         FactionEvents.MEMBER_LEAVE.register(FactionsManager::memberChange);
+        PlayerEvents.ON_KILLED_BY_PLAYER.register(FactionsManager::playerDeath);
+        PlayerEvents.ON_POWER_TICK.register(FactionsManager::powerTick);
     }
 
-    public static void serverStarted(MinecraftServer server) {
+    private static void serverStarted(MinecraftServer server) {
         playerManager = server.getPlayerManager();
         Message.manager = server.getPlayerManager();
     }
 
-    public static void factionModified(Faction faction) {
+    private static void factionModified(Faction faction) {
         List<ServerPlayerEntity> players = faction.getUsers().stream().map(user -> playerManager.getPlayer(user.getID())).filter(player -> player != null).toList();
         updatePlayerList(players);
     }
 
-    public static void memberChange(Faction faction, User user) {
+    private static void memberChange(Faction faction, User user) {
         updatePlayerList(playerManager.getPlayer(user.getID()));
     }
 
-    public static void playerDeath(ServerPlayerEntity player) {
+    private static void playerDeath(ServerPlayerEntity player, DamageSource source) {
         User member = User.get(player.getUuid());
         if (!member.isInFaction()) return;
 
@@ -48,7 +52,7 @@ public class FactionsManager {
         new Message("%s lost %d power from dying", player.getName().asString(), adjusted).send(faction);
     }
 
-    public static void powerTick(ServerPlayerEntity player) {
+    private static void powerTick(ServerPlayerEntity player) {
         User member = User.get(player.getUuid());
         if (!member.isInFaction()) return;
 
@@ -59,13 +63,13 @@ public class FactionsManager {
             new Message("%s gained %d power from surviving", player.getName().asString(), adjusted).send(faction);
     }
 
-    public static void updatePlayerList(ServerPlayerEntity player) {
+    private static void updatePlayerList(ServerPlayerEntity player) {
         if (player != null) {
             playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));
         }
     }
 
-    public static void updatePlayerList(Collection<ServerPlayerEntity> players) {
+    private static void updatePlayerList(Collection<ServerPlayerEntity> players) {
         playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, players));
     }
 }

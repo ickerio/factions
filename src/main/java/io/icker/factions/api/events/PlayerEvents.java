@@ -3,6 +3,7 @@ package io.icker.factions.api.events;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -48,16 +49,29 @@ public class PlayerEvents {
 
     public static final Event<IsInvulnerable> IS_INVULNERABLE = EventFactory.createArrayBacked(IsInvulnerable.class, callbacks -> (source, target) -> {
         for (IsInvulnerable callback : callbacks) {
-            if (callback.isInvulnerable(source, target)) {
-                return true;
+            ActionResult result = callback.isInvulnerable(source, target);
+            if (result != ActionResult.PASS) {
+                return result;
             }
         }
-        return false;
+        return ActionResult.PASS;
     });
 
     public static final Event<OnMove> ON_MOVE = EventFactory.createArrayBacked(OnMove.class, callbacks -> (player) -> {
         for (OnMove callback : callbacks) {
             callback.onMove(player);
+        }
+    });
+
+    public static final Event<OnKilledByPlayer> ON_KILLED_BY_PLAYER = EventFactory.createArrayBacked(OnKilledByPlayer.class, callbacks -> (player, source) -> {
+        for (OnKilledByPlayer callback : callbacks) {
+            callback.onKilledByPlayer(player, source);
+        }
+    });
+
+    public static final Event<OnPowerTick> ON_POWER_TICK = EventFactory.createArrayBacked(OnPowerTick.class, callbacks -> (player) -> {
+        for (OnPowerTick callback : callbacks) {
+            callback.onPowerTick(player);
         }
     });
 
@@ -79,11 +93,21 @@ public class PlayerEvents {
 
     @FunctionalInterface
     public interface IsInvulnerable {
-		boolean isInvulnerable(Entity source, Entity target);
+		ActionResult isInvulnerable(Entity source, Entity target);
     }
 
     @FunctionalInterface
     public interface OnMove {
         void onMove(ServerPlayerEntity player);
+    }
+
+    @FunctionalInterface
+    public interface OnKilledByPlayer {
+        void onKilledByPlayer(ServerPlayerEntity player, DamageSource source);
+    }
+
+    @FunctionalInterface
+    public interface OnPowerTick {
+        void onPowerTick(ServerPlayerEntity player);
     }
 }

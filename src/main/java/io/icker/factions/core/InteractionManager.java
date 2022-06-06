@@ -85,7 +85,7 @@ public class InteractionManager {
 
     private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
         if (entity.isPlayer()) {
-            return isInvulnerableTo(player, entity) ? ActionResult.FAIL : ActionResult.PASS;
+            return isInvulnerableTo(player, entity) == ActionResult.SUCCESS ? ActionResult.FAIL : ActionResult.PASS;
         }
 
         if (!entity.isLiving()) {
@@ -101,25 +101,25 @@ public class InteractionManager {
         return ActionResult.PASS;
     }
 
-    private static boolean isInvulnerableTo(Entity source, Entity target) {
-        if (!source.isPlayer() || FactionsMod.CONFIG.FRIENDLY_FIRE) return false;
+    private static ActionResult isInvulnerableTo(Entity source, Entity target) {
+        if (!source.isPlayer() || FactionsMod.CONFIG.FRIENDLY_FIRE) return ActionResult.PASS;
 
         User sourceUser = User.get(source.getUuid());
         User targetUser = User.get(target.getUuid());
 
         if (!sourceUser.isInFaction() || !targetUser.isInFaction()) {
-            return false;
+            return ActionResult.PASS;
         }
 
         if (sourceUser.getFaction() == targetUser.getFaction()) {
-            return true;
+            return ActionResult.SUCCESS;
         }
 
         if (Relationship.get(sourceUser.getFaction().getID(), targetUser.getFaction().getID()).mutuallyAllies()) {
-            return true;
+            return ActionResult.SUCCESS;
         }
 
-        return false;
+        return ActionResult.PASS;
     }
 
     private static ActionResult checkPermissions(PlayerEntity player, BlockPos position, World world) {

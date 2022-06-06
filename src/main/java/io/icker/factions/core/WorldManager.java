@@ -1,6 +1,7 @@
 package io.icker.factions.core;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.events.MiscEvents;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
@@ -15,10 +16,11 @@ import net.minecraft.util.math.ChunkPos;
 public class WorldManager {
     public static void register() {
         PlayerEvents.ON_MOVE.register(WorldManager::onMove);
+        MiscEvents.ON_MOB_SPAWN_ATTEMPT.register(WorldManager::onMobSpawnAttempt);
     }
 
-    public static void onMobSpawnAttempt() {
-        // TODO  (and be private)
+    private static void onMobSpawnAttempt() {
+        // TODO Implement this
     }
  
     private static void onMove(ServerPlayerEntity player) {

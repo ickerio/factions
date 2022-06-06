@@ -1,5 +1,6 @@
 package io.icker.factions.core;
 
+import io.icker.factions.api.events.MiscEvents;
 import io.icker.factions.api.persistents.*;
 import io.icker.factions.util.Message;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -11,9 +12,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class ServerManager {
     public static void register() {
         ServerPlayConnectionEvents.JOIN.register(ServerManager::playerJoin);
+        MiscEvents.ON_SAVE.register(ServerManager::save);
     }
 
-    public static void save() {
+    private static void save(MinecraftServer server) {
         Claim.save();
         Faction.save();
         Home.save();
@@ -22,7 +24,7 @@ public class ServerManager {
         Relationship.save();
     }
 
-    public static void playerJoin(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+    private static void playerJoin(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
         ServerPlayerEntity player = handler.getPlayer();
         User user = User.get(player.getUuid());
 
