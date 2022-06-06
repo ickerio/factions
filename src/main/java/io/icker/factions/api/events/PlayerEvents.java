@@ -57,20 +57,20 @@ public class PlayerEvents {
         return ActionResult.PASS;
     });
 
-    public static final Event<OnMove> ON_MOVE = EventFactory.createArrayBacked(OnMove.class, callbacks -> (player) -> {
-        for (OnMove callback : callbacks) {
+    public static final Event<Move> ON_MOVE = EventFactory.createArrayBacked(Move.class, callbacks -> (player) -> {
+        for (Move callback : callbacks) {
             callback.onMove(player);
         }
     });
 
-    public static final Event<OnKilledByPlayer> ON_KILLED_BY_PLAYER = EventFactory.createArrayBacked(OnKilledByPlayer.class, callbacks -> (player, source) -> {
-        for (OnKilledByPlayer callback : callbacks) {
+    public static final Event<KilledByPlayer> ON_KILLED_BY_PLAYER = EventFactory.createArrayBacked(KilledByPlayer.class, callbacks -> (player, source) -> {
+        for (KilledByPlayer callback : callbacks) {
             callback.onKilledByPlayer(player, source);
         }
     });
 
-    public static final Event<OnPowerTick> ON_POWER_TICK = EventFactory.createArrayBacked(OnPowerTick.class, callbacks -> (player) -> {
-        for (OnPowerTick callback : callbacks) {
+    public static final Event<PowerTick> ON_POWER_TICK = EventFactory.createArrayBacked(PowerTick.class, callbacks -> (player) -> {
+        for (PowerTick callback : callbacks) {
             callback.onPowerTick(player);
         }
     });
@@ -97,17 +97,17 @@ public class PlayerEvents {
     }
 
     @FunctionalInterface
-    public interface OnMove {
+    public interface Move {
         void onMove(ServerPlayerEntity player);
     }
 
     @FunctionalInterface
-    public interface OnKilledByPlayer {
+    public interface KilledByPlayer {
         void onKilledByPlayer(ServerPlayerEntity player, DamageSource source);
     }
 
     @FunctionalInterface
-    public interface OnPowerTick {
+    public interface PowerTick {
         void onPowerTick(ServerPlayerEntity player);
     }
 }
