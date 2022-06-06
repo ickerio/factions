@@ -44,20 +44,20 @@ public class FactionsMod implements ModInitializer {
     }
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
-		LiteralCommandNode<ServerCommandSource> factions = CommandManager
-			.literal("factions")
-			.build();
+        LiteralCommandNode<ServerCommandSource> factions = CommandManager
+            .literal("factions")
+            .build();
 
-		LiteralCommandNode<ServerCommandSource> alias = CommandManager
-			.literal("f")
-			.build();
+        LiteralCommandNode<ServerCommandSource> alias = CommandManager
+            .literal("f")
+            .build();
 
-		dispatcher.getRoot().addChild(factions);
-		dispatcher.getRoot().addChild(alias);
+        dispatcher.getRoot().addChild(factions);
+        dispatcher.getRoot().addChild(alias);
 
-		Command[] commands = new Command[] {
+        Command[] commands = new Command[] {
             new AdminCommand(),
-			new ChatCommand(),
+            new ChatCommand(),
             new ClaimCommand(),
             new CreateCommand(),
             new DeclareCommand(),
@@ -73,11 +73,11 @@ public class FactionsMod implements ModInitializer {
             new ModifyCommand(),
             new RadarCommand(),
             new RankCommand(),
-		};
+        };
 
-		for (Command command : commands) {
-			factions.addChild(command.getNode());
+        for (Command command : commands) {
+            factions.addChild(command.getNode());
             alias.addChild(command.getNode());
-		}
+        }
     }
 }

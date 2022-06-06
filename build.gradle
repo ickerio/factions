@@ -1,6 +1,6 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
-	id 'maven-publish'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'maven-publish'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -11,52 +11,52 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-	maven { url = "https://repo.mikeprimm.com/" }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url = "https://repo.mikeprimm.com/" }
 }
 
 loom {
-	log4jConfigs.from(file("log4j-dev.xml"))
+    log4jConfigs.from(file("log4j-dev.xml"))
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation "me.lucko:fabric-permissions-api:${project.lucko_permissions_version}"
-	include "me.lucko:fabric-permissions-api:${project.lucko_permissions_version}"
-	compileOnly "us.dynmap:DynmapCoreAPI:${project.dynmap_api_version}"
-	implementation(include("com.h2database:h2:${project.h2_version}"))
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation "me.lucko:fabric-permissions-api:${project.lucko_permissions_version}"
+    include "me.lucko:fabric-permissions-api:${project.lucko_permissions_version}"
+    compileOnly "us.dynmap:DynmapCoreAPI:${project.dynmap_api_version}"
+    implementation(include("com.h2database:h2:${project.h2_version}"))
 }
 
 processResources {
-	inputs.property "version", project.version
+    inputs.property "version", project.version
 
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
+    it.options.release = 17
 }
 
 java {
-	withSourcesJar()
+    withSourcesJar()
 }
 
 jar {
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
-	}
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
+    }
 }
 
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }

@@ -78,22 +78,22 @@ public class PlayerEvents {
 
     @FunctionalInterface
     public interface BreakBlock {
-		ActionResult onBreakBlock(PlayerEntity player, BlockPos position, World world);
+        ActionResult onBreakBlock(PlayerEntity player, BlockPos position, World world);
     }
 
     @FunctionalInterface
     public interface UseBlock {
-		ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult);
+        ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult);
     }
 
     @FunctionalInterface
     public interface UseItem {
-		ActionResult onUseItem(PlayerEntity player, World world, ItemStack stack, Hand hand);
+        ActionResult onUseItem(PlayerEntity player, World world, ItemStack stack, Hand hand);
     }
 
     @FunctionalInterface
     public interface IsInvulnerable {
-		ActionResult isInvulnerable(Entity source, Entity target);
+        ActionResult isInvulnerable(Entity source, Entity target);
     }
 
     @FunctionalInterface

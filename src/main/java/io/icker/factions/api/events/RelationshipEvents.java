@@ -25,16 +25,16 @@ public final class RelationshipEvents {
 
     @FunctionalInterface
     public interface NewDecleration {
-		void onNewDecleration(Relationship relationship);
-	}
+        void onNewDecleration(Relationship relationship);
+    }
 
     @FunctionalInterface
     public interface NewMutual {
-		void onNewMutual(Relationship relationship);
-	}
+        void onNewMutual(Relationship relationship);
+    }
 
     @FunctionalInterface
     public interface EndMutual {
-		void onEndMutual(Relationship relationship, Relationship.Status oldStatus);
-	}
+        void onEndMutual(Relationship relationship, Relationship.Status oldStatus);
+    }
 }

@@ -19,11 +19,11 @@ public final class MiscEvents {
 
     @FunctionalInterface
     public interface OnSave {
-		void onSave(MinecraftServer server);
-	}
+        void onSave(MinecraftServer server);
+    }
 
     @FunctionalInterface
     public interface OnMobSpawnAttempt { //TODO Implement this
-		void onMobSpawnAttempt();
-	}
+        void onMobSpawnAttempt();
+    }
 }
