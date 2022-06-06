@@ -1,6 +1,7 @@
 package io.icker.factions.core;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -13,14 +14,14 @@ import net.minecraft.util.math.ChunkPos;
 
 public class WorldManager {
     public static void register() {
-        // TODO register event handlers
+        PlayerEvents.ON_MOVE.register(WorldManager::onMove);
     }
 
     public static void onMobSpawnAttempt() {
         // TODO  (and be private)
     }
  
-    public static void onMove(ServerPlayerEntity player) {
+    private static void onMove(ServerPlayerEntity player) {
         User user = User.get(player.getUuid());
         ServerWorld world = player.getWorld();
         String dimension = world.getRegistryKey().getValue().toString();

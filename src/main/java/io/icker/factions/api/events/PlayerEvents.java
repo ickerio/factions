@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -54,6 +55,12 @@ public class PlayerEvents {
         return false;
     });
 
+    public static final Event<OnMove> ON_MOVE = EventFactory.createArrayBacked(OnMove.class, callbacks -> (player) -> {
+        for (OnMove callback : callbacks) {
+            callback.onMove(player);
+        }
+    });
+
 
     @FunctionalInterface
     public interface BreakBlock {
@@ -73,5 +80,10 @@ public class PlayerEvents {
     @FunctionalInterface
     public interface IsInvulnerable {
 		boolean isInvulnerable(Entity source, Entity target);
+    }
+
+    @FunctionalInterface
+    public interface OnMove {
+        void onMove(ServerPlayerEntity player);
     }
 }
