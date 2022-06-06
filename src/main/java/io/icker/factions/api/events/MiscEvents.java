@@ -5,25 +5,25 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.MinecraftServer;
 
 public final class MiscEvents {
-    public static final Event<OnSave> ON_SAVE = EventFactory.createArrayBacked(OnSave.class, callbacks -> (server) -> {
-        for (OnSave callback : callbacks) {
+    public static final Event<Save> ON_SAVE = EventFactory.createArrayBacked(Save.class, callbacks -> (server) -> {
+        for (Save callback : callbacks) {
             callback.onSave(server);
         }
     });
 
-    public static final Event<OnMobSpawnAttempt> ON_MOB_SPAWN_ATTEMPT = EventFactory.createArrayBacked(OnMobSpawnAttempt.class, callbacks -> () -> {
-        for (OnMobSpawnAttempt callback : callbacks) {
+    public static final Event<MobSpawnAttempt> ON_MOB_SPAWN_ATTEMPT = EventFactory.createArrayBacked(MobSpawnAttempt.class, callbacks -> () -> {
+        for (MobSpawnAttempt callback : callbacks) {
             callback.onMobSpawnAttempt();
         }
     });
 
     @FunctionalInterface
-    public interface OnSave {
+    public interface Save {
 		void onSave(MinecraftServer server);
 	}
 
     @FunctionalInterface
-    public interface OnMobSpawnAttempt { //TODO Implement this
-		void onMobSpawnAttempt();
-	}
+    public interface MobSpawnAttempt { //TODO Implement this
+        void onMobSpawnAttempt();
+    }
 }
