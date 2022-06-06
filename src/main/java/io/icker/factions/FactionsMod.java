@@ -11,15 +11,13 @@ import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
 import io.icker.factions.core.InteractionManager;
 import io.icker.factions.core.FactionsManager;
-import io.icker.factions.core.ServerEvents;
+import io.icker.factions.core.ServerManager;
 import io.icker.factions.core.WorldManager;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.Migrator;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -38,15 +36,12 @@ public class FactionsMod implements ModInitializer {
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         Migrator.migrate();
 
+        FactionsManager.register();
         InteractionManager.register();
+        ServerManager.register();
         WorldManager.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
-        ServerPlayConnectionEvents.JOIN.register(ServerEvents::playerJoin);
-        ServerLifecycleEvents.SERVER_STARTED.register(FactionsManager::serverStarted);
-        FactionEvents.MODIFY.register(FactionsManager::factionModified);
-        FactionEvents.MEMBER_JOIN.register(FactionsManager::memberChange);
-        FactionEvents.MEMBER_LEAVE.register(FactionsManager::memberChange);
     }
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
