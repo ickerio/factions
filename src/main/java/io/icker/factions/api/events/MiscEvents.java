@@ -19,8 +19,8 @@ public final class MiscEvents {
 
     @FunctionalInterface
     public interface Save {
-		void onSave(MinecraftServer server);
-	}
+        void onSave(MinecraftServer server);
+    }
 
     @FunctionalInterface
     public interface MobSpawnAttempt { //TODO Implement this
