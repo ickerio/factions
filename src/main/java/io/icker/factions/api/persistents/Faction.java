@@ -1,9 +1,6 @@
 package io.icker.factions.api.persistents;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.*;
@@ -37,6 +34,9 @@ public class Faction implements Persistent {
 
     @Child(value = Home.class, nullable = true)
     private Home home;
+
+    @Child(value = Invite.class, list = true)
+    private ArrayList<Invite> invites;
 
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
@@ -105,6 +105,8 @@ public class Faction implements Persistent {
         return power;
     }
 
+
+
     public boolean isOpen() {
         return open;
     }
@@ -163,8 +165,20 @@ public class Faction implements Persistent {
         Claim.add(new Claim(x, z, level, id));
     }
 
-    public List<Invite> getInvites() {
-        return Invite.getByFaction(id);
+    public ArrayList<Invite> getInvites() {
+        return invites;
+    }
+
+    public Invite getInvite(UUID playerID) {
+        return invites.stream().filter((invite) -> invite.getPlayerID() == playerID).findFirst().get();
+    }
+
+    public void addInvite(Invite invite) {
+        this.invites.add(invite);
+    }
+
+    public void removeInvite(Invite invite) {
+        this.invites.remove(invite);
     }
 
     public Home getHome() {

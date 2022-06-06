@@ -11,8 +11,6 @@ import io.icker.factions.database.Persistent;
 
 @Name("Invite")
 public class Invite implements Persistent {
-    private static final HashMap<String, Invite> STORE = Database.load(Invite.class, i -> i.getKey());
-
     @Field("PlayerID")
     private UUID playerID;
 
@@ -30,41 +28,11 @@ public class Invite implements Persistent {
         return playerID.toString() + "-" + factionID.toString();
     }
 
-    public static Invite get(UUID playerID, UUID factionID) {
-        return STORE.get(playerID.toString() + "-" + factionID.toString());
-    }
-
     public UUID getPlayerID() {
         return playerID;
     }
 
-    public static List<Invite> getByPlayer(UUID playerID) {
-        return STORE.values()
-            .stream()
-            .filter(i -> i.playerID.equals(playerID))
-            .toList();
-    }
-
-    public static List<Invite> getByFaction(UUID factionID) {
-        return STORE.values()
-            .stream()
-            .filter(i -> i.factionID.equals(factionID))
-            .toList();
-    }
-
-    public static void add(Invite invite) {
-        STORE.put(invite.getKey(), invite);
-    }
-
     public Faction getFaction() {
         return Faction.get(factionID);
-    }
-
-    public void remove() {
-        STORE.remove(getKey());
-    }
-
-    public static void save() {
-        Database.save(Invite.class, STORE.values().stream().toList());
     }
 }

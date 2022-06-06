@@ -29,7 +29,7 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        Invite invite = Invite.get(player.getUuid(), faction.getID());
+        Invite invite = faction.getInvite(player.getUuid());
         if (!faction.isOpen() && invite == null) {
             new Message("Cannot join faction as it is not open and you are not invited").fail().send(player, false);
             return 0;
@@ -40,7 +40,7 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        if (invite != null) invite.remove();
+        if (invite != null) faction.removeInvite(invite);
         User.get(player.getUuid()).joinFaction(faction.getID(), Rank.MEMBER);
         source.getServer().getPlayerManager().sendCommandTree(player);
 

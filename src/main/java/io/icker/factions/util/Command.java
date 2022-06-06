@@ -91,7 +91,7 @@ public interface Command {
             return suggest(member -> 
                 Faction.all()
                     .stream()
-                    .filter(f -> f.isOpen() || Invite.get(member.getID(), f.getID()) != null)
+                    .filter(f -> f.isOpen() || f.getInvites().contains(new Invite(member.getID(), f.getID())))
                     .map(f -> f.getName())
                     .toArray(String[]::new)
             );

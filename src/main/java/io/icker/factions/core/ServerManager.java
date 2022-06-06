@@ -18,7 +18,6 @@ public class ServerManager {
     private static void save(MinecraftServer server) {
         Claim.save();
         Faction.save();
-        Invite.save();
         User.save();
         Relationship.save();
     }

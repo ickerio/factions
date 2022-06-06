@@ -52,7 +52,7 @@ public class InviteCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         Faction faction = User.get(source.getPlayer().getUuid()).getFaction();
-        Invite invite = Invite.get(target.getUuid(), faction.getID());
+        Invite invite = faction.getInvite(player.getUuid());
         if (invite != null) {
             new Message(target.getName().asString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
             return 0;
@@ -65,7 +65,7 @@ public class InviteCommand implements Command {
             return 0;
         }
 
-        Invite.add(new Invite(target.getUuid(), faction.getID()));
+        faction.addInvite(new Invite(target.getUuid(), faction.getID()));
 
         new Message(target.getName().asString() + " has been invited")
                 .send(faction);
@@ -83,7 +83,7 @@ public class InviteCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         Faction faction = User.get(player.getUuid()).getFaction();
-        new Invite(target.getUuid(), faction.getID()).remove();
+        faction.removeInvite(new Invite(target.getUuid(), faction.getID()));
 
         new Message(target.getName().asString() + " is no longer invited to your faction").send(player, false);
         return 1;
