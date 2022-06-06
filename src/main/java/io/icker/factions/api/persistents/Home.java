@@ -1,18 +1,13 @@
 package io.icker.factions.api.persistents;
 
-import java.util.HashMap;
 import java.util.UUID;
 
-import io.icker.factions.api.events.HomeEvents;
-import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.database.Persistent;
 
-@Name("Home")
+@Name(value = "Home", child = false)
 public class Home implements Persistent {
-    private static final HashMap<UUID, Home> STORE = Database.load(Home.class, h -> h.factionID);
-
     @Field("FactionID")
     public UUID factionID;
 
@@ -47,23 +42,10 @@ public class Home implements Persistent {
     public Home() { ; }
 
     public String getKey() {
-        return factionID.toString();
-    }
-
-    public static Home get(UUID factionID) {
-        return STORE.get(factionID);
-    }
-
-    public static void set(Home home) {
-        STORE.put(home.factionID, home);
-        HomeEvents.SET.invoker().onSet(home);
+        return "home";
     }
     
     public Faction getFaction() {
         return Faction.get(factionID);
-    }
-
-    public static void save() {
-        Database.save(Home.class, STORE.values().stream().toList());
     }
 }

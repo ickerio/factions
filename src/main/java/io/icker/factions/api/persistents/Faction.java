@@ -7,12 +7,8 @@ import java.util.UUID;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.*;
+import io.icker.factions.database.*;
 import net.minecraft.util.Formatting;
-
-import io.icker.factions.database.Database;
-import io.icker.factions.database.Field;
-import io.icker.factions.database.Name;
-import io.icker.factions.database.Persistent;
 
 @Name("Faction")
 public class Faction implements Persistent {
@@ -38,6 +34,9 @@ public class Faction implements Persistent {
 
     @Field("Power")
     private int power;
+
+    @Child(value = Home.class, nullable = true)
+    private Home home;
 
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
@@ -169,7 +168,11 @@ public class Faction implements Persistent {
     }
 
     public Home getHome() {
-        return Home.get(id);
+        return home;
+    }
+
+    public void setHome(Home home) {
+        this.home = home;
     }
 
     public void remove() {
