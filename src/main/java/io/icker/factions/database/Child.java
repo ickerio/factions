@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Child {
-    public Class<? extends Persistent> value();
+    public Class<?> value();
     public boolean list() default false;
 }

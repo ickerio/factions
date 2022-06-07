@@ -16,7 +16,7 @@ public class Database {
     private static final File BASE_PATH = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
     private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<Class<?>, HashMap<String, Field>>();
 
-    private static <T extends Persistent> void setup(Class<T> clazz) {
+    private static <T> void setup(Class<T> clazz) {
         HashMap<String, Field> fields = new HashMap<String, Field>();
 
         for (Field field : clazz.getDeclaredFields()) {

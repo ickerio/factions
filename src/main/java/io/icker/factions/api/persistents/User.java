@@ -32,10 +32,10 @@ public class User implements Persistent {
     @Field("ID")
     private UUID id;
 
-    @Field(value = "FactionID")
+    @Field("FactionID")
     private UUID factionID;
 
-    @Field(value = "Rank")
+    @Field("Rank")
     private Rank rank;
 
     @Field("Radar")

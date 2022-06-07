@@ -1,15 +1,10 @@
 package io.icker.factions.api.persistents;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
-import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
-import io.icker.factions.database.Name;
-import io.icker.factions.database.Persistent;
 
-public class Invite implements Persistent {
+public class Invite  {
     @Field("PlayerID")
     private UUID playerID;
 
@@ -22,10 +17,6 @@ public class Invite implements Persistent {
     }
 
     public Invite() { ; }
-
-    public String getKey() {
-        return playerID.toString() + "-" + factionID.toString();
-    }
 
     public UUID getPlayerID() {
         return playerID;
