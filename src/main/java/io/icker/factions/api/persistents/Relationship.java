@@ -10,7 +10,6 @@ import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.database.Persistent;
 
-@Name(value = "Relationship", child = true)
 public class Relationship implements Persistent {
     public enum Status {
         ALLY,

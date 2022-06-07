@@ -6,7 +6,6 @@ import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.database.Persistent;
 
-@Name(value = "Home", child = true)
 public class Home implements Persistent {
     @Field("FactionID")
     public UUID factionID;
