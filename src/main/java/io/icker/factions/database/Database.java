@@ -66,21 +66,20 @@ public class Database {
             String key = entry.getKey();
             Field field = entry.getValue();
 
-            // if data contains key
-            if (data.contains(key)) {
-                // if its a child
-                if (field.isAnnotationPresent(Child.class)) {
-                    // if child is a list
-                    if (field.getAnnotation(Child.class).list()) {
-                        field.set(item, deserializeList(field.getAnnotation(Child.class).value(), (NbtList) data.get(key)));
-                    } else {
-                        field.set(item, deserialize(field.getType(), data.getCompound(key)));
-                    }
-                } else {
-                    Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, data);
-                    field.set(item, element);
-                }
+            if (!data.contains(key)) continue;
+
+            if (!field.isAnnotationPresent(Child.class)) {
+                Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, data);
+                field.set(item, element);
+                continue;
             }
+
+            if (field.getAnnotation(Child.class).list()) {
+                field.set(item, deserializeList(field.getAnnotation(Child.class).value(), (NbtList) data.get(key)));
+                continue;
+            }
+
+            field.set(item, deserialize(field.getType(), data.getCompound(key)));
         }
 
         return item;
@@ -125,16 +124,18 @@ public class Database {
 
             if (data == null) continue;
 
-            if (field.isAnnotationPresent(Child.class)) {
-                if (field.getAnnotation(Child.class).list()) {
-                    compound.put(key, serializeList(type, cast(data)));
-                } else {
-                    compound.put(key, serialize(type, cast(data)));
-                }
-            } else {
+            if (!field.isAnnotationPresent(Child.class)) {
                 TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
                 serializer.writeNbt(key, compound, cast(data));
+                continue;
             }
+
+            if (field.getAnnotation(Child.class).list()) {
+                compound.put(key, serializeList(type, cast(data)));
+                continue;
+            }
+
+            compound.put(key, serialize(type, cast(data)));
         }
 
         return compound;
