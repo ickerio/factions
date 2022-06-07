@@ -9,6 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Child {
     public Class<? extends Persistent> value();
-    public boolean nullable() default false;
     public boolean list() default false;
 }

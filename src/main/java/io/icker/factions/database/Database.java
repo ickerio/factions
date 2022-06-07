@@ -11,6 +11,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
+import org.jetbrains.annotations.Nullable;
 
 public class Database {
     private static final File BASE_PATH = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
@@ -67,12 +68,12 @@ public class Database {
                     NbtCompound itemData = fileData.getCompound(id);
 
                     if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
-                        if (itemData.contains(key) || !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
+                        if (itemData.contains(key) || !field.isAnnotationPresent(Nullable.class)) {
                             Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, itemData);
                             field.set(item, element);
                         }
                     } else {
-                        if (itemData.contains(key) || !field.getAnnotation(Child.class).nullable()) {
+                        if (itemData.contains(key) || !field.isAnnotationPresent(Nullable.class)) {
                             if (field.getAnnotation(Child.class).list()) {
                                 field.set(item, loadList(field.getAnnotation(Child.class).value(), (NbtList) itemData.get(key)));
                             } else {
@@ -102,7 +103,7 @@ public class Database {
                 String key = entry.getKey();
                 Field field = entry.getValue();
 
-                if (data.contains(key) || !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
+                if (data.contains(key) || !field.isAnnotationPresent(Nullable.class)) {
                     Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, data);
                     field.set(item, element);
                 }
@@ -131,7 +132,7 @@ public class Database {
                     String key = entry.getKey();
                     Field field = entry.getValue();
 
-                    if (data.contains(key) || !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
+                    if (data.contains(key) || !field.isAnnotationPresent(Nullable.class)) {
                         Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, data);
                         field.set(item, element);
                     }
@@ -165,12 +166,12 @@ public class Database {
                     Object data = field.get(item);
 
                     if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
-                        if (data != null || !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
+                        if (data != null || !field.isAnnotationPresent(Nullable.class)) {
                             TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
                             serializer.writeNbt(key, compound, cast(data));
                         }
                     } else {
-                        if (data != null || !field.getAnnotation(Child.class).nullable()) {
+                        if (data != null || !field.isAnnotationPresent(Nullable.class)) {
                             if (field.getAnnotation(Child.class).list()) {
                                 compound.put(key, saveList(field.getAnnotation(Child.class).value(), cast(data)));
                             } else {
@@ -201,7 +202,7 @@ public class Database {
                 Class<?> type = field.getType();
                 Object data = field.get(item);
 
-                if (data != null || !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
+                if (data != null || !field.isAnnotationPresent(Nullable.class)) {
                     TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
                     serializer.writeNbt(key, compound, cast(data));
                 }
@@ -231,7 +232,7 @@ public class Database {
                     Class<?> type = field.getType();
                     Object data = field.get(item);
 
-                    if (data != null || !field.getAnnotation(io.icker.factions.database.Field.class).nullable()) {
+                    if (data != null || !field.isAnnotationPresent(Nullable.class)) {
                         TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
                         serializer.writeNbt(key, compound, cast(data));
                     }
