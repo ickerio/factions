@@ -11,7 +11,6 @@ import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.database.Persistent;
-import org.jetbrains.annotations.Nullable;
 
 @Name("User")
 public class User implements Persistent {
@@ -33,11 +32,9 @@ public class User implements Persistent {
     @Field("ID")
     private UUID id;
 
-    @Nullable
     @Field(value = "FactionID")
     private UUID factionID;
 
-    @Nullable
     @Field(value = "Rank")
     private Rank rank;
 

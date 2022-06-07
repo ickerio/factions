@@ -6,7 +6,6 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.*;
 import io.icker.factions.database.*;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.Nullable;
 
 @Name("Faction")
 public class Faction implements Persistent {
@@ -33,14 +32,16 @@ public class Faction implements Persistent {
     @Field("Power")
     private int power;
 
-    @Nullable
     @Child(value = Home.class)
+    @Field("Home")
     private Home home;
 
     @Child(value = Invite.class, list = true)
+    @Field("Invites")
     private ArrayList<Invite> invites = new ArrayList<>();
 
     @Child(value = Relationship.class, list = true)
+    @Field("Relationships")
     private ArrayList<Relationship> relationships = new ArrayList<>();
 
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {

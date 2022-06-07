@@ -11,37 +11,22 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
-import org.jetbrains.annotations.Nullable;
 
 public class Database {
     private static final File BASE_PATH = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
     private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<Class<?>, HashMap<String, Field>>();
 
     private static <T extends Persistent> void setup(Class<T> clazz) {
-        String name = clazz.getAnnotation(Name.class).value();
-
-        if (!BASE_PATH.exists()) {
-            BASE_PATH.mkdir();
-        }
-
-        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT) + ".dat");
-
-        if (!file.exists() && !clazz.getAnnotation(Name.class).child()) {
-            try {
-                NbtIo.writeCompressed(new NbtCompound(), file);
-            } catch (IOException e) {
-                FactionsMod.LOGGER.error("Failed to create NBT file", e);
-            }
-        }
-
         HashMap<String, Field> fields = new HashMap<String, Field>();
 
         for (Field field : clazz.getDeclaredFields()) {
             field.setAccessible(true);
             if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
                 fields.put(field.getAnnotation(io.icker.factions.database.Field.class).value(), field);
-            } else if (field.isAnnotationPresent(Child.class)) {
-                fields.put(field.getAnnotation(Child.class).value().getAnnotation(io.icker.factions.database.Name.class).value(), field);
+            }
+
+            if (field.isAnnotationPresent(Child.class)) {
+                setup(field.getAnnotation(Child.class).value());
             }
         }
 
@@ -50,98 +35,63 @@ public class Database {
 
     public static <T extends Persistent, E> HashMap<E, T> load(Class<T> clazz, Function<T, E> getStoreKey) {
         String name = clazz.getAnnotation(Name.class).value();
-        if (!cache.containsKey(clazz)) setup(clazz);
-        HashMap<String, Field> fields = cache.get(clazz);
-
         File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT) + ".dat");
+
+        if (!cache.containsKey(clazz)) setup(clazz);
 
         HashMap<E, T> store = new HashMap<E, T>();
 
+        if (!file.exists()) {
+            return store;
+        }
+
         try {
             NbtCompound fileData = NbtIo.readCompressed(file);
-            for (String id : fileData.getKeys()) {
-                T item = (T) clazz.getDeclaredConstructor().newInstance();
-
-                for (Map.Entry<String, Field> entry : fields.entrySet()) {
-                    String key = entry.getKey();
-                    Field field = entry.getValue();
-                    NbtCompound itemData = fileData.getCompound(id);
-
-                    if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
-                        if (itemData.contains(key) || !field.isAnnotationPresent(Nullable.class)) {
-                            Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, itemData);
-                            field.set(item, element);
-                        }
-                    } else {
-                        if (itemData.contains(key) || !field.isAnnotationPresent(Nullable.class)) {
-                            if (field.getAnnotation(Child.class).list()) {
-                                field.set(item, loadList(field.getAnnotation(Child.class).value(), (NbtList) itemData.get(key)));
-                            } else {
-                                field.set(item, loadIndividual(field.getAnnotation(Child.class).value(), itemData.getCompound(key)));
-                            }
-                        }
-                    }
-                }
-
+            for (T item : deserializeList(clazz, (NbtList) fileData.get("CORE"))) {
                 store.put(getStoreKey.apply(item), item);
             }
         } catch (IOException | ReflectiveOperationException e) {
-            FactionsMod.LOGGER.error("Failed to read NBT data", e);
+            FactionsMod.LOGGER.error("Failed to read NBT data ({})", file, e);
         }
 
         return store;
     }
 
-    private static <T extends Persistent> T loadIndividual(Class<T> clazz, NbtCompound data) {
-        if (!cache.containsKey(clazz)) setup(clazz);
+    private static <T> T deserialize(Class<T> clazz, NbtCompound data) throws IOException, ReflectiveOperationException {
         HashMap<String, Field> fields = cache.get(clazz);
 
-        try {
-            T item = (T) clazz.getDeclaredConstructor().newInstance();
+        T item = (T) clazz.getDeclaredConstructor().newInstance();
 
-            for (Map.Entry<String, Field> entry : fields.entrySet()) {
-                String key = entry.getKey();
-                Field field = entry.getValue();
+        for (Map.Entry<String, Field> entry : fields.entrySet()) {
+            String key = entry.getKey();
+            Field field = entry.getValue();
 
-                if (data.contains(key) || !field.isAnnotationPresent(Nullable.class)) {
+            // if data contains key
+            if (data.contains(key)) {
+                // if its a child
+                if (field.isAnnotationPresent(Child.class)) {
+                    // if child is a list
+                    if (field.getAnnotation(Child.class).list()) {
+                        field.set(item, deserializeList(field.getAnnotation(Child.class).value(), (NbtList) data.get(key)));
+                    } else {
+                        field.set(item, deserialize(field.getType(), data.getCompound(key)));
+                    }
+                } else {
                     Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, data);
                     field.set(item, element);
                 }
             }
-
-            return item;
-        } catch (ReflectiveOperationException e) {
-            FactionsMod.LOGGER.error("Failed to read NBT data", e);
         }
 
-        return null;
+        return item;
     }
 
-    private static <T extends Persistent> ArrayList<T> loadList(Class<T> clazz, NbtList list) {
-        if (!cache.containsKey(clazz)) setup(clazz);
-        HashMap<String, Field> fields = cache.get(clazz);
+    private static <T> ArrayList<T> deserializeList(Class<T> clazz, NbtList list) throws IOException, ReflectiveOperationException {
+        ArrayList<T> store = new ArrayList<T>();
 
-        ArrayList<T> store = new ArrayList<>();
-
-        try {
-            for (int i = 0; i < list.size(); i++) {
-                NbtCompound data = list.getCompound(i);
-                T item = (T) clazz.getDeclaredConstructor().newInstance();
-
-                for (Map.Entry<String, Field> entry : fields.entrySet()) {
-                    String key = entry.getKey();
-                    Field field = entry.getValue();
-
-                    if (data.contains(key) || !field.isAnnotationPresent(Nullable.class)) {
-                        Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, data);
-                        field.set(item, element);
-                    }
-                }
-
-                store.add(item);
-            }
-        } catch (ReflectiveOperationException e) {
-            FactionsMod.LOGGER.error("Failed to read NBT data", e);
+        for (int i = 0; i < list.size(); i++) {
+            NbtCompound data = list.getCompound(i);
+            store.add(deserialize(clazz, data));
         }
 
         return store;
@@ -149,99 +99,52 @@ public class Database {
 
     public static <T extends Persistent> void save(Class<T> clazz, List<T> items) {
         String name = clazz.getAnnotation(Name.class).value();
-        HashMap<String, Field> fields = cache.get(clazz);
-
         File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT) + ".dat");
 
-        NbtCompound fileData = new NbtCompound();
+        if (!cache.containsKey(clazz)) setup(clazz);
 
         try {
-            for (T item : items) {
-                NbtCompound compound = new NbtCompound();
-                for (Map.Entry<String, Field> entry : fields.entrySet()) {
-                    String key = entry.getKey();
-                    Field field = entry.getValue();
-
-                    Class<?> type = field.getType();
-                    Object data = field.get(item);
-
-                    if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
-                        if (data != null || !field.isAnnotationPresent(Nullable.class)) {
-                            TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
-                            serializer.writeNbt(key, compound, cast(data));
-                        }
-                    } else {
-                        if (data != null || !field.isAnnotationPresent(Nullable.class)) {
-                            if (field.getAnnotation(Child.class).list()) {
-                                compound.put(key, saveList(field.getAnnotation(Child.class).value(), cast(data)));
-                            } else {
-                                compound.put(key, saveIndividual(field.getAnnotation(Child.class).value(), cast(data)));
-                            }
-                        }
-                    }
-                }
-                fileData.put(item.getKey(), compound);
-            }
-
+            NbtCompound fileData = new NbtCompound();
+            fileData.put("CORE",  serializeList(clazz, items));
             NbtIo.writeCompressed(fileData, file);
         } catch (IOException | ReflectiveOperationException e) {
-            FactionsMod.LOGGER.error("Failed to write NBT data", e);
+            FactionsMod.LOGGER.error("Failed to write NBT data ({})", file, e);
         }
     }
 
-    private static <T extends Persistent> NbtCompound saveIndividual(Class<T> clazz, T item) {
-        if (!cache.containsKey(clazz)) setup(clazz);
+    private static <T> NbtCompound serialize(Class<T> clazz, T item) throws IOException, ReflectiveOperationException {
         HashMap<String, Field> fields = cache.get(clazz);
 
-        try {
-            NbtCompound compound = new NbtCompound();
-            for (Map.Entry<String, Field> entry : fields.entrySet()) {
-                String key = entry.getKey();
-                Field field = entry.getValue();
+        NbtCompound compound = new NbtCompound();
+        for (Map.Entry<String, Field> entry : fields.entrySet()) {
+            String key = entry.getKey();
+            Field field = entry.getValue();
 
-                Class<?> type = field.getType();
-                Object data = field.get(item);
+            Class<?> type = field.getType();
+            Object data = field.get(item);
 
-                if (data != null || !field.isAnnotationPresent(Nullable.class)) {
-                    TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
-                    serializer.writeNbt(key, compound, cast(data));
+            if (data == null) continue;
+
+            if (field.isAnnotationPresent(Child.class)) {
+                if (field.getAnnotation(Child.class).list()) {
+                    compound.put(key, serializeList(type, cast(data)));
+                } else {
+                    compound.put(key, serialize(type, cast(data)));
                 }
+            } else {
+                TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
+                serializer.writeNbt(key, compound, cast(data));
             }
-
-            return compound;
-        } catch (ReflectiveOperationException e) {
-            FactionsMod.LOGGER.error("Failed to write NBT data", e);
         }
 
-        return null;
+        return compound;
     }
 
-    private static <T extends Persistent> NbtList saveList(Class<T> clazz, ArrayList<T> items) {
-        if (!cache.containsKey(clazz)) setup(clazz);
-        HashMap<String, Field> fields = cache.get(clazz);
-
+    private static <T> NbtList serializeList(Class<T> clazz, List<T> items) throws IOException, ReflectiveOperationException {
         NbtList list = new NbtList();
 
-        try {
-            for (T item : items) {
-                NbtCompound compound = new NbtCompound();
-                for (Map.Entry<String, Field> entry : fields.entrySet()) {
-                    String key = entry.getKey();
-                    Field field = entry.getValue();
-
-                    Class<?> type = field.getType();
-                    Object data = field.get(item);
-
-                    if (data != null || !field.isAnnotationPresent(Nullable.class)) {
-                        TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
-                        serializer.writeNbt(key, compound, cast(data));
-                    }
-                }
-
-                list.add(list.size(), compound);
-            }
-        } catch (ReflectiveOperationException e) {
-            FactionsMod.LOGGER.error("Failed to write NBT data", e);
+        for (T item : items) {
+            list.add(list.size(), serialize(clazz, item));
         }
 
         return list;
