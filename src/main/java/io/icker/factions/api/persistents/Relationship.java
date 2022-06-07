@@ -1,17 +1,10 @@
 package io.icker.factions.api.persistents;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
-import io.icker.factions.api.events.RelationshipEvents;
-import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
-import io.icker.factions.database.Name;
-import io.icker.factions.database.Persistent;
 
-@Name(value = "Relationship", child = true)
-public class Relationship implements Persistent {
+public class Relationship {
     public enum Status {
         ALLY,
         NEUTRAL,
@@ -34,10 +27,6 @@ public class Relationship implements Persistent {
     }
 
     public Relationship() { ; }
-
-    public String getKey() {
-        return source.toString() + "-" + target.toString();   
-    }
 
     public Relationship getReverse() {
         return Faction.get(target).getRelationship(source);

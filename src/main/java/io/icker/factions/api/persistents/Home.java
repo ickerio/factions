@@ -3,11 +3,8 @@ package io.icker.factions.api.persistents;
 import java.util.UUID;
 
 import io.icker.factions.database.Field;
-import io.icker.factions.database.Name;
-import io.icker.factions.database.Persistent;
 
-@Name(value = "Home", child = true)
-public class Home implements Persistent {
+public class Home {
     @Field("FactionID")
     public UUID factionID;
 

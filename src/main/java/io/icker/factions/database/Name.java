@@ -9,5 +9,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Name {
     public String value() default "";
-    public boolean child() default false;
 }
