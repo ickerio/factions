@@ -6,7 +6,6 @@ import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.util.Message;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
-import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.filter.FilteredMessage;
@@ -21,8 +20,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import io.icker.factions.api.events.PlayerEvents;
-import io.icker.factions.core.ChatManager;
-import io.icker.factions.core.PlayerInteractions;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerPlayNetworkHandlerMixin {

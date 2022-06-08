@@ -42,7 +42,7 @@ public class WorldManager {
             } else {
                 faction.addClaim(chunkPos.x, chunkPos.z, dimension);
                 claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
-                new Message("Chunk (%d, %d) claimed by %s", chunkPos.x, chunkPos.z, player.getName().asString())
+                new Message("Chunk (%d, %d) claimed by %s", chunkPos.x, chunkPos.z, player.getName().getString())
                     .send(faction);
             }
         }

@@ -14,7 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class ChatManager {
-    public ChatManager() {
+    public static void register() {
         ServerMessageDecoratorEvent.EVENT.register(ServerMessageDecoratorEvent.CONTENT_PHASE, (sender, message) -> {
             if (sender != null && FactionsMod.CONFIG.MODIFY_CHAT) {
                 return CompletableFuture.completedFuture(ChatManager.handleMessage(sender, message.getString()));

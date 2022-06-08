@@ -19,9 +19,6 @@ import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.Migrator;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -31,14 +28,13 @@ public class FactionsMod implements ModInitializer {
 
     public static Config CONFIG;
     public static DynmapWrapper dynmap;
-    public ChatManager chatManager;
 
     @Override
     public void onInitialize() {
         LOGGER.info("Initialized Factions Mod for Minecraft v1.18");
         CONFIG = Config.load();
 
-        chatManager = new ChatManager();
+        ChatManager.register();
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         Migrator.migrate();

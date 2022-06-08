@@ -5,10 +5,7 @@ import io.icker.factions.api.persistents.User;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralTextContent;
-import net.minecraft.text.MutableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 
 public class Message {
@@ -16,11 +13,11 @@ public class Message {
     private MutableText text;
 
     public Message(String message) {
-        text = MutableText.of(new LiteralTextContent(message));
+        text = (MutableText) Text.of(message);
     }
 
     public Message(String message, Object... args) {
-        text = MutableText.of(new LiteralTextContent(String.format(message, args)));
+        text = (MutableText) Text.of(String.format(message, args));
     }
 
     public Message add(String message) {
@@ -49,7 +46,7 @@ public class Message {
     }
 
     public Message hover(String message) {
-        text.styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, MutableText.of(new LiteralTextContent(message)))));
+        text.styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(message))));
         return this;
     }
 
@@ -96,7 +93,7 @@ public class Message {
     }
 
     public Message filler(String symbol) {
-        text.append(MutableText.of(new LiteralTextContent(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol + Formatting.RESET + " ")));
+        text.append(Text.of(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol + Formatting.RESET + " "));
         return this;
     }
 
