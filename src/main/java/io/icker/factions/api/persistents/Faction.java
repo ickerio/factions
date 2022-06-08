@@ -1,14 +1,21 @@
 package io.icker.factions.api.persistents;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 import io.icker.factions.FactionsMod;
-import io.icker.factions.api.events.*;
-import io.icker.factions.database.*;
+import io.icker.factions.api.events.FactionEvents;
+import io.icker.factions.api.events.HomeEvents;
+import io.icker.factions.database.Database;
+import io.icker.factions.database.Field;
+import io.icker.factions.database.Name;
 import net.minecraft.util.Formatting;
 
 @Name("Faction")
-public class Faction implements Persistent {
+public class Faction {
     private static final HashMap<UUID, Faction> STORE = Database.load(Faction.class, f -> f.getID());
 
     @Field("ID")
@@ -36,7 +43,7 @@ public class Faction implements Persistent {
     private Home home;
 
     @Field("Invites")
-    private ArrayList<Invite> invites = new ArrayList<Invite>();
+    private ArrayList<UUID> invites = new ArrayList<UUID>();
 
     @Field("Relationships")
     private ArrayList<Relationship> relationships = new ArrayList<Relationship>();
@@ -168,20 +175,20 @@ public class Faction implements Persistent {
         Claim.add(new Claim(x, z, level, id));
     }
 
-    public ArrayList<Invite> getInvites() {
+    public ArrayList<UUID> getInvites() {
         return invites;
     }
 
-    public Invite getInvite(UUID playerID) {
-        return invites.stream().filter((invite) -> invite.getPlayerID() == playerID).findFirst().orElse(null);
+    public boolean isInvited(UUID playerID) {
+        return invites.stream().anyMatch(invite -> invite.equals(playerID));
     }
 
-    public void addInvite(Invite invite) {
-        this.invites.add(invite);
+    public void addInvite(UUID playerID) {
+        this.invites.add(playerID);
     }
 
-    public void removeInvite(Invite invite) {
-        this.invites.remove(invite);
+    public void removeInvite(UUID playerID) {
+        this.invites.remove(playerID);
     }
 
     public Home getHome() {

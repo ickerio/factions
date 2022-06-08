@@ -11,14 +11,13 @@ public class Relationship {
         ENEMY,
     }
 
-    @Field("Source")
-    public UUID source;
-
     @Field("Target")
     public UUID target;
 
     @Field("Status")
     public Status status;
+
+    public UUID source;
 
     public Relationship(UUID source, UUID target, Status status) {
         this.source = source;

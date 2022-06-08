@@ -44,8 +44,7 @@ public class Migrator {
 
                 Query inviteQuery = new Query("SELECT * FROM Invite WHERE faction = ?;").set(faction.getName()).executeQuery();
                 while (inviteQuery.next()) {
-                    Invite invite = new Invite(inviteQuery.getUUID("player"), faction.getID());
-                    faction.addInvite(invite);
+                    faction.addInvite(inviteQuery.getUUID("player"));
                 }
             }
 

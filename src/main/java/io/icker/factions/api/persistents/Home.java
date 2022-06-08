@@ -5,9 +5,6 @@ import java.util.UUID;
 import io.icker.factions.database.Field;
 
 public class Home {
-    @Field("FactionID")
-    public UUID factionID;
-
     @Field("X")
     public double x;
 
@@ -26,6 +23,8 @@ public class Home {
     @Field("Level")
     public String level;
 
+    private UUID factionID;    
+
     public Home(UUID factionID, double x, double y, double z, float yaw, float pitch, String level) {
         this.factionID = factionID;
         this.x = x;
@@ -38,10 +37,6 @@ public class Home {
 
     public Home() { ; }
 
-    public String getKey() {
-        return "home";
-    }
-    
     public Faction getFaction() {
         return Faction.get(factionID);
     }

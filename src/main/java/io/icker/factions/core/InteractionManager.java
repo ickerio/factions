@@ -4,7 +4,6 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;

@@ -8,10 +8,9 @@ import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
-import io.icker.factions.database.Persistent;
 
 @Name("Claim")
-public class Claim implements Persistent {
+public class Claim {
     private static final HashMap<String, Claim> STORE = Database.load(Claim.class, c -> c.getKey());
 
     @Field("X")

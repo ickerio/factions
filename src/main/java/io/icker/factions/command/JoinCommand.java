@@ -7,7 +7,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Invite;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.util.Command;
@@ -29,8 +28,9 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        Invite invite = faction.getInvite(player.getUuid());
-        if (!faction.isOpen() && invite == null) {
+        boolean invited = faction.isInvited(player.getUuid());
+
+        if (!faction.isOpen() && !invited) {
             new Message("Cannot join faction as it is not open and you are not invited").fail().send(player, false);
             return 0;
         }
@@ -40,7 +40,7 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        if (invite != null) faction.removeInvite(invite);
+        if (invited) faction.removeInvite(player.getUuid());
         User.get(player.getUuid()).joinFaction(faction.getID(), Rank.MEMBER);
         source.getServer().getPlayerManager().sendCommandTree(player);
 

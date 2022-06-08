@@ -4,46 +4,27 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 
 public class Database {
     private static final File BASE_PATH = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
     private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<Class<?>, HashMap<String, Field>>();
+    private static final String KEY = "CORE";
 
-    private static <T> void setup(Class<T> clazz) {
-        HashMap<String, Field> fields = new HashMap<String, Field>();
-
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
-                field.setAccessible(true);
-                fields.put(field.getAnnotation(io.icker.factions.database.Field.class).value(), field);
-
-                // Setup children
-                Class<?> type = field.getType();
-                if (!TypeSerializerRegistry.contains(type)) {
-                    if (Collection.class.isAssignableFrom(type)) {
-                        ParameterizedType pType = (ParameterizedType) field.getGenericType();
-                        setup((Class<?>) pType.getActualTypeArguments()[0]);
-                    } else {
-                        setup(type);
-                    }
-                }
-            }
-        }
-
-        cache.put(clazz, fields);
-    }
-
-    public static <T extends Persistent, E> HashMap<E, T> load(Class<T> clazz, Function<T, E> getStoreKey) {
+    public static <T, E> HashMap<E, T> load(Class<T> clazz, Function<T, E> getStoreKey) {
         String name = clazz.getAnnotation(Name.class).value();
-        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT) + ".dat");
+        File file = new File(BASE_PATH, name.toLowerCase() + ".dat");
 
         if (!cache.containsKey(clazz)) setup(clazz);
 
@@ -54,8 +35,9 @@ public class Database {
         }
 
         try {
-            NbtCompound fileData = NbtIo.readCompressed(file);
-            for (T item : deserializeList(clazz, (NbtList) fileData.get("CORE"))) {
+            NbtList list = (NbtList) NbtIo.readCompressed(file).get(KEY);
+
+            for (T item : deserializeList(clazz, list)) {
                 store.put(getStoreKey.apply(item), item);
             }
         } catch (IOException | ReflectiveOperationException e) {
@@ -65,31 +47,28 @@ public class Database {
         return store;
     }
 
-    private static <T> T deserialize(Class<T> clazz, NbtCompound data) throws IOException, ReflectiveOperationException {
-        HashMap<String, Field> fields = cache.get(clazz);
+    private static <T> T deserialize(Class<T> clazz, NbtElement value) throws IOException, ReflectiveOperationException {
+        if (SerializerRegistry.contains(clazz)) {
+            return SerializerRegistry.fromNbtElement(clazz, value);
+        }
 
+        NbtCompound compound = (NbtCompound) value;
         T item = (T) clazz.getDeclaredConstructor().newInstance();
 
+        HashMap<String, Field> fields = cache.get(clazz);
         for (Map.Entry<String, Field> entry : fields.entrySet()) {
             String key = entry.getKey();
             Field field = entry.getValue();
 
-            if (!data.contains(key)) continue;
+            if (!compound.contains(key)) continue;
 
             Class<?> type = field.getType();
-            if (TypeSerializerRegistry.contains(type)) {
-                // Standard SerializedType
-                Object element = TypeSerializerRegistry.get(type).readNbt(key, data);
-                field.set(item, element);
+
+            if (ArrayList.class.isAssignableFrom(type)) {
+                Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+                field.set(item, deserializeList(genericType, (NbtList) compound.get(key)));
             } else {
-                if (Collection.class.isAssignableFrom(type)) {
-                    // ArrayList
-                    ParameterizedType pType = (ParameterizedType) field.getGenericType();
-                    field.set(item, deserializeList((Class<?>) pType.getActualTypeArguments()[0], (NbtList) data.get(key)));
-                } else {
-                    // Embed
-                    field.set(item, deserialize(type, data.getCompound(key)));
-                }
+                field.set(item, deserialize(type, compound.get(key)));
             }
         }
 
@@ -100,31 +79,33 @@ public class Database {
         ArrayList<T> store = new ArrayList<T>();
 
         for (int i = 0; i < list.size(); i++) {
-            NbtCompound data = list.getCompound(i);
-            store.add(deserialize(clazz, data));
+            store.add(deserialize(clazz, list.get(i)));
         }
 
         return store;
     }
 
-    public static <T extends Persistent> void save(Class<T> clazz, List<T> items) {
+    public static <T> void save(Class<T> clazz, List<T> items) {
         String name = clazz.getAnnotation(Name.class).value();
-        File file = new File(BASE_PATH, name.toLowerCase(Locale.ROOT) + ".dat");
+        File file = new File(BASE_PATH, name.toLowerCase() + ".dat");
 
         if (!cache.containsKey(clazz)) setup(clazz);
 
         try {
             NbtCompound fileData = new NbtCompound();
-            fileData.put("CORE",  serializeList(clazz, items));
+            fileData.put(KEY,  serializeList(clazz, items));
             NbtIo.writeCompressed(fileData, file);
         } catch (IOException | ReflectiveOperationException e) {
             FactionsMod.LOGGER.error("Failed to write NBT data ({})", file, e);
         }
     }
 
-    private static <T> NbtCompound serialize(Class<T> clazz, T item) throws IOException, ReflectiveOperationException {
-        HashMap<String, Field> fields = cache.get(clazz);
+    private static <T> NbtElement serialize(Class<T> clazz, T item) throws IOException, ReflectiveOperationException {
+        if (SerializerRegistry.contains(clazz)) {
+            return SerializerRegistry.toNbtElement(clazz, item);
+        }
 
+        HashMap<String, Field> fields = cache.get(clazz);
         NbtCompound compound = new NbtCompound();
         for (Map.Entry<String, Field> entry : fields.entrySet()) {
             String key = entry.getKey();
@@ -135,23 +116,18 @@ public class Database {
 
             if (data == null) continue;
 
-            if (TypeSerializerRegistry.contains(type)) {
-                TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
-                serializer.writeNbt(key, compound, cast(data));
+            if (ArrayList.class.isAssignableFrom(type)) {
+                Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+                compound.put(key, serializeList(genericType, cast(data)));
             } else {
-                if (Collection.class.isAssignableFrom(type)) {
-                    ParameterizedType pType = (ParameterizedType) field.getGenericType();
-                    compound.put(key, serializeList((Class<?>) pType.getActualTypeArguments()[0], cast(data)));
-                } else {
-                    compound.put(key, serialize(type, cast(data)));
-                }
+                compound.put(key, serialize(type, cast(data)));
             }
         }
 
         return compound;
     }
 
-    private static <T> NbtList serializeList(Class<T> clazz, Collection<T> items) throws IOException, ReflectiveOperationException {
+    private static <T> NbtList serializeList(Class<T> clazz, List<T> items) throws IOException, ReflectiveOperationException {
         NbtList list = new NbtList();
 
         for (T item : items) {
@@ -159,6 +135,29 @@ public class Database {
         }
 
         return list;
+    }
+
+    private static <T> void setup(Class<T> clazz) {
+        HashMap<String, Field> fields = new HashMap<String, Field>();
+
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
+                field.setAccessible(true);
+                fields.put(field.getAnnotation(io.icker.factions.database.Field.class).value(), field);
+
+                Class<?> type = field.getType();
+                if (!SerializerRegistry.contains(type)) {
+                    if (ArrayList.class.isAssignableFrom(type)) {
+                        ParameterizedType pType = (ParameterizedType) field.getGenericType();
+                        setup((Class<?>) pType.getActualTypeArguments()[0]);
+                    } else {
+                        setup(type);
+                    }
+                }
+            }
+        }
+
+        cache.put(clazz, fields);
     }
 
     @SuppressWarnings("unchecked")

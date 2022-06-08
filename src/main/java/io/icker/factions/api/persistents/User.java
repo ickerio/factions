@@ -10,10 +10,9 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
-import io.icker.factions.database.Persistent;
 
 @Name("User")
-public class User implements Persistent {
+public class User {
     private static final HashMap<UUID, User> STORE = Database.load(User.class, p -> p.getID());
 
     public enum ChatMode {
