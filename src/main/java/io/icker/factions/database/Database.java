@@ -36,7 +36,6 @@ public class Database {
 
         try {
             NbtList list = (NbtList) NbtIo.readCompressed(file).get(KEY);
-
             for (T item : deserializeList(clazz, list)) {
                 store.put(getStoreKey.apply(item), item);
             }
@@ -148,8 +147,8 @@ public class Database {
                 Class<?> type = field.getType();
                 if (!SerializerRegistry.contains(type)) {
                     if (ArrayList.class.isAssignableFrom(type)) {
-                        ParameterizedType pType = (ParameterizedType) field.getGenericType();
-                        setup((Class<?>) pType.getActualTypeArguments()[0]);
+                        ParameterizedType genericType = (ParameterizedType) field.getGenericType();
+                        setup((Class<?>) genericType.getActualTypeArguments()[0]);
                     } else {
                         setup(type);
                     }
