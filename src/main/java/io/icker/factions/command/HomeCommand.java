@@ -96,9 +96,7 @@ public class HomeCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("home")
-            .requires(Requires.hasPerms("factions.home", 0))
-            .requires(s -> FactionsMod.CONFIG.HOME != Config.HomeOptions.DISABLED)
-            .requires(Requires.isMember())
+            .requires(Requires.multiple(Requires.isMember(), s -> FactionsMod.CONFIG.HOME != Config.HomeOptions.DISABLED, Requires.hasPerms("factions.home", 0)))
             .executes(this::go)
             .then(
                 CommandManager.literal("set")

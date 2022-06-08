@@ -35,8 +35,7 @@ public class DisbandCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("disband")
-            .requires(Requires.hasPerms("factions.disband", 0))
-            .requires(Requires.isOwner())
+            .requires(Requires.multiple(Requires.isOwner(), Requires.hasPerms("factions.disband", 0)))
             .executes(this::run)
             .build();
     }

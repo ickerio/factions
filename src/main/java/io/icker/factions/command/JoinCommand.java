@@ -52,8 +52,7 @@ public class JoinCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("join")
-            .requires(Requires.hasPerms("factions.join", 0))
-            .requires(Requires.isFactionless())
+            .requires(Requires.multiple(Requires.isFactionless(), Requires.hasPerms("factions.join", 0)))
             .then(
                 CommandManager.argument("name", StringArgumentType.greedyString())
                 .suggests(Suggests.openInvitedFactions())

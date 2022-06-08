@@ -23,6 +23,17 @@ public interface Command {
     public interface Requires {
         boolean run(User user);
 
+        @SafeVarargs
+        public static Predicate<ServerCommandSource> multiple(Predicate<ServerCommandSource>... args) {
+            return source -> {
+                for (Predicate<ServerCommandSource> predicate : args) {
+                    if (!predicate.test(source)) return false;
+                }
+
+                return true;
+            };
+        }
+
         public static Predicate<ServerCommandSource> isFactionless() {
             return require(user -> !user.isInFaction());
         }

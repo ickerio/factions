@@ -40,8 +40,7 @@ public class CreateCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("create")
-            .requires(Requires.hasPerms("factions.create", 0))
-            .requires(Requires.isFactionless())
+            .requires(Requires.multiple(Requires.isFactionless(), Requires.hasPerms("factions.create", 0)))
             .then(
                 CommandManager.argument("name", StringArgumentType.greedyString()).executes(this::run)
             )
