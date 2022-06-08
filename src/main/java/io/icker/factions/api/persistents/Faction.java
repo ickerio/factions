@@ -115,8 +115,6 @@ public class Faction {
         return power;
     }
 
-
-
     public boolean isOpen() {
         return open;
     }
