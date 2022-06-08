@@ -49,14 +49,14 @@ public class DeclareCommand implements Command {
             return 0;
         }
 
-        if (Relationship.get(sourceFaction.getID(), targetFaction.getID()).status == status) {
+        if (sourceFaction.getRelationship(targetFaction.getID()).status == status) {
             new Message("That faction relationship has already been declared with this faction").fail().send(player, false);
             return 0;
         }
 
-        Relationship rel = new Relationship(sourceFaction.getID(), targetFaction.getID(), status);
-        Relationship rev = rel.getReverse();
-        Relationship.set(rel);
+        Relationship rel = new Relationship(targetFaction.getID(), status);
+        Relationship rev = targetFaction.getRelationship(sourceFaction.getID());
+        sourceFaction.setRelationship(rel);
 
         Message msgStatus = rel.status == Relationship.Status.ALLY ? new Message("allies").format(Formatting.GREEN) 
         : rel.status == Relationship.Status.ENEMY ? new Message("enemies").format(Formatting.RED) 

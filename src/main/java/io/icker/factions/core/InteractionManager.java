@@ -4,8 +4,8 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.Relationship.Status;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -111,11 +111,15 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
-        if (sourceUser.getFaction() == targetUser.getFaction()) {
+        Faction sourceFaction = sourceUser.getFaction();
+        Faction targetFaction = targetUser.getFaction();
+
+        if (sourceFaction.getID() == targetFaction.getID()) {
             return ActionResult.SUCCESS;
         }
 
-        if (Relationship.get(sourceUser.getFaction().getID(), targetUser.getFaction().getID()).mutuallyAllies()) {
+        if (sourceFaction.getRelationship(targetFaction.getID()).status == Status.ALLY &&
+                targetFaction.getRelationship(sourceFaction.getID()).status == Status.ALLY) {
             return ActionResult.SUCCESS;
         }
 
@@ -145,8 +149,9 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
-        if (Relationship.get(claimFaction.getID(), userFaction.getID()).mutuallyAllies()) {
-            return ActionResult.PASS;
+        if (claimFaction.getRelationship(userFaction.getID()).status == Status.ALLY &&
+                userFaction.getRelationship(claimFaction.getID()).status == Status.ALLY) {
+            return ActionResult.SUCCESS;
         }
 
         if (claimFaction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT > claimFaction.getPower()) {

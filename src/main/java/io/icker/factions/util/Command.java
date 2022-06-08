@@ -8,7 +8,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Invite;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.User.Rank;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -22,26 +21,26 @@ public interface Command {
     public static final boolean permissions = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
 
     public interface Requires {
-        boolean run(User member);
+        boolean run(User user);
 
         public static Predicate<ServerCommandSource> isFactionless() {
-            return require(member -> !member.isInFaction());
+            return require(user -> !user.isInFaction());
         }
 
         public static Predicate<ServerCommandSource> isMember() {
-            return require(member -> member.isInFaction());
+            return require(user -> user.isInFaction());
         }
 
         public static Predicate<ServerCommandSource> isCommander() {
-            return require(member -> member.getRank() == Rank.COMMANDER || member.getRank() == Rank.LEADER || member.getRank() == Rank.OWNER);
+            return require(user -> user.getRank() == Rank.COMMANDER || user.getRank() == Rank.LEADER || user.getRank() == Rank.OWNER);
         }
 
         public static Predicate<ServerCommandSource> isLeader() {
-            return require(member -> member.getRank() == Rank.LEADER || member.getRank() == Rank.OWNER);
+            return require(user -> user.getRank() == Rank.LEADER || user.getRank() == Rank.OWNER);
         }
 
         public static Predicate<ServerCommandSource> isOwner() {
-            return require(member -> member.getRank() == Rank.OWNER);
+            return require(user -> user.getRank() == Rank.OWNER);
         }
         
         public static Predicate<ServerCommandSource> isAdmin() {
@@ -54,18 +53,22 @@ public interface Command {
 
         public static Predicate<ServerCommandSource> require(Requires req) {
             return source -> {
-                ServerPlayerEntity entity = source.getPlayer();
-                User member = User.get(entity.getUuid());
-                return req.run(member);
+                try {
+                    ServerPlayerEntity entity = source.getPlayer();
+                    User user = User.get(entity.getUuid());
+                    return req.run(user);
+                } catch (CommandSyntaxException e) {
+                    return false;
+                }
             };
         }
     }
 
     public interface Suggests {
-        String[] run(User member);
+        String[] run(User user);
 
         public static SuggestionProvider<ServerCommandSource> allFactions() {
-            return suggest(member -> 
+            return suggest(user ->
                 Faction.all()
                     .stream()
                     .map(f -> f.getName())
@@ -74,7 +77,7 @@ public interface Command {
         }
 
         public static SuggestionProvider<ServerCommandSource> openFactions() {
-            return suggest(member -> 
+            return suggest(user ->
                 Faction.all()
                     .stream()
                     .filter(f -> f.isOpen())
@@ -84,10 +87,10 @@ public interface Command {
         }
 
         public static SuggestionProvider<ServerCommandSource> openInvitedFactions() {
-            return suggest(member -> 
+            return suggest(user ->
                 Faction.all()
                     .stream()
-                    .filter(f -> f.isOpen() || Invite.get(member.getID(), f.getID()) != null)
+                    .filter(f -> f.isOpen() || f.isInvited(user.getID()))
                     .map(f -> f.getName())
                     .toArray(String[]::new)
             );
@@ -95,11 +98,13 @@ public interface Command {
 
         public static SuggestionProvider<ServerCommandSource> suggest(Suggests sug) {
             return (context, builder) -> {
-                ServerPlayerEntity entity = context.getSource().getPlayer();
-                User member = User.get(entity.getUuid());
-                for (String suggestion : sug.run(member)) {
-                    builder.suggest(suggestion);
-                }
+                try {
+                    ServerPlayerEntity entity = context.getSource().getPlayer();
+                    User user = User.get(entity.getUuid());
+                    for (String suggestion : sug.run(user)) {
+                        builder.suggest(suggestion);
+                    }
+                } catch (CommandSyntaxException e) {}
                 return builder.buildFuture();
             };
         }

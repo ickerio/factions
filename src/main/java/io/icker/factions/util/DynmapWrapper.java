@@ -97,9 +97,10 @@ public class DynmapWrapper {
     }
 
     private void setHome(Home home) {
-        Marker marker = markerSet.findMarker(home.getKey());
+        Faction faction = home.getFaction();
+        Marker marker = markerSet.findMarker(faction.getID().toString() + "-home");
         if (marker == null) {
-            markerSet.createMarker(home.getKey(), home.getFaction().getName() + "'s Home", dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
+            markerSet.createMarker("home", faction.getName() + "'s Home", dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
         } else {
             marker.setLocation(dimensionTagToID(home.level), home.x, home.y, home.z);
         }

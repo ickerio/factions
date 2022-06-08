@@ -1,21 +1,21 @@
 package io.icker.factions.api.persistents;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import io.icker.factions.FactionsMod;
-import io.icker.factions.api.events.*;
-import net.minecraft.util.Formatting;
-
+import io.icker.factions.api.events.FactionEvents;
+import io.icker.factions.api.events.HomeEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
-import io.icker.factions.database.Persistent;
+import net.minecraft.util.Formatting;
 
 @Name("Faction")
-public class Faction implements Persistent {
+public class Faction {
     private static final HashMap<UUID, Faction> STORE = Database.load(Faction.class, f -> f.getID());
 
     @Field("ID")
@@ -38,6 +38,15 @@ public class Faction implements Persistent {
 
     @Field("Power")
     private int power;
+
+    @Field("Home")
+    private Home home;
+
+    @Field("Invites")
+    private ArrayList<UUID> invites = new ArrayList<UUID>();
+
+    @Field("Relationships")
+    private ArrayList<Relationship> relationships = new ArrayList<Relationship>();
 
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
@@ -164,21 +173,49 @@ public class Faction implements Persistent {
         Claim.add(new Claim(x, z, level, id));
     }
 
-    public List<Invite> getInvites() {
-        return Invite.getByFaction(id);
+    public ArrayList<UUID> getInvites() {
+        return invites;
+    }
+
+    public boolean isInvited(UUID playerID) {
+        return invites.stream().anyMatch(invite -> invite.equals(playerID));
+    }
+
+    public void addInvite(UUID playerID) {
+        this.invites.add(playerID);
+    }
+
+    public void removeInvite(UUID playerID) {
+        this.invites.remove(playerID);
     }
 
     public Home getHome() {
-        return Home.get(id);
+        return home;
+    }
+
+    public void setHome(Home home) {
+        this.home = home;
+        HomeEvents.SET.invoker().onSet(home);
+    }
+
+    public Relationship getRelationship(UUID target) {
+        return relationships.stream().filter((rel) -> rel.target.equals(target)).findFirst().orElse(new Relationship(target, Relationship.Status.NEUTRAL));
+    }
+
+    public void removeRelationship(UUID target) {
+        relationships = new ArrayList<>(relationships.stream().filter((rel) -> !rel.target.equals(target)).toList());
+    }
+
+    public void setRelationship(Relationship relationship) {
+        if (getRelationship(relationship.target) != null) {
+            removeRelationship(relationship.target);
+        }
+        relationships.add(relationship);
     }
 
     public void remove() {
         for (User user : getUsers()) {
             user.leaveFaction();
-        }
-        for (Relationship rel : Relationship.getByFaction(id)) {
-            rel.getReverse().remove();
-            rel.remove();
         }
         removeAllClaims();
         STORE.remove(id);
