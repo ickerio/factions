@@ -56,6 +56,7 @@ public interface Command {
                 try {
                     ServerPlayerEntity entity = source.getPlayer();
                     User user = User.get(entity.getUuid());
+                    FactionsMod.LOGGER.info(!user.isInFaction());
                     return req.run(user);
                 } catch (CommandSyntaxException e) {
                     return false;
@@ -68,9 +69,14 @@ public interface Command {
         String[] run(User user);
 
         public static SuggestionProvider<ServerCommandSource> allFactions() {
+            return allFactions(true);
+        }
+
+        public static SuggestionProvider<ServerCommandSource> allFactions(boolean includeYou) {
             return suggest(user -> 
                 Faction.all()
                     .stream()
+                    .filter(f -> includeYou || !user.isInFaction() || !user.getFaction().getID().equals(f.getID()))
                     .map(f -> f.getName())
                     .toArray(String[]::new)
             );
