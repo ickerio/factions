@@ -81,11 +81,11 @@ public class Migrator {
                 Faction source = Faction.getByName(query.getString("source"));
                 Faction target = Faction.getByName(query.getString("target"));
 
-                Relationship rel = new Relationship(source.getID(), target.getID(), Status.ALLY);
+                Relationship rel = new Relationship(target.getID(), Status.ALLY);
                 source.setRelationship(rel);
 
                 if (query.getBool("accept")) {
-                    Relationship rev = new Relationship(target.getID(), source.getID(), Status.ALLY);
+                    Relationship rev = new Relationship(source.getID(), Status.ALLY);
                     source.setRelationship(rev);
                 }
             }

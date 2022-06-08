@@ -201,7 +201,7 @@ public class Faction {
     }
 
     public Relationship getRelationship(UUID target) {
-        return relationships.stream().filter((rel) -> rel.target.equals(target)).findFirst().orElse(new Relationship(id, target, Relationship.Status.NEUTRAL));
+        return relationships.stream().filter((rel) -> rel.target.equals(target)).findFirst().orElse(new Relationship(target, Relationship.Status.NEUTRAL));
     }
 
     public void removeRelationship(UUID target) {

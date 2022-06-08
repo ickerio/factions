@@ -17,21 +17,10 @@ public class Relationship {
     @Field("Status")
     public Status status;
 
-    public UUID source;
-
-    public Relationship(UUID source, UUID target, Status status) {
-        this.source = source;
+    public Relationship(UUID target, Status status) {
         this.target = target;
         this.status = status;
     }
 
     public Relationship() { ; }
-
-    public Relationship getReverse() {
-        return Faction.get(target).getRelationship(source);
-    }
-
-    public boolean mutuallyAllies() {
-        return status == Status.ALLY && status == getReverse().status;
-    }
 }

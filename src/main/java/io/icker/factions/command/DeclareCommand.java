@@ -54,8 +54,8 @@ public class DeclareCommand implements Command {
             return 0;
         }
 
-        Relationship rel = new Relationship(sourceFaction.getID(), targetFaction.getID(), status);
-        Relationship rev = rel.getReverse();
+        Relationship rel = new Relationship(targetFaction.getID(), status);
+        Relationship rev = new Relationship(sourceFaction.getID(), status);
         sourceFaction.setRelationship(rel);
 
         Message msgStatus = rel.status == Relationship.Status.ALLY ? new Message("allies").format(Formatting.GREEN) 
