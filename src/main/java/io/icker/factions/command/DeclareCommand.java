@@ -69,7 +69,7 @@ public class DeclareCommand implements Command {
         }
 
         new Message("You have declared " + targetFaction.getName() + " as ").add(msgStatus).send(sourceFaction);
-        new Message(sourceFaction.getName() + " have declared you as ").add(msgStatus).hover("Click to add them back").click(String.format("/factions declare %s %s", rel.status.toString().toLowerCase(Locale.ROOT), sourceFaction.getName())).send(targetFaction);
+        new Message(sourceFaction.getName() + " have declared you as ").add(msgStatus).hover("Click to add them back").click(String.format("/f declare %s %s", rel.status.toString().toLowerCase(Locale.ROOT), sourceFaction.getName())).send(targetFaction);
         return 1;
     }
 
