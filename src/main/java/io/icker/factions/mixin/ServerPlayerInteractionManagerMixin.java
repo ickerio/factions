@@ -1,5 +1,6 @@
 package io.icker.factions.mixin;
 
+import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
@@ -15,7 +16,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import io.icker.factions.core.PlayerInteractions;
+import io.icker.factions.api.events.PlayerEvents;
+import io.icker.factions.core.InteractionsUtil;
 
 @Mixin(ServerPlayerInteractionManager.class)
 public class ServerPlayerInteractionManagerMixin {
@@ -25,27 +27,35 @@ public class ServerPlayerInteractionManagerMixin {
     public ServerPlayerEntity player;
 
     @Inject(at = @At("HEAD"), method = "tryBreakBlock", cancellable = true)
-    private void tryBreakBlock(BlockPos pos, CallbackInfoReturnable<Boolean> info) {
-        if (!PlayerInteractions.actionPermitted(pos, world, player)) {
-            PlayerInteractions.warnPlayer(player, "break blocks");
+    private void tryBreakBlock(BlockPos position, CallbackInfoReturnable<Boolean> info) {
+        ActionResult result = PlayerEvents.BREAK_BLOCK.invoker().onBreakBlock(player, position, world);
+
+        if (result == ActionResult.FAIL) {
+            InteractionsUtil.warn(player, "break blocks");
             info.setReturnValue(false);
         }
     }
 
     @Inject(at = @At("HEAD"), method = "interactBlock", cancellable = true)
-    public void interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult blockHitResult, CallbackInfoReturnable<ActionResult> info) {
-        if (PlayerInteractions.preventInteract(player, world, blockHitResult)) {
-            PlayerInteractions.warnPlayer(player, "use blocks");
-            PlayerInteractions.syncItem(player, stack, hand);
+    public void interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> info) {
+        ActionResult result = PlayerEvents.USE_BLOCK.invoker().onUseBlock(player, world, hand, hitResult);
+
+        if (result == ActionResult.FAIL) {
+            InteractionsUtil.warn(player, "use blocks");
+            InteractionsUtil.sync(player, stack, hand);
             info.setReturnValue(ActionResult.FAIL);
         }
     }
 
     @Inject(at = @At("HEAD"), method = "interactItem", cancellable = true)
     public void interactItem(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, CallbackInfoReturnable<ActionResult> info) {
-        if (PlayerInteractions.preventUseItem(player, world, stack)) {
-            PlayerInteractions.warnPlayer(player, "use items");
-            PlayerInteractions.syncItem(player, stack, hand);
+        ActionResult result = PlayerEvents.USE_ITEM.invoker().onUseItem(player, world, stack, hand);
+
+        if (result == ActionResult.FAIL) {
+            if (stack == ItemStack.EMPTY || !(stack.getItem() instanceof BucketItem)) {
+                InteractionsUtil.warn(player, "use items");
+            }
+            InteractionsUtil.sync(player, stack, hand);
             info.setReturnValue(ActionResult.FAIL);
         }
     }

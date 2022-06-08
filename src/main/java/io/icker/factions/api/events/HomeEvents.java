@@ -13,6 +13,6 @@ public final class HomeEvents {
 
     @FunctionalInterface
     public interface Set {
-		void onSet(Home home);
-	}
+        void onSet(Home home);
+    }
 }

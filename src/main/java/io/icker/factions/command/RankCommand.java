@@ -144,7 +144,6 @@ public class RankCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("rank")
-            .requires(Requires.hasPerms("factions.rank", 0))
             .requires(Requires.isLeader())
             .then(
                 CommandManager
@@ -167,7 +166,7 @@ public class RankCommand implements Command {
             .then(
                 CommandManager
                 .literal("transfer")
-                .requires(Requires.hasPerms("factions.transfer", 0))
+                .requires(Requires.hasPerms("factions.rank.transfer", 0))
                 .requires(Requires.isOwner())
                 .then(
                     CommandManager.argument("player", EntityArgumentType.player())

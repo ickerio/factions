@@ -56,43 +56,42 @@ public final class FactionEvents {
 
     @FunctionalInterface
     public interface Create {
-		void onCreate(Faction faction, User owner);
-	}
+        void onCreate(Faction faction, User owner);
+    }
 
     @FunctionalInterface
     public interface Disband {
-		void onDisband(Faction faction);
-	}
+        void onDisband(Faction faction);
+    }
 
     @FunctionalInterface
     public interface MemberJoin {
-		void onMemberJoin(Faction faction, User user);
-	}
+        void onMemberJoin(Faction faction, User user);
+    }
 
     // TODO add Reason: LEAVE, KICK, DISBAND
     @FunctionalInterface
     public interface MemberLeave {
-		void onMemberLeave(Faction faction, User user);
-	}
+        void onMemberLeave(Faction faction, User user);
+    }
 
     @FunctionalInterface
     public interface Modify {
-		void onModify(Faction faction);
-	}
+        void onModify(Faction faction);
+    }
 
-    // TODO add Reason: PowerTick, Death
     @FunctionalInterface
     public interface PowerChange {
-		void onPowerChange(Faction faction, int oldPower);
-	}
+        void onPowerChange(Faction faction, int oldPower);
+    }
 
     @FunctionalInterface
     public interface SetHome {
-		void onSetHome(Faction faction);
-	}
+        void onSetHome(Faction faction);
+    }
 
     @FunctionalInterface
     public interface RemoveAllClaims {
-		void onRemoveAllClaims(Faction faction);
-	}
+        void onRemoveAllClaims(Faction faction);
+    }
 }

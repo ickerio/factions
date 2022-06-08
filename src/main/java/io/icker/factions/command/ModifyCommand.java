@@ -105,7 +105,6 @@ public class ModifyCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("modify")
-            .requires(Requires.hasPerms("factions.modify", 0))
             .requires(Requires.isLeader())
             .then(
                 CommandManager

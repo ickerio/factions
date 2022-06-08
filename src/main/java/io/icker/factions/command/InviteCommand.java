@@ -92,7 +92,6 @@ public class InviteCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("invite")
-            .requires(Requires.hasPerms("factions.invite", 0))
             .requires(Requires.isCommander())
             .then(
                 CommandManager

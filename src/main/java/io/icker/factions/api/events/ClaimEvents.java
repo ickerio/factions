@@ -20,11 +20,11 @@ public final class ClaimEvents {
 
     @FunctionalInterface
     public interface Add {
-		void onAdd(Claim claim);
-	}
+        void onAdd(Claim claim);
+    }
 
     @FunctionalInterface
     public interface Remove {
-		void onRemove(int x, int z, String level, Faction faction);
-	}
+        void onRemove(int x, int z, String level, Faction faction);
+    }
 }
