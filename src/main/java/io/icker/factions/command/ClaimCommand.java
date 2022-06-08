@@ -232,7 +232,7 @@ public class ClaimCommand implements Command {
                     .then(
                         CommandManager.literal("force")
                         .requires(Requires.hasPerms("factions.claim.add.force", 0))
-                        .executes((context) -> addForced(context, IntegerArgumentType.getInteger(context, "size")))
+                        .executes(context -> addForced(context, IntegerArgumentType.getInteger(context, "size")))
                     )
                     .executes(this::addSize)
                 )

@@ -68,6 +68,21 @@ public class InfoCommand implements Command {
         String usersList = users.stream()
             .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
             .collect(Collectors.joining(", "));
+        
+        String mutualAllies = faction.getMutualAllies().stream()
+            .map(rel -> Faction.get(rel.target))
+            .map(fac -> fac.getColor() + fac.getName())
+            .collect(Collectors.joining(Formatting.GRAY + ", "));
+
+        String enemiesWith = Formatting.GRAY + faction.getEnemiesWith().stream()
+            .map(rel -> Faction.get(rel.target))
+            .map(fac -> fac.getColor() + fac.getName())
+            .collect(Collectors.joining(Formatting.GRAY + ", "));
+
+        String enemiesOf = Formatting.GRAY + faction.getEnemiesOf().stream()
+            .map(rel -> Faction.get(rel.target))
+            .map(fac -> fac.getColor() + fac.getName())
+            .collect(Collectors.joining(Formatting.GRAY + ", "));
 
         int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT;
         int maxPower = users.size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
@@ -87,14 +102,25 @@ public class InfoCommand implements Command {
             .add(Formatting.GREEN.toString() + faction.getPower() + slash() + requiredPower + slash() + maxPower)
             .hover("Current / Required / Max")
             .send(player, false);
+        if (mutualAllies.length() > 0)
+            new Message("Mutual allies: ")
+                .add(mutualAllies)
+                .send(player, false);
+        if (enemiesWith.length() > 0)
+            new Message("Enemies with: ")
+                .add(enemiesWith)
+                .send(player, false);
+        if (enemiesOf.length() > 0)
+            new Message("Enemies of: ")
+                .add(enemiesOf)
+                .send(player, false);
 
         User user = User.get(player.getUuid());
         UUID userFaction = user.isInFaction() ? user.getFaction().getID() : null;
-        if (faction.getID().equals(userFaction)) {
+        if (faction.getID().equals(userFaction))
             new Message("Your Rank: ")
                 .add(Formatting.GRAY + user.getRankName())
                 .send(player, false);
-        }
 
         return 1;
     }

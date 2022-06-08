@@ -9,6 +9,7 @@ import java.util.UUID;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.events.HomeEvents;
+import io.icker.factions.api.persistents.Relationship.Status;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -199,11 +200,32 @@ public class Faction {
     }
 
     public Relationship getRelationship(UUID target) {
-        return relationships.stream().filter((rel) -> rel.target.equals(target)).findFirst().orElse(new Relationship(target, Relationship.Status.NEUTRAL));
+        return relationships.stream().filter(rel -> rel.target.equals(target)).findFirst().orElse(new Relationship(target, Relationship.Status.NEUTRAL));
+    }
+
+    public Relationship getReverse(Relationship rel) {
+        return Faction.get(rel.target).getRelationship(id);
+    }
+
+    public boolean isMutualAllies(UUID target) {
+        Relationship rel = getRelationship(target);
+        return rel.status == Status.ALLY && getReverse(rel).status == Status.ALLY;
+    }
+
+    public List<Relationship> getMutualAllies() {
+        return relationships.stream().filter(rel -> isMutualAllies(rel.target)).toList();
+    }
+
+    public List<Relationship> getEnemiesWith() {
+        return relationships.stream().filter(rel -> rel.status == Status.ENEMY).toList();
+    }
+
+    public List<Relationship> getEnemiesOf() {
+        return relationships.stream().filter(rel -> getReverse(rel).status == Status.ENEMY).toList();
     }
 
     public void removeRelationship(UUID target) {
-        relationships = new ArrayList<>(relationships.stream().filter((rel) -> !rel.target.equals(target)).toList());
+        relationships = new ArrayList<>(relationships.stream().filter(rel -> !rel.target.equals(target)).toList());
     }
 
     public void setRelationship(Relationship relationship) {
