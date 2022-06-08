@@ -31,7 +31,7 @@ public class FactionsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Initialized Factions Mod for Minecraft v1.18");
+        LOGGER.info("Initialized Factions Mod for Minecraft v1.19");
         CONFIG = Config.load();
 
         ChatManager.register();
