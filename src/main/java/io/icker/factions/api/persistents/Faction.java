@@ -32,17 +32,14 @@ public class Faction implements Persistent {
     @Field("Power")
     private int power;
 
-    @Child(value = Home.class)
     @Field("Home")
     private Home home;
 
-    @Child(value = Invite.class, list = true)
     @Field("Invites")
-    private ArrayList<Invite> invites = new ArrayList<>();
+    private ArrayList<Invite> invites = new ArrayList<Invite>();
 
-    @Child(value = Relationship.class, list = true)
     @Field("Relationships")
-    private ArrayList<Relationship> relationships = new ArrayList<>();
+    private ArrayList<Relationship> relationships = new ArrayList<Relationship>();
 
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();

@@ -3,6 +3,7 @@ package io.icker.factions.database;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.function.Function;
 
@@ -20,13 +21,20 @@ public class Database {
         HashMap<String, Field> fields = new HashMap<String, Field>();
 
         for (Field field : clazz.getDeclaredFields()) {
-            field.setAccessible(true);
             if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
+                field.setAccessible(true);
                 fields.put(field.getAnnotation(io.icker.factions.database.Field.class).value(), field);
-            }
 
-            if (field.isAnnotationPresent(Child.class)) {
-                setup(field.getAnnotation(Child.class).value());
+                // Setup children
+                Class<?> type = field.getType();
+                if (!TypeSerializerRegistry.contains(type)) {
+                    if (Collection.class.isAssignableFrom(type)) {
+                        ParameterizedType pType = (ParameterizedType) field.getGenericType();
+                        setup((Class<?>) pType.getActualTypeArguments()[0]);
+                    } else {
+                        setup(type);
+                    }
+                }
             }
         }
 
@@ -68,18 +76,21 @@ public class Database {
 
             if (!data.contains(key)) continue;
 
-            if (!field.isAnnotationPresent(Child.class)) {
-                Object element = TypeSerializerRegistry.get(field.getType()).readNbt(key, data);
+            Class<?> type = field.getType();
+            if (TypeSerializerRegistry.contains(type)) {
+                // Standard SerializedType
+                Object element = TypeSerializerRegistry.get(type).readNbt(key, data);
                 field.set(item, element);
-                continue;
+            } else {
+                if (Collection.class.isAssignableFrom(type)) {
+                    // ArrayList
+                    ParameterizedType pType = (ParameterizedType) field.getGenericType();
+                    field.set(item, deserializeList((Class<?>) pType.getActualTypeArguments()[0], (NbtList) data.get(key)));
+                } else {
+                    // Embed
+                    field.set(item, deserialize(type, data.getCompound(key)));
+                }
             }
-
-            if (field.getAnnotation(Child.class).list()) {
-                field.set(item, deserializeList(field.getAnnotation(Child.class).value(), (NbtList) data.get(key)));
-                continue;
-            }
-
-            field.set(item, deserialize(field.getType(), data.getCompound(key)));
         }
 
         return item;
@@ -124,24 +135,23 @@ public class Database {
 
             if (data == null) continue;
 
-            if (!field.isAnnotationPresent(Child.class)) {
+            if (TypeSerializerRegistry.contains(type)) {
                 TypeSerializer<?> serializer = TypeSerializerRegistry.get(type);
                 serializer.writeNbt(key, compound, cast(data));
-                continue;
+            } else {
+                if (Collection.class.isAssignableFrom(type)) {
+                    ParameterizedType pType = (ParameterizedType) field.getGenericType();
+                    compound.put(key, serializeList((Class<?>) pType.getActualTypeArguments()[0], cast(data)));
+                } else {
+                    compound.put(key, serialize(type, cast(data)));
+                }
             }
-
-            if (field.getAnnotation(Child.class).list()) {
-                compound.put(key, serializeList(type, cast(data)));
-                continue;
-            }
-
-            compound.put(key, serialize(type, cast(data)));
         }
 
         return compound;
     }
 
-    private static <T> NbtList serializeList(Class<T> clazz, List<T> items) throws IOException, ReflectiveOperationException {
+    private static <T> NbtList serializeList(Class<T> clazz, Collection<T> items) throws IOException, ReflectiveOperationException {
         NbtList list = new NbtList();
 
         for (T item : items) {

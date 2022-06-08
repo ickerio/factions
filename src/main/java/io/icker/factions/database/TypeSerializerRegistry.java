@@ -30,6 +30,10 @@ public class TypeSerializerRegistry {
         registry.put(Status.class, createEnumSerializer(Status.class));
     }
 
+    public static boolean contains(Class<?> clazz) {
+        return registry.containsKey(clazz);
+    }
+
     public static TypeSerializer<?> get(Class<?> clazz) {
         return registry.get(clazz);
     }
