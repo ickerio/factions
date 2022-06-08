@@ -48,9 +48,9 @@ public class FactionsMod implements ModInitializer {
     }
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-		LiteralCommandNode<ServerCommandSource> factions = CommandManager
-			.literal("factions")
-			.build();
+        LiteralCommandNode<ServerCommandSource> factions = CommandManager
+            .literal("factions")
+            .build();
 
         LiteralCommandNode<ServerCommandSource> alias = CommandManager
             .literal("f")

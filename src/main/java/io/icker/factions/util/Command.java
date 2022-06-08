@@ -2,7 +2,6 @@ package io.icker.factions.util;
 
 import java.util.function.Predicate;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
