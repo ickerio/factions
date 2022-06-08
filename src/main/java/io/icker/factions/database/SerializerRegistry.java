@@ -50,9 +50,9 @@ public class SerializerRegistry {
         registry.put(String.class, new Serializer<String, NbtString>((val) -> NbtString.of(val), (el) -> el.asString()));
         registry.put(UUID.class, new Serializer<UUID, NbtIntArray>((val) -> NbtHelper.fromUuid(val), (el) -> NbtHelper.toUuid(el)));
 
-        registry.put(ChatMode.class, createEnumSez(ChatMode.class));
-        registry.put(Rank.class, createEnumSez(Rank.class));
-        registry.put(Status.class, createEnumSez(Status.class));
+        registry.put(ChatMode.class, createEnumSerializer(ChatMode.class));
+        registry.put(Rank.class, createEnumSerializer(Rank.class));
+        registry.put(Status.class, createEnumSerializer(Status.class));
     }
 
     public static boolean contains(Class<?> clazz) {
@@ -68,7 +68,7 @@ public class SerializerRegistry {
         return (T) registry.get(clazz).deserialize(value);
     }
 
-    private static <T extends Enum<T>> Serializer<T, NbtString> createEnumSez(Class<T> clazz) {
+    private static <T extends Enum<T>> Serializer<T, NbtString> createEnumSerializer(Class<T> clazz) {
         return new Serializer<T, NbtString>(
             (val) -> NbtString.of(val.toString()),
             (el) -> Enum.valueOf(clazz, el.asString())
