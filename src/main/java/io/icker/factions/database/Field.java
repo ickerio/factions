@@ -9,5 +9,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Field {
     public String value() default "";
-    public boolean nullable() default false;
 }

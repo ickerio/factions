@@ -33,7 +33,7 @@ public class Migrator {
                 Query homeQuery = new Query("SELECT * FROM Home WHERE faction = ?;").set(faction.getName()).executeQuery();
                 if (homeQuery.success) {
                     Home home = new Home(faction.getID(), homeQuery.getDouble("x"), homeQuery.getDouble("y"), homeQuery.getDouble("z"), homeQuery.getFloat("yaw"), homeQuery.getFloat("pitch"), homeQuery.getString("level"));
-                    Home.set(home);
+                    faction.setHome(home);
                 }
 
                 Query claimQuery = new Query("SELECT * FROM Claim WHERE faction = ?;").set(faction.getName()).executeQuery();
@@ -44,8 +44,7 @@ public class Migrator {
 
                 Query inviteQuery = new Query("SELECT * FROM Invite WHERE faction = ?;").set(faction.getName()).executeQuery();
                 while (inviteQuery.next()) {
-                    Invite invite = new Invite(inviteQuery.getUUID("player"), faction.getID());
-                    Invite.add(invite);
+                    faction.addInvite(inviteQuery.getUUID("player"));
                 }
             }
 
@@ -79,12 +78,15 @@ public class Migrator {
 
             query = new Query("SELECT * FROM Allies;").executeQuery();
             while (query.next()) {
-                Relationship rel = new Relationship(Faction.getByName(query.getString("source")).getID(), Faction.getByName(query.getString("target")).getID(), Status.ALLY);
-                Relationship.set(rel);
+                Faction source = Faction.getByName(query.getString("source"));
+                Faction target = Faction.getByName(query.getString("target"));
+
+                Relationship rel = new Relationship(target.getID(), Status.ALLY);
+                source.setRelationship(rel);
 
                 if (query.getBool("accept")) {
-                    rel = new Relationship(Faction.getByName(query.getString("target")).getID(), Faction.getByName(query.getString("source")).getID(), Status.ALLY);
-                    Relationship.set(rel);
+                    Relationship rev = new Relationship(source.getID(), Status.ALLY);
+                    source.setRelationship(rev);
                 }
             }
         } catch (SQLException err) {
