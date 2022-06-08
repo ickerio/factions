@@ -53,13 +53,9 @@ public interface Command {
 
         public static Predicate<ServerCommandSource> require(Requires req) {
             return source -> {
-                try {
-                    ServerPlayerEntity entity = source.getPlayer();
-                    User user = User.get(entity.getUuid());
-                    return req.run(user);
-                } catch (CommandSyntaxException e) {
-                    return false;
-                }
+                ServerPlayerEntity entity = source.getPlayer();
+                User user = User.get(entity.getUuid());
+                return req.run(user);
             };
         }
     }
@@ -98,13 +94,11 @@ public interface Command {
 
         public static SuggestionProvider<ServerCommandSource> suggest(Suggests sug) {
             return (context, builder) -> {
-                try {
-                    ServerPlayerEntity entity = context.getSource().getPlayer();
-                    User user = User.get(entity.getUuid());
-                    for (String suggestion : sug.run(user)) {
-                        builder.suggest(suggestion);
-                    }
-                } catch (CommandSyntaxException e) {}
+                ServerPlayerEntity entity = context.getSource().getPlayer();
+                User user = User.get(entity.getUuid());
+                for (String suggestion : sug.run(user)) {
+                    builder.suggest(suggestion);
+                }
                 return builder.buildFuture();
             };
         }
