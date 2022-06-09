@@ -69,12 +69,14 @@ public class DeclareCommand implements Command {
         }
 
         new Message("You have declared " + targetFaction.getName() + " as ").add(msgStatus).send(sourceFaction);
+
         if (rel.status != Relationship.Status.NEUTRAL)
             new Message(sourceFaction.getName() + " have declared you as ")
                 .add(msgStatus)
                 .hover("Click to add them back")
-                .click(String.format("/factions %s %s", rel.status.toString().toLowerCase(Locale.ROOT), sourceFaction.getName()))
+                .click(String.format("/factions declare %s %s", rel.status.toString().toLowerCase(Locale.ROOT), sourceFaction.getName()))
                 .send(targetFaction);
+      
         return 1;
     }
 
@@ -88,7 +90,7 @@ public class DeclareCommand implements Command {
                 .requires(Requires.hasPerms("factions.declare.ally", 0))
                 .then(
                     CommandManager.argument("faction", StringArgumentType.greedyString())
-                    .suggests(Suggests.allFactions())
+                    .suggests(Suggests.allFactions(false))
                     .executes(this::ally)
                 )
             )
@@ -97,7 +99,7 @@ public class DeclareCommand implements Command {
                 .requires(Requires.hasPerms("factions.declare.neutral", 0))
                 .then(
                     CommandManager.argument("faction", StringArgumentType.greedyString())
-                    .suggests(Suggests.allFactions())
+                    .suggests(Suggests.allFactions(false))
                     .executes(this::neutral)
                 )
             )
@@ -106,7 +108,7 @@ public class DeclareCommand implements Command {
                 .requires(Requires.hasPerms("factions.declare.enemy", 0))
                 .then(
                     CommandManager.argument("faction", StringArgumentType.greedyString())
-                    .suggests(Suggests.allFactions())
+                    .suggests(Suggests.allFactions(false))
                     .executes(this::enemy)
                 )
             )

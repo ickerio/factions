@@ -41,8 +41,7 @@ public class LeaveCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("leave")
-            .requires(Requires.hasPerms("factions.leave", 0))
-            .requires(Requires.require(m -> m.isInFaction() && m.rank != User.Rank.OWNER))
+            .requires(Requires.multiple(Requires.require(m -> m.isInFaction() && m.rank != Rank.OWNER), Requires.hasPerms("factions.leave", 0)))
             .executes(this::run)
             .build();
     }

@@ -21,6 +21,17 @@ public interface Command {
     public interface Requires {
         boolean run(User user);
 
+        @SafeVarargs
+        public static Predicate<ServerCommandSource> multiple(Predicate<ServerCommandSource>... args) {
+            return source -> {
+                for (Predicate<ServerCommandSource> predicate : args) {
+                    if (!predicate.test(source)) return false;
+                }
+
+                return true;
+            };
+        }
+
         public static Predicate<ServerCommandSource> isFactionless() {
             return require(user -> !user.isInFaction());
         }
@@ -62,9 +73,14 @@ public interface Command {
         String[] run(User user);
 
         public static SuggestionProvider<ServerCommandSource> allFactions() {
-            return suggest(user ->
+            return allFactions(true);
+        }
+
+        public static SuggestionProvider<ServerCommandSource> allFactions(boolean includeYou) {
+            return suggest(user -> 
                 Faction.all()
                     .stream()
+                    .filter(f -> includeYou || !user.isInFaction() || !user.getFaction().getID().equals(f.getID()))
                     .map(f -> f.getName())
                     .toArray(String[]::new)
             );

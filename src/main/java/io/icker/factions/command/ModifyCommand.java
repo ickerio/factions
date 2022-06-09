@@ -109,8 +109,7 @@ public class ModifyCommand implements Command {
             .then(
                 CommandManager
                 .literal("name")
-                .requires(Requires.isOwner())
-                .requires(Requires.hasPerms("factions.modify.name", 0))
+                .requires(Requires.multiple(Requires.hasPerms("factions.modify.name", 0), Requires.isOwner()))
                 .then(
                     CommandManager.argument("name", StringArgumentType.greedyString())
                     .executes(this::name)

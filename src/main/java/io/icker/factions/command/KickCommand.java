@@ -42,7 +42,9 @@ public class KickCommand implements Command {
 
         targetUser.leaveFaction();
         context.getSource().getServer().getPlayerManager().sendCommandTree(target);
-        new Message("Kicked " + target.getName().getString()).send(player, false);
+
+        new Message("Kicked " + target.getName().asString()).send(player, false);
+        new Message("You have been kicked from the faction by " + player.getName().asString()).send(target, false);
 
         return 1;
     }
@@ -50,8 +52,7 @@ public class KickCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("kick")
-            .requires(Requires.hasPerms("factions.kick", 0))
-            .requires(Requires.isLeader())
+            .requires(Requires.multiple(Requires.isLeader(), Requires.hasPerms("factions.kick", 0)))
             .then(
                 CommandManager.argument("player", EntityArgumentType.player()).executes(this::run)
             )

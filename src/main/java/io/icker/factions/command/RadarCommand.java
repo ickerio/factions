@@ -36,8 +36,7 @@ public class RadarCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("radar")
-            .requires(s -> FactionsMod.CONFIG.RADAR)
-            .requires(Requires.hasPerms("factions.radar", 0))
+            .requires(Requires.multiple(Requires.hasPerms("factions.radar", 0), s -> FactionsMod.CONFIG.RADAR))
             .executes(this::run)
             .build();
     }

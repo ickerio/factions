@@ -69,8 +69,7 @@ public class AdminCommand implements Command {
             )
             .then(
                 CommandManager.literal("reload")
-                .requires(source -> FactionsMod.dynmap != null)
-                .requires(Requires.hasPerms("factions.admin.reload", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                .requires(Requires.multiple(Requires.hasPerms("factions.admin.reload", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL), source -> FactionsMod.dynmap != null))
                 .executes(this::reload)
             )
             .then(
