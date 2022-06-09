@@ -99,8 +99,7 @@ public class HomeCommand implements Command {
             .executes(this::go)
             .then(
                 CommandManager.literal("set")
-                .requires(Requires.hasPerms("factions.home.set", 0))
-                .requires(Requires.isLeader())
+                .requires(Requires.multiple(Requires.hasPerms("factions.home.set", 0), Requires.isLeader()))
                 .executes(this::set)
             )
             .build();
