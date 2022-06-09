@@ -43,8 +43,8 @@ public class KickCommand implements Command {
         targetUser.leaveFaction();
         context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-        new Message("Kicked " + target.getName().asString()).send(player, false);
-        new Message("You have been kicked from the faction by " + player.getName().asString()).send(target, false);
+        new Message("Kicked " + player.getName().getString()).send(player, false);
+        new Message("You have been kicked from the faction by " + player.getName().getString()).send(target, false);
 
         return 1;
     }
