@@ -1,10 +1,15 @@
 package io.icker.factions.mixin;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.filter.FilteredMessage;
@@ -54,6 +59,24 @@ public class ServerPlayNetworkHandlerMixin {
 
                 return null;
             }, sender.asMessageSender(), typeKey);
+        }
+    }
+
+    @Inject(method = "onClickSlot", at = @At("HEAD"))
+    public void onClickSlot(ClickSlotC2SPacket packet, CallbackInfo ci) {
+        Faction faction = User.get(player.getUuid()).getFaction();
+        FactionsMod.LOGGER.info(packet.getSyncId());
+
+        if (faction.syncId == packet.getSyncId()) {
+            SimpleInventory safe = faction.getSafe();
+
+            Int2ObjectMaps.fastForEach(packet.getModifiedStacks(), (entry) -> {
+                if (entry.getIntKey() < 27) {
+                    safe.setStack(entry.getIntKey(), entry.getValue());
+                }
+            });
+
+            faction.setSafe(safe);
         }
     }
 }

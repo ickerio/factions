@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Function;
 
+import net.minecraft.inventory.SimpleInventory;
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.icker.factions.api.persistents.Relationship.Status;
@@ -49,6 +50,12 @@ public class SerializerRegistry {
 
         registry.put(String.class, new Serializer<String, NbtString>(val -> NbtString.of(val), (el) -> el.asString()));
         registry.put(UUID.class, new Serializer<UUID, NbtIntArray>(val -> NbtHelper.fromUuid(val), (el) -> NbtHelper.toUuid(el)));
+
+        registry.put(SimpleInventory.class, new Serializer<SimpleInventory, NbtList>(val -> val.toNbtList(), (el) -> {
+            SimpleInventory inventory = new SimpleInventory(27);
+            inventory.readNbtList(el);
+            return inventory;
+        }));
 
         registry.put(ChatMode.class, createEnumSerializer(ChatMode.class));
         registry.put(Rank.class, createEnumSerializer(Rank.class));

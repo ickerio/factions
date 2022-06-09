@@ -12,7 +12,9 @@ import io.icker.factions.api.events.HomeEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.random.Random;
 
 @Name("Faction")
 public class Faction {
@@ -42,11 +44,16 @@ public class Faction {
     @Field("Home")
     private Home home;
 
+    @Field("Safe")
+    private SimpleInventory safe;
+
     @Field("Invites")
     public ArrayList<UUID> invites = new ArrayList<UUID>();
 
     @Field("Relationships")
     private ArrayList<Relationship> relationships = new ArrayList<Relationship>();
+
+    public int syncId = Random.create().nextBetween(0, 100);
 
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
@@ -56,6 +63,7 @@ public class Faction {
         this.color = color.getName();
         this.open = open;
         this.power = power;
+        this.safe = new SimpleInventory(27);
     }
 
     public Faction() { ; }
@@ -113,6 +121,14 @@ public class Faction {
 
     public int getPower() {
         return power;
+    }
+
+    public SimpleInventory getSafe() {
+        return safe;
+    }
+
+    public void setSafe(SimpleInventory safe) {
+        this.safe = safe;
     }
 
     public boolean isOpen() {
