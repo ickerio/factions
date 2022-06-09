@@ -13,7 +13,6 @@ import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.random.Random;
 
@@ -55,6 +54,7 @@ public class Faction {
     private ArrayList<Relationship> relationships = new ArrayList<Relationship>();
 
     public int syncId = Random.create().nextBetween(0, 100); // FIXME: use proper sync id instead of randomly generated ones
+    public int currentRevision = 1;
 
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();

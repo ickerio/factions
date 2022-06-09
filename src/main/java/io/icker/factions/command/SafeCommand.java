@@ -31,7 +31,7 @@ public class SafeCommand implements Command {
             items.set(i, safe.getStack(i));
         }
 
-        networkHandler.sendPacket(new InventoryS2CPacket(faction.syncId, 1, items, ItemStack.EMPTY));
+        networkHandler.sendPacket(new InventoryS2CPacket(faction.syncId, faction.currentRevision, items, ItemStack.EMPTY));
         return 1;
     }
 
