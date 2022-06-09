@@ -54,7 +54,7 @@ public class Faction {
     @Field("Relationships")
     private ArrayList<Relationship> relationships = new ArrayList<Relationship>();
 
-    public int syncId = Random.create().nextBetween(0, 100);
+    public int syncId = Random.create().nextBetween(0, 100); // FIXME: use proper sync id instead of randomly generated ones
 
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
