@@ -5,6 +5,7 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.network.message.MessageType;
@@ -68,7 +69,7 @@ public class ServerPlayNetworkHandlerMixin {
         FactionsMod.LOGGER.info(packet.getSyncId());
 
         if (faction.syncId == packet.getSyncId()) {
-            SimpleInventory safe = faction.getSafe();
+            EnderChestInventory safe = faction.getSafe();
 
             Int2ObjectMaps.fastForEach(packet.getModifiedStacks(), (entry) -> {
                 if (entry.getIntKey() < 27) {

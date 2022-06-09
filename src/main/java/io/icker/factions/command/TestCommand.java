@@ -9,6 +9,7 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.block.GravelBlock;
+import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
@@ -30,9 +31,9 @@ public class TestCommand implements Command {
         Faction faction = User.get(context.getSource().getPlayer().getUuid()).getFaction();
 
         networkHandler.sendPacket(new OpenScreenS2CPacket(faction.syncId, ScreenHandlerType.GENERIC_9X3, Text.of("test")));
-        
+
         DefaultedList<ItemStack> items = DefaultedList.ofSize(27, ItemStack.EMPTY);
-        SimpleInventory safe = faction.getSafe();
+        EnderChestInventory safe = faction.getSafe();
 
         for (int i = 0; i < 27; i++) {
             items.set(i, safe.getStack(i));
