@@ -21,7 +21,7 @@ public class DisbandCommand implements Command {
         User user = User.get(player.getUuid());
         Faction faction = user.getFaction();
 
-        new Message(player.getName().asString() + " disbanded the faction").send(faction);
+        new Message(player.getName().getString() + " disbanded the faction").send(faction);
         faction.remove();
 
         PlayerManager manager = source.getServer().getPlayerManager();

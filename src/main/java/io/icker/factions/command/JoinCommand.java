@@ -8,7 +8,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -40,11 +39,11 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        if (invited) faction.removeInvite(player.getUuid());
-        User.get(player.getUuid()).joinFaction(faction.getID(), Rank.MEMBER);
+        if (invited) faction.invites.remove(player.getUuid());
+        User.get(player.getUuid()).joinFaction(faction.getID(), User.Rank.MEMBER);
         source.getServer().getPlayerManager().sendCommandTree(player);
 
-        new Message(player.getName().asString() + " joined").send(faction);
+        new Message(player.getName().getString() + " joined").send(faction);
         faction.adjustPower(FactionsMod.CONFIG.MEMBER_POWER);
         return 1;
     }

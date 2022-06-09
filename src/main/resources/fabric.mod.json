@@ -27,14 +27,14 @@
         "factions.mixins.json"
     ],
 
-    "depends": {
-        "fabricloader": ">=0.13.3",
-        "minecraft": "1.18.x",
-        "java": ">=17",
-        "fabric": "*"
-    },
-    "suggests": {
-        "fabric-permissions-api-v0": "*",
-        "dynmap": ">=3.0"
-    }
+  "depends": {
+    "fabricloader": ">=0.13.3",
+    "minecraft": ">=1.19",
+    "java": ">=17",
+    "fabric": "*"
+  },
+  "suggests": {
+    "fabric-permissions-api-v0": "*",
+    "dynmap": ">=3.0"
+  }
 }

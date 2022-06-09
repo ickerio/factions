@@ -35,15 +35,16 @@ public class KickCommand implements Command {
             return 0;
         }
 
-        if (selfUser.getRank() == User.Rank.LEADER && (targetUser.getRank() == User.Rank.LEADER || targetUser.getRank() == User.Rank.OWNER)) {
+        if (selfUser.rank == User.Rank.LEADER && (targetUser.rank == User.Rank.LEADER || targetUser.rank == User.Rank.OWNER)) {
             new Message("Cannot kick members with a higher of equivalent rank").format(Formatting.RED).send(player, false);
             return 0;
         }
 
         targetUser.leaveFaction();
         context.getSource().getServer().getPlayerManager().sendCommandTree(target);
-        new Message("Kicked " + target.getName().asString()).send(player, false);
-        new Message("You have been kicked from the faction by " + player.getName().asString()).send(target, false);
+
+        new Message("Kicked " + player.getName().getString()).send(player, false);
+        new Message("You have been kicked from the faction by " + player.getName().getString()).send(target, false);
 
         return 1;
     }

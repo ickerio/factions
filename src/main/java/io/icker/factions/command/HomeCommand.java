@@ -77,8 +77,7 @@ public class HomeCommand implements Command {
         );
 
         faction.setHome(home);
-        
-        new Message("Home set to %.2f, %.2f, %.2f by %s", home.x, home.y, home.z, player.getName().asString()).send(faction);
+        new Message("Home set to %.2f, %.2f, %.2f by %s", home.x, home.y, home.z, player.getName().getString()).send(faction);
         return 1;
     }
 

@@ -38,7 +38,7 @@ public class DynmapWrapper {
         ClaimEvents.REMOVE.register(this::removeClaim);
         HomeEvents.SET.register(this::setHome);
 
-        FactionEvents.MODIFY.register((faction) -> updateFaction(faction));
+        FactionEvents.MODIFY.register(faction -> updateFaction(faction));
         FactionEvents.MEMBER_JOIN.register((faction, user) -> updateFaction(faction));
         FactionEvents.MEMBER_LEAVE.register((faction, user) -> updateFaction(faction));
         FactionEvents.POWER_CHANGE.register((faction, oldPower) -> updateFaction(faction));

@@ -54,11 +54,11 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         if (member.isInFaction()) {
             Faction faction = member.getFaction();
             cir.setReturnValue(new Message(String.format("[%s] ", faction.getName())).format(faction.getColor()).add(
-                    new Message(((ServerPlayerEntity)(Object) this).getName().asString()).format(Formatting.WHITE)
+                    new Message(((ServerPlayerEntity)(Object) this).getName().getString()).format(Formatting.WHITE)
             ).raw());
         } else {
             cir.setReturnValue(new Message("[FACTIONLESS] ").format(Formatting.GRAY).add(
-                    new Message(((ServerPlayerEntity)(Object) this).getName().asString()).format(Formatting.WHITE)
+                    new Message(((ServerPlayerEntity)(Object) this).getName().getString()).format(Formatting.WHITE)
             ).raw());
         }
     }

@@ -5,7 +5,6 @@ import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.api.persistents.Relationship.Status;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -118,8 +117,7 @@ public class InteractionManager {
             return ActionResult.SUCCESS;
         }
 
-        if (sourceFaction.getRelationship(targetFaction.getID()).status == Status.ALLY &&
-                targetFaction.getRelationship(sourceFaction.getID()).status == Status.ALLY) {
+        if (sourceFaction.isMutualAllies(targetFaction.getID())) {
             return ActionResult.SUCCESS;
         }
 
@@ -128,7 +126,7 @@ public class InteractionManager {
 
     private static ActionResult checkPermissions(PlayerEntity player, BlockPos position, World world) {
         User user = User.get(player.getUuid());
-        if (player.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL) && user.isBypassOn()) { // notes: bypass manager that returns ActionResult.SUCCESS;
+        if (player.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL) && user.bypass) { // notes: bypass manager that returns ActionResult.SUCCESS;
             return ActionResult.PASS;
         }
 
@@ -149,8 +147,7 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
-        if (claimFaction.getRelationship(userFaction.getID()).status == Status.ALLY &&
-                userFaction.getRelationship(claimFaction.getID()).status == Status.ALLY) {
+        if (claimFaction.isMutualAllies(userFaction.getID())) {
             return ActionResult.SUCCESS;
         }
 

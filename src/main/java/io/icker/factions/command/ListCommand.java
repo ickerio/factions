@@ -39,7 +39,6 @@ public class ListCommand implements Command {
         return 1;
     }
 
-    // TODO list, list allies, list neutral, list enemies
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("list")

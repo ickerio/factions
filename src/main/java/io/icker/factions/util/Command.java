@@ -2,14 +2,12 @@ package io.icker.factions.util;
 
 import java.util.function.Predicate;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.api.persistents.User.Rank;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
@@ -43,15 +41,15 @@ public interface Command {
         }
 
         public static Predicate<ServerCommandSource> isCommander() {
-            return require(user -> user.getRank() == Rank.COMMANDER || user.getRank() == Rank.LEADER || user.getRank() == Rank.OWNER);
+            return require(user -> user.rank == User.Rank.COMMANDER || user.rank == User.Rank.LEADER || user.rank == User.Rank.OWNER);
         }
 
         public static Predicate<ServerCommandSource> isLeader() {
-            return require(user -> user.getRank() == Rank.LEADER || user.getRank() == Rank.OWNER);
+            return require(user -> user.rank == User.Rank.LEADER || user.rank == User.Rank.OWNER);
         }
 
         public static Predicate<ServerCommandSource> isOwner() {
-            return require(user -> user.getRank() == Rank.OWNER);
+            return require(user -> user.rank == User.Rank.OWNER);
         }
         
         public static Predicate<ServerCommandSource> isAdmin() {
@@ -64,14 +62,9 @@ public interface Command {
 
         public static Predicate<ServerCommandSource> require(Requires req) {
             return source -> {
-                try {
-                    ServerPlayerEntity entity = source.getPlayer();
-                    User user = User.get(entity.getUuid());
-                    FactionsMod.LOGGER.info(!user.isInFaction());
-                    return req.run(user);
-                } catch (CommandSyntaxException e) {
-                    return false;
-                }
+                ServerPlayerEntity entity = source.getPlayer();
+                User user = User.get(entity.getUuid());
+                return req.run(user);
             };
         }
     }
@@ -94,7 +87,7 @@ public interface Command {
         }
 
         public static SuggestionProvider<ServerCommandSource> openFactions() {
-            return suggest(user -> 
+            return suggest(user ->
                 Faction.all()
                     .stream()
                     .filter(f -> f.isOpen())
@@ -104,7 +97,7 @@ public interface Command {
         }
 
         public static SuggestionProvider<ServerCommandSource> openInvitedFactions() {
-            return suggest(user -> 
+            return suggest(user ->
                 Faction.all()
                     .stream()
                     .filter(f -> f.isOpen() || f.isInvited(user.getID()))
@@ -115,13 +108,11 @@ public interface Command {
 
         public static SuggestionProvider<ServerCommandSource> suggest(Suggests sug) {
             return (context, builder) -> {
-                try {
-                    ServerPlayerEntity entity = context.getSource().getPlayer();
-                    User user = User.get(entity.getUuid());
-                    for (String suggestion : sug.run(user)) {
-                        builder.suggest(suggestion);
-                    }
-                } catch (CommandSyntaxException e) {}
+                ServerPlayerEntity entity = context.getSource().getPlayer();
+                User user = User.get(entity.getUuid());
+                for (String suggestion : sug.run(user)) {
+                    builder.suggest(suggestion);
+                }
                 return builder.buildFuture();
             };
         }

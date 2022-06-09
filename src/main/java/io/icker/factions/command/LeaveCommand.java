@@ -7,7 +7,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -23,7 +22,7 @@ public class LeaveCommand implements Command {
         Faction faction = user.getFaction();
 
         user.leaveFaction();
-        new Message(player.getName().asString() + " left").send(faction);
+        new Message(player.getName().getString() + " left").send(faction);
         new Message("You have left this faction.")
             .prependFaction(faction)
             .send(player, false);
@@ -35,14 +34,14 @@ public class LeaveCommand implements Command {
         } else {
             faction.adjustPower(-FactionsMod.CONFIG.MEMBER_POWER);
         }
-        
+
         return 1;
     }
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("leave")
-            .requires(Requires.multiple(Requires.require(m -> m.isInFaction() && m.getRank() != Rank.OWNER), Requires.hasPerms("factions.leave", 0)))
+            .requires(Requires.multiple(Requires.require(m -> m.isInFaction() && m.rank != User.Rank.OWNER), Requires.hasPerms("factions.leave", 0)))
             .executes(this::run)
             .build();
     }

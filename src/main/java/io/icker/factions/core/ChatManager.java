@@ -3,71 +3,62 @@ package io.icker.factions.core;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.util.Message;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class ChatManager {
-    public static void handleMessage(ServerPlayerEntity sender, String message) {
+    public static void register() {
+        ServerMessageDecoratorEvent.EVENT.register(ServerMessageDecoratorEvent.CONTENT_PHASE, (sender, message) -> {
+            if (sender != null && FactionsMod.CONFIG.MODIFY_CHAT) {
+                return CompletableFuture.completedFuture(ChatManager.handleMessage(sender, message.getString()));
+            }
+            return CompletableFuture.completedFuture(message);
+        });
+    }
+
+    public static Text handleMessage(ServerPlayerEntity sender, String message) {
         UUID id = sender.getUuid();
         User member = User.get(id);
 
-        if (member.getChatMode() == ChatMode.GLOBAL) {
+        if (member.chat == User.ChatMode.GLOBAL) {
             if (member.isInFaction()) {
-                ChatManager.inFactionGlobal(sender, member.getFaction(), message);
+                return ChatManager.inFactionGlobal(sender, member.getFaction(), message);
             } else {
-                ChatManager.global(sender, message);
+                return ChatManager.global(sender, message);
             }
         } else {
             if (member.isInFaction()) {
-                ChatManager.faction(sender, member.getFaction(), message);
+                return ChatManager.faction(sender, member.getFaction(), message);
             } else {
-                ChatManager.fail(sender);
+                return ChatManager.global(sender, message);
             }
         }
     }
-    
-    private static void global(ServerPlayerEntity sender, String message) {
-        FactionsMod.LOGGER.info("[" + sender.getName().asString() + " -> All] " + message);
-        new Message(sender.getName().asString())
-            .filler("»")
-            .add(new Message(message).format(Formatting.GRAY))
-            .sendToGlobalChat();
+
+    private static Text global(ServerPlayerEntity sender, String message) {
+        return new Message(message).format(Formatting.GRAY)
+                .raw();
     }
 
-    private static void inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
-        FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> All] " + message);
-        String rank = "";
-        for (User member : faction.getUsers())
-            if (member.getID().equals(sender.getUuid()))
-                rank = member.getRankName();
-
-        new Message("")
-            .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
-            .add(" " + rank)
-            .add(" " + sender.getName().asString())
-            .filler("»")
-            .add(new Message(message).format(Formatting.GRAY))
-            .sendToGlobalChat();
+    private static Text inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
+        return new Message("")
+                .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
+                .filler("»")
+                .add(new Message(message).format(Formatting.GRAY))
+                .raw();
     }
 
-    private static void fail(ServerPlayerEntity sender) {
-        new Message("You must be in a faction to use faction chat")
-            .hover("Click to join global chat")
-            .click("/f chat global")
-            .fail()
-            .send(sender, false);
-    }
-
-    private static void faction(ServerPlayerEntity sender, Faction faction, String message) {
-        FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> " + faction.getName() + "] " + message);
-        new Message(sender.getName().asString())
-            .add(new Message(" F").format(Formatting.BOLD, faction.getColor()))
-            .filler("»")
-            .add(new Message(message).format(Formatting.GRAY))
-            .sendToFactionChat(faction);
+    private static Text faction(ServerPlayerEntity sender, Faction faction, String message) {
+        return new Message("")
+                .add(new Message("F").format(Formatting.BOLD, faction.getColor()))
+                .filler("»")
+                .add(new Message(message).format(Formatting.GRAY))
+                .raw();
     }
 }

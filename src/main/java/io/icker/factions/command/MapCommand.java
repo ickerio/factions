@@ -26,7 +26,7 @@ public class MapCommand implements Command{
         String dimension = world.getRegistryKey().getValue().toString();
 
         // Print the header of the faction map.
-        new Message(Formatting.DARK_GRAY + "──┤" + Formatting.GREEN + 
+        new Message(Formatting.DARK_GRAY + "──┤" + Formatting.GREEN +
                 " Faction Map" + Formatting.DARK_GRAY + "├──")
             .send(player, false);
 

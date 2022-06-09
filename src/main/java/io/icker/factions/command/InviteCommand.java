@@ -25,7 +25,7 @@ public class InviteCommand implements Command {
     private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        List<UUID> invites = User.get(source.getPlayer().getUuid()).getFaction().getInvites();
+        List<UUID> invites = User.get(source.getPlayer().getUuid()).getFaction().invites;
         int count = invites.size();
 
         new Message("You have ")
@@ -52,20 +52,20 @@ public class InviteCommand implements Command {
 
         Faction faction = User.get(source.getPlayer().getUuid()).getFaction();
         if (faction.isInvited(player.getUuid())) {
-            new Message(target.getName().asString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
+            new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
             return 0;
         }
 
         User targetUser = User.get(target.getUuid());
         UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
         if (faction.getID().equals(targetFaction)) {
-            new Message(target.getName().asString() + " is already in your faction").format(Formatting.RED).send(player, false);
+            new Message(target.getName().getString() + " is already in your faction").format(Formatting.RED).send(player, false);
             return 0;
         }
 
-        faction.addInvite(target.getUuid());
+        faction.invites.add(target.getUuid());
 
-        new Message(target.getName().asString() + " has been invited")
+        new Message(target.getName().getString() + " has been invited")
                 .send(faction);
         new Message("You have been invited to join this faction").format(Formatting.YELLOW)
                 .hover("Click to join").click("/factions join " + faction.getName())
@@ -81,9 +81,9 @@ public class InviteCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         Faction faction = User.get(player.getUuid()).getFaction();
-        faction.removeInvite(target.getUuid());
+        faction.invites.remove(target.getUuid());
 
-        new Message(target.getName().asString() + " is no longer invited to your faction").send(player, false);
+        new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);
         return 1;
     }
 
