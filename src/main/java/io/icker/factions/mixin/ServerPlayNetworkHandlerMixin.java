@@ -47,7 +47,7 @@ public class ServerPlayNetworkHandlerMixin {
         if (factionChat && faction == null) {
             new Message("You can't send a message to faction chat if you aren't in a faction").fail().hover("Click to switch to global chat").click("/factions chat global").send(sender, false);
         } else {
-            instance.broadcast(message.raw(), (player) -> {
+            instance.broadcast(message.raw(), player -> {
                 User targetMember = User.get(player.getUuid());
                 Faction target = targetMember != null ? targetMember.getFaction() : null;
 
@@ -73,7 +73,7 @@ public class ServerPlayNetworkHandlerMixin {
             EnderChestInventory safe = faction.getSafe();
             faction.currentRevision++;
 
-            Int2ObjectMaps.fastForEach(packet.getModifiedStacks(), (entry) -> {
+            Int2ObjectMaps.fastForEach(packet.getModifiedStacks(), entry -> {
                 if (entry.getIntKey() < 27) {
                     safe.setStack(entry.getIntKey(), entry.getValue());
                 }
