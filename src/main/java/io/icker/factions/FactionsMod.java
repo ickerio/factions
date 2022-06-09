@@ -4,9 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.core.ChatManager;
-import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -79,7 +77,7 @@ public class FactionsMod implements ModInitializer {
             new ModifyCommand(),
             new RadarCommand(),
             new RankCommand(),
-            new TestCommand(),
+            new SafeCommand(),
         };
 
         for (Command command : commands) {
