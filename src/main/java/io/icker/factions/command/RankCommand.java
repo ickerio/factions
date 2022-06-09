@@ -34,9 +34,9 @@ public class RankCommand implements Command {
         for (User users : faction.getUsers())
             if (users.getID().equals(target.getUuid())) {
 
-                switch (users.getRank()) {
-                    case MEMBER -> users.changeRank(User.Rank.COMMANDER);
-                    case COMMANDER -> users.changeRank(User.Rank.LEADER);
+                switch (users.rank) {
+                    case MEMBER -> users.rank = User.Rank.COMMANDER;
+                    case COMMANDER -> users.rank = User.Rank.LEADER;
                     case LEADER -> {
                         new Message("You cannot promote a Leader to Owner").format(Formatting.RED).send(player, false);
                         return 0;
@@ -76,19 +76,19 @@ public class RankCommand implements Command {
         for (User user : faction.getUsers())
             if (user.getID().equals(target.getUuid())) {
 
-                switch (user.getRank()) {
+                switch (user.rank) {
                     case MEMBER -> {
                         new Message("You cannot demote a Member").format(Formatting.RED).send(player, false);
                         return 0;
                     }
-                    case COMMANDER -> user.changeRank(User.Rank.MEMBER);
+                    case COMMANDER -> user.rank = User.Rank.MEMBER;
                     case LEADER -> {
-                        if (User.get(player.getUuid()).getRank() == User.Rank.LEADER) {
+                        if (User.get(player.getUuid()).rank == User.Rank.LEADER) {
                             new Message("You cannot demote a fellow Co-Owner").format(Formatting.RED).send(player, false);
                             return 0;
                         }
 
-                        user.changeRank(User.Rank.COMMANDER);
+                        user.rank = User.Rank.COMMANDER;
                     }
                     case OWNER -> {
                         new Message("You cannot demote the Owner").format(Formatting.RED).send(player, false);
@@ -124,8 +124,8 @@ public class RankCommand implements Command {
         User targetUser = User.get(target.getUuid());
         UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
         if (User.get(player.getUuid()).getFaction().getID().equals(targetFaction)) {
-            targetUser.changeRank(User.Rank.OWNER);
-            User.get(player.getUuid()).changeRank(User.Rank.LEADER);
+            targetUser.rank = User.Rank.OWNER;
+            User.get(player.getUuid()).rank = User.Rank.LEADER;
 
             context.getSource().getServer().getPlayerManager().sendCommandTree(player);
             context.getSource().getServer().getPlayerManager().sendCommandTree(target);

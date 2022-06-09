@@ -158,7 +158,7 @@ public class ClaimCommand implements Command {
         User user = User.get(player.getUuid());
         Faction faction = user.getFaction();
 
-        if (!user.isBypassOn() && existingClaim.getFaction().getID() != faction.getID()) {
+        if (!user.bypass && existingClaim.getFaction().getID() != faction.getID()) {
             new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
             return 0;
         }
@@ -184,7 +184,7 @@ public class ClaimCommand implements Command {
                 ChunkPos chunkPos = world.getChunk(player.getBlockPos().add(x * 16, 0, y * 16)).getPos();
                 Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
-                if (existingClaim != null && (user.isBypassOn() || existingClaim.getFaction().getID() == faction.getID())) existingClaim.remove();
+                if (existingClaim != null && (user.bypass || existingClaim.getFaction().getID() == faction.getID())) existingClaim.remove();
             }
         }
 
@@ -212,9 +212,9 @@ public class ClaimCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         User user = User.get(player.getUuid());
-        user.toggleAutoclaim();
+        user.autoclaim = !user.autoclaim;
 
-        new Message("Autoclaim toggled " + (user.getAutoclaim() ? "on" : "off")).send(player, false);
+        new Message("Autoclaim toggled " + (user.autoclaim ? "on" : "off")).send(player, false);
         return 1;
     }
 

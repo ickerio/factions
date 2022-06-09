@@ -3,7 +3,6 @@ package io.icker.factions.core;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.util.Message;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -27,7 +26,7 @@ public class ChatManager {
         UUID id = sender.getUuid();
         User member = User.get(id);
 
-        if (member.getChatMode() == ChatMode.GLOBAL) {
+        if (member.chat == User.ChatMode.GLOBAL) {
             if (member.isInFaction()) {
                 return ChatManager.inFactionGlobal(sender, member.getFaction(), message);
             } else {

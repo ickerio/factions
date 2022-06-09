@@ -2,7 +2,6 @@ package io.icker.factions.mixin;
 
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.util.Message;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
@@ -36,7 +35,7 @@ public class ServerPlayNetworkHandlerMixin {
         User member = User.get(sender.getUuid());
         Faction faction = member != null ? member.getFaction() : null;
 
-        boolean factionChat = member.getChatMode() == ChatMode.FACTION || member.getChatMode() == ChatMode.FOCUS;
+        boolean factionChat = member.chat == User.ChatMode.FACTION || member.chat == User.ChatMode.FOCUS;
 
         if (factionChat && faction == null) {
             new Message("You can't send a message to faction chat if you aren't in a faction").fail().hover("Click to switch to global chat").click("/factions chat global").send(sender, false);
@@ -45,7 +44,7 @@ public class ServerPlayNetworkHandlerMixin {
                 User targetMember = User.get(player.getUuid());
                 Faction target = targetMember != null ? targetMember.getFaction() : null;
 
-                if (member.getChatMode() == ChatMode.GLOBAL && targetMember.getChatMode() != ChatMode.FOCUS) {
+                if (member.chat == User.ChatMode.GLOBAL && targetMember.chat != User.ChatMode.FOCUS) {
                     return message.getFilterableFor(sender, player);
                 }
 

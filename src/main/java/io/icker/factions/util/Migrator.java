@@ -6,8 +6,6 @@ import java.util.UUID;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.*;
-import io.icker.factions.api.persistents.User.*;
-import io.icker.factions.api.persistents.Relationship.Status;
 import net.minecraft.util.Formatting;
 
 public class Migrator {
@@ -44,7 +42,7 @@ public class Migrator {
 
                 Query inviteQuery = new Query("SELECT * FROM Invite WHERE faction = ?;").set(faction.getName()).executeQuery();
                 while (inviteQuery.next()) {
-                    faction.addInvite(inviteQuery.getUUID("player"));
+                    faction.invites.add(inviteQuery.getUUID("player"));
                 }
             }
 
@@ -57,23 +55,23 @@ public class Migrator {
                     rank = OldRank.CIVILIAN;
                 }
 
-                User user = new User(query.getUUID("uuid"), ChatMode.GLOBAL, false, false);
+                User user = new User(query.getUUID("uuid"));
                 user.joinFaction(Faction.getByName(query.getString("faction")).getID(), migrateRank(rank));
                 User.add(user);
             }
 
             query = new Query("SELECT * FROM PlayerConfig;").executeQuery();
             while (query.next()) {
-                ChatMode opt;
+                User.ChatMode opt;
                 try {
-                    opt = Enum.valueOf(ChatMode.class, query.getString("chat"));
+                    opt = Enum.valueOf(User.ChatMode.class, query.getString("chat"));
                 } catch (IllegalArgumentException e) {
-                    opt = ChatMode.GLOBAL;
+                    opt = User.ChatMode.GLOBAL;
                 }
 
                 User user = User.get(query.getUUID("uuid"));
-                user.setChatMode(opt);
-                user.setRadar(query.getBool("zone"));
+                user.chat = opt;
+                user.radar = query.getBool("zone");
             }
 
             query = new Query("SELECT * FROM Allies;").executeQuery();
@@ -81,11 +79,11 @@ public class Migrator {
                 Faction source = Faction.getByName(query.getString("source"));
                 Faction target = Faction.getByName(query.getString("target"));
 
-                Relationship rel = new Relationship(target.getID(), Status.ALLY);
+                Relationship rel = new Relationship(target.getID(), Relationship.Status.ALLY);
                 source.setRelationship(rel);
 
                 if (query.getBool("accept")) {
-                    Relationship rev = new Relationship(source.getID(), Status.ALLY);
+                    Relationship rev = new Relationship(source.getID(), Relationship.Status.ALLY);
                     source.setRelationship(rev);
                 }
             }
@@ -100,23 +98,23 @@ public class Migrator {
         }
     }
 
-    private static Rank migrateRank(OldRank rank) {
+    private static User.Rank migrateRank(OldRank rank) {
         switch (rank) {
             case OWNER -> {
-                return Rank.OWNER;
+                return User.Rank.OWNER;
             }
             case CO_OWNER -> {
-                return Rank.LEADER;
+                return User.Rank.LEADER;
             }
             case OFFICER -> {
-                return Rank.COMMANDER;
+                return User.Rank.COMMANDER;
             }
             case CIVILIAN -> {
-                return Rank.MEMBER;
+                return User.Rank.MEMBER;
             }
         }
 
-        return Rank.MEMBER;
+        return User.Rank.MEMBER;
     }
 
     public enum OldRank {

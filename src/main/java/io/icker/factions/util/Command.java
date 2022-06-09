@@ -8,7 +8,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.api.persistents.User.Rank;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
@@ -31,15 +30,15 @@ public interface Command {
         }
 
         public static Predicate<ServerCommandSource> isCommander() {
-            return require(user -> user.getRank() == Rank.COMMANDER || user.getRank() == Rank.LEADER || user.getRank() == Rank.OWNER);
+            return require(user -> user.rank == User.Rank.COMMANDER || user.rank == User.Rank.LEADER || user.rank == User.Rank.OWNER);
         }
 
         public static Predicate<ServerCommandSource> isLeader() {
-            return require(user -> user.getRank() == Rank.LEADER || user.getRank() == Rank.OWNER);
+            return require(user -> user.rank == User.Rank.LEADER || user.rank == User.Rank.OWNER);
         }
 
         public static Predicate<ServerCommandSource> isOwner() {
-            return require(user -> user.getRank() == Rank.OWNER);
+            return require(user -> user.rank == User.Rank.OWNER);
         }
         
         public static Predicate<ServerCommandSource> isAdmin() {

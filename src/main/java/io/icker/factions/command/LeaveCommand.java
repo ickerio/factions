@@ -7,7 +7,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -43,7 +42,7 @@ public class LeaveCommand implements Command {
         return CommandManager
             .literal("leave")
             .requires(Requires.hasPerms("factions.leave", 0))
-            .requires(Requires.require(m -> m.isInFaction() && m.getRank() != Rank.OWNER))
+            .requires(Requires.require(m -> m.isInFaction() && m.rank != User.Rank.OWNER))
             .executes(this::run)
             .build();
     }

@@ -22,14 +22,14 @@ public class AdminCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         User user = User.get(player.getUuid());
-        boolean bypass = !user.isBypassOn();
-        user.setBypass(bypass);
+        boolean bypass = !user.bypass;
+        user.bypass = bypass;
 
         new Message("Successfully toggled claim bypass")
                 .filler("·")
                 .add(
-                        new Message(user.isBypassOn() ? "ON" : "OFF")
-                                .format(user.isBypassOn() ? Formatting.GREEN : Formatting.RED))
+                    new Message(user.bypass ? "ON" : "OFF")
+                        .format(user.bypass ? Formatting.GREEN : Formatting.RED))
                 .send(player, false);
 
         return 1;

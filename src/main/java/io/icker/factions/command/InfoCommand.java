@@ -9,7 +9,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -59,10 +58,10 @@ public class InfoCommand implements Command {
             (FactionsMod.CONFIG.MAX_FACTION_SIZE != -1 ? "/" + FactionsMod.CONFIG.MAX_FACTION_SIZE : (" Member" + (users.size() != 1 ? "s" : "")));
 
         String commanderText = Formatting.WHITE + 
-            String.valueOf(users.stream().filter(u -> u.getRank() == Rank.COMMANDER).count()) + Formatting.GRAY + " Commanders";
+            String.valueOf(users.stream().filter(u -> u.rank == User.Rank.COMMANDER).count()) + Formatting.GRAY + " Commanders";
         
         String leaderText = Formatting.WHITE + 
-            String.valueOf(users.stream().filter(u -> u.getRank() == Rank.LEADER).count()) + Formatting.GRAY + " Leaders";
+            String.valueOf(users.stream().filter(u -> u.rank == User.Rank.LEADER).count()) + Formatting.GRAY + " Leaders";
 
         UserCache cache = player.getServer().getUserCache();
         String usersList = users.stream()

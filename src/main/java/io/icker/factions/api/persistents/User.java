@@ -35,22 +35,19 @@ public class User {
     private UUID factionID;
 
     @Field("Rank")
-    private Rank rank;
+    public Rank rank;
 
     @Field("Radar")
-    private boolean radar;
+    public boolean radar = false;
 
     @Field("Chat")
-    private ChatMode chat;
+    public ChatMode chat = ChatMode.GLOBAL;
 
-    private boolean autoclaim = false;
-    private boolean bypass = false;
+    public boolean autoclaim = false;
+    public boolean bypass = false;
 
-    public User(UUID id, ChatMode chat, boolean bypass, boolean radar) {
+    public User(UUID id) {
         this.id = id;
-        this.chat = chat;
-        this.bypass = bypass;
-        this.radar = radar;
     }
 
     public User() { ; }
@@ -61,7 +58,7 @@ public class User {
 
     public static User get(UUID id) {
         if (!STORE.containsKey(id)) {
-            User.add(new User(id, ChatMode.GLOBAL, false, false));
+            User.add(new User(id));
         }
         return STORE.get(id);
     }
@@ -81,24 +78,8 @@ public class User {
         return id;
     }
 
-    public ChatMode getChatMode() {
-        return chat;
-    }
-
-    public boolean isBypassOn() {
-        return bypass;
-    }
-
-    public boolean isRadarOn() {
-        return radar;
-    }
-
     public boolean isInFaction() {
         return factionID != null;
-    }
-
-    public Rank getRank() {
-        return rank;
     }
 
     public String getRankName() {
@@ -114,18 +95,6 @@ public class User {
         return Faction.get(factionID);
     }
 
-    public void setChatMode(ChatMode chat) {
-        this.chat = chat;
-    }
-
-    public void setBypass(boolean bypass) {
-        this.bypass = bypass;
-    }
-
-    public void setRadar(boolean radar) {
-        this.radar = radar;
-    }
-
     public void joinFaction(UUID factionID, Rank rank) {
         this.factionID = factionID;
         this.rank = rank;
@@ -137,18 +106,6 @@ public class User {
         factionID = null;
         rank = null;
         FactionEvents.MEMBER_LEAVE.invoker().onMemberLeave(Faction.get(oldFactionID), this);
-    }
-
-    public boolean getAutoclaim() {
-        return autoclaim;
-    }
-
-    public void toggleAutoclaim() {
-        this.autoclaim = !autoclaim;
-    }
-
-    public void changeRank(Rank rank) {
-        this.rank = rank;
     }
 
     public static void save() {

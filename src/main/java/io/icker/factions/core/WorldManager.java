@@ -31,14 +31,14 @@ public class WorldManager {
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
 
         Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
-        if (user.getAutoclaim() && claim == null) {
+        if (user.autoclaim && claim == null) {
             Faction faction = user.getFaction();
             int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.CLAIM_WEIGHT;
             int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
 
             if (maxPower < requiredPower) {
                 new Message("Not enough faction power to claim chunk, autoclaim toggled off").fail().send(player, false);
-                user.toggleAutoclaim();
+                user.autoclaim = false;
             } else {
                 faction.addClaim(chunkPos.x, chunkPos.z, dimension);
                 claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
@@ -46,7 +46,7 @@ public class WorldManager {
                     .send(faction);
             }
         }
-        if (FactionsMod.CONFIG.RADAR && user.isRadarOn()) {
+        if (FactionsMod.CONFIG.RADAR && user.radar) {
             if (claim != null) {
                 new Message(claim.getFaction().getName())
                         .format(claim.getFaction().getColor())

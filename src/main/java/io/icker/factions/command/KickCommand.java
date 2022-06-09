@@ -35,7 +35,7 @@ public class KickCommand implements Command {
             return 0;
         }
 
-        if (selfUser.getRank() == User.Rank.LEADER && (targetUser.getRank() == User.Rank.LEADER || targetUser.getRank() == User.Rank.OWNER)) {
+        if (selfUser.rank == User.Rank.LEADER && (targetUser.rank == User.Rank.LEADER || targetUser.rank == User.Rank.OWNER)) {
             new Message("Cannot kick members with a higher of equivalent rank").format(Formatting.RED).send(player, false);
             return 0;
         }

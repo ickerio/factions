@@ -19,14 +19,14 @@ public class RadarCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         User config = User.get(player.getUuid());
-        boolean zoneMsg = !config.isRadarOn();
-        config.setRadar(zoneMsg);
+        boolean radar = !config.radar;
+        config.radar = radar;
 
         new Message("Successfully toggled claim radar")
                 .filler("·")
                 .add(
-                    new Message(zoneMsg ? "ON" : "OFF")
-                    .format(zoneMsg ? Formatting.GREEN : Formatting.RED)
+                    new Message(radar ? "ON" : "OFF")
+                    .format(radar ? Formatting.GREEN : Formatting.RED)
                 )
                 .send(player, false);
 
