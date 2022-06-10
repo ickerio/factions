@@ -12,7 +12,7 @@ import io.icker.factions.api.events.HomeEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
-import net.minecraft.inventory.EnderChestInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.util.Formatting;
 
 @Name("Faction")
@@ -44,7 +44,7 @@ public class Faction {
     private Home home;
 
     @Field("Safe")
-    private EnderChestInventory safe = new EnderChestInventory();
+    private SimpleInventory safe = new SimpleInventory(54);
 
     @Field("Invites")
     public ArrayList<UUID> invites = new ArrayList<UUID>();
@@ -119,11 +119,11 @@ public class Faction {
         return power;
     }
 
-    public EnderChestInventory getSafe() {
+    public SimpleInventory getSafe() {
         return safe;
     }
 
-    public void setSafe(EnderChestInventory safe) {
+    public void setSafe(SimpleInventory safe) {
         this.safe = safe;
     }
 

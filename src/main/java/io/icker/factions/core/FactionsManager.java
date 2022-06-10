@@ -89,8 +89,16 @@ public class FactionsManager {
         Faction faction = user.getFaction();
 
         player.openHandledScreen(
-            new SimpleNamedScreenHandlerFactory((syncId, inventory, p) -> GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, faction.getSafe()),
-            Text.of(String.format("%s's Safe", faction.getName())))
+            new SimpleNamedScreenHandlerFactory(
+                (syncId, inventory, p) -> {
+                    if (FactionsMod.CONFIG.FACTION_SAFE_DOUBLE) {
+                        return GenericContainerScreenHandler.createGeneric9x6(syncId, inventory, faction.getSafe());
+                    } else {
+                        return GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, faction.getSafe());
+                    }
+                },
+                Text.of(String.format("%s's Safe", faction.getName()))
+            )
         );
 
         return ActionResult.SUCCESS;

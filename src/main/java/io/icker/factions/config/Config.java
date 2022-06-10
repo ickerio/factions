@@ -112,4 +112,7 @@ public class Config {
 
     @SerializedName("factionSafe")
     public SafeOptions FACTION_SAFE = SafeOptions.ENABLED;
+
+    @SerializedName("factionSafeDouble")
+    public boolean FACTION_SAFE_DOUBLE = true;
 }
