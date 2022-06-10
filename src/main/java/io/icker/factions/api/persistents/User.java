@@ -28,6 +28,13 @@ public class User {
         MEMBER
     }
 
+    public enum SoundMode {
+        NONE,
+        WARNINGS,
+        FACTION,
+        ALL
+    }
+
     @Field("ID")
     private UUID id;
 
@@ -42,6 +49,9 @@ public class User {
 
     @Field("Chat")
     public ChatMode chat = ChatMode.GLOBAL;
+
+    @Field("Sounds")
+    public SoundMode sounds = SoundMode.ALL;
 
     public boolean autoclaim = false;
     public boolean bypass = false;
@@ -82,13 +92,25 @@ public class User {
         return factionID != null;
     }
 
-    public String getRankName() {
+    private String getEnumName(Enum<?> value) {
         return Arrays
-            .stream(rank.name().split("_"))
+            .stream(value.name().split("_"))
             .map(word -> word.isEmpty() ? word :
                 Character.toTitleCase(word.charAt(0)) +
                 word.substring(1).toLowerCase())
             .collect(Collectors.joining(" "));
+    }
+
+    public String getRankName() {
+        return getEnumName(rank);
+    }
+
+    public String getChatName() {
+        return getEnumName(chat);
+    }
+
+    public String getSoundName() {
+        return getEnumName(sounds);
     }
 
     public Faction getFaction() {

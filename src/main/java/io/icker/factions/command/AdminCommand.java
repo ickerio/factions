@@ -29,7 +29,8 @@ public class AdminCommand implements Command {
                 .filler("·")
                 .add(
                     new Message(user.bypass ? "ON" : "OFF")
-                        .format(user.bypass ? Formatting.GREEN : Formatting.RED))
+                        .format(user.bypass ? Formatting.GREEN : Formatting.RED)
+                )
                 .send(player, false);
 
         return 1;

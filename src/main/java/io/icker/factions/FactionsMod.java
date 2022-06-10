@@ -61,7 +61,7 @@ public class FactionsMod implements ModInitializer {
 
         Command[] commands = new Command[] {
             new AdminCommand(),
-            new ChatCommand(),
+            new SettingsCommand(),
             new ClaimCommand(),
             new CreateCommand(),
             new DeclareCommand(),
@@ -75,7 +75,6 @@ public class FactionsMod implements ModInitializer {
             new ListCommand(),
             new MapCommand(),
             new ModifyCommand(),
-            new RadarCommand(),
             new RankCommand(),
             new SafeCommand(),
         };

@@ -95,7 +95,11 @@ public class ModifyCommand implements Command {
         Faction faction = User.get(player.getUuid()).getFaction();
 
         faction.setOpen(open);
-        new Message("Successfully updated faction to " + (open ? "Open" : "Closed"))
+        new Message("Successfully updated faction to ")
+            .add(
+                new Message(open ? "Open" : "Closed")
+                    .format(open ? Formatting.GREEN : Formatting.RED)
+            )
             .prependFaction(faction)
             .send(player, false);
             

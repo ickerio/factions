@@ -214,7 +214,14 @@ public class ClaimCommand implements Command {
         User user = User.get(player.getUuid());
         user.autoclaim = !user.autoclaim;
 
-        new Message("Autoclaim toggled " + (user.autoclaim ? "on" : "off")).send(player, false);
+        new Message("Successfully toggled autoclaim")
+            .filler("·")
+            .add(
+                new Message(user.autoclaim ? "ON" : "OFF")
+                    .format(user.autoclaim ? Formatting.GREEN : Formatting.RED)
+            )
+            .send(player, false);
+
         return 1;
     }
 
