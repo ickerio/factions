@@ -5,6 +5,7 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.config.Config;
 import io.icker.factions.util.Message;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.damage.DamageSource;
@@ -16,9 +17,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-
-import java.util.Collection;
-import java.util.List;
+import net.minecraft.util.ActionResult;
 
 public class FactionsManager {
     public static PlayerManager playerManager;
@@ -39,7 +38,11 @@ public class FactionsManager {
     }
 
     private static void factionModified(Faction faction) {
-        List<ServerPlayerEntity> players = faction.getUsers().stream().map(user -> playerManager.getPlayer(user.getID())).filter(player -> player != null).toList();
+        ServerPlayerEntity[] players = faction.getUsers()
+            .stream()
+            .map(user -> playerManager.getPlayer(user.getID()))
+            .filter(player -> player != null)
+            .toArray(ServerPlayerEntity[]::new);
         updatePlayerList(players);
     }
 
@@ -68,21 +71,36 @@ public class FactionsManager {
             new Message("%s gained %d power from surviving", player.getName().getString(), adjusted).send(faction);
     }
 
-    private static void updatePlayerList(ServerPlayerEntity player) {
-        if (player != null) {
-            playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player));
-        }
-    }
-
-    private static void updatePlayerList(Collection<ServerPlayerEntity> players) {
+    private static void updatePlayerList(ServerPlayerEntity ...players) {
         playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, players));
     }
 
-    private static void openSafe(PlayerEntity player) {
-        Faction faction = User.get(player.getUuid()).getFaction();
+    private static ActionResult openSafe(PlayerEntity player) {
+        User user =  User.get(player.getUuid());
 
-        player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inventory, playerx) -> (
-            GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, faction.getSafe())
-        ), Text.of(String.format("%s's Safe", faction.getName()))));
+        if (!user.isInFaction()) {
+            if (FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ENDERCHEST || FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ENABLED) {
+                new Message("Cannot use enderchests when not in a faction").fail().send(player, false);
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        }
+
+        Faction faction = user.getFaction();
+
+        player.openHandledScreen(
+            new SimpleNamedScreenHandlerFactory(
+                (syncId, inventory, p) -> {
+                    if (FactionsMod.CONFIG.FACTION_SAFE_DOUBLE) {
+                        return GenericContainerScreenHandler.createGeneric9x6(syncId, inventory, faction.getSafe());
+                    } else {
+                        return GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, faction.getSafe());
+                    }
+                },
+                Text.of(String.format("%s's Safe", faction.getName()))
+            )
+        );
+
+        return ActionResult.SUCCESS;
     }
 }

@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Function;
 
-import net.minecraft.inventory.EnderChestInventory;
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.icker.factions.api.persistents.Relationship.Status;
 import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.api.persistents.User.Rank;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.nbt.*;
 
 public class SerializerRegistry {
@@ -51,8 +51,8 @@ public class SerializerRegistry {
         registry.put(String.class, new Serializer<String, NbtString>(val -> NbtString.of(val), el -> el.asString()));
         registry.put(UUID.class, new Serializer<UUID, NbtIntArray>(val -> NbtHelper.fromUuid(val), el -> NbtHelper.toUuid(el)));
 
-        registry.put(EnderChestInventory.class, new Serializer<EnderChestInventory, NbtList>(val -> val.toNbtList(), el -> {
-            EnderChestInventory inventory = new EnderChestInventory();
+        registry.put(SimpleInventory.class, new Serializer<SimpleInventory, NbtList>(val -> val.toNbtList(), el -> {
+            SimpleInventory inventory = new SimpleInventory(54);
             inventory.readNbtList(el);
             return inventory;
         }));

@@ -55,8 +55,8 @@ public class Config {
     }
 
     public enum SafeOptions {
-        @SerializedName("OFF")
-        OFF,
+        @SerializedName("ENABLED")
+        ENABLED,
 
         @SerializedName("ENDERCHEST")
         ENDERCHEST,
@@ -64,8 +64,8 @@ public class Config {
         @SerializedName("COMMAND")
         COMMAND,
 
-        @SerializedName("ON")
-        ON
+        @SerializedName("DISABLED")
+        DISABLED,
     }
 
     @SerializedName("version")
@@ -111,5 +111,8 @@ public class Config {
     public boolean MODIFY_CHAT = true;
 
     @SerializedName("factionSafe")
-    public SafeOptions FACTION_SAFE = SafeOptions.COMMAND;
+    public SafeOptions FACTION_SAFE = SafeOptions.ENABLED;
+
+    @SerializedName("factionSafeDouble")
+    public boolean FACTION_SAFE_DOUBLE = true;
 }

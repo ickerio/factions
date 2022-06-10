@@ -38,6 +38,8 @@ public class ServerPlayerInteractionManagerMixin {
 
     @Inject(at = @At("HEAD"), method = "interactBlock", cancellable = true)
     public void interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> info) {
+        if (stack.getItem() instanceof BucketItem) return;
+
         ActionResult result = PlayerEvents.USE_BLOCK.invoker().onUseBlock(player, world, hand, hitResult);
 
         if (result == ActionResult.FAIL) {
@@ -52,9 +54,7 @@ public class ServerPlayerInteractionManagerMixin {
         ActionResult result = PlayerEvents.USE_ITEM.invoker().onUseItem(player, world, stack, hand);
 
         if (result == ActionResult.FAIL) {
-            if (stack == ItemStack.EMPTY || !(stack.getItem() instanceof BucketItem)) {
-                InteractionsUtil.warn(player, "use items");
-            }
+            InteractionsUtil.warn(player, "use items");
             InteractionsUtil.sync(player, stack, hand);
             info.setReturnValue(ActionResult.FAIL);
         }
