@@ -1,14 +1,15 @@
 package io.icker.factions.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.SerializedName;
-import io.icker.factions.FactionsMod;
-import net.fabricmc.loader.api.FabricLoader;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
+
+import io.icker.factions.FactionsMod;
+import net.fabricmc.loader.api.FabricLoader;
 
 public class Config {
     private static final int REQUIRED_VERSION = 2;

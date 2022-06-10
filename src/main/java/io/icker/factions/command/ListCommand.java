@@ -1,5 +1,7 @@
 package io.icker.factions.command;
 
+import java.util.Collection;
+
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -11,8 +13,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
-
-import java.util.Collection;
 
 public class ListCommand implements Command {
     private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

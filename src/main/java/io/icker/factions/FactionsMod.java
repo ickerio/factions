@@ -1,17 +1,16 @@
 package io.icker.factions;
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-
-import io.icker.factions.core.ChatManager;
-import net.minecraft.command.CommandRegistryAccess;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
-import io.icker.factions.core.InteractionManager;
+import io.icker.factions.core.ChatManager;
 import io.icker.factions.core.FactionsManager;
+import io.icker.factions.core.InteractionManager;
 import io.icker.factions.core.ServerManager;
 import io.icker.factions.core.SoundManager;
 import io.icker.factions.core.WorldManager;
@@ -21,6 +20,7 @@ import io.icker.factions.util.Migrator;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 

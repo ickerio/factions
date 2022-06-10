@@ -1,16 +1,16 @@
 package io.icker.factions.core;
 
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
-
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public class ChatManager {
     public static void register() {

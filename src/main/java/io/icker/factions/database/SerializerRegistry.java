@@ -7,7 +7,9 @@ import java.util.function.Function;
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.icker.factions.api.persistents.Relationship.Status;
-import io.icker.factions.api.persistents.User.*;
+import io.icker.factions.api.persistents.User.ChatMode;
+import io.icker.factions.api.persistents.User.Rank;
+import io.icker.factions.api.persistents.User.SoundMode;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;

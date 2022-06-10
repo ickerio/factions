@@ -1,7 +1,9 @@
 package io.icker.factions.core;
 
 import io.icker.factions.api.events.MiscEvents;
-import io.icker.factions.api.persistents.*;
+import io.icker.factions.api.persistents.Claim;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;

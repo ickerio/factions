@@ -1,11 +1,19 @@
 package io.icker.factions.util;
 
 import java.io.File;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
 import io.icker.factions.FactionsMod;
-import io.icker.factions.api.persistents.*;
+import io.icker.factions.api.persistents.Claim;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Home;
+import io.icker.factions.api.persistents.Relationship;
+import io.icker.factions.api.persistents.User;
 import net.minecraft.util.Formatting;
 
 public class Migrator {
