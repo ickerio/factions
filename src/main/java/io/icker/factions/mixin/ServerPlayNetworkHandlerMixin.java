@@ -63,46 +63,4 @@ public class ServerPlayNetworkHandlerMixin {
             }, sender.asMessageSender(), typeKey);
         }
     }
-
-    @Inject(method = "onClickSlot", at = @At("HEAD"))
-    public void onClickSlot(ClickSlotC2SPacket packet, CallbackInfo ci) {
-        Faction faction = User.get(player.getUuid()).getFaction();
-        FactionsMod.LOGGER.info(packet.getSyncId());
-
-        if (faction.syncId == packet.getSyncId() && packet.getRevision() == faction.currentRevision) {
-            EnderChestInventory safe = faction.getSafe();
-            faction.currentRevision++;
-
-            Int2ObjectMaps.fastForEach(packet.getModifiedStacks(), entry -> {
-                if (entry.getIntKey() < 27) {
-                    safe.setStack(entry.getIntKey(), entry.getValue());
-                }
-            });
-
-            faction.setSafe(safe);
-
-            DefaultedList<ItemStack> items = DefaultedList.ofSize(27, ItemStack.EMPTY);
-
-            for (int i = 0; i < 27; i++) {
-                items.set(i, safe.getStack(i));
-            }
-
-            PlayerManager manager = player.getServer().getPlayerManager();
-            for (User user : faction.getUsers()) {
-                ServerPlayerEntity currentPlayer;
-                if ((currentPlayer = manager.getPlayer(user.getID())) != null) {
-                    currentPlayer.networkHandler.sendPacket(new InventoryS2CPacket(faction.syncId, faction.currentRevision, items, ItemStack.EMPTY));
-                }
-            }
-        } else if (faction.syncId == packet.getSyncId()) {
-            DefaultedList<ItemStack> items = DefaultedList.ofSize(27, ItemStack.EMPTY);
-            EnderChestInventory safe = faction.getSafe();
-
-            for (int i = 0; i < 27; i++) {
-                items.set(i, safe.getStack(i));
-            }
-
-            player.networkHandler.sendPacket(new InventoryS2CPacket(faction.syncId, faction.currentRevision, items, ItemStack.EMPTY));
-        }
-    }
 }
