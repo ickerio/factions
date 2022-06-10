@@ -60,7 +60,6 @@ public class Faction {
         this.color = color.getName();
         this.open = open;
         this.power = power;
-        this.safe = new EnderChestInventory();
     }
 
     public Faction() { ; }
