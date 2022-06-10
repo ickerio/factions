@@ -45,7 +45,7 @@ public class Faction {
     private Home home;
 
     @Field("Safe")
-    private EnderChestInventory safe;
+    private EnderChestInventory safe = new EnderChestInventory();
 
     @Field("Invites")
     public ArrayList<UUID> invites = new ArrayList<UUID>();
@@ -61,7 +61,6 @@ public class Faction {
         this.color = color.getName();
         this.open = open;
         this.power = power;
-        this.safe = new EnderChestInventory();
     }
 
     public Faction() { ; }
