@@ -1,5 +1,6 @@
 package io.icker.factions.command;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -18,8 +19,7 @@ import net.minecraft.util.Formatting;
 
 public class AdminCommand implements Command {
     private int bypass(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayer();
 
         User user = User.get(player.getUuid());
         boolean bypass = !user.bypass;
@@ -60,6 +60,28 @@ public class AdminCommand implements Command {
         return 1;
     }
 
+    private int power(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+
+        Faction target = Faction.getByName(StringArgumentType.getString(context, "faction"));
+        int power = IntegerArgumentType.getInteger(context, "power");
+
+        int adjusted = target.adjustPower(power);
+        if (adjusted != 0) {
+            if (power > 0) {
+                new Message("Admin %s added %d power", player.getName().getString(), adjusted).send(target);
+                new Message("Added %d power", adjusted).send(player, false);
+            } else {
+                new Message("Admin %s removed %d power", player.getName().getString(), adjusted).send(target);
+                new Message("Removed %d power", adjusted).send(player, false);
+            }
+        } else {
+            new Message("Could not change power").fail().send(player, false);
+        }
+
+        return 1;
+    }
+
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("admin")
@@ -80,6 +102,18 @@ public class AdminCommand implements Command {
                     CommandManager.argument("faction", StringArgumentType.greedyString())
                     .suggests(Suggests.allFactions())
                     .executes(this::disband)
+                )
+            )
+            .then(
+                CommandManager.literal("power")
+                .requires(Requires.hasPerms("factions.admin.power", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                .then(
+                    CommandManager.argument("power", IntegerArgumentType.integer())
+                    .then(
+                        CommandManager.argument("faction", StringArgumentType.greedyString())
+                        .suggests(Suggests.allFactions())
+                        .executes(this::power)
+                    )
                 )
             )
             .build();
