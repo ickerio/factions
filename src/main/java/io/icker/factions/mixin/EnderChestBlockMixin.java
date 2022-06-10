@@ -1,25 +1,31 @@
 package io.icker.factions.mixin;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.config.Config;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.EnderChestBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-
-import java.util.OptionalInt;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 @Mixin(EnderChestBlock.class)
 public class EnderChestBlockMixin {
-    @Redirect(method = "onUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;openHandledScreen(Lnet/minecraft/screen/NamedScreenHandlerFactory;)Ljava/util/OptionalInt;"))
-    public OptionalInt openHandledScreen(PlayerEntity instance, NamedScreenHandlerFactory factory) {
-        if (FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ENDERCHEST || FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ON) {
-            PlayerEvents.OPEN_SAFE.invoker().onOpenSafe(instance);
-        } // TODO: open normal ender chest
-
-        return OptionalInt.empty();
+    @Inject(method = "onUse", at = @At("HEAD"), cancellable = true)
+    public void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> info) {
+        if (FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.COMMAND || FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.DISABLED) return;
+            
+        ActionResult result = PlayerEvents.OPEN_SAFE.invoker().onOpenSafe(player);
+        if (result != ActionResult.PASS) {
+            info.setReturnValue(result);
+        }
     }
 }

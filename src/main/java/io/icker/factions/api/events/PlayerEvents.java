@@ -77,8 +77,13 @@ public class PlayerEvents {
 
     public static final Event<OpenSafe> OPEN_SAFE = EventFactory.createArrayBacked(OpenSafe.class, callbacks -> (player) -> {
         for (OpenSafe callback : callbacks) {
-            callback.onOpenSafe(player);
+            ActionResult result = callback.onOpenSafe(player);
+            if (result != ActionResult.PASS) {
+                return result;
+            }
+
         }
+        return ActionResult.PASS;
     });
 
 
@@ -119,6 +124,6 @@ public class PlayerEvents {
 
     @FunctionalInterface
     public interface OpenSafe {
-        void onOpenSafe(PlayerEntity player);
+        ActionResult onOpenSafe(PlayerEntity player);
     }
 }

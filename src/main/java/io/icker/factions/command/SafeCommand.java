@@ -13,18 +13,21 @@ public class SafeCommand implements Command {
 
     private int run(CommandContext<ServerCommandSource> context) {
         PlayerEvents.OPEN_SAFE.invoker().onOpenSafe(context.getSource().getPlayer());
-
         return 1;
     }
 
     @Override
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-                .literal("safe")
-                .requires(Requires.multiple(Requires.isMember(), Requires.hasPerms("faction.safe", 0), (serverCommandSource -> (
-                    FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.COMMAND || FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ON
-                ))))
-                .executes(this::run)
-                .build();
+            .literal("safe")
+            .requires(
+                Requires.multiple(
+                    Requires.hasPerms("faction.safe", 0),
+                    Requires.isMember(),
+                    s -> FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.COMMAND || FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ENABLED
+                )
+            )
+            .executes(this::run)
+            .build();
     }
 }
