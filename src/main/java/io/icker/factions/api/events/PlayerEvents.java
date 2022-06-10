@@ -75,6 +75,12 @@ public class PlayerEvents {
         }
     });
 
+    public static final Event<OpenSafe> OPEN_SAFE = EventFactory.createArrayBacked(OpenSafe.class, callbacks -> (player) -> {
+        for (OpenSafe callback : callbacks) {
+            callback.onOpenSafe(player);
+        }
+    });
+
 
     @FunctionalInterface
     public interface BreakBlock {
@@ -109,5 +115,10 @@ public class PlayerEvents {
     @FunctionalInterface
     public interface PowerTick {
         void onPowerTick(ServerPlayerEntity player);
+    }
+
+    @FunctionalInterface
+    public interface OpenSafe {
+        void onOpenSafe(PlayerEntity player);
     }
 }

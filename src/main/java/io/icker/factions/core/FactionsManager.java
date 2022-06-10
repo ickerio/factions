@@ -8,10 +8,14 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +30,7 @@ public class FactionsManager {
         FactionEvents.MEMBER_LEAVE.register(FactionsManager::memberChange);
         PlayerEvents.ON_KILLED_BY_PLAYER.register(FactionsManager::playerDeath);
         PlayerEvents.ON_POWER_TICK.register(FactionsManager::powerTick);
+        PlayerEvents.OPEN_SAFE.register(FactionsManager::openSafe);
     }
 
     private static void serverStarted(MinecraftServer server) {
@@ -71,5 +76,13 @@ public class FactionsManager {
 
     private static void updatePlayerList(Collection<ServerPlayerEntity> players) {
         playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, players));
+    }
+
+    private static void openSafe(PlayerEntity player) {
+        Faction faction = User.get(player.getUuid()).getFaction();
+
+        player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inventory, playerx) -> (
+            GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, faction.getSafe())
+        ), Text.of(String.format("%s's Safe", faction.getName()))));
     }
 }
