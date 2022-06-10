@@ -27,24 +27,22 @@ import net.minecraft.server.command.ServerCommandSource;
 public class FactionsMod implements ModInitializer {
     public static Logger LOGGER = LogManager.getLogger("Factions");
 
-    public static Config CONFIG;
+    public static Config CONFIG = Config.load();
     public static DynmapWrapper dynmap;
 
     @Override
     public void onInitialize() {
         LOGGER.info("Initialized Factions Mod for Minecraft v1.19");
-        CONFIG = Config.load();
-
-        ChatManager.register();
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         Migrator.migrate();
 
+        ChatManager.register();
         FactionsManager.register();
         InteractionManager.register();
         ServerManager.register();
-        WorldManager.register();
         SoundManager.register();
+        WorldManager.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
     }

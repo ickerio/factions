@@ -49,12 +49,12 @@ public class WorldManager {
         if (FactionsMod.CONFIG.RADAR && user.radar) {
             if (claim != null) {
                 new Message(claim.getFaction().getName())
-                        .format(claim.getFaction().getColor())
-                        .send(player, true);
+                    .format(claim.getFaction().getColor())
+                    .send(player, true);
             } else {
                 new Message("Wilderness")
-                        .format(Formatting.GREEN)
-                        .send(player, true);
+                    .format(Formatting.GREEN)
+                    .send(player, true);
             }
         }
     }
