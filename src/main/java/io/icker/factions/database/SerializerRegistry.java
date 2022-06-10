@@ -10,6 +10,7 @@ import io.icker.factions.api.persistents.Relationship.Status;
 import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.api.persistents.User.Rank;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 
 public class SerializerRegistry {
@@ -50,12 +51,7 @@ public class SerializerRegistry {
 
         registry.put(String.class, new Serializer<String, NbtString>(val -> NbtString.of(val), el -> el.asString()));
         registry.put(UUID.class, new Serializer<UUID, NbtIntArray>(val -> NbtHelper.fromUuid(val), el -> NbtHelper.toUuid(el)));
-
-        registry.put(SimpleInventory.class, new Serializer<SimpleInventory, NbtList>(val -> val.toNbtList(), el -> {
-            SimpleInventory inventory = new SimpleInventory(54);
-            inventory.readNbtList(el);
-            return inventory;
-        }));
+        registry.put(SimpleInventory.class, createInventorySerializer(54));
 
         registry.put(ChatMode.class, createEnumSerializer(ChatMode.class));
         registry.put(Rank.class, createEnumSerializer(Rank.class));
@@ -80,5 +76,39 @@ public class SerializerRegistry {
             val -> NbtString.of(val.toString()),
             el -> Enum.valueOf(clazz, el.asString())
         );
+    }
+
+    private static Serializer<SimpleInventory, NbtList> createInventorySerializer(int size) {
+        return new Serializer<SimpleInventory, NbtList>(val -> {
+            NbtList nbtList = new NbtList();
+
+            for(int i = 0; i < val.size(); ++i) {
+                ItemStack itemStack = val.getStack(i);
+                if (!itemStack.isEmpty()) {
+                    NbtCompound nbtCompound = new NbtCompound();
+                    nbtCompound.putByte("Slot", (byte) i);
+                    itemStack.writeNbt(nbtCompound);
+                    nbtList.add(nbtCompound);
+                }
+            }
+    
+            return nbtList;
+        }, el -> {
+            SimpleInventory inventory = new SimpleInventory(size);
+
+            for(int i = 0; i < size; ++i) {
+                inventory.setStack(i, ItemStack.EMPTY);
+            }
+
+            for(int i = 0; i < el.size(); ++i) {
+                NbtCompound nbtCompound = el.getCompound(i);
+                int slot = nbtCompound.getByte("Slot") & 255;
+                if (slot >= 0 && slot < size) {
+                    inventory.setStack(slot, ItemStack.fromNbt(nbtCompound));
+                }
+            }
+
+            return inventory;
+        });
     }
 }
