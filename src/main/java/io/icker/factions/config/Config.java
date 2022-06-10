@@ -1,15 +1,14 @@
 package io.icker.factions.config;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
-
 import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 
 public class Config {
     private static final int REQUIRED_VERSION = 2;
@@ -55,6 +54,20 @@ public class Config {
         DISABLED
     }
 
+    public enum SafeOptions {
+        @SerializedName("OFF")
+        OFF,
+
+        @SerializedName("ENDERCHEST")
+        ENDERCHEST,
+
+        @SerializedName("COMMAND")
+        COMMAND,
+
+        @SerializedName("ON")
+        ON
+    }
+
     @SerializedName("version")
     public int VERSION = REQUIRED_VERSION;
 
@@ -96,4 +109,7 @@ public class Config {
 
     @SerializedName("chatModificationEnabled")
     public boolean MODIFY_CHAT = true;
+
+    @SerializedName("factionSafe")
+    public SafeOptions FACTION_SAFE = SafeOptions.COMMAND;
 }

@@ -5,6 +5,7 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "BucketItemMixin",
+        "EnderChestBlockMixin",
         "ItemMixin",
         "MinecraftServerMixin",
         "ServerPlayerEntityMixin",
