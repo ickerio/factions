@@ -13,7 +13,7 @@ import net.minecraft.sound.SoundEvent;
 public class SoundManager {
     public static PlayerManager playerManager;
 
-    public static void register() { // TODO decide on better sounds to use
+    public static void register() { // TODO decide on better sounds to use, and fix overlapping sounds (eg. removing all claims)
         ClaimEvents.ADD.register(claim -> playFaction(claim.getFaction(), SoundEvents.BLOCK_NOTE_BLOCK_PLING, 2.0F));
         ClaimEvents.REMOVE.register((x, z, level, faction) -> playFaction(faction, SoundEvents.BLOCK_NOTE_BLOCK_PLING, 0.5F));
         FactionEvents.POWER_CHANGE.register((faction, oldPower) -> {

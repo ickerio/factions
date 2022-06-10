@@ -13,6 +13,7 @@ import io.icker.factions.config.Config;
 import io.icker.factions.core.InteractionManager;
 import io.icker.factions.core.FactionsManager;
 import io.icker.factions.core.ServerManager;
+import io.icker.factions.core.SoundManager;
 import io.icker.factions.core.WorldManager;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
@@ -43,6 +44,7 @@ public class FactionsMod implements ModInitializer {
         InteractionManager.register();
         ServerManager.register();
         WorldManager.register();
+        SoundManager.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
     }

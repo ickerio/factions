@@ -38,7 +38,11 @@ public class ServerPlayNetworkHandlerMixin {
         boolean factionChat = member.chat == User.ChatMode.FACTION || member.chat == User.ChatMode.FOCUS;
 
         if (factionChat && faction == null) {
-            new Message("You can't send a message to faction chat if you aren't in a faction").fail().hover("Click to switch to global chat").click("/factions chat global").send(sender, false);
+            new Message("You can't send a message to faction chat if you aren't in a faction.")
+                .fail()
+                .hover("Click to switch to global chat")
+                .click("/factions settings chat global")
+                .send(sender, false);
         } else {
             instance.broadcast(message.raw(), player -> {
                 User targetMember = User.get(player.getUuid());

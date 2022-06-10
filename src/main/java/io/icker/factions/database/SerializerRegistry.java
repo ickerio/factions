@@ -7,8 +7,7 @@ import java.util.function.Function;
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.icker.factions.api.persistents.Relationship.Status;
-import io.icker.factions.api.persistents.User.ChatMode;
-import io.icker.factions.api.persistents.User.Rank;
+import io.icker.factions.api.persistents.User.*;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
@@ -54,6 +53,7 @@ public class SerializerRegistry {
         registry.put(SimpleInventory.class, createInventorySerializer(54));
 
         registry.put(ChatMode.class, createEnumSerializer(ChatMode.class));
+        registry.put(SoundMode.class, createEnumSerializer(SoundMode.class));
         registry.put(Rank.class, createEnumSerializer(Rank.class));
         registry.put(Status.class, createEnumSerializer(Status.class));
     }
