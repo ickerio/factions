@@ -161,6 +161,8 @@ public class Faction {
         int newPower = Math.min(Math.max(0, power + adjustment), maxPower);
         int oldPower = this.power;
 
+        if (newPower == oldPower) return 0;
+
         power = newPower;
         FactionEvents.POWER_CHANGE.invoker().onPowerChange(this, oldPower);
         return Math.abs(newPower - oldPower);
