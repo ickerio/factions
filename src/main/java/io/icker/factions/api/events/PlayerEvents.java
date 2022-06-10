@@ -13,7 +13,13 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+* Events related to player actions
+*/
 public class PlayerEvents {
+    /**
+     * Called when a player attempts to break a block.
+     */
     public static final Event<BreakBlock> BREAK_BLOCK = EventFactory.createArrayBacked(BreakBlock.class, callbacks -> (player, position, world) -> {
         for (BreakBlock callback : callbacks) {
             ActionResult result = callback.onBreakBlock(player, position, world);
@@ -25,6 +31,10 @@ public class PlayerEvents {
         return ActionResult.PASS;
     });
 
+
+    /**
+     * Called when a chunk claim is added by a faction (See {@link Claim})
+     */
     public static final Event<UseBlock> USE_BLOCK = EventFactory.createArrayBacked(UseBlock.class, callbacks -> (player, world, hand, hitResult) -> {
         for (UseBlock callback : callbacks) {
             ActionResult result = callback.onUseBlock(player, world, hand, hitResult);

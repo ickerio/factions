@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
-import io.icker.factions.api.events.HomeEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
@@ -197,7 +196,7 @@ public class Faction {
 
     public void setHome(Home home) {
         this.home = home;
-        HomeEvents.SET.invoker().onSet(home);
+        FactionEvents.SET_HOME.invoker().onSetHome(this, home);
     }
 
     public Relationship getRelationship(UUID target) {

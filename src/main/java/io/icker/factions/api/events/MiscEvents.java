@@ -4,13 +4,22 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.MinecraftServer;
 
+/**
+* Events related to miscellaneous actions
+*/
 public final class MiscEvents {
+    /**
+     * Called when the Factions database is saved (which is also when the server saves world and player files)
+     */
     public static final Event<Save> ON_SAVE = EventFactory.createArrayBacked(Save.class, callbacks -> (server) -> {
         for (Save callback : callbacks) {
             callback.onSave(server);
         }
     });
 
+    /**
+     * Called when the game attempts to spawn in mobs (UNIMPLEMENTED)
+     */
     public static final Event<MobSpawnAttempt> ON_MOB_SPAWN_ATTEMPT = EventFactory.createArrayBacked(MobSpawnAttempt.class, callbacks -> () -> {
         for (MobSpawnAttempt callback : callbacks) {
             callback.onMobSpawnAttempt();
@@ -23,7 +32,7 @@ public final class MiscEvents {
     }
 
     @FunctionalInterface
-    public interface MobSpawnAttempt { //TODO Implement this
+    public interface MobSpawnAttempt {
         void onMobSpawnAttempt();
     }
 }

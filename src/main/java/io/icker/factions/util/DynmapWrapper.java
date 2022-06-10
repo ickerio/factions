@@ -9,7 +9,6 @@ import org.dynmap.markers.MarkerSet;
 
 import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.events.FactionEvents;
-import io.icker.factions.api.events.HomeEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
@@ -36,8 +35,8 @@ public class DynmapWrapper {
 
         ClaimEvents.ADD.register(this::addClaim);
         ClaimEvents.REMOVE.register(this::removeClaim);
-        HomeEvents.SET.register(this::setHome);
 
+        FactionEvents.SET_HOME.register(this::setHome);
         FactionEvents.MODIFY.register(faction -> updateFaction(faction));
         FactionEvents.MEMBER_JOIN.register((faction, user) -> updateFaction(faction));
         FactionEvents.MEMBER_LEAVE.register((faction, user) -> updateFaction(faction));
@@ -48,7 +47,7 @@ public class DynmapWrapper {
         for (Faction faction : Faction.all()) {
             Home home = faction.getHome();
             if (home != null) {
-                setHome(home);
+                setHome(faction, home);
             }
 
             String info = getInfo(faction);
@@ -96,8 +95,7 @@ public class DynmapWrapper {
         }
     }
 
-    private void setHome(Home home) {
-        Faction faction = home.getFaction();
+    private void setHome(Faction faction, Home home) {
         Marker marker = markerSet.findMarker(faction.getID().toString() + "-home");
         if (marker == null) {
             markerSet.createMarker("home", faction.getName() + "'s Home", dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
