@@ -126,7 +126,7 @@ public class InteractionManager {
 
     private static ActionResult checkPermissions(PlayerEntity player, BlockPos position, World world) {
         User user = User.get(player.getUuid());
-        if (player.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL) && user.bypass) { // notes: bypass manager that returns ActionResult.SUCCESS;
+        if (player.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL) && user.bypass) {
             return ActionResult.PASS;
         }
 
@@ -136,11 +136,16 @@ public class InteractionManager {
         Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
         if (claim == null) return ActionResult.PASS;
 
+        Faction claimFaction = claim.getFaction();
+
+        if (claimFaction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT > claimFaction.getPower()) {
+            return ActionResult.PASS;
+        }
+
         if (!user.isInFaction()) {
             return ActionResult.FAIL;
         }
 
-        Faction claimFaction = claim.getFaction();
         Faction userFaction = user.getFaction();
 
         if (claimFaction == userFaction) {
@@ -149,10 +154,6 @@ public class InteractionManager {
 
         if (claimFaction.isMutualAllies(userFaction.getID())) {
             return ActionResult.SUCCESS;
-        }
-
-        if (claimFaction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT > claimFaction.getPower()) {
-            return ActionResult.FAIL;
         }
 
         return ActionResult.FAIL;
