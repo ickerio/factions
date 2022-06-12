@@ -31,6 +31,12 @@ public class Database {
         HashMap<E, T> store = new HashMap<E, T>();
 
         if (!file.exists()) {
+            if (!BASE_PATH.exists()) BASE_PATH.mkdir();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                FactionsMod.LOGGER.error("Failed to create file ({})", file, e);
+            }
             return store;
         }
 
