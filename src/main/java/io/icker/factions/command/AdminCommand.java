@@ -124,10 +124,6 @@ public class AdminCommand implements Command {
                     CommandManager.argument("player", EntityArgumentType.player())
                     .executes(this::spoof)
                 )
-            )
-            .then(
-                CommandManager.literal("clearSpoof")
-                .requires(Requires.hasPerms("factions.admin.spoof.clear", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
                 .executes(this::clearSpoof)
             )
             .build();
