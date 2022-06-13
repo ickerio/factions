@@ -72,18 +72,69 @@ public class AdminCommand implements Command {
 
         if (!target.isInFaction()) {
             new Message("%s is not in a faction", targetEntity.getName().getString()).fail().send(player, false);
+            return 0;
         }
 
         Faction faction = target.getFaction();
 
         if (target.rank == User.Rank.OWNER) {
-            new Message("%s is the owner of %s and can't be removed, instead run ", targetEntity.getName().getString(), faction.getName()).add(new Message("/f admin disband").hover("Click to run").click(String.format("/f admin disband %s", faction.getName()))).fail().send(player, false);
+            new Message("%s is the owner of %s and can't be removed, instead run ", targetEntity.getName().getString(), faction.getName())
+                .add(
+                    new Message("/f admin disband")
+                    .hover("Click to run")
+                    .click(String.format("/f admin disband %s", faction.getName()))
+                )
+                .add(" or ")
+                .add(
+                    new Message("/f admin transfer")
+                    .hover("Click to run")
+                    .click(String.format("/f admin transfer %s", targetEntity.getName().getString()))
+                ).fail().send(player, false);
+
+            return 0;
         }
 
         new Message("An admin kicked you from %s", faction.getName()).send(targetEntity, false);
         target.leaveFaction();
 
         new Message("%s has been kicked from %s", targetEntity.getName().getString(), faction.getName()).send(player, false);
+
+        PlayerManager manager = source.getServer().getPlayerManager();
+        for (ServerPlayerEntity p : manager.getPlayerList()) {
+            manager.sendCommandTree(p);
+        }
+        return 1;
+    }
+
+    private int transfer(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        ServerPlayerEntity targetEntity = EntityArgumentType.getPlayer(context, "player");
+        User target = User.get(targetEntity.getUuid());
+
+        if (!target.isInFaction()) {
+            new Message("%s is not in a faction", targetEntity.getName().getString()).fail().send(player, false);
+            return 0;
+        }
+
+        Faction faction = target.getFaction();
+
+        if (target.rank == User.Rank.OWNER) {
+            new Message("%s is already the owner of %s", targetEntity.getName().getString(), faction.getName()).fail().send(player, false);
+            return 0;
+        }
+
+        User owner = faction.getUsers().stream().filter((user) -> user.rank == User.Rank.OWNER).findFirst().orElse(target);
+        ServerPlayerEntity ownerEntity = source.getServer().getPlayerManager().getPlayer(owner.getID());
+
+        owner.rank = User.Rank.MEMBER;
+        target.rank = User.Rank.OWNER;
+
+        new Message("An admin has made you owner of %s", faction.getName()).send(targetEntity, false);
+        new Message("An admin has stripped your ownership of %s and given it to %s", faction.getName(), targetEntity.getName().getString()).send(targetEntity, false);
+
+        new Message("%s has been given owner ship of %s from %s", targetEntity.getName().getString(), faction.getName(), ownerEntity.getName().getString()).send(player, false);
 
         PlayerManager manager = source.getServer().getPlayerManager();
         for (ServerPlayerEntity p : manager.getPlayerList()) {
@@ -148,6 +199,15 @@ public class AdminCommand implements Command {
                 )
             )
             .then(
+                CommandManager.literal("safe")
+                .requires(Requires.hasPerms("factions.admin.safe", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                .then(
+                    CommandManager.argument("faction", StringArgumentType.greedyString())
+                    .suggests(Suggests.allFactions())
+                    .executes(this::safe)
+                )
+            )
+            .then(
                 CommandManager.literal("power")
                 .requires(Requires.hasPerms("factions.admin.power", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
                 .then(
@@ -165,6 +225,14 @@ public class AdminCommand implements Command {
                 .then(
                     CommandManager.argument("player", EntityArgumentType.player())
                     .executes(this::kick)
+                )
+            )
+            .then(
+                CommandManager.literal("transfer")
+                .requires(Requires.hasPerms("factions.admin.transfer", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                .then(
+                    CommandManager.argument("player", EntityArgumentType.player())
+                    .executes(this::transfer)
                 )
             )
             .build();
