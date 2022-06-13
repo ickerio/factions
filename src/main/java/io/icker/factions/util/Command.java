@@ -63,7 +63,7 @@ public interface Command {
         public static Predicate<ServerCommandSource> require(Requires req) {
             return source -> {
                 ServerPlayerEntity entity = source.getPlayer();
-                User user = User.get(entity.getUuid());
+                User user = Command.getUser(entity);
                 return req.run(user);
             };
         }
