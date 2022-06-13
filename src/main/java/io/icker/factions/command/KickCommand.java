@@ -26,7 +26,7 @@ public class KickCommand implements Command {
             return 0;
         }
 
-        User selfUser = User.get(player.getUuid());
+        User selfUser = Command.getUser(player);
         User targetUser = User.get(target.getUuid());
         Faction faction = selfUser.getFaction();
 

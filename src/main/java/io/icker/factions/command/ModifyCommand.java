@@ -28,7 +28,7 @@ public class ModifyCommand implements Command {
             return 0;
         }
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
 
         faction.setName(name);
         new Message("Successfully renamed faction to '" + name + "'")
@@ -44,7 +44,7 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
 
         faction.setDescription(description);
         new Message("Successfully updated faction description to '" + description + "'")
@@ -60,7 +60,7 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
 
         faction.setMOTD(motd);
         new Message("Successfully updated faction MOTD to '" + motd + "'")
@@ -76,7 +76,7 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
 
         faction.setColor(color);
         new Message("Successfully updated faction color to " + Formatting.BOLD + color + color.name())
@@ -92,7 +92,7 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
 
         faction.setOpen(open);
         new Message("Successfully updated faction to ")

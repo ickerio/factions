@@ -176,6 +176,31 @@ public class AdminCommand implements Command {
         return 1;
     }
 
+    private int spoof(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        User user = User.get(player.getUuid());
+
+        ServerPlayerEntity targetEntity = EntityArgumentType.getPlayer(context, "player");
+        User target = User.get(targetEntity.getUuid());
+
+        user.setSpoof(target);
+
+        return 1;
+    }
+
+    private int clearSpoof(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        User user = User.get(player.getUuid());
+
+        user.setSpoof(null);
+
+        return 1;
+    }
+
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("admin")
@@ -234,6 +259,19 @@ public class AdminCommand implements Command {
                     CommandManager.argument("player", EntityArgumentType.player())
                     .executes(this::transfer)
                 )
+            )
+            .then(
+                CommandManager.literal("spoof")
+                .requires(Requires.hasPerms("factions.admin.spoof", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                .then(
+                    CommandManager.argument("player", EntityArgumentType.player())
+                    .executes(this::spoof)
+                )
+            )
+            .then(
+                CommandManager.literal("clearSpoof")
+                .requires(Requires.hasPerms("factions.admin.spoof.clear", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                .executes(this::clearSpoof)
             )
             .build();
     }

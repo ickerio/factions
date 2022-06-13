@@ -42,7 +42,7 @@ public class DeclareCommand implements Command {
             return 0;
         }
         
-        Faction sourceFaction = User.get(player.getUuid()).getFaction();
+        Faction sourceFaction = Command.getUser(player).getFaction();
 
         if (sourceFaction.equals(targetFaction)) {
             new Message("Cannot use the declare command on your own faction").fail().send(player, false);

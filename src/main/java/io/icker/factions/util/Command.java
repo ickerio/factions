@@ -117,4 +117,12 @@ public interface Command {
             };
         }
     }
+
+    public static User getUser(ServerPlayerEntity player) {
+        User user = User.get(player.getUuid());
+        if (user.getSpoof() == null) {
+            return user;
+        }
+        return user.getSpoof();
+    }
 }

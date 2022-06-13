@@ -29,7 +29,7 @@ public class CreateCommand implements Command {
 
         Faction faction = new Faction(name, "No description set", "No faction MOTD set", Formatting.WHITE, false, FactionsMod.CONFIG.BASE_POWER + FactionsMod.CONFIG.MEMBER_POWER);
         Faction.add(faction);
-        User.get(player.getUuid()).joinFaction(faction.getID(), User.Rank.OWNER);
+        Command.getUser(player).joinFaction(faction.getID(), User.Rank.OWNER);
 
         source.getServer().getPlayerManager().sendCommandTree(player);
         new Message("Successfully created faction").send(player, false);

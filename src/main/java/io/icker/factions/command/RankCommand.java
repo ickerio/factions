@@ -29,7 +29,7 @@ public class RankCommand implements Command {
             return 0;
         }
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
 
         for (User users : faction.getUsers())
             if (users.getID().equals(target.getUuid())) {
@@ -71,7 +71,7 @@ public class RankCommand implements Command {
             return 0;
         }
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
 
         for (User user : faction.getUsers())
             if (user.getID().equals(target.getUuid())) {
@@ -83,7 +83,7 @@ public class RankCommand implements Command {
                     }
                     case COMMANDER -> user.rank = User.Rank.MEMBER;
                     case LEADER -> {
-                        if (User.get(player.getUuid()).rank == User.Rank.LEADER) {
+                        if (Command.getUser(player).rank == User.Rank.LEADER) {
                             new Message("You cannot demote a fellow Co-Owner").format(Formatting.RED).send(player, false);
                             return 0;
                         }
@@ -123,9 +123,9 @@ public class RankCommand implements Command {
 
         User targetUser = User.get(target.getUuid());
         UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
-        if (User.get(player.getUuid()).getFaction().getID().equals(targetFaction)) {
+        if (Command.getUser(player).getFaction().getID().equals(targetFaction)) {
             targetUser.rank = User.Rank.OWNER;
-            User.get(player.getUuid()).rank = User.Rank.LEADER;
+            Command.getUser(player).rank = User.Rank.LEADER;
 
             context.getSource().getServer().getPlayerManager().sendCommandTree(player);
             context.getSource().getServer().getPlayerManager().sendCommandTree(target);

@@ -56,6 +56,8 @@ public class User {
     public boolean autoclaim = false;
     public boolean bypass = false;
 
+    private User spoof;
+
     public User(UUID id) {
         this.id = id;
     }
@@ -115,6 +117,14 @@ public class User {
 
     public Faction getFaction() {
         return Faction.get(factionID);
+    }
+
+    public User getSpoof() {
+        return spoof;
+    }
+
+    public void setSpoof(User user) {
+        this.spoof = user;
     }
 
     public void joinFaction(UUID factionID, Rank rank) {

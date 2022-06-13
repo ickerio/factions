@@ -25,7 +25,7 @@ public class InviteCommand implements Command {
     private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        List<UUID> invites = User.get(source.getPlayer().getUuid()).getFaction().invites;
+        List<UUID> invites = Command.getUser(source.getPlayer()).getFaction().invites;
         int count = invites.size();
 
         new Message("You have ")
@@ -50,7 +50,7 @@ public class InviteCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = User.get(source.getPlayer().getUuid()).getFaction();
+        Faction faction = Command.getUser(source.getPlayer()).getFaction();
         if (faction.isInvited(player.getUuid())) {
             new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
             return 0;
@@ -80,7 +80,7 @@ public class InviteCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
         faction.invites.remove(target.getUuid());
 
         new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);

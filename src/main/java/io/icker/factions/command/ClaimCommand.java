@@ -29,7 +29,7 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        List<Claim> claims = User.get(player.getUuid()).getFaction().getClaims();
+        List<Claim> claims = Command.getUser(player).getFaction().getClaims();
         int count = claims.size();
 
         new Message("You have ")
@@ -71,7 +71,7 @@ public class ClaimCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
         ServerWorld world = player.getWorld();
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
         String dimension = world.getRegistryKey().getValue().toString();
         ArrayList<ChunkPos> chunks = new ArrayList<ChunkPos>();
 
@@ -110,7 +110,7 @@ public class ClaimCommand implements Command {
 
     private int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.CLAIM_WEIGHT;
         int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
@@ -126,7 +126,7 @@ public class ClaimCommand implements Command {
     private int addSize(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         int size = IntegerArgumentType.getInteger(context, "size");
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower = (faction.getClaims().size() + (int)Math.pow(size * 2 - 1, 2)) * FactionsMod.CONFIG.CLAIM_WEIGHT;
         int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
@@ -155,7 +155,7 @@ public class ClaimCommand implements Command {
             return 0;
         }
 
-        User user = User.get(player.getUuid());
+        User user = Command.getUser(player);
         Faction faction = user.getFaction();
 
         if (!user.bypass && existingClaim.getFaction().getID() != faction.getID()) {
@@ -176,7 +176,7 @@ public class ClaimCommand implements Command {
         ServerWorld world = player.getWorld();
         String dimension = world.getRegistryKey().getValue().toString();
 
-        User user = User.get(player.getUuid());
+        User user = Command.getUser(player);
         Faction faction = user.getFaction();
 
         for (int x = -size + 1; x < size; x++) {
@@ -200,7 +200,7 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = Command.getUser(player).getFaction();
 
         faction.removeAllClaims();
         new Message("All claims removed by %s", player.getName().getString()).send(faction);
@@ -211,7 +211,7 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        User user = User.get(player.getUuid());
+        User user = Command.getUser(player);
         user.autoclaim = !user.autoclaim;
 
         new Message("Successfully toggled autoclaim")

@@ -27,7 +27,7 @@ public class InfoCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        User user = User.get(player.getUuid());
+        User user = Command.getUser(player);
         if (!user.isInFaction()) {
             new Message("Command can only be used whilst in a faction").fail().send(player, false);
             return 0;
@@ -114,7 +114,7 @@ public class InfoCommand implements Command {
                 .add(enemiesOf)
                 .send(player, false);
 
-        User user = User.get(player.getUuid());
+        User user = Command.getUser(player);
         UUID userFaction = user.isInFaction() ? user.getFaction().getID() : null;
         if (faction.getID().equals(userFaction))
             new Message("Your Rank: ")
