@@ -7,6 +7,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.events.FactionEvents;
+import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
@@ -108,6 +110,17 @@ public class AdminCommand implements Command {
         } else {
             new Message("Could not change power").fail().send(player, false);
         }
+
+        return 1;
+    }
+
+    private int safe(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        Faction target = Faction.getByName(StringArgumentType.getString(context, "faction"));
+
+        PlayerEvents.OPEN_SAFE.invoker().onOpenSafe(player, target);
 
         return 1;
     }

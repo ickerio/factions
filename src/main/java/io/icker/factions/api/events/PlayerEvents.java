@@ -1,5 +1,7 @@
 package io.icker.factions.api.events;
 
+import io.icker.factions.api.persistents.Claim;
+import io.icker.factions.api.persistents.Faction;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.Entity;
@@ -85,9 +87,9 @@ public class PlayerEvents {
         }
     });
 
-    public static final Event<OpenSafe> OPEN_SAFE = EventFactory.createArrayBacked(OpenSafe.class, callbacks -> (player) -> {
+    public static final Event<OpenSafe> OPEN_SAFE = EventFactory.createArrayBacked(OpenSafe.class, callbacks -> (player, faction) -> {
         for (OpenSafe callback : callbacks) {
-            ActionResult result = callback.onOpenSafe(player);
+            ActionResult result = callback.onOpenSafe(player, faction);
             if (result != ActionResult.PASS) {
                 return result;
             }
@@ -134,6 +136,6 @@ public class PlayerEvents {
 
     @FunctionalInterface
     public interface OpenSafe {
-        ActionResult onOpenSafe(PlayerEntity player);
+        ActionResult onOpenSafe(PlayerEntity player, Faction faction);
     }
 }

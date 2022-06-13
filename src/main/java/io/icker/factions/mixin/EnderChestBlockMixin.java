@@ -1,5 +1,6 @@
 package io.icker.factions.mixin;
 
+import io.icker.factions.api.persistents.User;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,7 +24,7 @@ public class EnderChestBlockMixin {
     public void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> info) {
         if (FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.COMMAND || FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.DISABLED) return;
             
-        ActionResult result = PlayerEvents.OPEN_SAFE.invoker().onOpenSafe(player);
+        ActionResult result = PlayerEvents.OPEN_SAFE.invoker().onOpenSafe(player, User.get(player.getUuid()).getFaction());
         if (result != ActionResult.PASS) {
             info.setReturnValue(result);
         }

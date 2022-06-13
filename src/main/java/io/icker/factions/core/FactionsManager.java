@@ -75,7 +75,7 @@ public class FactionsManager {
         playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, players));
     }
 
-    private static ActionResult openSafe(PlayerEntity player) {
+    private static ActionResult openSafe(PlayerEntity player, Faction faction) {
         User user =  User.get(player.getUuid());
 
         if (!user.isInFaction()) {
@@ -85,8 +85,6 @@ public class FactionsManager {
             }
             return ActionResult.PASS;
         }
-
-        Faction faction = user.getFaction();
 
         player.openHandledScreen(
             new SimpleNamedScreenHandlerFactory(
