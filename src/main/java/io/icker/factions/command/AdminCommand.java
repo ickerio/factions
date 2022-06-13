@@ -11,6 +11,7 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -52,6 +53,35 @@ public class AdminCommand implements Command {
         target.remove();
 
         new Message("Faction has been removed").send(player, false);
+
+        PlayerManager manager = source.getServer().getPlayerManager();
+        for (ServerPlayerEntity p : manager.getPlayerList()) {
+            manager.sendCommandTree(p);
+        }
+        return 1;
+    }
+
+    private int kick(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        ServerPlayerEntity targetEntity = EntityArgumentType.getPlayer(context, "player");
+        User target = User.get(targetEntity.getUuid());
+
+        if (!target.isInFaction()) {
+            new Message("%s is not in a faction", targetEntity.getName().getString()).fail().send(player, false);
+        }
+
+        Faction faction = target.getFaction();
+
+        if (target.rank == User.Rank.OWNER) {
+            new Message("%s is the owner of %s and can't be removed, instead run ", targetEntity.getName().getString(), faction.getName()).add(new Message("/f admin disband").hover("Click to run").click(String.format("/f admin disband %s", faction.getName()))).fail().send(player, false);
+        }
+
+        new Message("An admin kicked you from %s", faction.getName()).send(targetEntity, false);
+        target.leaveFaction();
+
+        new Message("%s has been kicked from %s", targetEntity.getName().getString(), faction.getName()).send(player, false);
 
         PlayerManager manager = source.getServer().getPlayerManager();
         for (ServerPlayerEntity p : manager.getPlayerList()) {
@@ -114,6 +144,14 @@ public class AdminCommand implements Command {
                         .suggests(Suggests.allFactions())
                         .executes(this::power)
                     )
+                )
+            )
+            .then(
+                CommandManager.literal("kick")
+                .requires(Requires.hasPerms("factions.admin.kick", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                .then(
+                    CommandManager.argument("player", EntityArgumentType.player())
+                    .executes(this::kick)
                 )
             )
             .build();
