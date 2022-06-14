@@ -225,6 +225,48 @@ public class ClaimCommand implements Command {
         return 1;
     }
 
+    private int setAccessLevel(CommandContext<ServerCommandSource> context, boolean increase) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+
+        ServerPlayerEntity player = source.getPlayer();
+        ServerWorld world = player.getWorld();
+
+        ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
+        String dimension = world.getRegistryKey().getValue().toString();
+
+        Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+
+        if (claim == null) {
+            new Message("Cannot change access level on unclaimed chunk").fail().send(player, false);
+            return 0;
+        }
+
+        User user = Command.getUser(player);
+        Faction faction = user.getFaction();
+
+        if (!user.bypass && claim.getFaction().getID() != faction.getID()) {
+            new Message("Cannot change access level on another factions claim").fail().send(player, false);
+            return 0;
+        }
+
+        if (increase) {
+            switch (claim.accessLevel) {
+                case LEADER -> claim.accessLevel = User.Rank.OWNER;
+                case COMMANDER -> claim.accessLevel = User.Rank.LEADER;
+                case MEMBER -> claim.accessLevel = User.Rank.COMMANDER;
+            }
+        } else {
+            switch (claim.accessLevel) {
+                case OWNER -> claim.accessLevel = User.Rank.LEADER;
+                case LEADER -> claim.accessLevel = User.Rank.COMMANDER;
+                case COMMANDER -> claim.accessLevel = User.Rank.MEMBER;
+            }
+        }
+
+        new Message("Claim (%d, %d) changed to level %s by %s", claim.x, claim.z, claim.accessLevel.toString(), player.getName().getString()).send(faction);
+        return 1;
+    }
+
     @Override
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
@@ -269,6 +311,20 @@ public class ClaimCommand implements Command {
                 CommandManager.literal("auto")
                 .requires(Requires.hasPerms("factions.claim.auto", 0))
                 .executes(this::auto)
+            )
+            .then(
+                CommandManager.literal("access")
+                .requires(Requires.hasPerms("factions.claim.access", 0))
+                .then(
+                    CommandManager.literal("increase")
+                    .requires(Requires.hasPerms("factions.claim.access.increase", 0))
+                    .executes((context) -> setAccessLevel(context, true))
+                )
+                .then(
+                    CommandManager.literal("decrease")
+                    .requires(Requires.hasPerms("factions.claim.access.decrease", 0))
+                    .executes((context) -> setAccessLevel(context, false))
+                )
             )
             .build();
     }

@@ -148,14 +148,24 @@ public class InteractionManager {
 
         Faction userFaction = user.getFaction();
 
-        if (claimFaction == userFaction) {
+        if (claimFaction == userFaction && getRankLevel(claim.accessLevel) <= getRankLevel(user.rank)) {
             return ActionResult.PASS;
         }
 
-        if (claimFaction.isMutualAllies(userFaction.getID())) {
+        if (claimFaction.isMutualAllies(userFaction.getID()) && claim.accessLevel == User.Rank.MEMBER) {
             return ActionResult.SUCCESS;
         }
 
         return ActionResult.FAIL;
+    }
+
+    private static int getRankLevel(User.Rank rank) {
+        switch (rank) {
+            case OWNER -> { return 3; }
+            case LEADER -> { return 2; }
+            case COMMANDER -> { return 1; }
+            case MEMBER -> { return 0; }
+            default ->  { return -1; }
+        }
     }
 }

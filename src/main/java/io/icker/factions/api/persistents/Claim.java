@@ -8,6 +8,7 @@ import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
+import io.icker.factions.api.persistents.User.Rank;
 
 @Name("Claim")
 public class Claim {
@@ -25,11 +26,15 @@ public class Claim {
     @Field("FactionID")
     public UUID factionID;
 
+    @Field("AccessLevel")
+    public Rank accessLevel;
+
     public Claim(int x, int z, String level, UUID factionID) {
         this.x = x;
         this.z = z;
         this.level = level;
         this.factionID = factionID;
+        this.accessLevel = Rank.MEMBER;
     }
 
     public Claim() { ; }
