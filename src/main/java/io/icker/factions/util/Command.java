@@ -1,10 +1,8 @@
 package io.icker.factions.util;
 
-import java.util.function.Predicate;
-
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -12,6 +10,8 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+
+import java.util.function.Predicate;
 
 
 public interface Command {
@@ -62,7 +62,12 @@ public interface Command {
 
         public static Predicate<ServerCommandSource> require(Requires req) {
             return source -> {
-                ServerPlayerEntity entity = source.getPlayer();
+                ServerPlayerEntity entity = null;
+                try {
+                    entity = source.getPlayer();
+                } catch (CommandSyntaxException e) {
+                    FactionsMod.LOGGER.info("Error in command requirements", e);
+                }
                 User user = User.get(entity.getUuid());
                 return req.run(user);
             };

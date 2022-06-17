@@ -1,8 +1,8 @@
 package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.config.Config;
@@ -12,7 +12,7 @@ import net.minecraft.server.command.ServerCommandSource;
 
 public class SafeCommand implements Command {
 
-    private int run(CommandContext<ServerCommandSource> context) {
+    private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         PlayerEvents.OPEN_SAFE.invoker().onOpenSafe(context.getSource().getPlayer());
         return 1;
     }

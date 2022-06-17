@@ -3,7 +3,6 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -29,7 +28,7 @@ public class SettingsCommand implements Command{
         return 1;
     }
 
-    private int setSounds(CommandContext<ServerCommandSource> context, User.SoundMode option) {
+    private int setSounds(CommandContext<ServerCommandSource> context, User.SoundMode option) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         User user = User.get(player.getUuid());
         user.sounds = option;
