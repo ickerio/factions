@@ -31,12 +31,12 @@ public class ChatManager {
 
     private static void global(ServerPlayerEntity sender, String message) {
         FactionsMod.LOGGER.info("[" + sender.getName().asString() + " -> All] " + message);
-        new Message(String.format("[%s] ") + message).format(Formatting.GRAY).sendToGlobalChat();
+        new Message(String.format("[%s] ", sender.getName().getString()) + message).format(Formatting.GRAY).sendToGlobalChat();
     }
 
     private static void inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
         FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> All] " + message);
-        new Message(String.format("[%s] "))
+        new Message(String.format("[%s] ", sender.getName().getString()))
             .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
             .filler("»")
             .add(new Message(message).format(Formatting.GRAY))
@@ -53,7 +53,7 @@ public class ChatManager {
 
     private static void faction(ServerPlayerEntity sender, Faction faction, String message) {
         FactionsMod.LOGGER.info("[" + faction.getName() + " " + sender.getName().asString() + " -> " + faction.getName() + "] " + message);
-        new Message(String.format("[%s] "))
+        new Message(String.format("[%s] ", sender.getName().getString()))
             .add(new Message("F").format(Formatting.BOLD, faction.getColor()))
             .filler("»")
             .add(new Message(message).format(Formatting.GRAY))
