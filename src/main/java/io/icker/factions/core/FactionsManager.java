@@ -47,7 +47,10 @@ public class FactionsManager {
     }
 
     private static void memberChange(Faction faction, User user) {
-        updatePlayerList(playerManager.getPlayer(user.getID()));
+        ServerPlayerEntity player = playerManager.getPlayer(user.getID());
+        if (player != null) {
+            updatePlayerList(player);
+        }
     }
 
     private static void playerDeath(ServerPlayerEntity player, DamageSource source) {
