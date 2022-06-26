@@ -7,14 +7,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.FactionsMod;
-import io.icker.factions.api.events.FactionEvents;
-import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -54,11 +51,25 @@ public class AdminCommand implements Command {
         int adjusted = target.adjustPower(power);
         if (adjusted != 0) {
             if (power > 0) {
-                new Message("Admin %s added %d power", player.getName().getString(), adjusted).send(target);
-                new Message("Added %d power", adjusted).send(player, false);
+                new Message(
+                    "Admin %s added %d power",
+                    player.getName().getString(),
+                    adjusted
+                ).send(target);
+                new Message(
+                    "Added %d power",
+                    adjusted
+                ).send(player, false);
             } else {
-                new Message("Admin %s removed %d power", player.getName().getString(), adjusted).send(target);
-                new Message("Removed %d power", adjusted).send(player, false);
+                new Message(
+                    "Admin %s removed %d power",
+                    player.getName().getString(),
+                    adjusted
+                ).send(target);
+                new Message(
+                    "Removed %d power",
+                    adjusted
+                ).send(player, false);
             }
         } else {
             new Message("Could not change power").fail().send(player, false);

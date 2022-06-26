@@ -97,12 +97,21 @@ public class ClaimCommand implements Command {
 
         chunks.forEach(chunk -> faction.addClaim(chunk.x, chunk.z, dimension));
         if (size == 1) {
-            new Message("Chunk (%d, %d) claimed by %s", chunks.get(0).x, chunks.get(0).z, player.getName().getString())
-                .send(faction);
+            new Message(
+                "Chunk (%d, %d) claimed by %s",
+                chunks.get(0).x,
+                chunks.get(0).z,
+                player.getName().getString()
+            ).send(faction);
         } else {
-            new Message("Chunks (%d, %d) to (%d, %d) claimed by %s", chunks.get(0).x, chunks.get(0).z,
-                    chunks.get(0).x + size - 1, chunks.get(0).z + size - 1, player.getName().getString())
-                .send(faction);
+            new Message(
+                "Chunks (%d, %d) to (%d, %d) claimed by %s",
+                chunks.get(0).x,
+                chunks.get(0).z,
+                chunks.get(0).x + size - 1,
+                chunks.get(0).z + size - 1,
+                player.getName().getString()
+            ).send(faction);
         }
 
         return 1;
@@ -151,7 +160,9 @@ public class ClaimCommand implements Command {
         Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
         if (existingClaim == null) {
-            new Message("Cannot remove a claim on an unclaimed chunk").fail().send(player, false);
+            new Message("Cannot remove a claim on an unclaimed chunk")
+                .fail()
+                .send(player, false);
             return 0;
         }
 
@@ -159,12 +170,19 @@ public class ClaimCommand implements Command {
         Faction faction = user.getFaction();
 
         if (!user.bypass && existingClaim.getFaction().getID() != faction.getID()) {
-            new Message("Cannot remove a claim owned by another faction").fail().send(player, false);
+            new Message("Cannot remove a claim owned by another faction")
+                .fail()
+                .send(player, false);
             return 0;
         }
 
         existingClaim.remove();
-        new Message("Claim (%d, %d) removed by %s", existingClaim.x, existingClaim.z, player.getName().getString()).send(faction);
+        new Message(
+            "Claim (%d, %d) removed by %s",
+            existingClaim.x,
+            existingClaim.z,
+            player.getName().getString()
+        ).send(faction);
         return 1;
     }
 
@@ -189,9 +207,14 @@ public class ClaimCommand implements Command {
         }
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos().add((-size + 1) * 16, 0, (-size + 1) * 16)).getPos();
-        new Message("Claims (%d, %d) to (%d, %d) removed by %s ", chunkPos.x, chunkPos.z,
-                chunkPos.x + size - 1, chunkPos.z + size - 1, player.getName().getString())
-            .send(faction);
+        new Message(
+            "Claims (%d, %d) to (%d, %d) removed by %s ",
+            chunkPos.x,
+            chunkPos.z,
+            chunkPos.x + size - 1,
+            chunkPos.z + size - 1,
+            player.getName().getString()
+        ).send(faction);
 
         return 1;
     }
@@ -203,7 +226,10 @@ public class ClaimCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.removeAllClaims();
-        new Message("All claims removed by %s", player.getName().getString()).send(faction);
+        new Message(
+            "All claims removed by %s",
+            player.getName().getString()
+        ).send(faction);
         return 1;
     }
 
@@ -225,6 +251,7 @@ public class ClaimCommand implements Command {
         return 1;
     }
 
+    @SuppressWarnings("")
     private int setAccessLevel(CommandContext<ServerCommandSource> context, boolean increase) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
@@ -237,7 +264,9 @@ public class ClaimCommand implements Command {
         Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
         if (claim == null) {
-            new Message("Cannot change access level on unclaimed chunk").fail().send(player, false);
+            new Message("Cannot change access level on unclaimed chunk")
+                .fail()
+                .send(player, false);
             return 0;
         }
 
@@ -245,12 +274,20 @@ public class ClaimCommand implements Command {
         Faction faction = user.getFaction();
 
         if (!user.bypass && claim.getFaction().getID() != faction.getID()) {
-            new Message("Cannot change access level on another factions claim").fail().send(player, false);
+            new Message("Cannot change access level on another factions claim")
+                .fail()
+                .send(player, false);
             return 0;
         }
 
         if (increase) {
             switch (claim.accessLevel) {
+                case OWNER -> {
+                    new Message("Cannot increase access level as it is already at its maximum.")
+                        .fail()
+                        .send(player, false);
+                    return 0;
+                }
                 case LEADER -> claim.accessLevel = User.Rank.OWNER;
                 case COMMANDER -> claim.accessLevel = User.Rank.LEADER;
                 case MEMBER -> claim.accessLevel = User.Rank.COMMANDER;
@@ -260,10 +297,22 @@ public class ClaimCommand implements Command {
                 case OWNER -> claim.accessLevel = User.Rank.LEADER;
                 case LEADER -> claim.accessLevel = User.Rank.COMMANDER;
                 case COMMANDER -> claim.accessLevel = User.Rank.MEMBER;
+                case MEMBER -> {
+                    new Message("Cannot decrease access level as it is already at its minimum.")
+                        .fail()
+                        .send(player, false);
+                    return 0;
+                }
             }
         }
 
-        new Message("Claim (%d, %d) changed to level %s by %s", claim.x, claim.z, claim.accessLevel.toString(), player.getName().getString()).send(faction);
+        new Message(
+            "Claim (%d, %d) changed to level %s by %s",
+            claim.x,
+            claim.z,
+            claim.accessLevel.toString(),
+            player.getName().getString()
+        ).send(faction);
         return 1;
     }
 

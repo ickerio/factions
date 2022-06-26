@@ -9,7 +9,6 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
-import io.icker.factions.api.persistents.User;
 import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -77,7 +76,13 @@ public class HomeCommand implements Command {
         );
 
         faction.setHome(home);
-        new Message("Home set to %.2f, %.2f, %.2f by %s", home.x, home.y, home.z, player.getName().getString()).send(faction);
+        new Message(
+            "Home set to %.2f, %.2f, %.2f by %s",
+            home.x,
+            home.y,
+            home.z,
+            player.getName().getString()
+        ).send(faction);
         return 1;
     }
 
