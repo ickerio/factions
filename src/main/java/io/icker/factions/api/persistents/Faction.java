@@ -1,11 +1,5 @@
 package io.icker.factions.api.persistents;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
@@ -13,6 +7,8 @@ import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.util.Formatting;
+
+import java.util.*;
 
 @Name("Faction")
 public class Faction {
@@ -239,6 +235,9 @@ public class Faction {
     public void remove() {
         for (User user : getUsers()) {
             user.leaveFaction();
+        }
+        for (Relationship rel : relationships) {
+            Faction.get(rel.target).removeRelationship(id);
         }
         removeAllClaims();
         STORE.remove(id);
