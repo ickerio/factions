@@ -29,8 +29,6 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         super(entityType, world);
     }
 
-    public String language = "en_us";
-
     @Inject(at = @At("HEAD"), method = "setClientSettings")
     public void setClientSettings(ClientSettingsC2SPacket packet, CallbackInfo info) {
         User member = User.get(((ServerPlayerEntity)(Object) this).getUuid());
