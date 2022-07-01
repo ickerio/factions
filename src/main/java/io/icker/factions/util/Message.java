@@ -23,14 +23,6 @@ public class Message {
         text = (MutableText) Text.of(String.format(message, args));
     }
 
-    public Message(MutableText message) {
-        text = message;
-    }
-
-    public static Message translate(String key, Object... args) {
-        return new Message(Text.translatable(key, args));
-    }
-
     public Message add(String message) {
         text.append(message);
         return this;

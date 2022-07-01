@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -14,6 +15,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Formatting;
 
 public class AdminCommand implements Command {
     private int bypass(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -23,10 +25,11 @@ public class AdminCommand implements Command {
         boolean bypass = !user.bypass;
         user.bypass = bypass;
 
-        Message.translate("chat.factions.admin.bypass")
+        new Message("Successfully toggled claim bypass")
                 .filler("·")
                 .add(
-                    Message.translate(user.bypass ? "chat.factions.on" : "chat.factions.off")
+                    new Message(user.bypass ? "ON" : "OFF")
+                        .format(user.bypass ? Formatting.GREEN : Formatting.RED)
                 )
                 .send(player, false);
 
@@ -35,7 +38,7 @@ public class AdminCommand implements Command {
 
     private int reload(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         FactionsMod.dynmap.reloadAll();
-        Message.translate("chat.factions.admin.reload").send(context.getSource().getPlayer(), false);
+        new Message("Reloaded dynmap marker").send(context.getSource().getPlayer(), false);
         return 1;
     }
 
@@ -48,28 +51,28 @@ public class AdminCommand implements Command {
         int adjusted = target.adjustPower(power);
         if (adjusted != 0) {
             if (power > 0) {
-                Message.translate(
-                    "chat.factions.admin.power.add.target",
+                new Message(
+                    "Admin %s added %d power",
                     player.getName().getString(),
                     adjusted
                 ).send(target);
-                Message.translate(
-                    "chat.factions.admin.power.add",
+                new Message(
+                    "Added %d power",
                     adjusted
                 ).send(player, false);
             } else {
-                Message.translate(
-                    "chat.factions.admin.power.remove.target",
+                new Message(
+                    "Admin %s removed %d power",
                     player.getName().getString(),
                     adjusted
                 ).send(target);
-                Message.translate(
-                    "chat.factions.admin.power.remove",
+                new Message(
+                    "Removed %d power",
                     adjusted
                 ).send(player, false);
             }
         } else {
-            Message.translate("chat.factions.admin.power.fail").fail().send(player, false);
+            new Message("Could not change power").fail().send(player, false);
         }
 
         return 1;
