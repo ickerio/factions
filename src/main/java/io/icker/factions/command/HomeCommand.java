@@ -4,7 +4,6 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
@@ -12,7 +11,7 @@ import io.icker.factions.api.persistents.Home;
 import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import net.minecraft.entity.damage.DamageTracker;
+import net.minecraft.entity.damage.DamageRecord;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -43,8 +42,8 @@ public class HomeCommand implements Command {
             return 0;
         }
 
-        DamageTracker tracker = player.getDamageTracker();
-        if (tracker.getMostRecentDamage() == null || tracker.getTimeSinceLastAttack() > FactionsMod.CONFIG.SAFE_TICKS_TO_WARP) {
+        DamageRecord damageRecord = player.getDamageTracker().getMostRecentDamage();
+        if (damageRecord == null || player.age - damageRecord.getEntityAge() > FactionsMod.CONFIG.SAFE_TICKS_TO_WARP) {
             player.teleport(
                     world,
                     home.x, home.y, home.z,

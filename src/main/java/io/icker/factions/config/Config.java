@@ -1,15 +1,14 @@
 package io.icker.factions.config;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
-
 import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 
 public class Config {
     private static final int REQUIRED_VERSION = 2;
@@ -85,7 +84,7 @@ public class Config {
     public int MAX_FACTION_SIZE = -1;
     
     @SerializedName("safeTicksToWarp")
-    public int SAFE_TICKS_TO_WARP = 1000;
+    public int SAFE_TICKS_TO_WARP = 100;
 
     @SerializedName("powerDeathPenalty")
     public int POWER_DEATH_PENALTY = 10;
