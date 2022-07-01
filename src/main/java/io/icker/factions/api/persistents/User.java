@@ -55,6 +55,7 @@ public class User {
 
     public boolean autoclaim = false;
     public boolean bypass = false;
+    public String language = "en_us";
 
     private User spoof;
 
