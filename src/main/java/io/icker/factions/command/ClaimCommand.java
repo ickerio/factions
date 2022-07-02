@@ -1,16 +1,9 @@
 package io.icker.factions.command;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
@@ -23,6 +16,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ClaimCommand implements Command {
     private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -121,8 +120,8 @@ public class ClaimCommand implements Command {
         ServerPlayerEntity player = context.getSource().getPlayer();
         Faction faction = Command.getUser(player).getFaction();
 
-        int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.CLAIM_WEIGHT;
-        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
+        int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
         if (maxPower < requiredPower) {
             new Message("Not enough faction power to claim chunk").fail().send(player, false);
@@ -137,8 +136,8 @@ public class ClaimCommand implements Command {
         ServerPlayerEntity player = context.getSource().getPlayer();
         Faction faction = Command.getUser(player).getFaction();
 
-        int requiredPower = (faction.getClaims().size() + (int)Math.pow(size * 2 - 1, 2)) * FactionsMod.CONFIG.CLAIM_WEIGHT;
-        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
+        int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
         if (maxPower < requiredPower) {
             new Message("Not enough faction power to claim chunks").fail().send(player, false);

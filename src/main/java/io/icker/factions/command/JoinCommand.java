@@ -4,7 +4,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -44,7 +43,7 @@ public class JoinCommand implements Command {
         source.getServer().getPlayerManager().sendCommandTree(player);
 
         new Message(player.getName().getString() + " joined").send(faction);
-        faction.adjustPower(FactionsMod.CONFIG.MEMBER_POWER);
+        faction.adjustPower(FactionsMod.CONFIG.POWER.MEMBER);
         return 1;
     }
 

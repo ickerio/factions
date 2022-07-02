@@ -5,7 +5,6 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.config.Config;
 import io.icker.factions.util.Message;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.damage.DamageSource;
@@ -59,7 +58,7 @@ public class FactionsManager {
 
         Faction faction = member.getFaction();
 
-        int adjusted = faction.adjustPower(-FactionsMod.CONFIG.POWER_DEATH_PENALTY);
+        int adjusted = faction.adjustPower(-FactionsMod.CONFIG.POWER.POWER_TICKS.DEATH_PENALTY);
         new Message(
             "%s lost %d power from dying",
             player.getName().getString(),
@@ -73,7 +72,7 @@ public class FactionsManager {
 
         Faction faction = member.getFaction();
 
-        int adjusted = faction.adjustPower(FactionsMod.CONFIG.TICKS_FOR_POWER_REWARD);
+        int adjusted = faction.adjustPower(FactionsMod.CONFIG.POWER.POWER_TICKS.REWARD);
         if (adjusted != 0)
             new Message(
                 "%s gained %d power from surviving",
@@ -90,7 +89,7 @@ public class FactionsManager {
         User user =  User.get(player.getUuid());
 
         if (!user.isInFaction()) {
-            if (FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ENDERCHEST || FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ENABLED) {
+            if (FactionsMod.CONFIG.SAFE != null && FactionsMod.CONFIG.SAFE.ENDER_CHEST) {
                 new Message("Cannot use enderchests when not in a faction").fail().send(player, false);
                 return ActionResult.FAIL;
             }
@@ -100,7 +99,7 @@ public class FactionsManager {
         player.openHandledScreen(
             new SimpleNamedScreenHandlerFactory(
                 (syncId, inventory, p) -> {
-                    if (FactionsMod.CONFIG.FACTION_SAFE_DOUBLE) {
+                    if (FactionsMod.CONFIG.SAFE.DOUBLE) {
                         return GenericContainerScreenHandler.createGeneric9x6(syncId, inventory, faction.getSafe());
                     } else {
                         return GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, faction.getSafe());

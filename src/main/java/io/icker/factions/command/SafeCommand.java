@@ -2,10 +2,8 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
-import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -27,7 +25,7 @@ public class SafeCommand implements Command {
                 Requires.multiple(
                     Requires.hasPerms("faction.safe", 0),
                     Requires.isMember(),
-                    s -> FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.COMMAND || FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ENABLED
+                    s -> FactionsMod.CONFIG.SAFE != null
                 )
             )
             .executes(this::run)

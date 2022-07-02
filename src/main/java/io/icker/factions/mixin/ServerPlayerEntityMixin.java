@@ -1,11 +1,5 @@
 package io.icker.factions.mixin;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
@@ -21,6 +15,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends LivingEntity {
@@ -44,7 +43,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void tick(CallbackInfo info) {
-        if (age % FactionsMod.CONFIG.TICKS_FOR_POWER != 0 || age == 0) return;
+        if (age % FactionsMod.CONFIG.POWER.POWER_TICKS.TICKS != 0 || age == 0) return;
         PlayerEvents.ON_POWER_TICK.invoker().onPowerTick((ServerPlayerEntity) (Object) this);
     }
 

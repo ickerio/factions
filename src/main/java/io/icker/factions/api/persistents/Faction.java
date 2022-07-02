@@ -152,7 +152,7 @@ public class Faction {
     }
 
     public int adjustPower(int adjustment) {
-        int maxPower = FactionsMod.CONFIG.BASE_POWER + (getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER);
+        int maxPower = FactionsMod.CONFIG.POWER.BASE + (getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER);
         int newPower = Math.min(Math.max(0, power + adjustment), maxPower);
         int oldPower = this.power;
 

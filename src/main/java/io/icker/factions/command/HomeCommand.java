@@ -8,7 +8,6 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
-import io.icker.factions.config.Config;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.entity.damage.DamageRecord;
@@ -43,7 +42,7 @@ public class HomeCommand implements Command {
         }
 
         DamageRecord damageRecord = player.getDamageTracker().getMostRecentDamage();
-        if (damageRecord == null || player.age - damageRecord.getEntityAge() > FactionsMod.CONFIG.SAFE_TICKS_TO_WARP) {
+        if (damageRecord == null || player.age - damageRecord.getEntityAge() > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
             player.teleport(
                     world,
                     home.x, home.y, home.z,
@@ -86,7 +85,7 @@ public class HomeCommand implements Command {
     }
 
     private static boolean checkLimitToClaim(Faction faction, ServerWorld world, BlockPos pos) {
-        if (FactionsMod.CONFIG.HOME == Config.HomeOptions.ANYWHERE) return false;
+        if (!FactionsMod.CONFIG.HOME.CLAIM_ONLY) return false;
 
         ChunkPos chunkPos = world.getChunk(pos).getPos();
         String dimension = world.getRegistryKey().getValue().toString();
@@ -99,7 +98,7 @@ public class HomeCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("home")
-            .requires(Requires.multiple(Requires.isMember(), s -> FactionsMod.CONFIG.HOME != Config.HomeOptions.DISABLED, Requires.hasPerms("factions.home", 0)))
+            .requires(Requires.multiple(Requires.isMember(), s -> FactionsMod.CONFIG.HOME != null, Requires.hasPerms("factions.home", 0)))
             .executes(this::go)
             .then(
                 CommandManager.literal("set")
