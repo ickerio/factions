@@ -1,31 +1,26 @@
 package io.icker.factions;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.command.*;
 import io.icker.factions.config.Config;
-import io.icker.factions.core.ChatManager;
-import io.icker.factions.core.FactionsManager;
-import io.icker.factions.core.InteractionManager;
-import io.icker.factions.core.ServerManager;
-import io.icker.factions.core.SoundManager;
-import io.icker.factions.core.WorldManager;
+import io.icker.factions.core.*;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.Migrator;
+import io.icker.factions.util.PlaceholdersWrapper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FactionsMod implements ModInitializer {
     public static Logger LOGGER = LogManager.getLogger("Factions");
+    public static final String MODID = "factions";
 
     public static Config CONFIG = Config.load();
     public static DynmapWrapper dynmap;
@@ -35,6 +30,7 @@ public class FactionsMod implements ModInitializer {
         LOGGER.info("Initialized Factions Mod for Minecraft v1.19");
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
+        PlaceholdersWrapper.init();
         Migrator.migrate();
 
         ChatManager.register();

@@ -152,7 +152,7 @@ public class Faction {
     }
 
     public int adjustPower(int adjustment) {
-        int maxPower = FactionsMod.CONFIG.BASE_POWER + (getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER);
+        int maxPower = calculateMaxPower();
         int newPower = Math.min(Math.max(0, power + adjustment), maxPower);
         int oldPower = this.power;
 
@@ -246,5 +246,11 @@ public class Faction {
 
     public static void save() {
         Database.save(Faction.class, STORE.values().stream().toList());
+    }
+
+//  TODO(samu): import per-player power patch
+//  FIXME(samu): Using normal max power forumla instead of per-player max power
+    public int calculateMaxPower(){
+        return FactionsMod.CONFIG.BASE_POWER + (getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER);
     }
 }

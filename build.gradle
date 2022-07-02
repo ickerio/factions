@@ -13,6 +13,7 @@ group = project.maven_group
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url = "https://repo.mikeprimm.com/" }
+    maven { url "https://maven.nucleoid.xyz/" }
 }
 
 loom {
@@ -26,6 +27,7 @@ dependencies {
     
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "me.lucko:fabric-permissions-api:${project.lucko_permissions_version}"
+    modImplementation include("eu.pb4:placeholder-api:${project.papi_version}")
     include "me.lucko:fabric-permissions-api:${project.lucko_permissions_version}"
     compileOnly "us.dynmap:DynmapCoreAPI:${project.dynmap_api_version}"
     implementation(include("com.h2database:h2:${project.h2_version}"))
