@@ -1,19 +1,19 @@
 package io.icker.factions.api.persistents;
 
+import io.icker.factions.api.events.FactionEvents;
+import io.icker.factions.database.Database;
+import io.icker.factions.database.Field;
+import io.icker.factions.database.Name;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import io.icker.factions.api.events.FactionEvents;
-import io.icker.factions.database.Database;
-import io.icker.factions.database.Field;
-import io.icker.factions.database.Name;
-
 @Name("User")
 public class User {
-    private static final HashMap<UUID, User> STORE = Database.load(User.class, p -> p.getID());
+    private static final HashMap<UUID, User> STORE = Database.load(User.class, User::getID);
 
     public enum ChatMode {
         FOCUS,
@@ -63,8 +63,9 @@ public class User {
         this.id = id;
     }
 
-    public User() { ; }
+    public User() {}
 
+    @SuppressWarnings("unused")
     public String getKey() {
         return id.toString();
     }
@@ -78,9 +79,9 @@ public class User {
 
     public static List<User> getByFaction(UUID factionID) {
         return STORE.values()
-            .stream()
-            .filter(m -> m.isInFaction() && m.factionID.equals(factionID))
-            .toList();
+                .stream()
+                .filter(m -> m.isInFaction() && m.factionID.equals(factionID))
+                .toList();
     }
 
     public static void add(User user) {
@@ -97,11 +98,11 @@ public class User {
 
     private String getEnumName(Enum<?> value) {
         return Arrays
-            .stream(value.name().split("_"))
-            .map(word -> word.isEmpty() ? word :
-                Character.toTitleCase(word.charAt(0)) +
-                word.substring(1).toLowerCase())
-            .collect(Collectors.joining(" "));
+                .stream(value.name().split("_"))
+                .map(word -> word.isEmpty() ? word :
+                        Character.toTitleCase(word.charAt(0)) +
+                        word.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
     }
 
     public String getRankName() {
@@ -144,4 +145,5 @@ public class User {
     public static void save() {
         Database.save(User.class, STORE.values().stream().toList());
     }
+
 }
