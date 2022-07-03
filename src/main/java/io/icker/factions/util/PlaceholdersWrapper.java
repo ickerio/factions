@@ -22,7 +22,6 @@ public class PlaceholdersWrapper {
     public static final Identifier FACTION_POWER_FORMATTED_ID = new Identifier(MODID, "power_formatted");
     public static final Identifier FACTION_MAX_POWER_ID = new Identifier(MODID, "max_power");
     public static final Identifier FACTION_PLAYER_POWER_ID = new Identifier(MODID, "player_power");
-    public static final Identifier FACTION_PLAYER_MAX_POWER_ID = new Identifier(MODID, "player_max_power");
     public static final Identifier FACTION_REQUIRED_POWER_ID = new Identifier(MODID, "required_power");
     public static final Identifier FACTION_REQUIRED_POWER_FORMATTED_ID = new Identifier(MODID, "required_power_formatted");
     public static final String NULL_STRING = "N/A";
@@ -110,8 +109,6 @@ public class PlaceholdersWrapper {
             final var faction = member.getFaction();
 
             if (faction != null) {
-//              TODO(samu): import per-player power patch
-//              FIXME(samu): Using normal max power formula instead of per-player max power
                 final int red = mapBoundRange(faction.calculateMaxPower(), 0, 170, 255, faction.getPower());
                 final int green = mapBoundRange(0, faction.calculateMaxPower(), 170, 255, faction.getPower());
                 r = Text.literal("" + faction.getPower()).setStyle(Style.EMPTY.withColor(TextColor.parse("#" + toHexString(red) + toHexString(green) + "AA")));
@@ -131,34 +128,13 @@ public class PlaceholdersWrapper {
 
             final var faction = member.getFaction();
 
-//          TODO(samu): import per-player power patch
-//          FIXME(samu): Using normal max power formula instead of per-player max power
             if (faction != null) r = "" + faction.calculateMaxPower();
 
             return value(r);
         });
 
         register(FACTION_PLAYER_POWER_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer()) return invalid("No Player!");
-            assert ctx.player() != null;
-
-            final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value("" + User.getPower(ctx.player().getUuid()));
-
-            String r = "" + member.getPower();
-
-            return value(r);
-        });
-
-        register(FACTION_PLAYER_MAX_POWER_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer()) return invalid("No Player!");
-            assert ctx.player() != null;
-
-            final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value("" + User.getMaxPower(ctx.player().getUuid()));
-
-            String r = "" + member.getMaxPower();
-
+            String r = "" + FactionsMod.CONFIG.MEMBER_POWER;
             return value(r);
         });
 

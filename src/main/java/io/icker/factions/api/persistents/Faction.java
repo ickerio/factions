@@ -12,7 +12,7 @@ import java.util.*;
 
 @Name("Faction")
 public class Faction {
-    private static final HashMap<UUID, Faction> STORE = Database.load(Faction.class, f -> f.getID());
+    private static final HashMap<UUID, Faction> STORE = Database.load(Faction.class, Faction::getID);
 
     @Field("ID")
     private UUID id;
@@ -42,10 +42,10 @@ public class Faction {
     private SimpleInventory safe = new SimpleInventory(54);
 
     @Field("Invites")
-    public ArrayList<UUID> invites = new ArrayList<UUID>();
+    public ArrayList<UUID> invites = new ArrayList<>();
 
     @Field("Relationships")
-    private ArrayList<Relationship> relationships = new ArrayList<Relationship>();
+    private ArrayList<Relationship> relationships = new ArrayList<>();
 
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
@@ -57,8 +57,9 @@ public class Faction {
         this.power = power;
     }
 
-    public Faction() { ; }
+    public Faction() {}
 
+    @SuppressWarnings("unused")
     public String getKey() {
         return id.toString();
     }
@@ -83,6 +84,7 @@ public class Faction {
         return STORE.values();
     }
 
+    @SuppressWarnings("unused")
     public static List<Faction> allBut(UUID id) {
         return STORE.values()
             .stream()
@@ -118,6 +120,7 @@ public class Faction {
         return safe;
     }
 
+    @SuppressWarnings("unused")
     public void setSafe(SimpleInventory safe) {
         this.safe = safe;
     }
@@ -174,7 +177,7 @@ public class Faction {
     public void removeAllClaims() {
         Claim.getByFaction(id)
             .stream()
-            .forEach(c -> c.remove());
+            .forEach(Claim::remove);
         FactionEvents.REMOVE_ALL_CLAIMS.invoker().onRemoveAllClaims(this);
     }
 
@@ -249,7 +252,6 @@ public class Faction {
     }
 
 //  TODO(samu): import per-player power patch
-//  FIXME(samu): Using normal max power forumla instead of per-player max power
     public int calculateMaxPower(){
         return FactionsMod.CONFIG.BASE_POWER + (getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER);
     }

@@ -1,6 +1,5 @@
 package io.icker.factions.api.persistents;
 
-import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Name("User")
 public class User {
-    private static final HashMap<UUID, User> STORE = Database.load(User.class, p -> p.getID());
+    private static final HashMap<UUID, User> STORE = Database.load(User.class, User::getID);
 
     public enum ChatMode {
         FOCUS,
@@ -64,10 +63,9 @@ public class User {
         this.id = id;
     }
 
-    public User() {
-        ;
-    }
+    public User() {}
 
+    @SuppressWarnings("unused")
     public String getKey() {
         return id.toString();
     }
@@ -148,21 +146,4 @@ public class User {
         Database.save(User.class, STORE.values().stream().toList());
     }
 
-//  TODO(samu): import per-player power patch
-//  FIXME(samu): Using config member power instead of per-player max power
-//region user power
-    public static int getMaxPower(UUID userUUID) {
-        return FactionsMod.CONFIG.MEMBER_POWER;
-    }
-    public int getMaxPower() {
-        return FactionsMod.CONFIG.MEMBER_POWER;
-    }
-
-    public static int getPower(UUID userUUID) {
-        return FactionsMod.CONFIG.MEMBER_POWER;
-    }
-    public int getPower() {
-        return FactionsMod.CONFIG.MEMBER_POWER;
-    }
-//endregion
 }
