@@ -1,15 +1,10 @@
 package io.icker.factions.command;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -21,6 +16,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class InfoCommand implements Command {
     private int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -83,8 +82,8 @@ public class InfoCommand implements Command {
             .map(fac -> fac.getColor() + fac.getName())
             .collect(Collectors.joining(Formatting.GRAY + ", "));
 
-        int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT;
-        int maxPower = users.size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
+        int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+        int maxPower = users.size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
         new Message(Formatting.GRAY + faction.getDescription())
             .prependFaction(faction)

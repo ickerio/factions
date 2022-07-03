@@ -9,13 +9,21 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.List;
 
 public class Config {
-    private static final int REQUIRED_VERSION = 2;
+    private static final int REQUIRED_VERSION = 3;
     private static final File file = FabricLoader.getInstance().getGameDir().resolve("config").resolve("factions.json").toFile();
 
     public static Config load() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create(); 
+        Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .disableHtmlEscaping()
+            .serializeNulls()
+            .registerTypeAdapter(HomeConfig.class, new HomeConfig.Deserializer())
+            .registerTypeAdapter(PowerConfig.class, new PowerConfig.Deserializer())
+            .registerTypeAdapter(SafeConfig.class, new SafeConfig.Deserializer())
+            .create();
 
         try {
             if (!file.exists()) {
@@ -43,76 +51,33 @@ public class Config {
         }
     }
 
-    public enum HomeOptions {
-        @SerializedName("ANYWHERE")
-        ANYWHERE,
-
-        @SerializedName("CLAIMS")
-        CLAIMS,
-
-        @SerializedName("DISABLED")
-        DISABLED
-    }
-
-    public enum SafeOptions {
-        @SerializedName("ENABLED")
-        ENABLED,
-
-        @SerializedName("ENDERCHEST")
-        ENDERCHEST,
-
-        @SerializedName("COMMAND")
-        COMMAND,
-
-        @SerializedName("DISABLED")
-        DISABLED,
-    }
-
     @SerializedName("version")
     public int VERSION = REQUIRED_VERSION;
 
-    @SerializedName("basePower")
-    public int BASE_POWER = 20;
+    @SerializedName("power")
+    public PowerConfig POWER = new PowerConfig();
 
-    @SerializedName("memberPower")
-    public int MEMBER_POWER = 20;
-    
-    @SerializedName("claimWeight")
-    public int CLAIM_WEIGHT = 5;
+    @SerializedName("safe")
+    public SafeConfig SAFE = new SafeConfig();
+
+    @SerializedName("home")
+    public HomeConfig HOME = new HomeConfig();
 
     @SerializedName("maxFactionSize")
     public int MAX_FACTION_SIZE = -1;
-    
-    @SerializedName("safeTicksToWarp")
-    public int SAFE_TICKS_TO_WARP = 100;
 
-    @SerializedName("powerDeathPenalty")
-    public int POWER_DEATH_PENALTY = 10;
+    @SerializedName("changeChat")
+    public boolean MODIFY_CHAT = true;
 
-    @SerializedName("ticksForPower")
-    public int TICKS_FOR_POWER = 12000;
-
-    @SerializedName("ticksForPowerReward")
-    public int TICKS_FOR_POWER_REWARD = 1;
+    @SerializedName("friendlyFire")
+    public boolean FRIENDLY_FIRE = false;
 
     @SerializedName("requiredBypassLevel")
     public int REQUIRED_BYPASS_LEVEL = 2;
 
-    @SerializedName("home")
-    public HomeOptions HOME = HomeOptions.CLAIMS;
+    @SerializedName("factionNameMaxLength")
+    public int NAME_MAX_LENGTH = -1;
 
-    @SerializedName("radarEnabled")
-    public boolean RADAR = true;
-
-    @SerializedName("friendlyFireEnabled")
-    public boolean FRIENDLY_FIRE = false;
-
-    @SerializedName("chatModificationEnabled")
-    public boolean MODIFY_CHAT = true;
-
-    @SerializedName("factionSafe")
-    public SafeOptions FACTION_SAFE = SafeOptions.ENABLED;
-
-    @SerializedName("factionSafeDouble")
-    public boolean FACTION_SAFE_DOUBLE = true;
+    @SerializedName("nameBlackList")
+    public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless");
 }

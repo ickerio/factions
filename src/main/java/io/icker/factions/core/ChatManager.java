@@ -1,8 +1,5 @@
 package io.icker.factions.core;
 
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -11,6 +8,9 @@ import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class ChatManager {
     public static void register() {
@@ -48,7 +48,7 @@ public class ChatManager {
 
     private static Text inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
         return new Message("")
-                .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
+                .add(faction.getTruncatedName().format(Formatting.BOLD, faction.getColor()))
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))
                 .raw();

@@ -138,7 +138,7 @@ public class InteractionManager {
 
         Faction claimFaction = claim.getFaction();
 
-        if (claimFaction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT > claimFaction.getPower()) {
+        if (claimFaction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT > claimFaction.getPower()) {
             return ActionResult.PASS;
         }
 
