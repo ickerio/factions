@@ -75,6 +75,9 @@ public class Config {
     @SerializedName("requiredBypassLevel")
     public int REQUIRED_BYPASS_LEVEL = 2;
 
+    @SerializedName("factionNameMaxLength")
+    public int NAME_MAX_LENGTH = -1;
+
     @SerializedName("nameBlackList")
     public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless");
 }
