@@ -9,6 +9,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.List;
 
 public class Config {
     private static final int REQUIRED_VERSION = 3;
@@ -73,4 +74,7 @@ public class Config {
 
     @SerializedName("requiredBypassLevel")
     public int REQUIRED_BYPASS_LEVEL = 2;
+
+    @SerializedName("nameBlackList")
+    public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless");
 }

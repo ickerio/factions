@@ -14,12 +14,19 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
+import java.util.Locale;
+
 public class CreateCommand implements Command {
     private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, "name");
 
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+
+        if (FactionsMod.CONFIG.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
+            new Message("Cannot create a faction with this name as it is on the blacklist").fail().send(player, false);
+            return 0;
+        }
 
         if (Faction.getByName(name) != null) {
             new Message("Cannot create a faction as a one with that name already exists").fail().send(player, false);
