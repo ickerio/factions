@@ -134,7 +134,7 @@ public class PlaceholdersWrapper {
         });
 
         register(FACTION_PLAYER_POWER_ID, (ctx, argument) -> {
-            String r = "" + FactionsMod.CONFIG.MEMBER_POWER;
+            String r = "" + FactionsMod.CONFIG.POWER.MEMBER;
             return value(r);
         });
 
@@ -150,7 +150,7 @@ public class PlaceholdersWrapper {
             final var faction = member.getFaction();
 
             if (faction != null)
-                r = "" + faction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT;
+                r = "" + faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
 
             return value(r);
         });
@@ -168,7 +168,7 @@ public class PlaceholdersWrapper {
 
 
             if (faction != null) {
-                final int reqPower = faction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT;
+                final int reqPower = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
                 final int red = mapBoundRange(0, faction.getPower(), 85, 255, reqPower);
                 r = Text.literal("" + reqPower).setStyle(Style.EMPTY.withColor(TextColor.parse("#" + toHexString(red) + "5555")));
             }

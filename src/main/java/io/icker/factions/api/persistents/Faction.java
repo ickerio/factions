@@ -263,6 +263,6 @@ public class Faction {
 
 //  TODO(samu): import per-player power patch
     public int calculateMaxPower(){
-        return FactionsMod.CONFIG.BASE_POWER + (getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER);
+        return FactionsMod.CONFIG.POWER.BASE + (getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER);
     }
 }
