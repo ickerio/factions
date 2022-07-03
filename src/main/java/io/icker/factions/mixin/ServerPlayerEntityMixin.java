@@ -52,21 +52,23 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         Entity source = damageSource.getAttacker();
         if (source == null) return;
         ActionResult result = PlayerEvents.IS_INVULNERABLE.invoker().isInvulnerable(damageSource.getAttacker(), (ServerPlayerEntity) (Object) this);
-        if (result != ActionResult.PASS) info.setReturnValue(result == ActionResult.SUCCESS ? true : false);
+        if (result != ActionResult.PASS) info.setReturnValue(result == ActionResult.SUCCESS);
     }
 
     @Inject(method = "getPlayerListName", at = @At("HEAD"), cancellable = true)
     public void getPlayerListName(CallbackInfoReturnable<Text> cir) {
-        User member = User.get(((ServerPlayerEntity)(Object) this).getUuid());
-        if (member.isInFaction()) {
-            Faction faction = member.getFaction();
-            cir.setReturnValue(new Message(String.format("[%s] ", faction.getName())).format(faction.getColor()).add(
-                    new Message(((ServerPlayerEntity)(Object) this).getName().getString()).format(Formatting.WHITE)
-            ).raw());
-        } else {
-            cir.setReturnValue(new Message("[FACTIONLESS] ").format(Formatting.GRAY).add(
-                    new Message(((ServerPlayerEntity)(Object) this).getName().getString()).format(Formatting.WHITE)
-            ).raw());
+        if (FactionsMod.CONFIG.DISPLAY.TAB_MENU) {
+            User member = User.get(((ServerPlayerEntity) (Object) this).getUuid());
+            if (member.isInFaction()) {
+                Faction faction = member.getFaction();
+                cir.setReturnValue(new Message(String.format("[%s] ", faction.getName())).format(faction.getColor()).add(
+                        new Message(((ServerPlayerEntity) (Object) this).getName().getString()).format(Formatting.WHITE)
+                ).raw());
+            } else {
+                cir.setReturnValue(new Message("[FACTIONLESS] ").format(Formatting.GRAY).add(
+                        new Message(((ServerPlayerEntity) (Object) this).getName().getString()).format(Formatting.WHITE)
+                ).raw());
+            }
         }
     }
 }

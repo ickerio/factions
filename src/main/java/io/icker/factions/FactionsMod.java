@@ -30,7 +30,9 @@ public class FactionsMod implements ModInitializer {
         LOGGER.info("Initialized Factions Mod for Minecraft v1.19");
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
-        PlaceholdersWrapper.init();
+        if (FabricLoader.getInstance().isModLoaded("placeholder-api")) {
+            PlaceholdersWrapper.init();
+        }
         Migrator.migrate();
 
         ChatManager.register();

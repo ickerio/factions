@@ -63,11 +63,11 @@ public class Config {
     @SerializedName("home")
     public HomeConfig HOME = new HomeConfig();
 
+    @SerializedName("display")
+    public DisplayConfig DISPLAY = new DisplayConfig();
+
     @SerializedName("maxFactionSize")
     public int MAX_FACTION_SIZE = -1;
-
-    @SerializedName("changeChat")
-    public boolean MODIFY_CHAT = true;
 
     @SerializedName("friendlyFire")
     public boolean FRIENDLY_FIRE = false;
@@ -75,9 +75,17 @@ public class Config {
     @SerializedName("requiredBypassLevel")
     public int REQUIRED_BYPASS_LEVEL = 2;
 
-    @SerializedName("factionNameMaxLength")
-    public int NAME_MAX_LENGTH = -1;
-
     @SerializedName("nameBlackList")
     public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless");
+
+    public static class DisplayConfig {
+        @SerializedName("factionNameMaxLength")
+        public int NAME_MAX_LENGTH = -1;
+
+        @SerializedName("changeChat")
+        public boolean MODIFY_CHAT = true;
+
+        @SerializedName("tabMenu")
+        public boolean TAB_MENU = true;
+    }
 }
