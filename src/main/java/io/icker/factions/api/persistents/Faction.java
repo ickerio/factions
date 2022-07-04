@@ -103,8 +103,8 @@ public class Faction {
     }
 
     public Message getTruncatedName() {
-        boolean overLength = FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > -1 && name.length() > FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH;
-        Message displayName = new Message(overLength ? name.substring(0, FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH - 1) + "..." : name);
+        boolean overLength = CONFIG.DISPLAY.NAME_MAX_LENGTH > -1 && name.length() > CONFIG.DISPLAY.NAME_MAX_LENGTH;
+        Message displayName = new Message(overLength ? name.substring(0, CONFIG.DISPLAY.NAME_MAX_LENGTH - 1) + "..." : name);
         if (overLength) {
             displayName = displayName.hover(name);
         }
