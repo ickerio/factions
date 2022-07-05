@@ -28,6 +28,11 @@ public class CreateCommand implements Command {
             return 0;
         }
 
+        if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0 & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > name.length()) {
+            new Message("Cannot create a faction with this name as it is too long").fail().send(player, false);
+            return 0;
+        }
+
         if (Faction.getByName(name) != null) {
             new Message("Cannot create a faction as a one with that name already exists").fail().send(player, false);
             return 0;
