@@ -54,30 +54,30 @@ public class MemberCommand implements Command {
 
         long memberCount = users.stream().filter(u -> u.rank == User.Rank.MEMBER).count();
         String members = Formatting.WHITE +
-                users.stream()
-                    .filter(u -> u.rank == User.Rank.MEMBER)
-                    .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                    .collect(Collectors.joining(", "));
+            users.stream()
+                .filter(u -> u.rank == User.Rank.MEMBER)
+                .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+                .collect(Collectors.joining(", "));
 
         long commanderCount = users.stream().filter(u -> u.rank == User.Rank.COMMANDER).count();
         String commanders = Formatting.WHITE +
-                users.stream()
-                    .filter(u -> u.rank == User.Rank.COMMANDER)
-                        .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                    .collect(Collectors.joining(", "));
+            users.stream()
+                .filter(u -> u.rank == User.Rank.COMMANDER)
+                .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+                .collect(Collectors.joining(", "));
 
         long leaderCount = users.stream().filter(u -> u.rank == User.Rank.LEADER).count();
         String leaders = Formatting.WHITE +
-                users.stream()
-                    .filter(u -> u.rank == User.Rank.LEADER)
-                    .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                    .collect(Collectors.joining(", "));
+            users.stream()
+                .filter(u -> u.rank == User.Rank.LEADER)
+                .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+                .collect(Collectors.joining(", "));
 
         String owner = Formatting.WHITE +
-                users.stream()
-                        .filter(u -> u.rank == User.Rank.OWNER)
-                        .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                        .collect(Collectors.joining(", "));
+            users.stream()
+                .filter(u -> u.rank == User.Rank.OWNER)
+                .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+                .collect(Collectors.joining(", "));
 
         // generate the ---
         int totalChars = 32;
@@ -89,8 +89,8 @@ public class MemberCommand implements Command {
         new Message(Formatting.BLACK + dashes + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
             .send(player, false);
         new Message(Formatting.GOLD + "Total Members: ")
-                .add(Formatting.WHITE.toString() + users.size())
-                .send(player, false);
+            .add(Formatting.WHITE.toString() + users.size())
+            .send(player, false);
         new Message(Formatting.GOLD + "Owner: ")
             .add(owner)
             .send(player, false);
@@ -109,15 +109,15 @@ public class MemberCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-                .literal("members")
-                .requires(Command.Requires.hasPerms("factions.members", 0))
-                .executes(this::self)
-                .then(
-                        CommandManager.argument("faction", StringArgumentType.greedyString())
-                                .requires(Command.Requires.hasPerms("factions.members.other", 0))
-                                .suggests(Command.Suggests.allFactions())
-                                .executes(this::any)
-                )
-                .build();
+            .literal("members")
+            .requires(Command.Requires.hasPerms("factions.members", 0))
+            .executes(this::self)
+            .then(
+                CommandManager.argument("faction", StringArgumentType.greedyString())
+                    .requires(Command.Requires.hasPerms("factions.members.other", 0))
+                    .suggests(Command.Suggests.allFactions())
+                    .executes(this::any)
+            )
+            .build();
     }
 }

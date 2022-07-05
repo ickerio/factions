@@ -54,10 +54,10 @@ public class InfoCommand implements Command {
 
         UserCache cache = player.getServer().getUserCache();
         String owner = Formatting.WHITE +
-                users.stream()
-                    .filter(u -> u.rank == User.Rank.OWNER)
-                    .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                    .collect(Collectors.joining(", "));
+            users.stream()
+                .filter(u -> u.rank == User.Rank.OWNER)
+                .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+                .collect(Collectors.joining(", "));
 
         String usersList = users.stream()
             .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
@@ -84,7 +84,7 @@ public class InfoCommand implements Command {
         }
 
         new Message(Formatting.BLACK + dashes + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
-                .send(player, false);
+            .send(player, false);
         new Message(Formatting.GOLD + "Description: ")
             .add(Formatting.WHITE + faction.getDescription())
             .send(player, false);
@@ -99,11 +99,11 @@ public class InfoCommand implements Command {
             .hover("Current / Required / Max")
             .send(player, false);
         new Message(Formatting.GREEN + "Allies (" + Formatting.WHITE + faction.getMutualAllies().size() + Formatting.GREEN + "): ")
-                .add(mutualAllies)
-                .send(player, false);
+            .add(mutualAllies)
+            .send(player, false);
         new Message(Formatting.RED + "Enemies (" + Formatting.WHITE + faction.getEnemiesWith().size() + Formatting.RED + "): ")
-                .add(enemiesWith)
-                .send(player, false);
+            .add(enemiesWith)
+            .send(player, false);
 
         return 1;
     }
