@@ -5,7 +5,6 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
-import io.icker.factions.util.Message;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.util.Formatting;
 
@@ -99,15 +98,6 @@ public class Faction {
 
     public String getName() {
         return name;
-    }
-
-    public Message getTruncatedName() {
-        boolean overLength = FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > -1 && name.length() > FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH;
-        Message displayName = new Message(overLength ? name.substring(0, FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH - 1) + "..." : name);
-        if (overLength) {
-            displayName = displayName.hover(name);
-        }
-        return displayName;
     }
 
     public Formatting getColor() {
