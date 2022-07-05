@@ -17,6 +17,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -39,25 +40,32 @@ public class InteractionManager {
     }
 
     private static boolean onBreakBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
-        return !(checkPermissions(player, pos, world) == ActionResult.FAIL);
+        boolean result = checkPermissions(player, pos, world) == ActionResult.FAIL;
+        if (result) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "break blocks");
+        }
+        return !result;
     }
 
     private static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
         ItemStack stack = player.getStackInHand(hand);
 
         if (checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
             InteractionsUtil.sync(player, stack, hand);
             return ActionResult.FAIL;
         }
 
         BlockPos hitPos = hitResult.getBlockPos();
         if (checkPermissions(player, hitPos, world) == ActionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
             InteractionsUtil.sync(player, stack, hand);
             return ActionResult.FAIL;
         }
 
         BlockPos placePos = hitPos.add(hitResult.getSide().getVector());
         if (checkPermissions(player, placePos, world) == ActionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
             InteractionsUtil.sync(player, stack, hand);
             return ActionResult.FAIL;
         }
@@ -71,6 +79,8 @@ public class InteractionManager {
         if (item instanceof BucketItem) {
             ActionResult playerResult = checkPermissions(player, player.getBlockPos(), world);
             if (playerResult == ActionResult.FAIL) {
+                InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
+                InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                 return TypedActionResult.fail(player.getStackInHand(hand));
             }
                 
@@ -82,11 +92,15 @@ public class InteractionManager {
             if (raycastResult.getType() != BlockHitResult.Type.MISS) {
                 BlockPos raycastPos = raycastResult.getBlockPos();
                 if (checkPermissions(player, raycastPos, world) == ActionResult.FAIL) {
+                    InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
+                    InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return TypedActionResult.fail(player.getStackInHand(hand));
                 }
 
                 BlockPos placePos = raycastPos.add(raycastResult.getSide().getVector());
                 if (checkPermissions(player, placePos, world) == ActionResult.FAIL) {
+                    InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
+                    InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return TypedActionResult.fail(player.getStackInHand(hand));
                 }
             }
