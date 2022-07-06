@@ -80,11 +80,8 @@ public class MemberCommand implements Command {
                 .collect(Collectors.joining(", "));
 
         // generate the ---
-        int totalChars = 32;
-        String dashes = "";
-        for (int i = 0; i < (totalChars - faction.getName().length()) / 2; i++) {
-            dashes += "-";
-        }
+        int numDashes = 32 - faction.getName().length();
+        String dashes = new StringBuilder("--------------------------------").substring(0, numDashes/2);
 
         new Message(Formatting.BLACK + dashes + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
             .send(player, false);
