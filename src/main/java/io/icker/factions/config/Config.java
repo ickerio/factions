@@ -75,9 +75,6 @@ public class Config {
     @SerializedName("requiredBypassLevel")
     public int REQUIRED_BYPASS_LEVEL = 2;
 
-    @SerializedName("nameBlackList")
-    public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless");
-
     public static class DisplayConfig {
         @SerializedName("factionNameMaxLength")
         public int NAME_MAX_LENGTH = -1;
@@ -87,5 +84,8 @@ public class Config {
 
         @SerializedName("tabMenu")
         public boolean TAB_MENU = true;
+
+        @SerializedName("nameBlackList")
+        public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless");
     }
 }

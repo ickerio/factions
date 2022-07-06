@@ -7,7 +7,9 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.*;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -15,8 +17,10 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -27,37 +31,57 @@ import net.minecraft.world.World;
 
 public class InteractionManager {
     public static void register() {
-        PlayerEvents.BREAK_BLOCK.register(InteractionManager::checkPermissions);
-        PlayerEvents.USE_BLOCK.register(InteractionManager::onUseBlock);
-        PlayerEvents.USE_ITEM.register(InteractionManager::onUseItem);
+        PlayerBlockBreakEvents.BEFORE.register(InteractionManager::onBreakBlock);
+        UseBlockCallback.EVENT.register(InteractionManager::onUseBlock);
+        UseItemCallback.EVENT.register(InteractionManager::onUseItem);
         AttackEntityCallback.EVENT.register(InteractionManager::onAttackEntity);
         PlayerEvents.IS_INVULNERABLE.register(InteractionManager::isInvulnerableTo);
+        UseEntityCallback.EVENT.register(InteractionManager::onUseEntity);
+    }
+
+    private static boolean onBreakBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+        boolean result = checkPermissions(player, pos, world) == ActionResult.FAIL;
+        if (result) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "break blocks");
+        }
+        return !result;
     }
 
     private static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
+        ItemStack stack = player.getStackInHand(hand);
+
         if (checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
+            InteractionsUtil.sync(player, stack, hand);
             return ActionResult.FAIL;
         }
 
         BlockPos hitPos = hitResult.getBlockPos();
         if (checkPermissions(player, hitPos, world) == ActionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
+            InteractionsUtil.sync(player, stack, hand);
             return ActionResult.FAIL;
         }
 
         BlockPos placePos = hitPos.add(hitResult.getSide().getVector());
         if (checkPermissions(player, placePos, world) == ActionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
+            InteractionsUtil.sync(player, stack, hand);
             return ActionResult.FAIL;
         }
 
         return ActionResult.PASS;
     }
-    private static ActionResult onUseItem(PlayerEntity player, World world, ItemStack stack, Hand hand) {
-        Item item = stack.getItem();
+
+    private static TypedActionResult<ItemStack> onUseItem(PlayerEntity player, World world, Hand hand) {
+        Item item = player.getStackInHand(hand).getItem();
 
         if (item instanceof BucketItem) {
             ActionResult playerResult = checkPermissions(player, player.getBlockPos(), world);
             if (playerResult == ActionResult.FAIL) {
-                return ActionResult.FAIL;
+                InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
+                InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
+                return TypedActionResult.fail(player.getStackInHand(hand));
             }
                 
             Fluid fluid = ((BucketItemMixin) item).getFluid();
@@ -68,33 +92,35 @@ public class InteractionManager {
             if (raycastResult.getType() != BlockHitResult.Type.MISS) {
                 BlockPos raycastPos = raycastResult.getBlockPos();
                 if (checkPermissions(player, raycastPos, world) == ActionResult.FAIL) {
-                    return ActionResult.FAIL;
+                    InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
+                    InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
+                    return TypedActionResult.fail(player.getStackInHand(hand));
                 }
 
                 BlockPos placePos = raycastPos.add(raycastResult.getSide().getVector());
                 if (checkPermissions(player, placePos, world) == ActionResult.FAIL) {
-                    return ActionResult.FAIL;
+                    InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
+                    InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
+                    return TypedActionResult.fail(player.getStackInHand(hand));
                 }
             }
         }
 
 
-        return ActionResult.PASS;
+        return TypedActionResult.pass(player.getStackInHand(hand));
     }
 
     private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        if (entity.isPlayer()) {
-            return isInvulnerableTo(player, entity) == ActionResult.SUCCESS ? ActionResult.FAIL : ActionResult.PASS;
+        if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL || checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
+            return ActionResult.FAIL;
         }
 
-        if (!entity.isLiving()) {
-            if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL) {
-                return ActionResult.FAIL;
-            }
+        return ActionResult.PASS;
+    }
 
-            if (checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
-                return ActionResult.FAIL;
-            }
+    private static ActionResult onUseEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
+        if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL || checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
+            return ActionResult.FAIL;
         }
 
         return ActionResult.PASS;

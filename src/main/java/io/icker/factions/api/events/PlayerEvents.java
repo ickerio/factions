@@ -1,6 +1,5 @@
 package io.icker.factions.api.events;
 
-import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -19,46 +18,6 @@ import net.minecraft.world.World;
 * Events related to player actions
 */
 public class PlayerEvents {
-    /**
-     * Called when a player attempts to break a block.
-     */
-    public static final Event<BreakBlock> BREAK_BLOCK = EventFactory.createArrayBacked(BreakBlock.class, callbacks -> (player, position, world) -> {
-        for (BreakBlock callback : callbacks) {
-            ActionResult result = callback.onBreakBlock(player, position, world);
- 
-            if (result != ActionResult.PASS) {
-                return result;
-            }
-        }
-        return ActionResult.PASS;
-    });
-
-
-    /**
-     * Called when a chunk claim is added by a faction (See {@link Claim})
-     */
-    public static final Event<UseBlock> USE_BLOCK = EventFactory.createArrayBacked(UseBlock.class, callbacks -> (player, world, hand, hitResult) -> {
-        for (UseBlock callback : callbacks) {
-            ActionResult result = callback.onUseBlock(player, world, hand, hitResult);
- 
-            if (result != ActionResult.PASS) {
-                return result;
-            }
-        }
-        return ActionResult.PASS;
-    });
-
-    public static final Event<UseItem> USE_ITEM = EventFactory.createArrayBacked(UseItem.class, callbacks -> (player, world, stack, hand) -> {
-        for (UseItem callback : callbacks) {
-            ActionResult result = callback.onUseItem(player, world, stack, hand);
- 
-            if (result != ActionResult.PASS) {
-                return result;
-            }
-        }
-        return ActionResult.PASS;
-    });
-
     public static final Event<IsInvulnerable> IS_INVULNERABLE = EventFactory.createArrayBacked(IsInvulnerable.class, callbacks -> (source, target) -> {
         for (IsInvulnerable callback : callbacks) {
             ActionResult result = callback.isInvulnerable(source, target);

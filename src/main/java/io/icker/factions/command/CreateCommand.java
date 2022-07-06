@@ -23,8 +23,13 @@ public class CreateCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (FactionsMod.CONFIG.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
+        if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
             new Message("Cannot create a faction with this name as it is on the blacklist").fail().send(player, false);
+            return 0;
+        }
+
+        if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0 & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > name.length()) {
+            new Message("Cannot create a faction with this name as it is too long").fail().send(player, false);
             return 0;
         }
 

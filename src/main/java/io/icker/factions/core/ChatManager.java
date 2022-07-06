@@ -48,7 +48,7 @@ public class ChatManager {
 
     private static Text inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
         return new Message("")
-                .add(faction.getTruncatedName().format(Formatting.BOLD, faction.getColor()))
+                .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))
                 .raw();
