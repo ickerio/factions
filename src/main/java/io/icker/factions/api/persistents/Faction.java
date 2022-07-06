@@ -1,6 +1,5 @@
 package io.icker.factions.api.persistents;
 
-import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
@@ -9,6 +8,8 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.util.Formatting;
 
 import java.util.*;
+
+import static io.icker.factions.FactionsMod.CONFIG;
 
 @Name("Faction")
 public class Faction {
@@ -155,8 +156,7 @@ public class Faction {
     }
 
     public int adjustPower(int adjustment) {
-        int maxPower = calculateMaxPower();
-        int newPower = Math.min(Math.max(0, power + adjustment), maxPower);
+        int newPower = Math.min(Math.max(0, power + adjustment), calculateMaxPower());
         int oldPower = this.power;
 
         if (newPower == oldPower) return 0;
@@ -174,6 +174,7 @@ public class Faction {
         return Claim.getByFaction(id);
     }
 
+    @SuppressWarnings("all")
     public void removeAllClaims() {
         Claim.getByFaction(id)
             .stream()
@@ -251,8 +252,11 @@ public class Faction {
         Database.save(Faction.class, STORE.values().stream().toList());
     }
 
-//  TODO(samu): import per-player power patch
     public int calculateMaxPower(){
-        return FactionsMod.CONFIG.POWER.BASE + (getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER);
+        int maxPower = CONFIG.POWER.BASE; // + (faction.getMembers().size() * Config.MEMBER_POWER);
+        for (final User user : getUsers()) {
+            maxPower += user.getMaxPower();
+        }
+        return maxPower;
     }
 }

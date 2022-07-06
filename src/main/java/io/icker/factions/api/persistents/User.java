@@ -4,12 +4,16 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static io.icker.factions.FactionsMod.CONFIG;
+import static io.icker.factions.util.PermissionUtil.getPermissionPower;
 
 @Name("User")
 public class User {
@@ -44,6 +48,9 @@ public class User {
     @Field("Rank")
     public Rank rank;
 
+//    @Field("Power")
+//    private int power = CONFIG.POWER.MEMBER + getPermissionPower(getID());
+
     @Field("Radar")
     public boolean radar = false;
 
@@ -63,7 +70,8 @@ public class User {
         this.id = id;
     }
 
-    public User() {}
+//    NOTE(CamperSamu): why does this exist??
+//    public User() {}
 
     @SuppressWarnings("unused")
     public String getKey() {
@@ -146,4 +154,40 @@ public class User {
         Database.save(User.class, STORE.values().stream().toList());
     }
 
+    //region Power Management
+    public static int getMaxPower(final @NotNull UUID userUUID) {
+        final var user = get(userUUID);
+        return user != null ? user.getMaxPower() : 0;
+    }
+
+    public int getMaxPower() {
+        return CONFIG.POWER.MEMBER + getPermissionPower(getID());
+    }
+
+//    public static int getPower(final @NotNull UUID userUUID) {
+//        return get(userUUID).getPower();
+//    }
+
+//    public int getPower() {
+//        return power;
+//    }
+
+//    @SuppressWarnings("unused")
+//    public static void setPower(final @NotNull UUID userUUID, final int newPower) {
+//        get(userUUID).setPower(newPower);
+//    }
+
+//    public void setPower(final int newPower) {
+//        power = newPower;
+//    }
+
+//    @SuppressWarnings("unused")
+//    public static void addPower(final @NotNull UUID userUUID, final int powerModifier) {
+//        get(userUUID).addPower(powerModifier);
+//    }
+
+//    public void addPower(final int powerModifier) {
+//        power += powerModifier;
+//    }
+    //endregion
 }
