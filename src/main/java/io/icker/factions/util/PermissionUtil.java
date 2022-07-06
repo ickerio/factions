@@ -23,7 +23,7 @@ public abstract class PermissionUtil {
                     }
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (NoClassDefFoundError | Exception ignored) {}
         return power;
     }
 

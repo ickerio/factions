@@ -10,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static io.icker.factions.FactionsMod.CONFIG;
-
 @Name("Faction")
 public class Faction {
     private static final HashMap<UUID, Faction> STORE = Database.load(Faction.class, Faction::getID);
@@ -238,7 +236,8 @@ public class Faction {
     }
 
     public int calculateMaxPower() {
-        int maxPower = CONFIG.POWER.BASE; // + (faction.getMembers().size() * Config.MEMBER_POWER);
+        //we need to remove base power otherwise is problematic
+        int maxPower = 0; //CONFIG.POWER.BASE; // + (faction.getMembers().size() * Config.MEMBER_POWER);
         for (final User user : getUsers()) {
             maxPower += user.getMaxPower();
         }
