@@ -3,7 +3,6 @@ package io.icker.factions.command;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
@@ -21,9 +20,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class InfoCommand implements Command {
-    private int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int self(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
         User user = Command.getUser(player);
         if (!user.isInFaction()) {
@@ -34,11 +34,12 @@ public class InfoCommand implements Command {
         return info(player, user.getFaction());
     }
 
-    private int any(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int any(CommandContext<ServerCommandSource> context) {
         String factionName = StringArgumentType.getString(context, "faction");
 
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
         Faction faction = Faction.getByName(factionName);
         if (faction == null) {
@@ -52,7 +53,9 @@ public class InfoCommand implements Command {
     public static int info(ServerPlayerEntity player, Faction faction) {
         List<User> users = faction.getUsers();
 
+        if (player.getServer() == null) return -1;
         UserCache cache = player.getServer().getUserCache();
+
         String owner = Formatting.WHITE +
             users.stream()
                 .filter(u -> u.rank == User.Rank.OWNER)
@@ -78,12 +81,10 @@ public class InfoCommand implements Command {
 
         // generate the ---
         int totalChars = 32;
-        String dashes = "";
-        for (int i = 0; i < (totalChars - faction.getName().length()) / 2; i++) {
-            dashes += "-";
-        }
+        StringBuilder dashes = new StringBuilder();
+        dashes.append("-".repeat(Math.max(0, (totalChars - faction.getName().length()) / 2)));
 
-        new Message(Formatting.BLACK + dashes + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
+        new Message(Formatting.BLACK + dashes.toString() + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
             .send(player, false);
         new Message(Formatting.GOLD + "Description: ")
             .add(Formatting.WHITE + faction.getDescription())
@@ -91,7 +92,7 @@ public class InfoCommand implements Command {
         new Message(Formatting.GOLD + "Owner: ")
             .add(Formatting.WHITE + owner)
             .send(player, false);
-        new Message(Formatting.GOLD + "Members (" + Formatting.WHITE.toString() + users.size() + Formatting.GOLD.toString() + "): ")
+        new Message(Formatting.GOLD + "Members (" + Formatting.WHITE + users.size() + Formatting.GOLD + "): ")
             .add(usersList)
             .send(player, false);
         new Message(Formatting.GOLD + "Power: ")

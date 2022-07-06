@@ -10,6 +10,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.NotNull;
 
 public class Message {
     public static PlayerManager manager;
@@ -17,6 +18,10 @@ public class Message {
 
     public Message(String message) {
         text = (MutableText) Text.of(message);
+    }
+
+    public Message(MutableText message) {
+        text = message;
     }
 
     public Message(String message, Object... args) {
@@ -72,6 +77,7 @@ public class Message {
         return this;
     }
 
+    @SuppressWarnings("unused") //util
     public void sendToGlobalChat() {
         for (ServerPlayerEntity player : manager.getPlayerList()) {
             User.ChatMode option = User.get(player.getUuid()).chat;
@@ -79,9 +85,11 @@ public class Message {
         }
     }
 
-    public void sendToFactionChat(Faction faction) {
+    @SuppressWarnings("unused") //util
+    public void sendToFactionChat(@NotNull Faction faction) {
         for (User member : faction.getUsers()) {
             ServerPlayerEntity player = manager.getPlayer(member.getID());
+            if (player == null) return;  // Confirm that it's a player executing the command and not an entity with /execute
             player.sendMessage(text, false);
         }
     }

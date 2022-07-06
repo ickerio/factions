@@ -1,23 +1,19 @@
 package io.icker.factions.util;
 
+import io.icker.factions.FactionsMod;
+import io.icker.factions.api.persistents.*;
+import net.minecraft.util.Formatting;
+
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.UUID;
 
-import io.icker.factions.FactionsMod;
-import io.icker.factions.api.persistents.Claim;
-import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Home;
-import io.icker.factions.api.persistents.Relationship;
-import io.icker.factions.api.persistents.User;
-import net.minecraft.util.Formatting;
+import static java.util.Objects.requireNonNull;
 
 public class Migrator {
     public static Connection con;
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void migrate() {
         File file = new File("./factions/factions.mv.db");
         if (file.isFile()) {
@@ -33,7 +29,7 @@ public class Migrator {
 
             Query query = new Query("SELECT * FROM Faction;").executeQuery();
             while (query.next()) {
-                Faction faction = new Faction(query.getString("name"), query.getString("description"), "No faction MOTD set", Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power"));
+                Faction faction = new Faction(query.getString("name"), query.getString("description"), "No faction MOTD set", requireNonNull(Formatting.byName(query.getString("color"))), query.getBool("open"));
                 Faction.add(faction);
 
                 Query homeQuery = new Query("SELECT * FROM Home WHERE faction = ?;").set(faction.getName()).executeQuery();
@@ -58,7 +54,7 @@ public class Migrator {
             while (query.next()) {
                 OldRank rank;
                 try {
-                    rank = Enum.valueOf(OldRank.class, query.getString("rank"));
+                    rank = Enum.valueOf(OldRank.class, requireNonNull(query.getString("rank")));
                 } catch (IllegalArgumentException e) {
                     rank = OldRank.CIVILIAN;
                 }
@@ -72,7 +68,7 @@ public class Migrator {
             while (query.next()) {
                 User.ChatMode opt;
                 try {
-                    opt = Enum.valueOf(User.ChatMode.class, query.getString("chat"));
+                    opt = Enum.valueOf(User.ChatMode.class, requireNonNull(query.getString("chat")));
                 } catch (IllegalArgumentException e) {
                     opt = User.ChatMode.GLOBAL;
                 }

@@ -6,6 +6,7 @@ import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -14,6 +15,8 @@ import static io.icker.factions.FactionsMod.CONFIG;
 @Name("Faction")
 public class Faction {
     private static final HashMap<UUID, Faction> STORE = Database.load(Faction.class, Faction::getID);
+    @Field("Invites")
+    public ArrayList<UUID> invites = new ArrayList<>();
 
     @Field("ID")
     private UUID id;
@@ -33,36 +36,25 @@ public class Faction {
     @Field("Open")
     private boolean open;
 
-    @Field("Power")
-    private int power;
-
     @Field("Home")
     private Home home;
 
     @Field("Safe")
     private SimpleInventory safe = new SimpleInventory(54);
 
-    @Field("Invites")
-    public ArrayList<UUID> invites = new ArrayList<>();
-
     @Field("Relationships")
     private ArrayList<Relationship> relationships = new ArrayList<>();
 
-    public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
+    public Faction(String name, String description, String motd, Formatting color, boolean open) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.motd = motd;
         this.description = description;
         this.color = color.getName();
         this.open = open;
-        this.power = power;
     }
 
-    public Faction() {}
-
-    @SuppressWarnings("unused")
-    public String getKey() {
-        return id.toString();
+    public Faction() {
     }
 
     public static Faction get(UUID id) {
@@ -71,10 +63,10 @@ public class Faction {
 
     public static Faction getByName(String name) {
         return STORE.values()
-            .stream()
-            .filter(f -> f.name.equals(name))
-            .findFirst()
-            .orElse(null);
+                .stream()
+                .filter(f -> f.name.equals(name))
+                .findFirst()
+                .orElse(null);
     }
 
     public static void add(Faction faction) {
@@ -88,9 +80,18 @@ public class Faction {
     @SuppressWarnings("unused")
     public static List<Faction> allBut(UUID id) {
         return STORE.values()
-            .stream()
-            .filter(f -> f.id != id)
-            .toList();
+                .stream()
+                .filter(f -> f.id != id)
+                .toList();
+    }
+
+    public static void save() {
+        Database.save(Faction.class, STORE.values().stream().toList());
+    }
+
+    @SuppressWarnings("unused")
+    public String getKey() {
+        return id.toString();
     }
 
     public UUID getID() {
@@ -101,20 +102,40 @@ public class Faction {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+        FactionEvents.MODIFY.invoker().onModify(this);
+    }
+
     public Formatting getColor() {
         return Formatting.byName(color);
+    }
+
+    public void setColor(Formatting color) {
+        this.color = color.getName();
+        FactionEvents.MODIFY.invoker().onModify(this);
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+        FactionEvents.MODIFY.invoker().onModify(this);
+    }
+
     public String getMOTD() {
         return motd;
     }
 
+    public void setMOTD(String motd) {
+        this.motd = motd;
+        FactionEvents.MODIFY.invoker().onModify(this);
+    }
+
     public int getPower() {
-        return power;
+        return getUsers().stream().mapToInt(User::getPower).sum();
     }
 
     public SimpleInventory getSafe() {
@@ -130,40 +151,9 @@ public class Faction {
         return open;
     }
 
-    public void setName(String name) {
-        this.name = name;
-        FactionEvents.MODIFY.invoker().onModify(this);
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-        FactionEvents.MODIFY.invoker().onModify(this);
-    }
-
-    public void setMOTD(String motd) {
-        this.motd = motd;
-        FactionEvents.MODIFY.invoker().onModify(this);
-    }
-
-    public void setColor(Formatting color) {
-        this.color = color.getName();
-        FactionEvents.MODIFY.invoker().onModify(this);
-    }
-
     public void setOpen(boolean open) {
         this.open = open;
         FactionEvents.MODIFY.invoker().onModify(this);
-    }
-
-    public int adjustPower(int adjustment) {
-        int newPower = Math.min(Math.max(0, power + adjustment), calculateMaxPower());
-        int oldPower = this.power;
-
-        if (newPower == oldPower) return 0;
-
-        power = newPower;
-        FactionEvents.POWER_CHANGE.invoker().onPowerChange(this, oldPower);
-        return Math.abs(newPower - oldPower);
     }
 
     public List<User> getUsers() {
@@ -174,11 +164,9 @@ public class Faction {
         return Claim.getByFaction(id);
     }
 
-    @SuppressWarnings("all")
     public void removeAllClaims() {
         Claim.getByFaction(id)
-            .stream()
-            .forEach(Claim::remove);
+                .forEach(Claim::remove);
         FactionEvents.REMOVE_ALL_CLAIMS.invoker().onRemoveAllClaims(this);
     }
 
@@ -220,6 +208,7 @@ public class Faction {
         return relationships.stream().filter(rel -> rel.status == Relationship.Status.ENEMY).toList();
     }
 
+    @SuppressWarnings("unused") //util
     public List<Relationship> getEnemiesOf() {
         return relationships.stream().filter(rel -> getReverse(rel).status == Relationship.Status.ENEMY).toList();
     }
@@ -228,7 +217,7 @@ public class Faction {
         relationships = new ArrayList<>(relationships.stream().filter(rel -> !rel.target.equals(target)).toList());
     }
 
-    public void setRelationship(Relationship relationship) {
+    public void setRelationship(@NotNull Relationship relationship) {
         if (getRelationship(relationship.target) != null) {
             removeRelationship(relationship.target);
         }
@@ -248,11 +237,7 @@ public class Faction {
         FactionEvents.DISBAND.invoker().onDisband(this);
     }
 
-    public static void save() {
-        Database.save(Faction.class, STORE.values().stream().toList());
-    }
-
-    public int calculateMaxPower(){
+    public int calculateMaxPower() {
         int maxPower = CONFIG.POWER.BASE; // + (faction.getMembers().size() * Config.MEMBER_POWER);
         for (final User user : getUsers()) {
             maxPower += user.getMaxPower();
