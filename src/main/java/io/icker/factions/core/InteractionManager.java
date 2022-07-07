@@ -53,12 +53,6 @@ public class InteractionManager {
     private static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) { // FIXME: this creates two warnings sometimes
         ItemStack stack = player.getStackInHand(hand);
 
-        if (checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
-            InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
-            InteractionsUtil.sync(player, stack, hand);
-            return ActionResult.FAIL;
-        }
-
         BlockPos hitPos = hitResult.getBlockPos();
         if (checkPermissions(player, hitPos, world) == ActionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
@@ -114,7 +108,7 @@ public class InteractionManager {
     }
 
     private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL || checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
+        if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL) {
             return ActionResult.FAIL;
         }
 
