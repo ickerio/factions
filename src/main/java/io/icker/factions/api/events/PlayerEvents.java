@@ -6,18 +6,24 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
 * Events related to player actions
 */
 public class PlayerEvents {
+    public static final Event<UseEntity> USE_ENTITY = EventFactory.createArrayBacked(UseEntity.class, callbacks -> (source, target, world) -> {
+        for (UseEntity callback : callbacks) {
+            ActionResult result = callback.onUseEntity(source, target, world);
+            if (result != ActionResult.PASS) {
+                return result;
+            }
+        }
+        return ActionResult.PASS;
+    });
+
     public static final Event<IsInvulnerable> IS_INVULNERABLE = EventFactory.createArrayBacked(IsInvulnerable.class, callbacks -> (source, target) -> {
         for (IsInvulnerable callback : callbacks) {
             ActionResult result = callback.isInvulnerable(source, target);
@@ -57,20 +63,9 @@ public class PlayerEvents {
         return ActionResult.PASS;
     });
 
-
     @FunctionalInterface
-    public interface BreakBlock {
-        ActionResult onBreakBlock(PlayerEntity player, BlockPos position, World world);
-    }
-
-    @FunctionalInterface
-    public interface UseBlock {
-        ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult);
-    }
-
-    @FunctionalInterface
-    public interface UseItem {
-        ActionResult onUseItem(PlayerEntity player, World world, ItemStack stack, Hand hand);
+    public interface UseEntity {
+        ActionResult onUseEntity(ServerPlayerEntity player, Entity entity, World world);
     }
 
     @FunctionalInterface
