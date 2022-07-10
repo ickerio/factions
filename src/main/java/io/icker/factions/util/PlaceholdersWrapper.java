@@ -16,6 +16,7 @@ import static net.minecraft.util.Formatting.DARK_GRAY;
 
 public class PlaceholdersWrapper {
     public static final Identifier FACTION_NAME_ID = new Identifier(MODID, "name");
+    public static final Identifier FACTION_CHAT_ID = new Identifier(MODID, "chat");
     public static final Identifier FACTION_RANK_ID = new Identifier(MODID, "rank");
     public static final Identifier FACTION_COLOR_ID = new Identifier(MODID, "color");
     public static final Identifier FACTION_DESCRIPTION_ID = new Identifier(MODID, "description");
@@ -44,6 +45,19 @@ public class PlaceholdersWrapper {
 
             if (faction != null)
                 r = Text.literal(faction.getName()).formatted(member.getFaction().getColor());
+
+            return value(r);
+        });
+
+        register(FACTION_CHAT_ID, (ctx, argument) -> {
+            if (!ctx.hasPlayer()) return invalid("No Player!");
+            assert ctx.player() != null;
+
+            Text r = Text.of("Faction Chat");
+
+            final var member = User.get(ctx.player().getUuid());
+            if (member.chat == User.ChatMode.GLOBAL || !member.isInFaction())
+                r = Text.of("Global Chat");
 
             return value(r);
         });
