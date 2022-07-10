@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;
@@ -58,9 +59,11 @@ public class Config {
     public PowerConfig POWER = new PowerConfig();
 
     @SerializedName("safe")
+    @Nullable
     public SafeConfig SAFE = new SafeConfig();
 
     @SerializedName("home")
+        @Nullable
     public HomeConfig HOME = new HomeConfig();
 
     @SerializedName("display")

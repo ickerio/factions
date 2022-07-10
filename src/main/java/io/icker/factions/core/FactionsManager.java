@@ -58,7 +58,7 @@ public class FactionsManager {
 
         Faction faction = member.getFaction();
 
-        int adjusted = faction.adjustPower(-FactionsMod.CONFIG.POWER.POWER_TICKS.DEATH_PENALTY);
+        int adjusted = faction.adjustPower(-FactionsMod.CONFIG.POWER.DEATH_PENALTY);
         new Message(
             "%s lost %d power from dying",
             player.getName().getString(),
