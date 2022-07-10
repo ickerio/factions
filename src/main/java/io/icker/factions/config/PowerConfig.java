@@ -2,12 +2,14 @@ package io.icker.factions.config;
 
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
 
 public class PowerConfig {
-    @SerializedName("base")
-    public int BASE = 20;
+//    TODO(CamperSamu): Delete this after https://github.com/ickerio/factions/pull/71#issuecomment-1179757876 gets greenlighted
+//    @SerializedName("base")
+//    public int BASE = 20;
 
     @SerializedName("member")
     public int MEMBER = 20;
@@ -31,7 +33,7 @@ public class PowerConfig {
 
     public static class Deserializer implements JsonDeserializer<PowerConfig> {
         @Override
-        public PowerConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public PowerConfig deserialize(@NotNull JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             if (!json.isJsonObject() && !json.getAsBoolean()) {
                 return null;
             }

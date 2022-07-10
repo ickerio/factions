@@ -2,7 +2,6 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
@@ -16,6 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,9 +24,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ClaimCommand implements Command {
-    private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int list(@NotNull CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
         List<Claim> claims = Command.getUser(player).getFaction().getClaims();
         int count = claims.size();
@@ -38,10 +39,10 @@ public class ClaimCommand implements Command {
 
         if (count == 0) return 1;
 
-        HashMap<String, ArrayList<Claim>> claimsMap = new HashMap<String, ArrayList<Claim>>();
+        HashMap<String, ArrayList<Claim>> claimsMap = new HashMap<>();
 
         claims.forEach(claim -> {
-            claimsMap.putIfAbsent(claim.level, new ArrayList<Claim>());
+            claimsMap.putIfAbsent(claim.level, new ArrayList<>());
             claimsMap.get(claim.level).add(claim);
         });
 
@@ -64,15 +65,16 @@ public class ClaimCommand implements Command {
         return 1;
     }
 
-    private int addForced(CommandContext<ServerCommandSource> context, int size) throws CommandSyntaxException {
+    private int addForced(@NotNull CommandContext<ServerCommandSource> context, int size) {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
         ServerWorld world = player.getWorld();
 
         Faction faction = Command.getUser(player).getFaction();
         String dimension = world.getRegistryKey().getValue().toString();
-        ArrayList<ChunkPos> chunks = new ArrayList<ChunkPos>();
+        ArrayList<ChunkPos> chunks = new ArrayList<>();
 
         for (int x = -size + 1; x < size; x++) {
             for (int y = -size + 1; y < size; y++) {
@@ -116,12 +118,13 @@ public class ClaimCommand implements Command {
         return 1;
     }
 
-    private int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int add(@NotNull CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
         Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
+        int maxPower = faction.calculateMaxPower();
 
         if (maxPower < requiredPower) {
             new Message("Not enough faction power to claim chunk").fail().send(player, false);
@@ -131,15 +134,15 @@ public class ClaimCommand implements Command {
         return addForced(context, 1);
     }
 
-    private int addSize(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        int size = IntegerArgumentType.getInteger(context, "size");
+    private int addSize(CommandContext<ServerCommandSource> context) {
+        final int size = IntegerArgumentType.getInteger(context, "size");
         ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
         Faction faction = Command.getUser(player).getFaction();
 
-        int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
+        final int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
 
-        if (maxPower < requiredPower) {
+        if (faction.calculateMaxPower() < requiredPower) {
             new Message("Not enough faction power to claim chunks").fail().send(player, false);
             return 0;
         }
@@ -147,10 +150,11 @@ public class ClaimCommand implements Command {
         return addForced(context, size);
     }
 
-    private int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int remove(@NotNull CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
         ServerWorld world = player.getWorld();
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
@@ -185,11 +189,12 @@ public class ClaimCommand implements Command {
         return 1;
     }
 
-    private int removeSize(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int removeSize(CommandContext<ServerCommandSource> context) {
         int size = IntegerArgumentType.getInteger(context, "size");
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
         ServerWorld world = player.getWorld();
         String dimension = world.getRegistryKey().getValue().toString();
 
@@ -218,9 +223,10 @@ public class ClaimCommand implements Command {
         return 1;
     }
 
-    private int removeAll(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int removeAll(@NotNull CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
         Faction faction = Command.getUser(player).getFaction();
 
@@ -232,9 +238,10 @@ public class ClaimCommand implements Command {
         return 1;
     }
 
-    private int auto(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int auto(@NotNull CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
         User user = Command.getUser(player);
         user.autoclaim = !user.autoclaim;
@@ -251,10 +258,11 @@ public class ClaimCommand implements Command {
     }
 
     @SuppressWarnings("")
-    private int setAccessLevel(CommandContext<ServerCommandSource> context, boolean increase) throws CommandSyntaxException {
+    private int setAccessLevel(@NotNull CommandContext<ServerCommandSource> context, boolean increase) {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
         ServerWorld world = player.getWorld();
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();

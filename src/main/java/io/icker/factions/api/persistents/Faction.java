@@ -1,5 +1,6 @@
 package io.icker.factions.api.persistents;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
@@ -240,10 +241,14 @@ public class Faction {
 
     public int calculateMaxPower() {
         //we need to remove base power otherwise is problematic
-        int maxPower = 0; //CONFIG.POWER.BASE; // + (faction.getMembers().size() * Config.MEMBER_POWER);
+        int maxPower = 0;
         for (final User user : getUsers()) {
             maxPower += user.getMaxPower();
         }
         return maxPower;
+    }
+
+    public int calculateRequiredPower(){
+        return (getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
     }
 }

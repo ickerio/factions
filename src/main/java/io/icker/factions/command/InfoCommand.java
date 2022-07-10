@@ -77,13 +77,12 @@ public class InfoCommand implements Command {
             .collect(Collectors.joining(Formatting.GRAY + ", "));
 
         int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-        int maxPower = users.size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
         // generate the ---
         int numDashes = 32 - faction.getName().length();
         String dashes = new StringBuilder("--------------------------------").substring(0, numDashes/2);
 
-        new Message(Formatting.BLACK + dashes.toString() + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
+        new Message(Formatting.BLACK + dashes + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
             .send(player, false);
         new Message(Formatting.GOLD + "Description: ")
             .add(Formatting.WHITE + faction.getDescription())
@@ -95,7 +94,7 @@ public class InfoCommand implements Command {
             .add(usersList)
             .send(player, false);
         new Message(Formatting.GOLD + "Power: ")
-            .add(Formatting.GREEN.toString() + faction.getPower() + slash() + requiredPower + slash() + maxPower)
+            .add(Formatting.GREEN.toString() + faction.getPower() + slash() + requiredPower + slash() + faction.calculateMaxPower())
             .hover("Current / Required / Max")
             .send(player, false);
         new Message(Formatting.GREEN + "Allies (" + Formatting.WHITE + faction.getMutualAllies().size() + Formatting.GREEN + "): ")
