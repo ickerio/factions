@@ -14,6 +14,9 @@ import net.minecraft.world.World;
 * Events related to player actions
 */
 public class PlayerEvents {
+    /**
+     * Called when a player tries to interact with an entity
+     */
     public static final Event<UseEntity> USE_ENTITY = EventFactory.createArrayBacked(UseEntity.class, callbacks -> (source, target, world) -> {
         for (UseEntity callback : callbacks) {
             ActionResult result = callback.onUseEntity(source, target, world);
@@ -24,6 +27,9 @@ public class PlayerEvents {
         return ActionResult.PASS;
     });
 
+    /**
+     * Called when a player is attacked and decides whether to allow the hit
+     */
     public static final Event<IsInvulnerable> IS_INVULNERABLE = EventFactory.createArrayBacked(IsInvulnerable.class, callbacks -> (source, target) -> {
         for (IsInvulnerable callback : callbacks) {
             ActionResult result = callback.isInvulnerable(source, target);
@@ -34,24 +40,36 @@ public class PlayerEvents {
         return ActionResult.PASS;
     });
 
+    /**
+     * Called when a player moves
+     */
     public static final Event<Move> ON_MOVE = EventFactory.createArrayBacked(Move.class, callbacks -> (player) -> {
         for (Move callback : callbacks) {
             callback.onMove(player);
         }
     });
 
+    /**
+     * Called when a player is killed by another player
+     */
     public static final Event<KilledByPlayer> ON_KILLED_BY_PLAYER = EventFactory.createArrayBacked(KilledByPlayer.class, callbacks -> (player, source) -> {
         for (KilledByPlayer callback : callbacks) {
             callback.onKilledByPlayer(player, source);
         }
     });
 
+    /**
+     * Called on a power reward will be given
+     */
     public static final Event<PowerTick> ON_POWER_TICK = EventFactory.createArrayBacked(PowerTick.class, callbacks -> (player) -> {
         for (PowerTick callback : callbacks) {
             callback.onPowerTick(player);
         }
     });
 
+    /**
+     * Called when a player attempts to open a safe
+     */
     public static final Event<OpenSafe> OPEN_SAFE = EventFactory.createArrayBacked(OpenSafe.class, callbacks -> (player, faction) -> {
         for (OpenSafe callback : callbacks) {
             ActionResult result = callback.onOpenSafe(player, faction);

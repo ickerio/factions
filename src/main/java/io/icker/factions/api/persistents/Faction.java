@@ -29,6 +29,9 @@ public class Faction {
     @Field("Color")
     private String color;
 
+    /**
+     * Whether a player can join without an invitation
+     */
     @Field("Open")
     private boolean open;
 
@@ -57,6 +60,7 @@ public class Faction {
         this.power = power;
     }
 
+    @SuppressWarnings("unused")
     public Faction() {}
 
     @SuppressWarnings("unused")
@@ -118,11 +122,6 @@ public class Faction {
 
     public SimpleInventory getSafe() {
         return safe;
-    }
-
-    @SuppressWarnings("unused")
-    public void setSafe(SimpleInventory safe) {
-        this.safe = safe;
     }
 
     public boolean isOpen() {
