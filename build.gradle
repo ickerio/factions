@@ -61,3 +61,7 @@ publishing {
         }
     }
 }
+
+javadoc {
+    source = sourceSets.main.allJava
+}
