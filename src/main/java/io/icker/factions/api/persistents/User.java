@@ -40,7 +40,7 @@ public class User {
     }
 
     @Field("ID")
-    private final UUID id;
+    private UUID id;
 
     @Field("FactionID")
     private UUID factionID;
@@ -72,8 +72,7 @@ public class User {
         power = getMaxPower();
     }
 
-//    NOTE(CamperSamu): why does this exist??
-//    public User() {}
+    public User() {}
 
     @SuppressWarnings("unused") //util
     public String getKey() {
