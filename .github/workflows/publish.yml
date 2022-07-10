@@ -20,10 +20,19 @@ jobs:
       - name: make gradle wrapper executable
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
-      - name: build
-        run: ./gradlew build
+      - name: build and generate javadoc
+        run: |
+          ./gradlew build
+          ./gradlew javadoc
       - name: Upload assets to GitHub
         uses: AButler/upload-release-assets@v2.0
         with:
           files: 'build/libs/*.jar;!build/libs/*-dev.jar'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Deploy javadoc
+        uses: crazy-max/ghaction-github-pages@v3
+        with:
+          target_branch: gh-pages
+          build_dir: build/docs/javadoc
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
