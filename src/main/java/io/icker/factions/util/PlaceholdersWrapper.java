@@ -17,6 +17,7 @@ import static net.minecraft.util.Formatting.DARK_GRAY;
 public class PlaceholdersWrapper {
     public static final Identifier FACTION_NAME_ID = new Identifier(MODID, "name");
     public static final Identifier FACTION_RANK_ID = new Identifier(MODID, "rank");
+    public static final Identifier FACTION_COLOR_ID = new Identifier(MODID, "color");
     public static final Identifier FACTION_DESCRIPTION_ID = new Identifier(MODID, "description");
     public static final Identifier FACTION_STATE_ID = new Identifier(MODID, "state");
     public static final Identifier FACTION_POWER_ID = new Identifier(MODID, "power");
@@ -59,6 +60,19 @@ public class PlaceholdersWrapper {
                 r = Text.of(member.getRankName());
 
             return value(r);
+        });
+
+        register(FACTION_COLOR_ID, (ctx, argument) -> {
+            if (!ctx.hasPlayer()) return invalid("No Player!");
+            assert ctx.player() != null;
+
+            final var member = User.get(ctx.player().getUuid());
+
+            if (member.isInFaction()) {
+                return value(member.getFaction().getColor().getName());
+            }
+
+            return value(NULL_TEXT);
         });
 
         register(FACTION_DESCRIPTION_ID, (ctx, argument) -> {
