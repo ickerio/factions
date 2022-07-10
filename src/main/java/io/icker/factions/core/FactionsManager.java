@@ -110,7 +110,7 @@ public class FactionsManager {
         player.openHandledScreen(
                 new SimpleNamedScreenHandlerFactory(
                         (syncId, inventory, p) -> {
-                            if (CONFIG.SAFE.DOUBLE) {
+                            if (CONFIG.SAFE != null && CONFIG.SAFE.DOUBLE) {
                                 return GenericContainerScreenHandler.createGeneric9x6(syncId, inventory, faction.getSafe());
                             } else {
                                 return GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, faction.getSafe());
