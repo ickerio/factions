@@ -30,14 +30,14 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(at = @At("HEAD"), method = "setClientSettings")
     public void setClientSettings(ClientSettingsC2SPacket packet, CallbackInfo info) {
-        User member = User.get(((ServerPlayerEntity)(Object) this).getUuid());
+        User member = User.get(getUuid());
         member.language = packet.language();
     }
 
     @Inject(at = @At("HEAD"), method = "onDeath")
     public void onDeath(DamageSource source, CallbackInfo info) {
         Entity entity = source.getSource();
-        if (entity == null || !entity.isPlayer()) return;
+        if (entity == null || !entity.isPlayer()) PlayerEvents.ON_PLAYER_DEATH.invoker().onPlayerDeath((ServerPlayerEntity) (Object) this, source);
         PlayerEvents.ON_KILLED_BY_PLAYER.invoker().onKilledByPlayer((ServerPlayerEntity) (Object) this, source);
     }
 
@@ -58,15 +58,15 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
     @Inject(method = "getPlayerListName", at = @At("HEAD"), cancellable = true)
     public void getPlayerListName(CallbackInfoReturnable<Text> cir) {
         if (FactionsMod.CONFIG.DISPLAY.TAB_MENU) {
-            User member = User.get(((ServerPlayerEntity) (Object) this).getUuid());
+            User member = User.get(getUuid());
             if (member.isInFaction()) {
                 Faction faction = member.getFaction();
                 cir.setReturnValue(new Message(String.format("[%s] ", faction.getName())).format(faction.getColor()).add(
-                        new Message(((ServerPlayerEntity) (Object) this).getName().getString()).format(Formatting.WHITE)
+                        new Message(getName().getString()).format(Formatting.WHITE)
                 ).raw());
             } else {
                 cir.setReturnValue(new Message("[FACTIONLESS] ").format(Formatting.GRAY).add(
-                        new Message(((ServerPlayerEntity) (Object) this).getName().getString()).format(Formatting.WHITE)
+                        new Message(getName().getString()).format(Formatting.WHITE)
                 ).raw());
             }
         }

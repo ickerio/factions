@@ -23,6 +23,9 @@ public class PowerConfig {
     @SerializedName("powerTicks")
     public PowerTicks POWER_TICKS = new PowerTicks();
 
+    @SerializedName("pveDeathPenalty")
+    public boolean PVE_DEATH_PENALTY = false;
+
     public static class PowerTicks {
         @SerializedName("ticks")
         public int TICKS = 12000;

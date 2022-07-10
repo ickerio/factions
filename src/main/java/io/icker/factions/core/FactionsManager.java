@@ -1,11 +1,8 @@
 package io.icker.factions.core;
 
-import io.icker.factions.api.events.FactionEvents;
-import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
@@ -22,7 +19,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 import static io.icker.factions.FactionsMod.CONFIG;
+import static io.icker.factions.api.events.FactionEvents.*;
+import static io.icker.factions.api.events.PlayerEvents.*;
 import static java.lang.String.format;
+import static net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED;
 
 public class FactionsManager {
     //region Constants
@@ -33,13 +33,14 @@ public class FactionsManager {
     //endregion
 
     public static void register() {
-        ServerLifecycleEvents.SERVER_STARTED.register(FactionsManager::serverStarted);
-        FactionEvents.MODIFY.register(FactionsManager::factionModified);
-        FactionEvents.MEMBER_JOIN.register(FactionsManager::memberChange);
-        FactionEvents.MEMBER_LEAVE.register(FactionsManager::memberChange);
-        PlayerEvents.ON_KILLED_BY_PLAYER.register(FactionsManager::playerDeath);
-        PlayerEvents.ON_POWER_TICK.register(FactionsManager::powerTick);
-        PlayerEvents.OPEN_SAFE.register(FactionsManager::openSafe);
+        SERVER_STARTED.register(FactionsManager::serverStarted);
+        MODIFY.register(FactionsManager::factionModified);
+        MEMBER_JOIN.register(FactionsManager::memberChange);
+        MEMBER_LEAVE.register(FactionsManager::memberChange);
+        if (CONFIG.POWER.PVE_DEATH_PENALTY) ON_PLAYER_DEATH.register(FactionsManager::playerDeath);
+        else ON_KILLED_BY_PLAYER.register(FactionsManager::playerDeath);
+        ON_POWER_TICK.register(FactionsManager::powerTick);
+        OPEN_SAFE.register(FactionsManager::openSafe);
     }
 
     private static void serverStarted(MinecraftServer server) {
