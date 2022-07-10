@@ -65,7 +65,7 @@ public class FactionsManager {
 
     private static void playerDeath(@NotNull ServerPlayerEntity player, DamageSource source) {
         User member = User.get(player.getUuid());
-        int adjusted = member.addPower(-CONFIG.POWER.POWER_TICKS.DEATH_PENALTY);
+        int adjusted = member.addPower(-CONFIG.POWER.POWER.DEATH_PENALTY);
 
         final MutableText message = Text.literal(format(POWER_LOST_MESSAGE, player.getName().getString(), adjusted));
 

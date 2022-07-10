@@ -31,6 +31,9 @@ public class Faction {
     @Field("Color")
     private String color;
 
+    /**
+     * Whether a player can join without an invitation
+     */
     @Field("Open")
     private boolean open;
 

@@ -4,6 +4,9 @@ import io.icker.factions.api.persistents.Relationship;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
+/**
+ * All events related to relationships (UNIMPLEMENTED)
+ */
 public final class RelationshipEvents {
     public static final Event<NewDecleration> NEW_DECLARATION = EventFactory.createArrayBacked(NewDecleration.class, callbacks -> (claim) -> {
         for (NewDecleration callback : callbacks) {

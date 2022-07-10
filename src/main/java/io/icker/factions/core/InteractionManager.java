@@ -7,7 +7,10 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
-import net.fabricmc.fabric.api.event.player.*;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
@@ -36,7 +39,7 @@ public class InteractionManager {
         UseItemCallback.EVENT.register(InteractionManager::onUseItem);
         AttackEntityCallback.EVENT.register(InteractionManager::onAttackEntity);
         PlayerEvents.IS_INVULNERABLE.register(InteractionManager::isInvulnerableTo);
-        UseEntityCallback.EVENT.register(InteractionManager::onUseEntity);
+        PlayerEvents.USE_ENTITY.register(InteractionManager::onUseEntity);
     }
 
     private static boolean onBreakBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
@@ -47,14 +50,8 @@ public class InteractionManager {
         return !result;
     }
 
-    private static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
+    private static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) { // FIXME: this creates two warnings sometimes
         ItemStack stack = player.getStackInHand(hand);
-
-        if (checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
-            InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
-            InteractionsUtil.sync(player, stack, hand);
-            return ActionResult.FAIL;
-        }
 
         BlockPos hitPos = hitResult.getBlockPos();
         if (checkPermissions(player, hitPos, world) == ActionResult.FAIL) {
@@ -111,19 +108,15 @@ public class InteractionManager {
     }
 
     private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL || checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
+        if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL) {
             return ActionResult.FAIL;
         }
 
         return ActionResult.PASS;
     }
 
-    private static ActionResult onUseEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL || checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
-            return ActionResult.FAIL;
-        }
-
-        return ActionResult.PASS;
+    private static ActionResult onUseEntity(PlayerEntity player, Entity entity, World world) {
+        return checkPermissions(player, entity.getBlockPos(), world);
     }
 
     private static ActionResult isInvulnerableTo(Entity source, Entity target) {

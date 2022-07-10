@@ -1,14 +1,14 @@
 package io.icker.factions.api.persistents;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
 import io.icker.factions.api.events.ClaimEvents;
+import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
-import io.icker.factions.api.persistents.User.Rank;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 @Name("Claim")
 public class Claim {
@@ -20,6 +20,9 @@ public class Claim {
     @Field("Z")
     public int z;
 
+    /**
+     * The dimension of the claim
+     */
     @Field("Level")
     public String level;
 
@@ -37,7 +40,8 @@ public class Claim {
         this.accessLevel = Rank.MEMBER;
     }
 
-    public Claim() { ; }
+    @SuppressWarnings("unused")
+    public Claim() {}
 
     public String getKey() {
         return String.format("%s-%d-%d", level, x, z);

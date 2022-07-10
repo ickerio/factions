@@ -7,7 +7,6 @@ import io.icker.factions.config.Config;
 import io.icker.factions.core.*;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
-import io.icker.factions.util.Migrator;
 import io.icker.factions.util.PlaceholdersWrapper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -33,7 +32,6 @@ public class FactionsMod implements ModInitializer {
         if (FabricLoader.getInstance().isModLoaded("placeholder-api")) {
             PlaceholdersWrapper.init();
         }
-        Migrator.migrate();
 
         ChatManager.register();
         FactionsManager.register();

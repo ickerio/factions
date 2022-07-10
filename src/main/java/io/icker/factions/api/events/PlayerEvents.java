@@ -6,18 +6,30 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
 * Events related to player actions
 */
 public class PlayerEvents {
+    /**
+     * Called when a player tries to interact with an entity
+     */
+    public static final Event<UseEntity> USE_ENTITY = EventFactory.createArrayBacked(UseEntity.class, callbacks -> (source, target, world) -> {
+        for (UseEntity callback : callbacks) {
+            ActionResult result = callback.onUseEntity(source, target, world);
+            if (result != ActionResult.PASS) {
+                return result;
+            }
+        }
+        return ActionResult.PASS;
+    });
+
+    /**
+     * Called when a player is attacked and decides whether to allow the hit
+     */
     public static final Event<IsInvulnerable> IS_INVULNERABLE = EventFactory.createArrayBacked(IsInvulnerable.class, callbacks -> (source, target) -> {
         for (IsInvulnerable callback : callbacks) {
             ActionResult result = callback.isInvulnerable(source, target);
@@ -28,24 +40,36 @@ public class PlayerEvents {
         return ActionResult.PASS;
     });
 
+    /**
+     * Called when a player moves
+     */
     public static final Event<Move> ON_MOVE = EventFactory.createArrayBacked(Move.class, callbacks -> (player) -> {
         for (Move callback : callbacks) {
             callback.onMove(player);
         }
     });
 
+    /**
+     * Called when a player is killed by another player
+     */
     public static final Event<KilledByPlayer> ON_KILLED_BY_PLAYER = EventFactory.createArrayBacked(KilledByPlayer.class, callbacks -> (player, source) -> {
         for (KilledByPlayer callback : callbacks) {
             callback.onKilledByPlayer(player, source);
         }
     });
 
+    /**
+     * Called on a power reward will be given
+     */
     public static final Event<PowerTick> ON_POWER_TICK = EventFactory.createArrayBacked(PowerTick.class, callbacks -> (player) -> {
         for (PowerTick callback : callbacks) {
             callback.onPowerTick(player);
         }
     });
 
+    /**
+     * Called when a player attempts to open a safe
+     */
     public static final Event<OpenSafe> OPEN_SAFE = EventFactory.createArrayBacked(OpenSafe.class, callbacks -> (player, faction) -> {
         for (OpenSafe callback : callbacks) {
             ActionResult result = callback.onOpenSafe(player, faction);
@@ -57,20 +81,9 @@ public class PlayerEvents {
         return ActionResult.PASS;
     });
 
-
     @FunctionalInterface
-    public interface BreakBlock {
-        ActionResult onBreakBlock(PlayerEntity player, BlockPos position, World world);
-    }
-
-    @FunctionalInterface
-    public interface UseBlock {
-        ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult);
-    }
-
-    @FunctionalInterface
-    public interface UseItem {
-        ActionResult onUseItem(PlayerEntity player, World world, ItemStack stack, Hand hand);
+    public interface UseEntity {
+        ActionResult onUseEntity(ServerPlayerEntity player, Entity entity, World world);
     }
 
     @FunctionalInterface

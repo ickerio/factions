@@ -1,8 +1,8 @@
 package io.icker.factions.api.persistents;
 
-import java.util.UUID;
-
 import io.icker.factions.database.Field;
+
+import java.util.UUID;
 
 public class Relationship {
     public enum Status {
@@ -22,5 +22,6 @@ public class Relationship {
         this.status = status;
     }
 
-    public Relationship() { ; }
+    @SuppressWarnings("unused")
+    public Relationship() {}
 }

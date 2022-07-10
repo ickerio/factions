@@ -80,9 +80,8 @@ public class InfoCommand implements Command {
         int maxPower = users.size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
         // generate the ---
-        int totalChars = 32;
-        StringBuilder dashes = new StringBuilder();
-        dashes.append("-".repeat(Math.max(0, (totalChars - faction.getName().length()) / 2)));
+        int numDashes = 32 - faction.getName().length();
+        String dashes = new StringBuilder("--------------------------------").substring(0, numDashes/2);
 
         new Message(Formatting.BLACK + dashes.toString() + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
             .send(player, false);
