@@ -249,6 +249,6 @@ public class Faction {
     }
 
     public int calculateRequiredPower(){
-        return (getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+        return (getClaims().size()) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
     }
 }

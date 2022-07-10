@@ -12,7 +12,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,6 +22,8 @@ import static io.icker.factions.api.events.FactionEvents.*;
 import static io.icker.factions.api.events.PlayerEvents.*;
 import static java.lang.String.format;
 import static net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED;
+import static net.minecraft.text.Text.literal;
+import static net.minecraft.text.Text.of;
 
 public class FactionsManager {
     //region Constants
@@ -68,7 +69,7 @@ public class FactionsManager {
         User member = User.get(player.getUuid());
         int adjusted = member.addPower(-CONFIG.POWER.DEATH_PENALTY);
 
-        final MutableText message = Text.literal(format(POWER_LOST_MESSAGE, player.getName().getString(), adjusted));
+        final MutableText message = literal(format(POWER_LOST_MESSAGE, player.getName().getString(), adjusted));
 
         if (member.isInFaction()) {
             final Faction faction = member.getFaction();
@@ -83,7 +84,7 @@ public class FactionsManager {
         if (member.getPower() == member.getMaxPower()) return;
         int adjusted = member.addPower(CONFIG.POWER.POWER_TICKS.REWARD);
 
-        final MutableText message = Text.literal(format(POWER_GAINED_MESSAGE, player.getName().getString(), adjusted));
+        final MutableText message = literal(format(POWER_GAINED_MESSAGE, player.getName().getString(), adjusted));
 
         if (member.isInFaction()) {
             final Faction faction = member.getFaction();
@@ -117,7 +118,7 @@ public class FactionsManager {
                                 return GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, faction.getSafe());
                             }
                         },
-                        Text.of(format("%s's Safe", faction.getName()))
+                        of(format("%s's Safe", faction.getName()))
                 )
         );
 
