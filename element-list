@@ -1,0 +1,9 @@
+io.icker.factions
+io.icker.factions.api.events
+io.icker.factions.api.persistents
+io.icker.factions.command
+io.icker.factions.config
+io.icker.factions.core
+io.icker.factions.database
+io.icker.factions.mixin
+io.icker.factions.util
