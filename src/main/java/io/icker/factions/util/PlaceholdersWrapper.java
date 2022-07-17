@@ -308,6 +308,10 @@ public class PlaceholdersWrapper {
 
     @SuppressWarnings("all")    //math utils
     private static int mapBoundRange(int a1, int a2, int b1, int b2, int s) {
-        return min(b2, max(b1, b1 + ((s - a1) * (b2 - b1)) / (a2 - a1)));
+        try {
+            return min(b2, max(b1, b1 + ((s - a1) * (b2 - b1)) / (a2 - a1)));
+        } catch (ArithmeticException ignored){
+            return 0;
+        }
     }
 }
