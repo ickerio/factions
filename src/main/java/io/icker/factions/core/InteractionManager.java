@@ -50,7 +50,7 @@ public class InteractionManager {
         return !result;
     }
 
-    private static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) { // FIXME: this creates two warnings sometimes
+    private static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) { // FIXME: this creates two warnings
         ItemStack stack = player.getStackInHand(hand);
 
         BlockPos hitPos = hitResult.getBlockPos();
@@ -109,6 +109,7 @@ public class InteractionManager {
 
     private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
         if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "attack entities");
             return ActionResult.FAIL;
         }
 

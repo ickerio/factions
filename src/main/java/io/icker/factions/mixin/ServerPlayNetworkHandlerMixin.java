@@ -13,6 +13,8 @@ import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,8 +66,23 @@ public class ServerPlayNetworkHandlerMixin {
 
     @Inject(method = "onPlayerInteractEntity", at = @At("HEAD"), cancellable = true)
     public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet, CallbackInfo ci) {
-        if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, packet.getEntity(player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
-            ci.cancel();
-        }
+        packet.handle(new PlayerInteractEntityC2SPacket.Handler() {
+            @Override
+            public void interact(Hand hand) {
+                if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, packet.getEntity(player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
+                    ci.cancel();
+                }
+            }
+
+            @Override
+            public void interactAt(Hand hand, Vec3d pos) {
+                if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, packet.getEntity(player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
+                    ci.cancel();
+                }
+            }
+
+            @Override
+            public void attack() {}
+        });
     }
 }
