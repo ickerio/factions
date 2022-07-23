@@ -1,9 +1,7 @@
 package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -12,8 +10,10 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
+import static io.icker.factions.util.Command.Requires.hasPerms;
+
 public class SettingsCommand implements Command{
-    private int setChat(CommandContext<ServerCommandSource> context, User.ChatMode option) throws CommandSyntaxException {
+    private int setChat(CommandContext<ServerCommandSource> context, User.ChatMode option) {
         ServerPlayerEntity player = context.getSource().getPlayer();
         User user = User.get(player.getUuid());
         user.chat = option;   
@@ -45,7 +45,7 @@ public class SettingsCommand implements Command{
         return 1;
     }
 
-    private int radar(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int radar(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
@@ -67,22 +67,22 @@ public class SettingsCommand implements Command{
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("settings")
-            .requires(Requires.hasPerms("factions.settings", 0))
+            .requires(hasPerms("factions.settings", 0))
             .then(
                 CommandManager.literal("chat")
-                .requires(Requires.hasPerms("factions.settings.chat", 0))
+                .requires(hasPerms("factions.settings.chat", 0))
                 .then(CommandManager.literal("global").executes(context -> setChat(context, User.ChatMode.GLOBAL)))
                 .then(CommandManager.literal("faction").executes(context -> setChat(context, User.ChatMode.FACTION)))
                 .then(CommandManager.literal("focus").executes(context -> setChat(context, User.ChatMode.FOCUS)))
             )
             .then(
                 CommandManager.literal("radar")
-                .requires(Requires.hasPerms("factions.settings.radar", 0))
+                .requires(hasPerms("factions.settings.radar", 0))
                 .executes(this::radar)
             )
             .then(
                 CommandManager.literal("sounds")
-                .requires(Requires.hasPerms("factions.settings.sounds", 0))
+                .requires(hasPerms("factions.settings.sounds", 0))
                 .then(CommandManager.literal("none").executes(context -> setSounds(context, User.SoundMode.NONE)))
                 .then(CommandManager.literal("warnings").executes(context -> setSounds(context, User.SoundMode.WARNINGS)))
                 .then(CommandManager.literal("faction").executes(context -> setSounds(context, User.SoundMode.FACTION)))

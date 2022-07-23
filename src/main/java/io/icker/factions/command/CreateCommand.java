@@ -2,7 +2,6 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
@@ -17,11 +16,12 @@ import net.minecraft.util.Formatting;
 import java.util.Locale;
 
 public class CreateCommand implements Command {
-    private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int run(CommandContext<ServerCommandSource> context) {
         String name = StringArgumentType.getString(context, "name");
 
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
             new Message("Cannot create a faction with this name as it is on the blacklist").fail().send(player, false);
@@ -38,7 +38,7 @@ public class CreateCommand implements Command {
             return 0;
         }
 
-        Faction faction = new Faction(name, "No description set", "No faction MOTD set", Formatting.WHITE, false, FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
+        Faction faction = new Faction(name, "No description set", "No faction MOTD set", Formatting.WHITE, false);
         Faction.add(faction);
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.OWNER);
 

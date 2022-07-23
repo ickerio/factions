@@ -59,6 +59,15 @@ public class PlayerEvents {
     });
 
     /**
+     * Called when a player dies
+     */
+    public static final Event<PlayerDeath> ON_PLAYER_DEATH = EventFactory.createArrayBacked(PlayerDeath.class, callbacks -> (player, source) -> {
+        for (PlayerDeath callback : callbacks) {
+            callback.onPlayerDeath(player, source);
+        }
+    });
+
+    /**
      * Called on a power reward will be given
      */
     public static final Event<PowerTick> ON_POWER_TICK = EventFactory.createArrayBacked(PowerTick.class, callbacks -> (player) -> {
@@ -99,6 +108,11 @@ public class PlayerEvents {
     @FunctionalInterface
     public interface KilledByPlayer {
         void onKilledByPlayer(ServerPlayerEntity player, DamageSource source);
+    }
+
+    @FunctionalInterface
+    public interface PlayerDeath {
+        void onPlayerDeath(ServerPlayerEntity player, DamageSource source);
     }
 
     @FunctionalInterface
