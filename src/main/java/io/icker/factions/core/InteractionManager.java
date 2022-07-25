@@ -108,7 +108,7 @@ public class InteractionManager {
     }
 
     private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL) {
+        if (entity != null && checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayerEntity) player, "attack entities");
             return ActionResult.FAIL;
         }
