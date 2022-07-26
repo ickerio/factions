@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -89,6 +88,8 @@ public class AdminCommand implements Command {
 
         user.setSpoof(target);
 
+        new Message("Set spoof to player %s", targetEntity.getName().getString()).send(player, false);
+
         return 1;
     }
 
@@ -99,6 +100,8 @@ public class AdminCommand implements Command {
         User user = User.get(player.getUuid());
 
         user.setSpoof(null);
+
+        new Message("Cleared spoof").send(player, false);
 
         return 1;
     }
