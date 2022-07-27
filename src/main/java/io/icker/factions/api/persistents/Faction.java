@@ -246,6 +246,14 @@ public class Faction {
         FactionEvents.DISBAND.invoker().onDisband(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Faction faction = (Faction) o;
+        return id.equals(faction.id);
+    }
+
     public static void save() {
         Database.save(Faction.class, STORE.values().stream().toList());
     }
