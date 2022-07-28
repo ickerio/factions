@@ -87,10 +87,6 @@ public class Faction {
                 .toList();
     }
 
-    public static void save() {
-        Database.save(Faction.class, STORE.values().stream().toList());
-    }
-
     @SuppressWarnings("unused")
     public String getKey() {
         return id.toString();
@@ -200,7 +196,7 @@ public class Faction {
     public boolean isMutualAllies(UUID target) {
         Relationship rel = getRelationship(target);
         return rel.status == Relationship.Status.ALLY && getReverse(rel).status == Relationship.Status.ALLY;
-    }
+    } 
 
     public List<Relationship> getMutualAllies() {
         return relationships.stream().filter(rel -> isMutualAllies(rel.target)).toList();
@@ -246,6 +242,17 @@ public class Faction {
             maxPower += user.getMaxPower();
         }
         return maxPower;
+        
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Faction faction = (Faction) o;
+        return id.equals(faction.id);
+    }
+
+    public static void save() {
+        Database.save(Faction.class, STORE.values().stream().toList());
     }
 
     public int calculateRequiredPower(){

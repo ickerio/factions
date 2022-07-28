@@ -93,6 +93,8 @@ public class AdminCommand implements Command {
 
         user.setSpoof(target);
 
+        new Message("Set spoof to player %s", targetEntity.getName().getString()).send(player, false);
+
         return 1;
     }
 
@@ -104,6 +106,8 @@ public class AdminCommand implements Command {
         User user = get(player.getUuid());
 
         user.setSpoof(null);
+
+        new Message("Cleared spoof").send(player, false);
 
         return 1;
     }

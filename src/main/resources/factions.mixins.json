@@ -8,6 +8,8 @@
         "EnderChestBlockMixin",
         "ItemMixin",
         "MinecraftServerMixin",
+        "PlayerManagerMixin",
+        "SentMessageAccessor",
         "ServerPlayerEntityMixin",
         "ServerPlayNetworkHandlerMixin"
     ],
