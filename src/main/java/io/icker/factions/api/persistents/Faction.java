@@ -242,6 +242,7 @@ public class Faction {
             maxPower += user.getMaxPower();
         }
         return maxPower;
+    }
         
     @Override
     public boolean equals(Object o) {
