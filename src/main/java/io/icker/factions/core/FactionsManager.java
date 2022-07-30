@@ -38,8 +38,7 @@ public class FactionsManager {
         MODIFY.register(FactionsManager::factionModified);
         MEMBER_JOIN.register(FactionsManager::memberChange);
         MEMBER_LEAVE.register(FactionsManager::memberChange);
-        if (CONFIG.POWER.PVE_DEATH_PENALTY) ON_PLAYER_DEATH.register(FactionsManager::playerDeath);
-        else ON_KILLED_BY_PLAYER.register(FactionsManager::playerDeath);
+        ON_PLAYER_DEATH.register(FactionsManager::playerDeath);
         ON_POWER_TICK.register(FactionsManager::powerTick);
         OPEN_SAFE.register(FactionsManager::openSafe);
     }
@@ -65,7 +64,9 @@ public class FactionsManager {
         }
     }
 
-    private static void playerDeath(@NotNull ServerPlayerEntity player, DamageSource source) {
+    private static void playerDeath(@NotNull ServerPlayerEntity player, DamageSource source, boolean killedByPlayer) {
+        if (!killedByPlayer && !CONFIG.POWER.PVE_DEATH_PENALTY) return;
+
         User member = User.get(player.getUuid());
         int adjusted = member.addPower(-CONFIG.POWER.DEATH_PENALTY);
 
