@@ -89,7 +89,7 @@ public class Message {
     public void sendToFactionChat(@NotNull Faction faction) {
         for (User member : faction.getUsers()) {
             ServerPlayerEntity player = manager.getPlayer(member.getID());
-            if (player == null) return;  // Confirm that it's a player executing the command and not an entity with /execute
+            if (player == null) return;  // Make sure that player is online
             player.sendMessage(text, false);
         }
     }
