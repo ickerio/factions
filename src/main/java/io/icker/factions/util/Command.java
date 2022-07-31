@@ -98,7 +98,6 @@ public interface Command {
         public static SuggestionProvider<ServerCommandSource> eligibleForWar() {
             return suggest(user -> {
                     Faction source = user.getFaction();
-                    FactionsMod.LOGGER.info(source.getName());
                     return Faction.all()
                         .stream()
                         .filter(faction -> WarManager.eligibleForWar(source, faction))

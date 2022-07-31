@@ -47,7 +47,6 @@ public class WarManager {
     }
 
     private static void onTrespassing(ServerPlayerEntity player) {
-        FactionsMod.LOGGER.info("trespassing");
         if (FactionsMod.CONFIG.WAR == null) return;
 
         User user = User.get(player.getUuid());
@@ -92,11 +91,17 @@ public class WarManager {
 
         Faction faction = user.getFaction();
 
-        return faction.getEnemiesWith().stream().anyMatch(rel -> (rel.aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL || faction.getReverse(rel).status == Relationship.Status.WARRING) && rel.status != Relationship.Status.WARRING);
+        return
+            faction.getEnemiesWith().stream().anyMatch(rel -> (rel.aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL ||
+            faction.getReverse(rel).status == Relationship.Status.WARRING) && rel.status != Relationship.Status.WARRING) ||
+            faction.getMutualAllies().stream().anyMatch(rel -> !Faction.get(rel.target).getWars().isEmpty());
     }
 
     public static boolean eligibleForWar(Faction source, Faction target) {
         if (FactionsMod.CONFIG.WAR == null) return false;
-        return target.getRelationship(source.getID()).status == Relationship.Status.WARRING || source.getRelationship(target.getID()).aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL;
+        return
+            target.getRelationship(source.getID()).status == Relationship.Status.WARRING
+            || source.getRelationship(target.getID()).aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL
+            || source.getMutualAllies().stream().anyMatch(rel -> Faction.get(rel.target).getRelationship(target.getID()).status == Relationship.Status.WARRING);
     }
 }
