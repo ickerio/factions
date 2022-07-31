@@ -6,10 +6,13 @@ import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 @Name("Faction")
 public class Faction {
@@ -169,6 +172,19 @@ public class Faction {
 
     public List<User> getUsers() {
         return User.getByFaction(id);
+    }
+
+    public void sendCommandTree(PlayerManager playerManager) {
+        sendCommandTree(playerManager, user -> true);
+    }
+
+    public void sendCommandTree(PlayerManager playerManager, Predicate<User> filter) {
+        getUsers().stream().filter(filter).forEach(user -> {
+            ServerPlayerEntity player = playerManager.getPlayer(user.getID());
+            if (player != null) {
+                playerManager.sendCommandTree(player);
+            }
+        });
     }
 
     public List<Claim> getClaims() {

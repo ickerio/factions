@@ -12,6 +12,9 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import static net.minecraft.util.Formatting.RED;
+import static net.minecraft.util.Formatting.RESET;
+
 public class WarManager {
     public static void register() {
         PlayerEvents.ON_KILLED_BY_PLAYER.register(WarManager::onKilled);
@@ -30,12 +33,10 @@ public class WarManager {
             rev.aggression += FactionsMod.CONFIG.WAR.ATTACK_AGGRESSION;
             if (rev.aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL) {
                 PlayerManager playerManager = player.getServer().getPlayerManager();
-                targetFaction.getUsers()
-                    .stream()
-                    .filter(user -> (user.rank == Rank.LEADER || user.rank == Rank.OWNER) && playerManager.getPlayer(user.getID()) != null)
-                    .forEach(user -> playerManager.sendCommandTree(playerManager.getPlayer(user.getID())));
 
-                new Message("Your faction is now eligible to go to war with %s", attackingFaction.getName()).hover("Click to go to war").click(String.format("/f war declare %s", attackingFaction.getName())).send(targetFaction);
+                targetFaction.sendCommandTree(playerManager, user -> (user.rank == Rank.LEADER || user.rank == Rank.OWNER) && playerManager.getPlayer(user.getID()) != null);
+
+                new Message("Your faction is now eligible to go to " + RED + "war" + RESET + " with %s", attackingFaction.getName()).hover("Click to go to war").click(String.format("/f war declare %s", attackingFaction.getName())).send(targetFaction);
             }
         }
     }
@@ -51,12 +52,11 @@ public class WarManager {
 
         Faction faction = user.getFaction();
 
-        return faction.getEnemiesWith().stream().anyMatch(rel -> rel.aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL || faction.getReverse(rel).status == Relationship.Status.WARRING);
+        return faction.getEnemiesWith().stream().anyMatch(rel -> (rel.aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL || faction.getReverse(rel).status == Relationship.Status.WARRING) && rel.status != Relationship.Status.WARRING);
     }
 
     public static boolean eligibleForWar(Faction source, Faction target) {
         if (FactionsMod.CONFIG.WAR == null) return false;
-        FactionsMod.LOGGER.info(source.getName(), target.getName());
         return target.getRelationship(source.getID()).status == Relationship.Status.WARRING || source.getRelationship(target.getID()).aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL;
     }
 }
