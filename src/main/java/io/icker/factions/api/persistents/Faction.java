@@ -224,6 +224,10 @@ public class Faction {
         return relationships.stream().filter(rel -> getReverse(rel).status == Relationship.Status.ENEMY).toList();
     }
 
+    public List<Relationship> getWars() {
+        return relationships.stream().filter(rel -> getReverse(rel).status == Relationship.Status.WARRING && rel.status == Relationship.Status.WARRING).toList();
+    }
+
     public void removeRelationship(UUID target) {
         relationships = new ArrayList<>(relationships.stream().filter(rel -> !rel.target.equals(target)).toList());
     }

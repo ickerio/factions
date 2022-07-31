@@ -86,6 +86,15 @@ public interface Command {
             );
         }
 
+        public static SuggestionProvider<ServerCommandSource> atWar() {
+            return suggest(user ->
+                    user.getFaction().getWars()
+                            .stream()
+                            .map(rel -> Faction.get(rel.target).getName())
+                            .toArray(String[]::new)
+            );
+        }
+
         public static SuggestionProvider<ServerCommandSource> eligibleForWar() {
             return suggest(user -> {
                     Faction source = user.getFaction();

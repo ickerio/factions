@@ -21,6 +21,8 @@ public class Relationship {
     @Field("Status")
     public Status status;
 
+    public boolean readyToEnd = false;
+
     public Relationship(UUID target, Status status) {
         this.target = target;
         this.status = status;
