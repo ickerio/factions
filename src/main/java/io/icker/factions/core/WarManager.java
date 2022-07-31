@@ -2,6 +2,8 @@ package io.icker.factions.core;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
+import io.icker.factions.api.events.RelationshipEvents;
+import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.api.persistents.User;
@@ -11,6 +13,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.ChunkPos;
 
 import static net.minecraft.util.Formatting.RED;
 import static net.minecraft.util.Formatting.RESET;
@@ -18,6 +21,8 @@ import static net.minecraft.util.Formatting.RESET;
 public class WarManager {
     public static void register() {
         PlayerEvents.ON_KILLED_BY_PLAYER.register(WarManager::onKilled);
+        PlayerEvents.ON_MOVE.register(WarManager::onMove);
+        RelationshipEvents.ON_TRESPASSING.register(WarManager::onTrespassing);
     }
 
     private static void onKilled(ServerPlayerEntity player, DamageSource source) {
@@ -39,6 +44,41 @@ public class WarManager {
                 new Message("Your faction is now eligible to go to " + RED + "war" + RESET + " with %s", attackingFaction.getName()).hover("Click to go to war").click(String.format("/f war declare %s", attackingFaction.getName())).send(targetFaction);
             }
         }
+    }
+
+    private static void onTrespassing(ServerPlayerEntity player) {
+        FactionsMod.LOGGER.info("trespassing");
+        if (FactionsMod.CONFIG.WAR == null) return;
+
+        User user = User.get(player.getUuid());
+
+        String dimension = player.world.getRegistryKey().getValue().toString();
+        ChunkPos chunkPosition = player.getChunkPos();
+
+        Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
+
+        claim.getFaction().getRelationship(user.getFaction().getID()).aggression += FactionsMod.CONFIG.WAR.TRESPASSING_AGGRESSION;
+    }
+
+    private static void onMove(ServerPlayerEntity player) {
+        if (FactionsMod.CONFIG.WAR == null) return;
+
+        User user = User.get(player.getUuid());
+
+        if (!user.isInFaction()) return;
+
+        String dimension = player.world.getRegistryKey().getValue().toString();
+        ChunkPos chunkPosition = player.getChunkPos();
+
+        Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
+
+        if (claim == null) return;
+
+        if (claim.getFaction().getRelationship(user.getFaction().getID()).status == Relationship.Status.ENEMY && !user.isTrespassing) {
+            user.startedTrespassing = player.age;
+        }
+
+        user.isTrespassing = claim.getFaction().getRelationship(user.getFaction().getID()).status == Relationship.Status.ENEMY;
     }
 
     public static boolean eligibleForWar(ServerCommandSource source) {

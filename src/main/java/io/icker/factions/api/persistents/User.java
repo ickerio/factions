@@ -57,6 +57,9 @@ public class User {
     public boolean bypass = false;
     public String language = "en_us";
 
+    public boolean isTrespassing = false;
+    public int startedTrespassing = 0;
+
     private User spoof;
 
     public User(UUID id) {
