@@ -24,6 +24,7 @@ public class Config {
             .registerTypeAdapter(HomeConfig.class, new Deserializer<>(HomeConfig.class))
             .registerTypeAdapter(PowerConfig.class, new Deserializer<>(PowerConfig.class))
             .registerTypeAdapter(SafeConfig.class, new Deserializer<>(SafeConfig.class))
+            .registerTypeAdapter(WarConfig.class, new Deserializer<>(WarConfig.class))
             .create();
 
         try {
@@ -65,6 +66,10 @@ public class Config {
     @SerializedName("home")
     @Nullable
     public HomeConfig HOME = new HomeConfig();
+
+    @SerializedName("war")
+    @Nullable
+    public WarConfig WAR = new WarConfig();
 
     @SerializedName("display")
     public DisplayConfig DISPLAY = new DisplayConfig();

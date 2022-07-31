@@ -9,10 +9,14 @@ public class Relationship {
         ALLY,
         NEUTRAL,
         ENEMY,
+        WARRING
     }
 
     @Field("Target")
     public UUID target;
+
+    @Field("Aggression")
+    public int aggression;
 
     @Field("Status")
     public Status status;

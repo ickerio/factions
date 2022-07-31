@@ -39,6 +39,7 @@ public class FactionsMod implements ModInitializer {
         ServerManager.register();
         SoundManager.register();
         WorldManager.register();
+        WarManager.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
     }

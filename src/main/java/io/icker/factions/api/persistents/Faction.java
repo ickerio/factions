@@ -7,6 +7,7 @@ import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -68,6 +69,7 @@ public class Faction {
         return id.toString();
     }
 
+    @Nullable
     public static Faction get(UUID id) {
         return STORE.get(id);
     }
