@@ -73,6 +73,11 @@ public class InfoCommand implements Command {
             .map(fac -> fac.getColor() + fac.getName())
             .collect(Collectors.joining(Formatting.GRAY + ", "));
 
+        String atWarWith = Formatting.GRAY + faction.getWars().stream()
+            .map(rel -> Faction.get(rel.target))
+            .map(fac -> fac.getColor() + fac.getName())
+            .collect(Collectors.joining(Formatting.GRAY + ", "));
+
         int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
         int maxPower = users.size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
@@ -100,6 +105,9 @@ public class InfoCommand implements Command {
             .send(player, false);
         new Message(Formatting.RED + "Enemies (" + Formatting.WHITE + faction.getEnemiesWith().size() + Formatting.RED + "): ")
             .add(enemiesWith)
+            .send(player, false);
+        new Message(Formatting.DARK_RED + "At War (" + Formatting.WHITE + faction.getWars().size() + Formatting.DARK_RED + "): ")
+            .add(atWarWith)
             .send(player, false);
 
         return 1;

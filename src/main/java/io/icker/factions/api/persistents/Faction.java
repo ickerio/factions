@@ -241,7 +241,7 @@ public class Faction {
     }
 
     public List<Relationship> getWars() {
-        return relationships.stream().filter(rel -> getReverse(rel).status == Relationship.Status.WARRING && rel.status == Relationship.Status.WARRING).toList();
+        return relationships.stream().filter(rel -> getReverse(rel).status == Relationship.Status.WARRING || rel.status == Relationship.Status.WARRING).toList();
     }
 
     public void removeRelationship(UUID target) {

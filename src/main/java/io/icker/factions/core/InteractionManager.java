@@ -4,6 +4,7 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
@@ -168,7 +169,11 @@ public class InteractionManager {
 
         Faction userFaction = user.getFaction();
 
-        if (claimFaction == userFaction && getRankLevel(claim.accessLevel) <= getRankLevel(user.rank)) {
+        if (claimFaction.equals(userFaction) && getRankLevel(claim.accessLevel) <= getRankLevel(user.rank)) {
+            return ActionResult.PASS;
+        }
+
+        if (userFaction.getRelationship(claimFaction.getID()).status == Relationship.Status.WARRING) {
             return ActionResult.PASS;
         }
 
