@@ -14,4 +14,7 @@ public class WarConfig {
 
     @SerializedName("trespassingAggression")
     public int TRESPASSING_AGGRESSION = 7;
+
+    @SerializedName("numLives")
+    public int NUM_LIVES = 2;
 }

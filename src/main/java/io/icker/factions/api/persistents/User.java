@@ -53,6 +53,9 @@ public class User {
     @Field("Sounds")
     public SoundMode sounds = SoundMode.ALL;
 
+    @Field("Lives")
+    public int lives = -1;
+
     public boolean autoclaim = false;
     public boolean bypass = false;
     public String language = "en_us";

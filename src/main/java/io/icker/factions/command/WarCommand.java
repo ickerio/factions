@@ -3,6 +3,7 @@ package io.icker.factions.command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.api.persistents.User;
@@ -21,6 +22,8 @@ import static net.minecraft.util.Formatting.RESET;
 
 public class WarCommand implements Command {
     private int declare (CommandContext<ServerCommandSource> context) {
+        if (FactionsMod.CONFIG.WAR == null) return 0;
+
         String name = StringArgumentType.getString(context, "faction");
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
@@ -56,6 +59,8 @@ public class WarCommand implements Command {
 
         PlayerManager playerManager = player.getServer().getPlayerManager();
         sourceFaction.sendCommandTree(playerManager, user -> (user.rank == User.Rank.LEADER || user.rank == User.Rank.OWNER) && playerManager.getPlayer(user.getID()) != null);
+
+        sourceFaction.getUsers().forEach(user -> user.lives = FactionsMod.CONFIG.WAR.NUM_LIVES);
 
         new Message(sourceFaction.getName() + " have declared " + RED + "war" + RESET + " on you")
             .hover("Click to declare war back")

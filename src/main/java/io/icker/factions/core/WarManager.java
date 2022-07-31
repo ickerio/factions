@@ -27,7 +27,8 @@ public class WarManager {
 
     private static void onKilled(ServerPlayerEntity player, DamageSource source) {
         Faction attackingFaction = User.get(source.getSource().getUuid()).getFaction();
-        Faction targetFaction = User.get(player.getUuid()).getFaction();
+        User killed = User.get(player.getUuid());
+        Faction targetFaction = killed.getFaction();
 
         if (attackingFaction == null || targetFaction == null) return;
 
@@ -43,6 +44,8 @@ public class WarManager {
 
                 new Message("Your faction is now eligible to go to " + RED + "war" + RESET + " with %s", attackingFaction.getName()).hover("Click to go to war").click(String.format("/f war declare %s", attackingFaction.getName())).send(targetFaction);
             }
+        } else if (rel.status == Relationship.Status.WARRING) {
+            killed.lives--;
         }
     }
 

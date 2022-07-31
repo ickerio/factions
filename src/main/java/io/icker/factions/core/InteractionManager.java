@@ -151,6 +151,8 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
+        if (user.lives == 0) return ActionResult.FAIL;
+
         String dimension = world.getRegistryKey().getValue().toString();
         ChunkPos chunkPosition = world.getChunk(position).getPos();
 
