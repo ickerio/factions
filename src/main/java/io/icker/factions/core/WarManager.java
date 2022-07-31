@@ -35,7 +35,7 @@ public class WarManager {
                     .filter(user -> (user.rank == Rank.LEADER || user.rank == Rank.OWNER) && playerManager.getPlayer(user.getID()) != null)
                     .forEach(user -> playerManager.sendCommandTree(playerManager.getPlayer(user.getID())));
 
-                new Message("Your faction is now eligible to go to war with %s", attackingFaction.getName()).hover("Click to go to war").click(String.format("/f declare warring %s", attackingFaction.getName())).send(targetFaction);
+                new Message("Your faction is now eligible to go to war with %s", attackingFaction.getName()).hover("Click to go to war").click(String.format("/f war declare %s", attackingFaction.getName())).send(targetFaction);
             }
         }
     }

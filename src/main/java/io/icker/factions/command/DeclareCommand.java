@@ -6,7 +6,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Relationship;
-import io.icker.factions.core.WarManager;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -27,10 +26,6 @@ public class DeclareCommand implements Command {
 
     private int enemy(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         return updateRelationship(context, Relationship.Status.ENEMY);
-    }
-
-    private int war(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        return updateRelationship(context, Relationship.Status.WARRING);
     }
 
     private int updateRelationship(CommandContext<ServerCommandSource> context, Relationship.Status status) throws CommandSyntaxException {
@@ -57,11 +52,6 @@ public class DeclareCommand implements Command {
             return 0;
         }
 
-        if (status == Relationship.Status.WARRING && !WarManager.eligibleForWar(sourceFaction, targetFaction)) {
-            new Message("You cannot currently go to war with that faction").fail().send(player, false);
-            return 0;
-        }
-
         Relationship rel = new Relationship(targetFaction.getID(), status);
         Relationship rev = targetFaction.getRelationship(sourceFaction.getID());
         sourceFaction.setRelationship(rel);
@@ -70,7 +60,6 @@ public class DeclareCommand implements Command {
 
         Message msgStatus = rel.status == Relationship.Status.ALLY ? new Message("allies").format(Formatting.GREEN) 
         : rel.status == Relationship.Status.ENEMY ? new Message("enemies").format(Formatting.RED)
-        : rel.status == Relationship.Status.WARRING ? new Message("warring").format(Formatting.RED).format(Formatting.BOLD)
         : new Message("neutral");
 
         if (rel.status == rev.status) {
@@ -121,15 +110,6 @@ public class DeclareCommand implements Command {
                     CommandManager.argument("faction", StringArgumentType.greedyString())
                     .suggests(Suggests.allFactions(false))
                     .executes(this::enemy)
-                )
-            )
-            .then(
-                CommandManager.literal("warring")
-                .requires(Requires.multiple(Requires.hasPerms("factions.declare.warring", 0), WarManager::eligibleForWar))
-                .then(
-                    CommandManager.argument("faction", StringArgumentType.greedyString())
-                    .suggests(Suggests.eligibleForWar())
-                    .executes(this::war)
                 )
             )
             .build();
