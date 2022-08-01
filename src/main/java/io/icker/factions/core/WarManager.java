@@ -105,4 +105,19 @@ public class WarManager {
 
         return  War.all().stream().anyMatch(war -> user.getFaction().getMutualAllies().stream().map(rel -> Faction.get(rel.target)).anyMatch(faction -> war.getSourceTeam().contains(faction) || war.getTargetTeam().contains(faction)));
     }
+
+    public static boolean eligibleToEndWar(ServerCommandSource source) {
+        if (FactionsMod.CONFIG.WAR == null) return false;
+
+        ServerPlayerEntity player = source.getPlayer();
+        if (source.getPlayer() == null) return false;
+
+        User user = User.get(player.getUuid());
+
+        if (!user.isInFaction()) return false;
+
+        Faction faction = user.getFaction();
+
+        return faction.getWars().stream().anyMatch(war -> war.getSource().equals(faction) || war.getTarget().equals(faction));
+    }
 }

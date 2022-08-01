@@ -7,6 +7,7 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.api.persistents.War;
+import io.icker.factions.core.WarManager;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.PlayerManager;
@@ -162,9 +163,10 @@ public class WarCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("war")
-            .requires(Requires.multiple(Requires.isLeader(), (source) -> FactionsMod.CONFIG.WAR != null))
+            .requires(Requires.multiple(Requires.isLeader(), (source) -> FactionsMod.CONFIG.WAR != null, Requires.hasPerms("factions.war", 0)))
             .then(
                 CommandManager.literal("declare")
+                .requires(Requires.multiple(WarManager::eligibleToStartWar, Requires.hasPerms("factions.war.declare", 0)))
                 .then(
                     CommandManager.argument("faction", StringArgumentType.greedyString())
                     .suggests(Suggests.eligibleForWar())
@@ -173,6 +175,7 @@ public class WarCommand implements Command {
             )
             .then(
                 CommandManager.literal("join")
+                .requires(Requires.multiple(WarManager::eligibleToJoinWar, Requires.hasPerms("factions.war.join", 0)))
                 .then(
                     CommandManager.argument("war", StringArgumentType.greedyString())
                     .suggests(Suggests.joinableWars())
@@ -181,6 +184,7 @@ public class WarCommand implements Command {
             )
             .then(
                 CommandManager.literal("end")
+                .requires(Requires.multiple(WarManager::eligibleToEndWar, Requires.hasPerms("factions.war.end", 0)))
                 .then(
                     CommandManager.argument("war", StringArgumentType.greedyString())
                         .suggests(Suggests.atWar())
