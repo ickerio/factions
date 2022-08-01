@@ -228,6 +228,10 @@ public class Faction {
         return rel.status == Relationship.Status.ALLY && getReverse(rel).status == Relationship.Status.ALLY;
     }
 
+    public boolean atWarWith(Faction target) {
+        return War.getByFactions(this, target) != null;
+    }
+
     public List<Relationship> getMutualAllies() {
         return relationships.stream().filter(rel -> isMutualAllies(rel.target)).toList();
     }
@@ -240,8 +244,8 @@ public class Faction {
         return relationships.stream().filter(rel -> getReverse(rel).status == Relationship.Status.ENEMY).toList();
     }
 
-    public List<Relationship> getWars() {
-        return relationships.stream().filter(rel -> getReverse(rel).status == Relationship.Status.WARRING || rel.status == Relationship.Status.WARRING).toList();
+    public List<War> getWars() {
+        return War.getByFaction(this);
     }
 
     public void removeRelationship(UUID target) {

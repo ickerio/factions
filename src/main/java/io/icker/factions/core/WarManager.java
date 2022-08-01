@@ -3,10 +3,7 @@ package io.icker.factions.core;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.events.RelationshipEvents;
-import io.icker.factions.api.persistents.Claim;
-import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Relationship;
-import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.*;
 import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.util.Message;
 import net.minecraft.entity.damage.DamageSource;
@@ -35,7 +32,7 @@ public class WarManager {
         Relationship rel = attackingFaction.getRelationship(targetFaction.getID());
         Relationship rev = attackingFaction.getReverse(rel);
 
-        if (rel.status == Relationship.Status.ENEMY && rev.status == Relationship.Status.ENEMY && FactionsMod.CONFIG.WAR != null) {
+        if (rel.status == Relationship.Status.ENEMY && rev.status == Relationship.Status.ENEMY && FactionsMod.CONFIG.WAR != null && !targetFaction.atWarWith(attackingFaction)) {
             rev.aggression += FactionsMod.CONFIG.WAR.ATTACK_AGGRESSION;
             if (rev.aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL) {
                 PlayerManager playerManager = player.getServer().getPlayerManager();
@@ -44,7 +41,7 @@ public class WarManager {
 
                 new Message("Your faction is now eligible to go to " + RED + "war" + RESET + " with %s", attackingFaction.getName()).hover("Click to go to war").click(String.format("/f war declare %s", attackingFaction.getName())).send(targetFaction);
             }
-        } else if (rel.status == Relationship.Status.WARRING) {
+        } else if (War.getByFactions(attackingFaction, targetFaction) != null) {
             killed.lives--;
         }
     }
@@ -83,28 +80,29 @@ public class WarManager {
         user.isTrespassing = claim.getFaction().getRelationship(user.getFaction().getID()).status == Relationship.Status.ENEMY;
     }
 
-    public static boolean eligibleForWar(ServerCommandSource source) {
+    public static boolean eligibleToStartWar(ServerCommandSource source) {
         if (FactionsMod.CONFIG.WAR == null) return false;
 
         ServerPlayerEntity player = source.getPlayer();
         if (source.getPlayer() == null) return false;
 
         User user = User.get(player.getUuid());
+
         if (!user.isInFaction()) return false;
 
-        Faction faction = user.getFaction();
-
-        return
-            faction.getEnemiesWith().stream().anyMatch(rel -> (rel.aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL ||
-            faction.getReverse(rel).status == Relationship.Status.WARRING) && rel.status != Relationship.Status.WARRING) ||
-            faction.getMutualAllies().stream().anyMatch(rel -> !Faction.get(rel.target).getWars().isEmpty());
+        return user.getFaction().getEnemiesWith().stream().anyMatch(rel -> (rel.aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL));
     }
 
-    public static boolean eligibleForWar(Faction source, Faction target) {
+    public static boolean eligibleToJoinWar(ServerCommandSource source) {
         if (FactionsMod.CONFIG.WAR == null) return false;
-        return
-            target.getRelationship(source.getID()).status == Relationship.Status.WARRING
-            || source.getRelationship(target.getID()).aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL
-            || source.getMutualAllies().stream().anyMatch(rel -> Faction.get(rel.target).getRelationship(target.getID()).status == Relationship.Status.WARRING);
+
+        ServerPlayerEntity player = source.getPlayer();
+        if (source.getPlayer() == null) return false;
+
+        User user = User.get(player.getUuid());
+
+        if (!user.isInFaction()) return false;
+
+        return War.all().stream().anyMatch(war -> user.getFaction().getMutualAllies().stream().map(rel -> Faction.get(rel.target)).anyMatch(faction -> war.getSourceTeam().contains(faction) || war.getTargetTeam().contains(faction)));
     }
 }

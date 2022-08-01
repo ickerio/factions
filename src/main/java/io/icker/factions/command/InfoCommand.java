@@ -8,6 +8,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.War;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -73,9 +74,8 @@ public class InfoCommand implements Command {
             .map(fac -> fac.getColor() + fac.getName())
             .collect(Collectors.joining(Formatting.GRAY + ", "));
 
-        String atWarWith = Formatting.GRAY + faction.getWars().stream()
-            .map(rel -> Faction.get(rel.target))
-            .map(fac -> fac.getColor() + fac.getName())
+        String warsJoined = Formatting.GRAY + faction.getWars().stream()
+            .map(War::getName)
             .collect(Collectors.joining(Formatting.GRAY + ", "));
 
         int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
@@ -106,8 +106,8 @@ public class InfoCommand implements Command {
         new Message(Formatting.RED + "Enemies (" + Formatting.WHITE + faction.getEnemiesWith().size() + Formatting.RED + "): ")
             .add(enemiesWith)
             .send(player, false);
-        new Message(Formatting.DARK_RED + "At War (" + Formatting.WHITE + faction.getWars().size() + Formatting.DARK_RED + "): ")
-            .add(atWarWith)
+        new Message(Formatting.DARK_RED + "Wars in (" + Formatting.WHITE + faction.getWars().size() + Formatting.DARK_RED + "): ")
+            .add(warsJoined)
             .send(player, false);
 
         return 1;

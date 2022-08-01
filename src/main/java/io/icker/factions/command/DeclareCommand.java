@@ -52,11 +52,6 @@ public class DeclareCommand implements Command {
             return 0;
         }
 
-        if (sourceFaction.getRelationship(targetFaction.getID()).status == Relationship.Status.WARRING && targetFaction.getRelationship(sourceFaction.getID()).status == Relationship.Status.WARRING) {
-            new Message("Both factions must agree to end the war").fail().send(player, false);
-            return 0;
-        }
-
         Relationship rel = new Relationship(targetFaction.getID(), status);
         Relationship rev = targetFaction.getRelationship(sourceFaction.getID());
         sourceFaction.setRelationship(rel);

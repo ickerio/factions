@@ -8,8 +8,7 @@ public class Relationship {
     public enum Status {
         ALLY,
         NEUTRAL,
-        ENEMY,
-        WARRING
+        ENEMY
     }
 
     @Field("Target")
@@ -20,8 +19,6 @@ public class Relationship {
 
     @Field("Status")
     public Status status;
-
-    public boolean readyToEnd = false;
 
     public Relationship(UUID target, Status status) {
         this.target = target;

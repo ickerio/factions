@@ -4,7 +4,6 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
@@ -151,7 +150,7 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
-        if (user.lives == 0) return ActionResult.FAIL;
+        if (user.lives <= 0) return ActionResult.FAIL;
 
         String dimension = world.getRegistryKey().getValue().toString();
         ChunkPos chunkPosition = world.getChunk(position).getPos();
@@ -175,7 +174,7 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
-        if (userFaction.getRelationship(claimFaction.getID()).status == Relationship.Status.WARRING) {
+        if (userFaction.atWarWith(claimFaction)) {
             return ActionResult.PASS;
         }
 

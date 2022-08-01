@@ -5,7 +5,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.core.WarManager;
+import io.icker.factions.api.persistents.War;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
@@ -90,7 +90,18 @@ public interface Command {
             return suggest(user ->
                     user.getFaction().getWars()
                             .stream()
-                            .map(rel -> Faction.get(rel.target).getName())
+                            .map(War::getName)
+                            .toArray(String[]::new)
+            );
+        }
+
+        public static SuggestionProvider<ServerCommandSource> joinableWars() {
+            return suggest(user ->
+                    user.getFaction().getMutualAllies()
+                            .stream()
+                            .map(rel -> Faction.get(rel.target))
+                            .filter(faction -> War.getByFaction(faction) != null)
+                            .map(Faction::getName)
                             .toArray(String[]::new)
             );
         }
@@ -98,10 +109,10 @@ public interface Command {
         public static SuggestionProvider<ServerCommandSource> eligibleForWar() {
             return suggest(user -> {
                     Faction source = user.getFaction();
-                    return Faction.all()
+                    return source.getEnemiesWith()
                         .stream()
-                        .filter(faction -> WarManager.eligibleForWar(source, faction))
-                        .map(Faction::getName)
+                        .filter(rel -> rel.aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL)
+                        .map(rel -> Faction.get(rel.target).getName())
                         .toArray(String[]::new);
                 }
             );
