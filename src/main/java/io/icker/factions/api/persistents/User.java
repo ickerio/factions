@@ -1,5 +1,6 @@
 package io.icker.factions.api.persistents;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
@@ -54,7 +55,7 @@ public class User {
     public SoundMode sounds = SoundMode.ALL;
 
     @Field("Lives")
-    public int lives = -1;
+    public int lives = FactionsMod.CONFIG.WAR != null ? FactionsMod.CONFIG.WAR.NUM_LIVES : 3;
 
     public boolean autoclaim = false;
     public boolean bypass = false;

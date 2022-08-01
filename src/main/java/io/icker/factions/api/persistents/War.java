@@ -43,6 +43,12 @@ public class War {
         this.sourceTeam.add(source.getID());
         this.id = UUID.randomUUID();
         name = String.format("The %s-%s war", source.getName(), target.getName());
+
+        for (Faction faction : getFactions()) {
+            for (User user : faction.getUsers()) {
+                user.lives = FactionsMod.CONFIG.WAR.NUM_LIVES;
+            }
+        }
     }
 
     public War() {}
@@ -101,6 +107,9 @@ public class War {
     }
 
     public void addSource(Faction source) {
+        for (User user : source.getUsers()) {
+            user.lives = FactionsMod.CONFIG.WAR.NUM_LIVES;
+        }
         this.sourceTeam.add(source.getID());
     }
 
@@ -113,6 +122,9 @@ public class War {
     }
 
     public void addTarget(Faction target) {
+        for (User user : target.getUsers()) {
+            user.lives = FactionsMod.CONFIG.WAR.NUM_LIVES;
+        }
         this.targetTeam.add(target.getID());
     }
 
@@ -134,6 +146,11 @@ public class War {
 
     public void end() {
         STORE.remove(this.getID());
+        for (Faction faction : getFactions()) {
+            for (User user : faction.getUsers()) {
+                user.lives = FactionsMod.CONFIG.WAR.NUM_LIVES;
+            }
+        }
     }
 
     public static void save() {
