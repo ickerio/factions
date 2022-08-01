@@ -54,8 +54,6 @@ public class WarCommand implements Command {
         sourceFaction.getUsers().forEach(user -> user.lives = FactionsMod.CONFIG.WAR.NUM_LIVES);
 
         new Message(sourceFaction.getName() + " have declared " + RED + "war" + RESET + " on you")
-            .hover("Click to declare war back")
-            .click(String.format("/factions war declare %s", sourceFaction.getName()))
             .send(targetFaction);
 
         return 1;
