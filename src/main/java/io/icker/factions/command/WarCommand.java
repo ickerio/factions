@@ -44,6 +44,9 @@ public class WarCommand implements Command {
             return 0;
         }
 
+        targetFaction.getRelationship(sourceFaction.getID()).aggression = 0;
+        sourceFaction.getRelationship(targetFaction.getID()).aggression = 0;
+
         War.add(new War(sourceFaction, targetFaction));
 
         new Message("You have declared " + RED + "war" + RESET + " on " + targetFaction.getName()).send(sourceFaction);
