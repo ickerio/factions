@@ -103,6 +103,6 @@ public class WarManager {
 
         if (!user.isInFaction()) return false;
 
-        return War.all().stream().anyMatch(war -> user.getFaction().getMutualAllies().stream().map(rel -> Faction.get(rel.target)).anyMatch(faction -> war.getSourceTeam().contains(faction) || war.getTargetTeam().contains(faction)));
+        return  War.all().stream().anyMatch(war -> user.getFaction().getMutualAllies().stream().map(rel -> Faction.get(rel.target)).anyMatch(faction -> war.getSourceTeam().contains(faction) || war.getTargetTeam().contains(faction)));
     }
 }

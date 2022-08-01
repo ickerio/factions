@@ -96,13 +96,16 @@ public interface Command {
         }
 
         public static SuggestionProvider<ServerCommandSource> joinableWars() {
-            return suggest(user ->
+            return suggest(user -> War.all()
+                .stream()
+                .filter(war ->
                     user.getFaction().getMutualAllies()
-                            .stream()
-                            .map(rel -> Faction.get(rel.target))
-                            .filter(faction -> War.getByFaction(faction) != null)
-                            .map(Faction::getName)
-                            .toArray(String[]::new)
+                        .stream()
+                        .map(rel -> Faction.get(rel.target))
+                        .anyMatch(faction -> war.getSourceTeam().contains(faction) || war.getTargetTeam().contains(faction))
+                ).map(War::getName)
+                .toArray(String[]::new)
+
             );
         }
 
