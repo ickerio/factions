@@ -4,6 +4,7 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -70,6 +71,7 @@ public class User {
         return id.toString();
     }
 
+    @NotNull
     public static User get(UUID id) {
         if (!STORE.containsKey(id)) {
             User.add(new User(id));
