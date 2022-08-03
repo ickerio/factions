@@ -182,7 +182,6 @@ public class PlaceholdersWrapper {
             assert ctx.player() != null;
 
             final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value("" + User.getPower(ctx.player().getUuid()));
 
             String r = "" + member.getPower();
 
@@ -206,7 +205,6 @@ public class PlaceholdersWrapper {
             assert ctx.player() != null;
 
             final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value("" + User.getMaxPower(ctx.player().getUuid()));
 
             String r = "" + member.getMaxPower();
 
