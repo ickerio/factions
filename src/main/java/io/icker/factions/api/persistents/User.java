@@ -79,6 +79,7 @@ public class User {
         return id.toString();
     }
 
+    @NotNull
     public static User get(UUID id) {
         if (!STORE.containsKey(id)) {
             User.add(new User(id));

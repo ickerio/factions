@@ -1,10 +1,7 @@
 package io.icker.factions.config;
 
-import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
-
-import java.lang.reflect.Type;
 
 public class PowerConfig {
 
@@ -29,16 +26,5 @@ public class PowerConfig {
 
         @SerializedName("reward")
         public int REWARD = 3;
-    }
-
-    public static class Deserializer implements JsonDeserializer<PowerConfig> {
-        @Override
-        public PowerConfig deserialize(@NotNull JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            if (!json.isJsonObject() && !json.getAsBoolean()) {
-                return null;
-            }
-
-            return new Gson().fromJson(json, PowerConfig.class);
-        }
     }
 }

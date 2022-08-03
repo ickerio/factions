@@ -1,7 +1,6 @@
 package io.icker.factions.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
@@ -10,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class Config {
@@ -21,9 +21,9 @@ public class Config {
             .setPrettyPrinting()
             .disableHtmlEscaping()
             .serializeNulls()
-            .registerTypeAdapter(HomeConfig.class, new HomeConfig.Deserializer())
-            .registerTypeAdapter(PowerConfig.class, new PowerConfig.Deserializer())
-            .registerTypeAdapter(SafeConfig.class, new SafeConfig.Deserializer())
+            .registerTypeAdapter(HomeConfig.class, new Deserializer<>(HomeConfig.class))
+            .registerTypeAdapter(PowerConfig.class, new Deserializer<>(PowerConfig.class))
+            .registerTypeAdapter(SafeConfig.class, new Deserializer<>(SafeConfig.class))
             .create();
 
         try {
@@ -63,7 +63,7 @@ public class Config {
     public SafeConfig SAFE = new SafeConfig();
 
     @SerializedName("home")
-        @Nullable
+    @Nullable
     public HomeConfig HOME = new HomeConfig();
 
     @SerializedName("display")
@@ -90,5 +90,22 @@ public class Config {
 
         @SerializedName("nameBlackList")
         public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless");
+    }
+
+    public static class Deserializer<T> implements JsonDeserializer<T> {
+        final Class<T> clazz;
+
+        public Deserializer(Class<T> clazz) {
+            this.clazz = clazz;
+        }
+
+        @Override
+        public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (!json.isJsonObject() && !json.getAsBoolean()) {
+                return null;
+            }
+
+            return new Gson().fromJson(json, clazz);
+        }
     }
 }

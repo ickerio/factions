@@ -45,7 +45,6 @@ public class PlaceholdersWrapper {
             Text r = NULL_TEXT;
 
             final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value(r);
 
 
             final var faction = member.getFaction();
@@ -103,7 +102,6 @@ public class PlaceholdersWrapper {
             String r = NULL_STRING;
 
             final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value(r);
 
             final var faction = member.getFaction();
 
@@ -120,7 +118,6 @@ public class PlaceholdersWrapper {
             String r = NULL_STRING;
 
             final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value(r);
 
             final var faction = member.getFaction();
 
@@ -137,7 +134,6 @@ public class PlaceholdersWrapper {
             String r = NULL_STRING;
 
             final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value(r);
 
             final var faction = member.getFaction();
 
@@ -154,7 +150,6 @@ public class PlaceholdersWrapper {
             Text r = NULL_TEXT;
 
             final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value(r);
 
             final var faction = member.getFaction();
 
@@ -174,7 +169,6 @@ public class PlaceholdersWrapper {
             String r = NULL_STRING;
 
             final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value(r);
 
             final var faction = member.getFaction();
 
@@ -226,7 +220,6 @@ public class PlaceholdersWrapper {
             String r = NULL_STRING;
 
             final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value(r);
 
             final var faction = member.getFaction();
 
@@ -243,7 +236,6 @@ public class PlaceholdersWrapper {
             Text r = NULL_TEXT;
 
             final var member = User.get(ctx.player().getUuid());
-            if (member == null) return value(r);
 
             final var faction = member.getFaction();
 
