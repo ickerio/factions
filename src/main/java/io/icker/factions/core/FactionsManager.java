@@ -69,9 +69,10 @@ public class FactionsManager {
 
         User member = User.get(player.getUuid());
         if (member.getPower() <= 0) return;
-        int adjusted = member.addPower(member.getPower()-CONFIG.POWER.DEATH_PENALTY >= 0 ? -CONFIG.POWER.DEATH_PENALTY : -member.getPower());
+        final int old = member.getPower();
+        final int adjusted = member.addPower(member.getPower()-CONFIG.POWER.DEATH_PENALTY >= 0 ? -CONFIG.POWER.DEATH_PENALTY : -member.getPower());
 
-        final MutableText message = literal(format(POWER_LOST_MESSAGE, player.getName().getString(), adjusted));
+        final MutableText message = literal(format(POWER_LOST_MESSAGE, player.getName().getString(), old-adjusted));
 
         if (member.isInFaction()) {
             final Faction faction = member.getFaction();
@@ -84,9 +85,10 @@ public class FactionsManager {
     private static void powerTick(@NotNull ServerPlayerEntity player) {
         User member = User.get(player.getUuid());
         if (member.getPower() >= member.getMaxPower()) return;
-        int adjusted = member.addPower(member.getPower() + CONFIG.POWER.POWER_TICKS.REWARD <= member.getMaxPower() ? CONFIG.POWER.POWER_TICKS.REWARD : member.getMaxPower() - member.getPower());
+        final int old = member.getPower();
+        final int adjusted = member.addPower(member.getPower() + CONFIG.POWER.POWER_TICKS.REWARD <= member.getMaxPower() ? CONFIG.POWER.POWER_TICKS.REWARD : member.getMaxPower() - member.getPower());
 
-        final MutableText message = literal(format(POWER_GAINED_MESSAGE, player.getName().getString(), adjusted));
+        final MutableText message = literal(format(POWER_GAINED_MESSAGE, player.getName().getString(), adjusted-old));
 
         if (member.isInFaction()) {
             final Faction faction = member.getFaction();
