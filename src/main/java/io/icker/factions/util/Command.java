@@ -13,7 +13,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-
 public interface Command {
     public LiteralCommandNode<ServerCommandSource> getNode();
     public static final boolean permissions = FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
@@ -63,6 +62,9 @@ public interface Command {
         public static Predicate<ServerCommandSource> require(Requires req) {
             return source -> {
                 ServerPlayerEntity entity = source.getPlayer();
+                if(entity == null){
+                    return false;
+                }
                 User user = Command.getUser(entity);
                 return req.run(user);
             };
@@ -109,9 +111,11 @@ public interface Command {
         public static SuggestionProvider<ServerCommandSource> suggest(Suggests sug) {
             return (context, builder) -> {
                 ServerPlayerEntity entity = context.getSource().getPlayer();
-                User user = User.get(entity.getUuid());
-                for (String suggestion : sug.run(user)) {
-                    builder.suggest(suggestion);
+                if(entity != null){
+                    User user = User.get(entity.getUuid());
+                    for (String suggestion : sug.run(user)) {
+                        builder.suggest(suggestion);
+                    }
                 }
                 return builder.buildFuture();
             };

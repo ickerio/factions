@@ -26,6 +26,11 @@ public class HomeCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+
+        if(player == null){
+            return 0;
+        }
+
         Faction faction = Command.getUser(player).getFaction();
         Home home = faction.getHome();
 
@@ -58,6 +63,10 @@ public class HomeCommand implements Command {
     private int set(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+
+        if(player == null){
+            return 0;
+        }
 
         Faction faction = Command.getUser(player).getFaction();
 

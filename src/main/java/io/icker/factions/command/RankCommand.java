@@ -29,6 +29,9 @@ public class RankCommand implements Command {
             return 0;
         }
 
+        if(player == null){
+            return 0;
+        }
         Faction faction = Command.getUser(player).getFaction();
 
         for (User users : faction.getUsers())
@@ -71,6 +74,9 @@ public class RankCommand implements Command {
             return 0;
         }
 
+        if(player == null){
+            return 0;
+        }
         Faction faction = Command.getUser(player).getFaction();
 
         for (User user : faction.getUsers())
@@ -118,6 +124,9 @@ public class RankCommand implements Command {
         if (target.getUuid().equals(player.getUuid())) {
             new Message("You cannot transfer ownership to yourself").format(Formatting.RED).send(player, false);
 
+            return 0;
+        }
+        if(player == null){
             return 0;
         }
 

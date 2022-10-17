@@ -26,7 +26,7 @@ public class FactionsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Initialized Factions Mod for Minecraft v1.19");
+        LOGGER.info("Initialized Factions Mod for Minecraft v1.19.2");
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         if (FabricLoader.getInstance().isModLoaded("placeholder-api")) {

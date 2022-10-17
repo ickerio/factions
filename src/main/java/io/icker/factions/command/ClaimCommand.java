@@ -28,6 +28,9 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            return 0;
+        }
         List<Claim> claims = Command.getUser(player).getFaction().getClaims();
         int count = claims.size();
 
@@ -68,6 +71,10 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
+
+        if(player == null){
+            return 0;
+        }
         ServerWorld world = player.getWorld();
 
         Faction faction = Command.getUser(player).getFaction();
@@ -118,6 +125,10 @@ public class ClaimCommand implements Command {
 
     private int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
+
+        if(player == null){
+            return 0;
+        }
         Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
@@ -134,6 +145,10 @@ public class ClaimCommand implements Command {
     private int addSize(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         int size = IntegerArgumentType.getInteger(context, "size");
         ServerPlayerEntity player = context.getSource().getPlayer();
+
+        if(player == null){
+            return 0;
+        }
         Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
@@ -165,6 +180,9 @@ public class ClaimCommand implements Command {
             return 0;
         }
 
+        if(player == null){
+            return 0;
+        }
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
 
@@ -190,6 +208,10 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
+
+        if(player == null){
+            return 0;
+        }
         ServerWorld world = player.getWorld();
         String dimension = world.getRegistryKey().getValue().toString();
 
@@ -236,6 +258,9 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            return 0;
+        }
         User user = Command.getUser(player);
         user.autoclaim = !user.autoclaim;
 
@@ -269,6 +294,9 @@ public class ClaimCommand implements Command {
             return 0;
         }
 
+        if(player == null){
+            return 0;
+        }
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
 

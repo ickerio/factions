@@ -17,6 +17,10 @@ public class LeaveCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            return 0;
+        }
+
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
 

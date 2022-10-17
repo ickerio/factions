@@ -24,6 +24,10 @@ public class MemberCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            return 0;
+        }
+
         User user = Command.getUser(player);
         if (!user.isInFaction()) {
             new Message("Command can only be used whilst in a faction").fail().send(player, false);

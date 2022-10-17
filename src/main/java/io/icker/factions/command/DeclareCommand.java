@@ -41,6 +41,10 @@ public class DeclareCommand implements Command {
             return 0;
         }
         
+        if(player == null){
+            return 0;
+        }
+
         Faction sourceFaction = Command.getUser(player).getFaction();
 
         if (sourceFaction.equals(targetFaction)) {

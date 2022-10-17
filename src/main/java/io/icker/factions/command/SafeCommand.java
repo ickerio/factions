@@ -13,6 +13,10 @@ public class SafeCommand implements Command {
 
     private int run(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
+
+        if(player == null){
+            return 0;
+        }
         PlayerEvents.OPEN_SAFE.invoker().onOpenSafe(player, Command.getUser(player).getFaction());
         return 1;
     }

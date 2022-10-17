@@ -38,6 +38,10 @@ public class CreateCommand implements Command {
             return 0;
         }
 
+        if (player == null){
+            return 0;
+        }
+
         Faction faction = new Faction(name, "No description set", "No faction MOTD set", Formatting.WHITE, false, FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
         Faction.add(faction);
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.OWNER);

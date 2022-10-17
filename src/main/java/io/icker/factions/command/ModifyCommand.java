@@ -39,6 +39,10 @@ public class ModifyCommand implements Command {
             return 0;
         }
 
+        if(player == null){
+            return 0;
+        }
+
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setName(name);
@@ -55,6 +59,9 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            return 0;
+        }
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setDescription(description);
@@ -71,6 +78,9 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            return 0;
+        }
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setMOTD(motd);
@@ -87,6 +97,9 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            return 0;
+        }
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setColor(color);
@@ -103,6 +116,9 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            return 0;
+        }
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setOpen(open);
