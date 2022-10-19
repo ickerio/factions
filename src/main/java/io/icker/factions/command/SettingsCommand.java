@@ -15,6 +15,10 @@ import net.minecraft.util.Formatting;
 public class SettingsCommand implements Command{
     private int setChat(CommandContext<ServerCommandSource> context, User.ChatMode option) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
+            return 0;
+        }
         User user = User.get(player.getUuid());
         user.chat = option;   
 
@@ -31,6 +35,10 @@ public class SettingsCommand implements Command{
 
     private int setSounds(CommandContext<ServerCommandSource> context, User.SoundMode option) {
         ServerPlayerEntity player = context.getSource().getPlayer();
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
+            return 0;
+        }
         User user = User.get(player.getUuid());
         user.sounds = option;
 
@@ -48,7 +56,10 @@ public class SettingsCommand implements Command{
     private int radar(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
-
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
+            return 0;
+        }
         User config = User.get(player.getUuid());
         boolean radar = !config.radar;
         config.radar = radar;

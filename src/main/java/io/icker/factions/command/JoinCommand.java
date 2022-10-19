@@ -19,6 +19,11 @@ public class JoinCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
+            return 0;
+        }
+
         Faction faction = Faction.getByName(name);
 
         if (faction == null) {
@@ -38,9 +43,6 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        if(player == null){
-            return 0;
-        }
 
         if (invited) faction.invites.remove(player.getUuid());
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.MEMBER);

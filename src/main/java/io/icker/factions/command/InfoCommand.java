@@ -25,8 +25,8 @@ public class InfoCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-
         if(player == null){
+            new Message("Not supported from server console").send(null, false);
             return 0;
         }
 
@@ -44,6 +44,11 @@ public class InfoCommand implements Command {
 
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
+            return 0;
+        }
 
         Faction faction = Faction.getByName(factionName);
         if (faction == null) {

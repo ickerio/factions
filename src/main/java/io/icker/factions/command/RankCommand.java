@@ -23,15 +23,17 @@ public class RankCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
+            return 0;
+        }
+
         if (target.getUuid().equals(player.getUuid())) {
             new Message("You cannot promote yourself").format(Formatting.RED).send(player, false);
 
             return 0;
         }
 
-        if(player == null){
-            return 0;
-        }
         Faction faction = Command.getUser(player).getFaction();
 
         for (User users : faction.getUsers())
@@ -69,14 +71,16 @@ public class RankCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
+            return 0;
+        }
+
         if (target.getUuid().equals(player.getUuid())) {
             new Message("You cannot demote yourself").format(Formatting.RED).send(player, false);
             return 0;
         }
 
-        if(player == null){
-            return 0;
-        }
         Faction faction = Command.getUser(player).getFaction();
 
         for (User user : faction.getUsers())
@@ -121,12 +125,14 @@ public class RankCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
+            return 0;
+        }
+
         if (target.getUuid().equals(player.getUuid())) {
             new Message("You cannot transfer ownership to yourself").format(Formatting.RED).send(player, false);
 
-            return 0;
-        }
-        if(player == null){
             return 0;
         }
 

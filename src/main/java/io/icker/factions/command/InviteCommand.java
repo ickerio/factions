@@ -24,17 +24,20 @@ import net.minecraft.util.Util;
 public class InviteCommand implements Command {
     private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
 
-        if(source.getPlayer() == null){
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
             return 0;
         }
-        List<UUID> invites = Command.getUser(source.getPlayer()).getFaction().invites;
+
+        List<UUID> invites = Command.getUser(player).getFaction().invites;
         int count = invites.size();
 
         new Message("You have ")
                 .add(new Message(String.valueOf(count)).format(Formatting.YELLOW))
                 .add(" outgoing invite%s", count == 1 ? "" : "s")
-                .send(source.getPlayer(), false);
+                .send(player, false);
 
         if (count == 0) return 1;
 
@@ -43,7 +46,7 @@ public class InviteCommand implements Command {
             .map(invite -> cache.getByUuid(invite).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
             .collect(Collectors.joining(", "));
 
-        new Message(players).format(Formatting.ITALIC).send(source.getPlayer(), false);
+        new Message(players).format(Formatting.ITALIC).send(player, false);
         return 1;
     }
 
@@ -53,8 +56,8 @@ public class InviteCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-
         if(player == null){
+            new Message("Not supported from server console").send(null, false);
             return 0;
         }
 
@@ -89,6 +92,7 @@ public class InviteCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if(player == null){
+            new Message("Not supported from server console").send(null, false);
             return 0;
         }
 

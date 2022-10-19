@@ -26,8 +26,8 @@ public class HomeCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-
         if(player == null){
+            new Message("Not supported from server console").send(null, false);
             return 0;
         }
 
@@ -65,6 +65,7 @@ public class HomeCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if(player == null){
+            new Message("Not supported from server console").send(null, false);
             return 0;
         }
 

@@ -11,7 +11,11 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Message {
+    public static Logger LOGGER = LogManager.getLogger("Factions");
     public static PlayerManager manager;
     private MutableText text;
 
@@ -59,7 +63,8 @@ public class Message {
     }
 
     public Message send(PlayerEntity player, boolean actionBar) {
-        player.sendMessage(text, actionBar);
+        if(player != null) player.sendMessage(text, actionBar);
+        else LOGGER.info(text.getString());
         return this;
     }
 

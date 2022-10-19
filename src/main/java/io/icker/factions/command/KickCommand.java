@@ -21,14 +21,16 @@ public class KickCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
+            return 0;
+        }
+
         if (target.getUuid().equals(player.getUuid())) {
             new Message("Cannot kick yourself").format(Formatting.RED).send(player, false);
             return 0;
         }
 
-        if(player == null){
-            return 0;
-        }
 
         User selfUser = Command.getUser(player);
         User targetUser = User.get(target.getUuid());

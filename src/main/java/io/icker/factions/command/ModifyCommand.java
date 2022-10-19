@@ -24,6 +24,11 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if(player == null){
+            new Message("Not supported from server console").send(null, false);
+            return 0;
+        }
+
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
             new Message("Cannot rename a faction to that name as it is on the blacklist").fail().send(player, false);
             return 0;
@@ -36,10 +41,6 @@ public class ModifyCommand implements Command {
 
         if (Faction.getByName(name) != null) {
             new Message("A faction with that name already exists").fail().send(player, false);
-            return 0;
-        }
-
-        if(player == null){
             return 0;
         }
 
@@ -60,8 +61,10 @@ public class ModifyCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if(player == null){
+            new Message("Not supported from server console").send(null, false);
             return 0;
         }
+
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setDescription(description);
@@ -79,8 +82,10 @@ public class ModifyCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if(player == null){
+            new Message("Not supported from server console").send(null, false);
             return 0;
         }
+
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setMOTD(motd);
@@ -98,8 +103,10 @@ public class ModifyCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if(player == null){
+            new Message("Not supported from server console").send(null, false);
             return 0;
         }
+
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setColor(color);
@@ -117,8 +124,10 @@ public class ModifyCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if(player == null){
+            new Message("Not supported from server console").send(null, false);
             return 0;
         }
+
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setOpen(open);

@@ -9,14 +9,20 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class SafeCommand implements Command {
+    public static Logger LOGGER = LogManager.getLogger("Factions");
 
     private int run(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
         if(player == null){
+            LOGGER.info("Not supported from server console");
             return 0;
         }
+
         PlayerEvents.OPEN_SAFE.invoker().onOpenSafe(player, Command.getUser(player).getFaction());
         return 1;
     }

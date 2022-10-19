@@ -166,6 +166,11 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
+
+
+        if(player == null){
+            return 0;
+        }
         ServerWorld world = player.getWorld();
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
@@ -180,9 +185,6 @@ public class ClaimCommand implements Command {
             return 0;
         }
 
-        if(player == null){
-            return 0;
-        }
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
 
@@ -280,6 +282,10 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
+
+        if(player == null){
+            return 0;
+        }
         ServerWorld world = player.getWorld();
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
@@ -294,9 +300,6 @@ public class ClaimCommand implements Command {
             return 0;
         }
 
-        if(player == null){
-            return 0;
-        }
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
 
