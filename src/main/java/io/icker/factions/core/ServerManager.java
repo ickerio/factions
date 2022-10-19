@@ -4,6 +4,7 @@ import io.icker.factions.api.events.MiscEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.War;
 import io.icker.factions.util.Message;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -21,6 +22,7 @@ public class ServerManager {
         Claim.save();
         Faction.save();
         User.save();
+        War.save();
     }
 
     private static void playerJoin(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {

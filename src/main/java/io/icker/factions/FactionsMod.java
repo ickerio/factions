@@ -39,6 +39,7 @@ public class FactionsMod implements ModInitializer {
         ServerManager.register();
         SoundManager.register();
         WorldManager.register();
+        WarManager.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
     }
@@ -74,6 +75,7 @@ public class FactionsMod implements ModInitializer {
             new ModifyCommand(),
             new RankCommand(),
             new SafeCommand(),
+            new WarCommand(),
         };
 
         for (Command command : commands) {

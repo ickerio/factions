@@ -77,6 +77,23 @@ public class AdminCommand implements Command {
         return 1;
     }
 
+    private int lives(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        ServerPlayerEntity targetEntity = EntityArgumentType.getPlayer(context, "player");
+        User target = User.get(targetEntity.getUuid());
+
+        int numLives = IntegerArgumentType.getInteger(context, "numLives");
+
+        target.lives = numLives;
+
+        new Message("Set %s's lives to %d", targetEntity.getName().getString(), numLives).send(player, false);
+        new Message("Your lives have been set to %d by %s", numLives, player.getName().getString()).send(targetEntity, false);
+
+        return 1;
+    }
+
     private int spoof(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
@@ -139,6 +156,17 @@ public class AdminCommand implements Command {
                     .executes(this::spoof)
                 )
                 .executes(this::clearSpoof)
+            )
+            .then(
+                CommandManager.literal("lives")
+                .requires(Requires.hasPerms("factions.admin.lives", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                .then(
+                    CommandManager.argument("numLives", IntegerArgumentType.integer())
+                        .then(
+                            CommandManager.argument("player", EntityArgumentType.player())
+                            .executes(this::lives)
+                        )
+                )
             )
             .build();
     }

@@ -1,17 +1,17 @@
 package io.icker.factions.util;
 
-import java.util.function.Predicate;
-
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.api.persistents.War;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+
+import java.util.function.Predicate;
 
 
 public interface Command {
@@ -83,6 +83,41 @@ public interface Command {
                     .filter(f -> includeYou || !user.isInFaction() || !user.getFaction().getID().equals(f.getID()))
                     .map(f -> f.getName())
                     .toArray(String[]::new)
+            );
+        }
+
+        public static SuggestionProvider<ServerCommandSource> atWar() {
+            return suggest(user ->
+                    user.getFaction().getWars()
+                            .stream()
+                            .map(War::getName)
+                            .toArray(String[]::new)
+            );
+        }
+
+        public static SuggestionProvider<ServerCommandSource> joinableWars() {
+            return suggest(user -> War.all()
+                .stream()
+                .filter(war ->
+                    user.getFaction().getMutualAllies()
+                        .stream()
+                        .map(rel -> Faction.get(rel.target))
+                        .anyMatch(faction -> war.getSourceTeam().contains(faction) || war.getTargetTeam().contains(faction))
+                ).map(War::getName)
+                .toArray(String[]::new)
+
+            );
+        }
+
+        public static SuggestionProvider<ServerCommandSource> eligibleForWar() {
+            return suggest(user -> {
+                    Faction source = user.getFaction();
+                    return source.getEnemiesWith()
+                        .stream()
+                        .filter(rel -> rel.aggression >= FactionsMod.CONFIG.WAR.AGGRESSION_LEVEL)
+                        .map(rel -> Faction.get(rel.target).getName())
+                        .toArray(String[]::new);
+                }
             );
         }
 

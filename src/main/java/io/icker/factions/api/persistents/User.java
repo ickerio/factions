@@ -1,5 +1,6 @@
 package io.icker.factions.api.persistents;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
@@ -54,9 +55,15 @@ public class User {
     @Field("Sounds")
     public SoundMode sounds = SoundMode.ALL;
 
+    @Field("Lives")
+    public int lives = FactionsMod.CONFIG.WAR != null ? FactionsMod.CONFIG.WAR.NUM_LIVES : 3;
+
     public boolean autoclaim = false;
     public boolean bypass = false;
     public String language = "en_us";
+
+    public boolean isTrespassing = false;
+    public int startedTrespassing = 0;
 
     private User spoof;
 

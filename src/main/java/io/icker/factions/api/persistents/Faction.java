@@ -6,9 +6,13 @@ import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 @Name("Faction")
 public class Faction {
@@ -68,6 +72,7 @@ public class Faction {
         return id.toString();
     }
 
+    @Nullable
     public static Faction get(UUID id) {
         return STORE.get(id);
     }
@@ -169,6 +174,19 @@ public class Faction {
         return User.getByFaction(id);
     }
 
+    public void sendCommandTree(PlayerManager playerManager) {
+        sendCommandTree(playerManager, user -> true);
+    }
+
+    public void sendCommandTree(PlayerManager playerManager, Predicate<User> filter) {
+        getUsers().stream().filter(filter).forEach(user -> {
+            ServerPlayerEntity player = playerManager.getPlayer(user.getID());
+            if (player != null) {
+                playerManager.sendCommandTree(player);
+            }
+        });
+    }
+
     public List<Claim> getClaims() {
         return Claim.getByFaction(id);
     }
@@ -210,6 +228,10 @@ public class Faction {
         return rel.status == Relationship.Status.ALLY && getReverse(rel).status == Relationship.Status.ALLY;
     }
 
+    public boolean atWarWith(Faction target) {
+        return War.getByFactions(this, target) != null;
+    }
+
     public List<Relationship> getMutualAllies() {
         return relationships.stream().filter(rel -> isMutualAllies(rel.target)).toList();
     }
@@ -220,6 +242,10 @@ public class Faction {
 
     public List<Relationship> getEnemiesOf() {
         return relationships.stream().filter(rel -> getReverse(rel).status == Relationship.Status.ENEMY).toList();
+    }
+
+    public List<War> getWars() {
+        return War.getByFaction(this);
     }
 
     public void removeRelationship(UUID target) {

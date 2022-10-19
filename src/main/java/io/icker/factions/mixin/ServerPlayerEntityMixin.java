@@ -2,6 +2,7 @@ package io.icker.factions.mixin;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
+import io.icker.factions.api.events.RelationshipEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
@@ -23,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends LivingEntity {
-
     protected ServerPlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -43,6 +43,10 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void tick(CallbackInfo info) {
+        User user = User.get(((ServerPlayerEntity) (Object) this).getUuid());
+        if (FactionsMod.CONFIG.WAR != null && user.isTrespassing && (age - user.startedTrespassing) % FactionsMod.CONFIG.WAR.TRESPASSING_TIME == 0)
+            RelationshipEvents.ON_TRESPASSING.invoker().onTrespassing((ServerPlayerEntity) (Object) this);
+
         if (age % FactionsMod.CONFIG.POWER.POWER_TICKS.TICKS != 0 || age == 0) return;
         PlayerEvents.ON_POWER_TICK.invoker().onPowerTick((ServerPlayerEntity) (Object) this);
     }

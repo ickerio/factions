@@ -150,6 +150,8 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
+        if (user.lives <= 0) return ActionResult.FAIL;
+
         String dimension = world.getRegistryKey().getValue().toString();
         ChunkPos chunkPosition = world.getChunk(position).getPos();
 
@@ -168,7 +170,11 @@ public class InteractionManager {
 
         Faction userFaction = user.getFaction();
 
-        if (claimFaction == userFaction && getRankLevel(claim.accessLevel) <= getRankLevel(user.rank)) {
+        if (claimFaction.equals(userFaction) && getRankLevel(claim.accessLevel) <= getRankLevel(user.rank)) {
+            return ActionResult.PASS;
+        }
+
+        if (userFaction.atWarWith(claimFaction)) {
             return ActionResult.PASS;
         }
 

@@ -1,12 +1,9 @@
 package io.icker.factions.command;
 
-import java.util.Locale;
-
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.util.Command;
@@ -15,6 +12,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
+
+import java.util.Locale;
 
 public class DeclareCommand implements Command {
     private int ally(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -57,8 +56,10 @@ public class DeclareCommand implements Command {
         Relationship rev = targetFaction.getRelationship(sourceFaction.getID());
         sourceFaction.setRelationship(rel);
 
+        rel.aggression = 0;
+
         Message msgStatus = rel.status == Relationship.Status.ALLY ? new Message("allies").format(Formatting.GREEN) 
-        : rel.status == Relationship.Status.ENEMY ? new Message("enemies").format(Formatting.RED) 
+        : rel.status == Relationship.Status.ENEMY ? new Message("enemies").format(Formatting.RED)
         : new Message("neutral");
 
         if (rel.status == rev.status) {

@@ -8,11 +8,14 @@ public class Relationship {
     public enum Status {
         ALLY,
         NEUTRAL,
-        ENEMY,
+        ENEMY
     }
 
     @Field("Target")
     public UUID target;
+
+    @Field("Aggression")
+    public int aggression;
 
     @Field("Status")
     public Status status;

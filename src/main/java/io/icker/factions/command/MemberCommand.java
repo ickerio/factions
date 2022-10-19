@@ -16,10 +16,30 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Collector;
 
 public class MemberCommand implements Command {
+    private static final Collector<User, ArrayList<Message>, Message> COLLECTOR = Collector.of(
+            ArrayList::new,
+            (result, user) -> result.add(getName(user)),
+            (result1, result2) -> {
+                result1.addAll(result2);
+                return result1;
+            },
+            (result) -> {
+                Message message = new Message("");
+                if (result.size() == 0) return message;
+
+                result.subList(0, result.size()-1).forEach(message1 -> message.add(message1).add(", "));
+                message.add(result.get(result.size()-1));
+                return message;
+            }
+    );
+
+    private static UserCache cache;
+
     private int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
@@ -48,36 +68,32 @@ public class MemberCommand implements Command {
         return members(player, faction);
     }
 
+    private static Message getName(User user) {
+        return new Message(cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName()).hover(String.format("Lives: %d", user.lives));
+    }
+
     public static int members(ServerPlayerEntity player, Faction faction) {
         List<User> users = faction.getUsers();
-        UserCache cache = player.getServer().getUserCache();
+        cache = player.getServer().getUserCache();
 
         long memberCount = users.stream().filter(u -> u.rank == User.Rank.MEMBER).count();
-        String members = Formatting.WHITE +
-            users.stream()
+        Message members = users.stream()
                 .filter(u -> u.rank == User.Rank.MEMBER)
-                .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                .collect(Collectors.joining(", "));
+                .collect(COLLECTOR).format(Formatting.WHITE);
 
         long commanderCount = users.stream().filter(u -> u.rank == User.Rank.COMMANDER).count();
-        String commanders = Formatting.WHITE +
-            users.stream()
+        Message commanders = users.stream()
                 .filter(u -> u.rank == User.Rank.COMMANDER)
-                .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                .collect(Collectors.joining(", "));
+                .collect(COLLECTOR).format(Formatting.WHITE);
 
         long leaderCount = users.stream().filter(u -> u.rank == User.Rank.LEADER).count();
-        String leaders = Formatting.WHITE +
-            users.stream()
+        Message leaders = users.stream()
                 .filter(u -> u.rank == User.Rank.LEADER)
-                .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                .collect(Collectors.joining(", "));
+                .collect(COLLECTOR).format(Formatting.WHITE);
 
-        String owner = Formatting.WHITE +
-            users.stream()
+        Message owner = users.stream()
                 .filter(u -> u.rank == User.Rank.OWNER)
-                .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-                .collect(Collectors.joining(", "));
+                .collect(COLLECTOR).format(Formatting.WHITE);
 
         // generate the ---
         int numDashes = 32 - faction.getName().length();
