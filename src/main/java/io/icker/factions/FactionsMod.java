@@ -14,8 +14,11 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import net.minecraft.MinecraftVersion;
 
 public class FactionsMod implements ModInitializer {
     public static Logger LOGGER = LogManager.getLogger("Factions");
@@ -26,7 +29,7 @@ public class FactionsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Initialized Factions Mod for Minecraft v1.19.2");
+        LOGGER.info("Initialized Factions Mod for Minecraft v{}", MinecraftVersion.CURRENT.getName());
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         if (FabricLoader.getInstance().isModLoaded("placeholder-api")) {
