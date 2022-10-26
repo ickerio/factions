@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static io.icker.factions.FactionsMod.CONFIG;
+import static io.icker.factions.util.PermissionUtil.getPermissionPower;
+
 @Name("User")
 public class User {
     private static final HashMap<UUID, User> STORE = Database.load(User.class, User::getID);
@@ -45,6 +48,10 @@ public class User {
     @Field("Rank")
     public Rank rank;
 
+    @Field("Power")
+    private int power;
+
+//  NOTE(CamperSamu): This should be private and have getters and setters with events in the API
     @Field("Radar")
     public boolean radar = false;
 
@@ -62,11 +69,12 @@ public class User {
 
     public User(UUID id) {
         this.id = id;
+        power = getMaxPower();
     }
 
     public User() {}
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") //util
     public String getKey() {
         return id.toString();
     }
@@ -90,6 +98,7 @@ public class User {
         STORE.put(user.id, user);
     }
 
+//  NOTE(CamperSamu): Consider refactoring this to uuid(), following the record-like naming convention
     public UUID getID() {
         return id;
     }
@@ -148,4 +157,40 @@ public class User {
         Database.save(User.class, STORE.values().stream().toList());
     }
 
+    //region Power Management
+    public static int getMaxPower(final @NotNull UUID userUUID) {
+        final var user = get(userUUID);
+        return user != null ? user.getMaxPower() : 0;
+    }
+
+    public int getMaxPower() {
+        return CONFIG.POWER.MEMBER + getPermissionPower(getID());
+    }
+
+    public static int getPower(final @NotNull UUID userUUID) {
+        return get(userUUID).getPower();
+    }
+
+    public int getPower() {
+        return power;
+    }
+
+    @SuppressWarnings("unused") //util
+    public static int setPower(final @NotNull UUID userUUID, final int newPower) {
+        return get(userUUID).setPower(newPower);
+    }
+
+    public int setPower(final int newPower) {
+        return power = newPower;
+    }
+
+    @SuppressWarnings("unused") //util
+    public static int addPower(final @NotNull UUID userUUID, final int powerModifier) {
+        return get(userUUID).addPower(powerModifier);
+    }
+
+    public int addPower(final int powerModifier) {
+        return power += powerModifier;
+    }
+    //endregion
 }

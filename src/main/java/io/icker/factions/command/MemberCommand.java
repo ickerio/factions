@@ -3,7 +3,6 @@ package io.icker.factions.command;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -20,9 +19,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MemberCommand implements Command {
-    private int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int self(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
         User user = Command.getUser(player);
         if (!user.isInFaction()) {
@@ -33,11 +33,12 @@ public class MemberCommand implements Command {
         return members(player, user.getFaction());
     }
 
-    private int any(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int any(CommandContext<ServerCommandSource> context) {
         String factionName = StringArgumentType.getString(context, "faction");
 
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
         Faction faction = Faction.getByName(factionName);
         if (faction == null) {
@@ -50,6 +51,7 @@ public class MemberCommand implements Command {
 
     public static int members(ServerPlayerEntity player, Faction faction) {
         List<User> users = faction.getUsers();
+        if (player.getServer() == null) return -1;
         UserCache cache = player.getServer().getUserCache();
 
         long memberCount = users.stream().filter(u -> u.rank == User.Rank.MEMBER).count();
@@ -83,7 +85,7 @@ public class MemberCommand implements Command {
         int numDashes = 32 - faction.getName().length();
         String dashes = new StringBuilder("--------------------------------").substring(0, numDashes/2);
 
-        new Message(Formatting.BLACK + dashes + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
+        new Message(Formatting.BLACK + dashes.toString() + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
             .send(player, false);
         new Message(Formatting.GOLD + "Total Members: ")
             .add(Formatting.WHITE.toString() + users.size())
@@ -91,13 +93,13 @@ public class MemberCommand implements Command {
         new Message(Formatting.GOLD + "Owner: ")
             .add(owner)
             .send(player, false);
-        new Message(Formatting.GOLD + "Leaders (" + Formatting.WHITE.toString() + leaderCount + Formatting.GOLD.toString() + "): ")
+        new Message(Formatting.GOLD + "Leaders (" + Formatting.WHITE + leaderCount + Formatting.GOLD + "): ")
             .add(leaders)
             .send(player, false);
-        new Message(Formatting.GOLD + "Commanders (" + Formatting.WHITE.toString() + commanderCount + Formatting.GOLD.toString() + "): ")
+        new Message(Formatting.GOLD + "Commanders (" + Formatting.WHITE + commanderCount + Formatting.GOLD + "): ")
             .add(commanders)
             .send(player, false);
-        new Message(Formatting.GOLD + "Members (" + Formatting.WHITE.toString() + memberCount + Formatting.GOLD.toString() + "): ")
+        new Message(Formatting.GOLD + "Members (" + Formatting.WHITE + memberCount + Formatting.GOLD + "): ")
             .add(members)
             .send(player, false);
 

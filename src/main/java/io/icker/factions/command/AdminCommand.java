@@ -1,12 +1,10 @@
 package io.icker.factions.command;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
-import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -14,47 +12,53 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.NotNull;
+
+import static io.icker.factions.api.persistents.User.get;
+import static net.minecraft.text.Text.of;
+import static net.minecraft.util.Formatting.GREEN;
+import static net.minecraft.util.Formatting.RED;
 
 public class AdminCommand implements Command {
-    private int bypass(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int bypass(@NotNull CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
-        User user = User.get(player.getUuid());
-        boolean bypass = !user.bypass;
-        user.bypass = bypass;
+        User user = get(player.getUuid());
+        user.bypass = !user.bypass;
 
         new Message("Successfully toggled claim bypass")
                 .filler("·")
                 .add(
                     new Message(user.bypass ? "ON" : "OFF")
-                        .format(user.bypass ? Formatting.GREEN : Formatting.RED)
+                        .format(user.bypass ? GREEN : RED)
                 )
                 .send(player, false);
 
         return 1;
     }
 
-    private int reload(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int reload(@NotNull CommandContext<ServerCommandSource> context) {
         FactionsMod.dynmap.reloadAll();
-        new Message("Reloaded dynmap marker").send(context.getSource().getPlayer(), false);
+        context.getSource().sendFeedback(of("Reloaded dynmap marker"), true);   //NOTE(CamperSamu): Avoid locking a reload command to be player-only, use the vanilla feedback function.
         return 1;
     }
 
-    private int power(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int power(@NotNull CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
-        Faction target = Faction.getByName(StringArgumentType.getString(context, "faction"));
-        int power = IntegerArgumentType.getInteger(context, "power");
+        final User target = get(EntityArgumentType.getPlayer(context, "player").getUuid());
+        final int power = IntegerArgumentType.getInteger(context, "power");
 
-        int adjusted = target.adjustPower(power);
+        int adjusted = target.addPower(power);
         if (adjusted != 0) {
             if (power > 0) {
                 new Message(
                     "Admin %s added %d power",
                     player.getName().getString(),
                     adjusted
-                ).send(target);
+                ).send(player, false);
                 new Message(
                     "Added %d power",
                     adjusted
@@ -64,7 +68,7 @@ public class AdminCommand implements Command {
                     "Admin %s removed %d power",
                     player.getName().getString(),
                     adjusted
-                ).send(target);
+                ).send(player, false);
                 new Message(
                     "Removed %d power",
                     adjusted
@@ -77,14 +81,15 @@ public class AdminCommand implements Command {
         return 1;
     }
 
-    private int spoof(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int spoof(@NotNull CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
-        User user = User.get(player.getUuid());
+        User user = get(player.getUuid());
 
         ServerPlayerEntity targetEntity = EntityArgumentType.getPlayer(context, "player");
-        User target = User.get(targetEntity.getUuid());
+        User target = get(targetEntity.getUuid());
 
         user.setSpoof(target);
 
@@ -93,11 +98,12 @@ public class AdminCommand implements Command {
         return 1;
     }
 
-    private int clearSpoof(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int clearSpoof(@NotNull CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+        if (player == null) return -1;  // Confirm that it's a player executing the command and not an entity with /execute
 
-        User user = User.get(player.getUuid());
+        User user = get(player.getUuid());
 
         user.setSpoof(null);
 
@@ -125,8 +131,7 @@ public class AdminCommand implements Command {
                 .then(
                     CommandManager.argument("power", IntegerArgumentType.integer())
                     .then(
-                        CommandManager.argument("faction", StringArgumentType.greedyString())
-                        .suggests(Suggests.allFactions())
+                        CommandManager.argument("player", EntityArgumentType.player())
                         .executes(this::power)
                     )
                 )
