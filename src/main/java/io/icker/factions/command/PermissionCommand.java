@@ -12,6 +12,9 @@ import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Formatting;
+
+import java.util.stream.Collectors;
 
 public class PermissionCommand implements Command {
     private int change(CommandContext<ServerCommandSource> context, boolean add) {
@@ -65,6 +68,37 @@ public class PermissionCommand implements Command {
         return change(context, false);
     }
 
+    private int list(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null) return 0;
+
+        Faction sourceFaction = User.get(player.getUuid()).getFaction();
+        Faction targetFaction = Faction.getByName(StringArgumentType.getString(context, "faction"));
+
+        if (sourceFaction == null || targetFaction == null) {
+            new Message("You must be in a faction and you must provide a valid function").fail().send(player, false);
+            return 0;
+        }
+
+        String permissionsList = sourceFaction.getRelationship(targetFaction.getID()).permissions
+            .stream()
+            .map(Enum::toString)
+            .collect(Collectors.joining(","));
+
+        new Message("")
+            .add(
+                new Message(targetFaction.getName())
+                    .format(targetFaction.getColor())
+                    .format(Formatting.BOLD)
+            )
+            .add(String.format(" has the permissions: %s", permissionsList))
+            .send(player, false);
+
+        return 1;
+    }
+
     @Override
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
@@ -94,6 +128,15 @@ public class PermissionCommand implements Command {
                                     .suggests(Suggests.allFactions(false))
                                     .executes(this::remove)
                             )
+                    )
+            )
+            .then(
+                CommandManager.literal("list")
+                    .requires(Requires.hasPerms("factions.permission.list", 0))
+                    .then(
+                        CommandManager.argument("faction", StringArgumentType.greedyString())
+                            .suggests(Suggests.allFactions(false))
+                            .executes(this::list)
                     )
             )
             .build();
