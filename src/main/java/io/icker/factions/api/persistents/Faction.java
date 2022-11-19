@@ -51,6 +51,9 @@ public class Faction {
     @Field("Relationships")
     private ArrayList<Relationship> relationships = new ArrayList<>();
 
+    @Field("GuestPermissions")
+    public ArrayList<Relationship.Permissions> guest_permissions = new ArrayList<>(FactionsMod.CONFIG.RELATIONSHIPS.DEFAULT_GUEST_PERMISSIONS);
+
     public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
         this.id = UUID.randomUUID();
         this.name = name;

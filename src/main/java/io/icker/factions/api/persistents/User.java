@@ -27,7 +27,8 @@ public class User {
         OWNER,
         LEADER,
         COMMANDER,
-        MEMBER
+        MEMBER,
+        GUEST
     }
 
     public enum SoundMode {

@@ -68,6 +68,52 @@ public class PermissionCommand implements Command {
         return change(context, false);
     }
 
+    private int changeGuest(CommandContext<ServerCommandSource> context, boolean add) {
+        String permissionName = StringArgumentType.getString(context, "permission");
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null) return 0;
+
+        Faction faction = User.get(player.getUuid()).getFaction();
+
+        if (faction == null) {
+            new Message("You must be in a faction").fail().send(player, false);
+            return 0;
+        }
+
+        Permissions permission;
+
+        try {
+            permission = Permissions.valueOf(permissionName);
+        } catch (IllegalArgumentException e) {
+            new Message("Not a valid permission").fail().send(player, false);
+            return 0;
+        }
+
+        if ((!faction.guest_permissions.contains(permission) && !add) || (faction.guest_permissions.contains(permission) && add)) {
+            new Message(String.format("Could not change because the permission %s", faction.guest_permissions.contains(permission) ? "already exists" : "doesn't exist")).fail().send(player, false);
+            return 0;
+        }
+
+        if (add) {
+            faction.guest_permissions.add(permission);
+        } else {
+            faction.guest_permissions.remove(permission);
+        }
+
+        new Message("Successfully changed permissions").send(player, false);
+        return 1;
+    }
+
+    private int addGuest(CommandContext<ServerCommandSource> context) {
+        return changeGuest(context, true);
+    }
+
+    private int removeGuest(CommandContext<ServerCommandSource> context) {
+        return changeGuest(context, false);
+    }
+
     private int list(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
@@ -98,6 +144,28 @@ public class PermissionCommand implements Command {
 
         return 1;
     }
+    private int listGuest(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null) return 0;
+
+        Faction faction = User.get(player.getUuid()).getFaction();
+
+        if (faction == null) {
+            new Message("You must be in a faction").fail().send(player, false);
+            return 0;
+        }
+
+        String permissionsList = faction.guest_permissions
+                .stream()
+                .map(Enum::toString)
+                .collect(Collectors.joining(","));
+
+        new Message(String.format("Guests have the permissions: %s", permissionsList)).send(player, false);
+        return 1;
+    }
+
 
     @Override
     public LiteralCommandNode<ServerCommandSource> getNode() {
@@ -111,9 +179,18 @@ public class PermissionCommand implements Command {
                         CommandManager.argument("permission", StringArgumentType.word())
                             .suggests(Suggests.enumSuggestion(Permissions.class))
                             .then(
-                                CommandManager.argument("faction", StringArgumentType.greedyString())
-                                    .suggests(Suggests.allFactions(false))
-                                    .executes(this::add)
+                                CommandManager.literal("faction")
+                                    .requires(Requires.hasPerms("factions.permission.add.faction", 0))
+                                    .then(
+                                        CommandManager.argument("faction", StringArgumentType.greedyString())
+                                            .suggests(Suggests.allFactions(false))
+                                            .executes(this::add)
+                                    )
+                            )
+                            .then(
+                                CommandManager.literal("guest")
+                                    .requires(Requires.hasPerms("factions.permission.add.guest", 0))
+                                    .executes(this::addGuest)
                             )
                     )
             )
@@ -124,20 +201,38 @@ public class PermissionCommand implements Command {
                         CommandManager.argument("permission", StringArgumentType.word())
                             .suggests(Suggests.enumSuggestion(Permissions.class))
                             .then(
-                                CommandManager.argument("faction", StringArgumentType.greedyString())
-                                    .suggests(Suggests.allFactions(false))
-                                    .executes(this::remove)
+                                CommandManager.literal("faction")
+                                    .requires(Requires.hasPerms("factions.permission.remove.faction", 0))
+                                    .then(
+                                        CommandManager.argument("faction", StringArgumentType.greedyString())
+                                            .suggests(Suggests.allFactions(false))
+                                            .executes(this::remove)
+                                    )
+                            )
+                            .then(
+                                CommandManager.literal("guest")
+                                    .requires(Requires.hasPerms("factions.permission.remove.guest", 0))
+                                    .executes(this::removeGuest)
                             )
                     )
             )
             .then(
                 CommandManager.literal("list")
                     .requires(Requires.hasPerms("factions.permission.list", 0))
-                    .then(
-                        CommandManager.argument("faction", StringArgumentType.greedyString())
-                            .suggests(Suggests.allFactions(false))
-                            .executes(this::list)
-                    )
+                        .then(
+                            CommandManager.literal("faction")
+                                .requires(Requires.hasPerms("factions.permission.list.faction", 0))
+                                .then(
+                                    CommandManager.argument("faction", StringArgumentType.greedyString())
+                                        .suggests(Suggests.allFactions(false))
+                                        .executes(this::list)
+                                )
+                        )
+                        .then(
+                            CommandManager.literal("guest")
+                                .requires(Requires.hasPerms("factions.permission.list.guest", 0))
+                                .executes(this::listGuest)
+                        )
             )
             .build();
     }

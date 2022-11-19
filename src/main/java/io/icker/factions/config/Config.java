@@ -3,6 +3,7 @@ package io.icker.factions.config;
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.persistents.Relationship;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,6 +99,9 @@ public class Config {
     public static class RelationshipConfig {
         @SerializedName("allyOverridesPermissions")
         public boolean ALLY_OVERRIDES_PERMISSIONS = true;
+
+        @SerializedName("defaultGuestPermissions")
+        public List<Relationship.Permissions> DEFAULT_GUEST_PERMISSIONS = List.of(Relationship.Permissions.USE_BLOCKS, Relationship.Permissions.USE_ENTITIES);
     }
 
     public static class Deserializer<T> implements JsonDeserializer<T> {

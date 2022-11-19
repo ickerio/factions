@@ -1,11 +1,8 @@
 package io.icker.factions.command;
 
-import java.util.UUID;
-
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
@@ -15,6 +12,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
+
+import java.util.UUID;
 
 public class RankCommand implements Command {
     private int promote(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -35,6 +34,7 @@ public class RankCommand implements Command {
             if (users.getID().equals(target.getUuid())) {
 
                 switch (users.rank) {
+                    case GUEST -> users.rank = User.Rank.MEMBER;
                     case MEMBER -> users.rank = User.Rank.COMMANDER;
                     case COMMANDER -> users.rank = User.Rank.LEADER;
                     case LEADER -> {
@@ -77,10 +77,11 @@ public class RankCommand implements Command {
             if (user.getID().equals(target.getUuid())) {
 
                 switch (user.rank) {
-                    case MEMBER -> {
-                        new Message("You cannot demote a Member").format(Formatting.RED).send(player, false);
+                    case GUEST -> {
+                        new Message("You cannot demote a Guest").format(Formatting.RED).send(player, false);
                         return 0;
                     }
+                    case MEMBER -> user.rank = User.Rank.GUEST;
                     case COMMANDER -> user.rank = User.Rank.MEMBER;
                     case LEADER -> {
                         if (Command.getUser(player).rank == User.Rank.LEADER) {

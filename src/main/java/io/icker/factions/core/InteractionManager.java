@@ -196,8 +196,8 @@ public class InteractionManager {
 
         Faction userFaction = user.getFaction();
 
-        if (claimFaction == userFaction && getRankLevel(claim.accessLevel) <= getRankLevel(user.rank)) {
-            return ActionResult.PASS;
+        if (claimFaction == userFaction && (getRankLevel(claim.accessLevel) <= getRankLevel(user.rank) || (user.rank == User.Rank.GUEST && claimFaction.guest_permissions.contains(permission) && claim.accessLevel == User.Rank.MEMBER))) {
+            return ActionResult.SUCCESS;
         }
 
         if (FactionsMod.CONFIG.RELATIONSHIPS.ALLY_OVERRIDES_PERMISSIONS && claimFaction.isMutualAllies(userFaction.getID()) && claim.accessLevel == User.Rank.MEMBER) {
@@ -217,7 +217,8 @@ public class InteractionManager {
             case LEADER -> { return 2; }
             case COMMANDER -> { return 1; }
             case MEMBER -> { return 0; }
-            default ->  { return -1; }
+            case GUEST -> { return -1; }
+            default -> { return -2; }
         }
     }
 }
