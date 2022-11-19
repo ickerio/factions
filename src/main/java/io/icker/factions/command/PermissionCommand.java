@@ -31,11 +31,6 @@ public class PermissionCommand implements Command {
 
         Relationship rel = sourceFaction.getRelationship(targetFaction.getID());
 
-        if (sourceFaction.isMutualAllies(targetFaction.getID())) {
-            new Message("Must be allied with that function to use the permission command").fail().send(player, false);
-            return 0;
-        }
-
         Permissions permission;
 
         try {

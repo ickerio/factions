@@ -14,6 +14,7 @@ public class Relationship {
 
     public enum Permissions {
         USE_BLOCKS,
+        PLACE_BLOCKS,
         BREAK_BLOCKS,
         USE_ITEMS,
         USE_ENTITIES,

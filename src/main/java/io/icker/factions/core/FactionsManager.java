@@ -3,7 +3,9 @@ package io.icker.factions.core;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.events.PlayerEvents;
+import io.icker.factions.api.events.RelationshipEvents;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -18,6 +20,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 
+import java.util.ArrayList;
+
 public class FactionsManager {
     public static PlayerManager playerManager;
 
@@ -29,6 +33,8 @@ public class FactionsManager {
         PlayerEvents.ON_KILLED_BY_PLAYER.register(FactionsManager::playerDeath);
         PlayerEvents.ON_POWER_TICK.register(FactionsManager::powerTick);
         PlayerEvents.OPEN_SAFE.register(FactionsManager::openSafe);
+        RelationshipEvents.NEW_MUTUAL.register(FactionsManager::onNewMutual);
+        RelationshipEvents.END_MUTUAL.register(FactionsManager::onEndMutual);
     }
 
     private static void serverStarted(MinecraftServer server) {
@@ -110,5 +116,19 @@ public class FactionsManager {
         );
 
         return ActionResult.SUCCESS;
+    }
+
+    private static void onNewMutual(Relationship rel) {
+        if (rel.status == Relationship.Status.ALLY && FactionsMod.CONFIG.RELATIONSHIPS.OVERWRITE_PERMISSIONS_ON_DECLARATION) {
+            rel.permissions = new ArrayList<>();
+            rel.permissions.addAll(FactionsMod.CONFIG.RELATIONSHIPS.DEFAULT_ALLY_PERMISSIONS);
+        }
+    }
+
+    private static void onEndMutual(Relationship rel, Relationship.Status oldStatus) {
+        if (oldStatus == Relationship.Status.ALLY && FactionsMod.CONFIG.RELATIONSHIPS.OVERWRITE_PERMISSIONS_ON_DECLARATION) {
+            rel.permissions = new ArrayList<>();
+            rel.permissions.addAll(FactionsMod.CONFIG.RELATIONSHIPS.DEFAULT_PERMISSIONS);
+        }
     }
 }

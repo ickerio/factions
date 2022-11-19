@@ -3,6 +3,7 @@ package io.icker.factions.config;
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.persistents.Relationship.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,6 +70,9 @@ public class Config {
     @SerializedName("display")
     public DisplayConfig DISPLAY = new DisplayConfig();
 
+    @SerializedName("relationships")
+    public RelationshipConfig RELATIONSHIPS = new RelationshipConfig();
+
     @SerializedName("maxFactionSize")
     public int MAX_FACTION_SIZE = -1;
 
@@ -90,6 +94,20 @@ public class Config {
 
         @SerializedName("nameBlackList")
         public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless");
+    }
+
+    public static class RelationshipConfig {
+        @SerializedName("allyOverridesPermissions")
+        public boolean ALLY_OVERRIDES_PERMISSIONS = true;
+
+        @SerializedName("overwritePermissionsOnDeclaration")
+        public boolean OVERWRITE_PERMISSIONS_ON_DECLARATION = true;
+
+        @SerializedName("defaultAllyPermissions")
+        public List<Permissions> DEFAULT_ALLY_PERMISSIONS = List.of(Permissions.USE_BLOCKS, Permissions.PLACE_BLOCKS, Permissions.USE_ITEMS, Permissions.ATTACK_ENTITIES, Permissions.BREAK_BLOCKS, Permissions.USE_ENTITIES, Permissions.USE_INVENTORIES);
+
+        @SerializedName("defaultPermissions")
+        public List<Permissions> DEFAULT_PERMISSIONS = List.of(Permissions.USE_BLOCKS);
     }
 
     public static class Deserializer<T> implements JsonDeserializer<T> {

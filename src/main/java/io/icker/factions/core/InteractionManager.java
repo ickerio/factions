@@ -188,7 +188,11 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
-        if (claimFaction.isMutualAllies(userFaction.getID()) && claim.accessLevel == User.Rank.MEMBER && claimFaction.getRelationship(userFaction.getID()).permissions.contains(permission)) {
+        if (FactionsMod.CONFIG.RELATIONSHIPS.ALLY_OVERRIDES_PERMISSIONS && claimFaction.isMutualAllies(userFaction.getID()) && claim.accessLevel == User.Rank.MEMBER) {
+            return ActionResult.SUCCESS;
+        }
+
+        if (claimFaction.getRelationship(userFaction.getID()).permissions.contains(permission) && claim.accessLevel == User.Rank.MEMBER) {
             return ActionResult.SUCCESS;
         }
 
