@@ -233,7 +233,7 @@ public class Faction {
         if (getRelationship(relationship.target) != null) {
             removeRelationship(relationship.target);
         }
-        if (relationship.status != Relationship.Status.NEUTRAL)
+        if (relationship.status != Relationship.Status.NEUTRAL || !relationship.permissions.isEmpty())
             relationships.add(relationship);
     }
 

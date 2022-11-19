@@ -51,6 +51,8 @@ public class PermissionCommand implements Command {
             rel.permissions.remove(permission);
         }
 
+        sourceFaction.setRelationship(rel);
+
         new Message("Successfully changed permissions").send(player, false);
         return 1;
     }
