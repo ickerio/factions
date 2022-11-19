@@ -21,6 +21,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -42,6 +43,7 @@ public class InteractionManager {
         PlayerEvents.IS_INVULNERABLE.register(InteractionManager::isInvulnerableTo);
         PlayerEvents.USE_ENTITY.register(InteractionManager::onUseEntity);
         PlayerEvents.USE_INVENTORY.register(InteractionManager::onUseInventory);
+        PlayerEvents.PLACE_BLOCK.register(InteractionManager::onPlaceBlock);
     }
 
     private static boolean onBreakBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
@@ -66,6 +68,16 @@ public class InteractionManager {
         if (checkPermissions(player, placePos, world, Permissions.USE_BLOCKS) == ActionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
             InteractionsUtil.sync(player, stack, hand);
+            return ActionResult.FAIL;
+        }
+
+        return ActionResult.PASS;
+    }
+
+    private static ActionResult onPlaceBlock(ItemUsageContext context) {
+        if (checkPermissions(context.getPlayer(), context.getBlockPos(), context.getWorld(), Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayerEntity) context.getPlayer(), "place block");
+            InteractionsUtil.sync(context.getPlayer(), context.getStack(), context.getHand());
             return ActionResult.FAIL;
         }
 

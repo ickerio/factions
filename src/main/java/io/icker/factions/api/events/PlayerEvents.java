@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -21,6 +22,16 @@ public class PlayerEvents {
     public static final Event<UseEntity> USE_ENTITY = EventFactory.createArrayBacked(UseEntity.class, callbacks -> (source, target, world) -> {
         for (UseEntity callback : callbacks) {
             ActionResult result = callback.onUseEntity(source, target, world);
+            if (result != ActionResult.PASS) {
+                return result;
+            }
+        }
+        return ActionResult.PASS;
+    });
+
+    public static final Event<PlaceBlock> PLACE_BLOCK = EventFactory.createArrayBacked(PlaceBlock.class, callbacks -> (context) -> {
+        for (PlaceBlock callback : callbacks) {
+            ActionResult result = callback.onPlaceBlock(context);
             if (result != ActionResult.PASS) {
                 return result;
             }
@@ -98,6 +109,11 @@ public class PlayerEvents {
     @FunctionalInterface
     public interface UseEntity {
         ActionResult onUseEntity(ServerPlayerEntity player, Entity entity, World world);
+    }
+
+    @FunctionalInterface
+    public interface PlaceBlock {
+        ActionResult onPlaceBlock(ItemUsageContext context);
     }
 
     @FunctionalInterface

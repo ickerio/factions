@@ -12,6 +12,7 @@
         "PlayerManagerMixin",
         "SentMessageAccessor",
         "ServerPlayerEntityMixin",
+        "ServerPlayerInteractionManagerMixin",
         "ServerPlayNetworkHandlerMixin"
     ],
     "injectors": {
