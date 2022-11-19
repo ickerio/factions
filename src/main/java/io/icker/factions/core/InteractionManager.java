@@ -38,7 +38,7 @@ public class InteractionManager {
     public static void register() {
         PlayerBlockBreakEvents.BEFORE.register(InteractionManager::onBreakBlock);
         UseBlockCallback.EVENT.register(InteractionManager::onUseBlock);
-        UseItemCallback.EVENT.register(InteractionManager::onPlaceBucket);
+        UseItemCallback.EVENT.register(InteractionManager::onUseBucket);
         AttackEntityCallback.EVENT.register(InteractionManager::onAttackEntity);
         PlayerEvents.IS_INVULNERABLE.register(InteractionManager::isInvulnerableTo);
         PlayerEvents.USE_ENTITY.register(InteractionManager::onUseEntity);
@@ -84,13 +84,13 @@ public class InteractionManager {
         return ActionResult.PASS;
     }
 
-    private static TypedActionResult<ItemStack> onPlaceBucket(PlayerEntity player, World world, Hand hand) {
+    private static TypedActionResult<ItemStack> onUseBucket(PlayerEntity player, World world, Hand hand) {
         Item item = player.getStackInHand(hand).getItem();
 
         if (item instanceof BucketItem) {
             ActionResult playerResult = checkPermissions(player, player.getBlockPos(), world, Permissions.PLACE_BLOCKS);
             if (playerResult == ActionResult.FAIL) {
-                InteractionsUtil.warn((ServerPlayerEntity) player, "place blocks");
+                InteractionsUtil.warn((ServerPlayerEntity) player, "pick up/place liquids");
                 InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                 return TypedActionResult.fail(player.getStackInHand(hand));
             }
@@ -103,14 +103,14 @@ public class InteractionManager {
             if (raycastResult.getType() != BlockHitResult.Type.MISS) {
                 BlockPos raycastPos = raycastResult.getBlockPos();
                 if (checkPermissions(player, raycastPos, world, Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
-                    InteractionsUtil.warn((ServerPlayerEntity) player, "place blocks");
+                    InteractionsUtil.warn((ServerPlayerEntity) player, "pick up/place liquids");
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return TypedActionResult.fail(player.getStackInHand(hand));
                 }
 
                 BlockPos placePos = raycastPos.add(raycastResult.getSide().getVector());
                 if (checkPermissions(player, placePos, world, Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
-                    InteractionsUtil.warn((ServerPlayerEntity) player, "place blocks");
+                    InteractionsUtil.warn((ServerPlayerEntity) player, "pick up/place liquids");
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return TypedActionResult.fail(player.getStackInHand(hand));
                 }
