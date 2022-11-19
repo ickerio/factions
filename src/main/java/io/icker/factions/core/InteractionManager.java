@@ -4,6 +4,7 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Relationship.Permissions;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
@@ -44,7 +45,7 @@ public class InteractionManager {
     }
 
     private static boolean onBreakBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
-        boolean result = checkPermissions(player, pos, world) == ActionResult.FAIL;
+        boolean result = checkPermissions(player, pos, world, Permissions.BREAK_BLOCKS) == ActionResult.FAIL;
         if (result) {
             InteractionsUtil.warn((ServerPlayerEntity) player, "break blocks");
         }
@@ -55,14 +56,14 @@ public class InteractionManager {
         ItemStack stack = player.getStackInHand(hand);
 
         BlockPos hitPos = hitResult.getBlockPos();
-        if (checkPermissions(player, hitPos, world) == ActionResult.FAIL) {
+        if (checkPermissions(player, hitPos, world, Permissions.USE_BLOCKS) == ActionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
             InteractionsUtil.sync(player, stack, hand);
             return ActionResult.FAIL;
         }
 
         BlockPos placePos = hitPos.add(hitResult.getSide().getVector());
-        if (checkPermissions(player, placePos, world) == ActionResult.FAIL) {
+        if (checkPermissions(player, placePos, world, Permissions.USE_BLOCKS) == ActionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayerEntity) player, "use blocks");
             InteractionsUtil.sync(player, stack, hand);
             return ActionResult.FAIL;
@@ -75,7 +76,7 @@ public class InteractionManager {
         Item item = player.getStackInHand(hand).getItem();
 
         if (item instanceof BucketItem) {
-            ActionResult playerResult = checkPermissions(player, player.getBlockPos(), world);
+            ActionResult playerResult = checkPermissions(player, player.getBlockPos(), world, Permissions.USE_ITEMS);
             if (playerResult == ActionResult.FAIL) {
                 InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
                 InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
@@ -89,14 +90,14 @@ public class InteractionManager {
 
             if (raycastResult.getType() != BlockHitResult.Type.MISS) {
                 BlockPos raycastPos = raycastResult.getBlockPos();
-                if (checkPermissions(player, raycastPos, world) == ActionResult.FAIL) {
+                if (checkPermissions(player, raycastPos, world, Permissions.USE_ITEMS) == ActionResult.FAIL) {
                     InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return TypedActionResult.fail(player.getStackInHand(hand));
                 }
 
                 BlockPos placePos = raycastPos.add(raycastResult.getSide().getVector());
-                if (checkPermissions(player, placePos, world) == ActionResult.FAIL) {
+                if (checkPermissions(player, placePos, world, Permissions.USE_ITEMS) == ActionResult.FAIL) {
                     InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return TypedActionResult.fail(player.getStackInHand(hand));
@@ -109,7 +110,7 @@ public class InteractionManager {
     }
 
     private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        if (entity != null && checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL) {
+        if (entity != null && checkPermissions(player, entity.getBlockPos(), world, Permissions.ATTACK_ENTITIES) == ActionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayerEntity) player, "attack entities");
             return ActionResult.FAIL;
         }
@@ -118,7 +119,7 @@ public class InteractionManager {
     }
 
     private static ActionResult onUseEntity(PlayerEntity player, Entity entity, World world) {
-        if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL) {
+        if (checkPermissions(player, entity.getBlockPos(), world, Permissions.USE_ENTITIES) == ActionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayerEntity) player, "use entities");
             return ActionResult.FAIL;
         }
@@ -127,7 +128,7 @@ public class InteractionManager {
     }
 
     private static ActionResult onUseInventory(PlayerEntity player, BlockPos pos, World world) {
-        if (checkPermissions(player, pos, world) == ActionResult.FAIL) {
+        if (checkPermissions(player, pos, world, Permissions.USE_INVENTORIES) == ActionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayerEntity) player, "use inventories");
             return ActionResult.FAIL;
         }
@@ -159,7 +160,7 @@ public class InteractionManager {
         return ActionResult.PASS;
     }
 
-    private static ActionResult checkPermissions(PlayerEntity player, BlockPos position, World world) {
+    private static ActionResult checkPermissions(PlayerEntity player, BlockPos position, World world, Permissions permission) {
         User user = User.get(player.getUuid());
         if (player.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL) && user.bypass) {
             return ActionResult.PASS;
@@ -187,7 +188,7 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
-        if (claimFaction.isMutualAllies(userFaction.getID()) && claim.accessLevel == User.Rank.MEMBER) {
+        if (claimFaction.isMutualAllies(userFaction.getID()) && claim.accessLevel == User.Rank.MEMBER && claimFaction.getRelationship(userFaction.getID()).permissions.contains(permission)) {
             return ActionResult.SUCCESS;
         }
 
