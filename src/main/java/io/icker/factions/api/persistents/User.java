@@ -7,10 +7,7 @@ import io.icker.factions.database.Name;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Name("User")
@@ -145,6 +142,10 @@ public class User {
         factionID = null;
         rank = null;
         FactionEvents.MEMBER_LEAVE.invoker().onMemberLeave(Faction.get(oldFactionID), this);
+    }
+
+    public static Collection<User> all() {
+        return STORE.values();
     }
 
     public static void save() {

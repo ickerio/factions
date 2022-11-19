@@ -1,5 +1,6 @@
 package io.icker.factions.util;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
@@ -9,8 +10,10 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.UserCache;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 
@@ -84,6 +87,22 @@ public interface Command {
                     .map(f -> f.getName())
                     .toArray(String[]::new)
             );
+        }
+
+        static SuggestionProvider<ServerCommandSource> allPlayers() {
+            return (context, builder) -> {
+                UserCache cache = context.getSource().getServer().getUserCache();
+
+                for (User user : User.all()) {
+                    Optional<GameProfile> player;
+                    if ((player = cache.getByUuid(user.getID())).isPresent()) {
+                        builder.suggest(player.get().getName());
+                    } else {
+                        builder.suggest(user.getID().toString());
+                    }
+                }
+                return builder.buildFuture();
+            };
         }
 
         public static SuggestionProvider<ServerCommandSource> openFactions() {

@@ -1,5 +1,6 @@
 package io.icker.factions.command;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -10,11 +11,13 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public class AdminCommand implements Command {
     private int bypass(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -83,12 +86,20 @@ public class AdminCommand implements Command {
 
         User user = User.get(player.getUuid());
 
-        ServerPlayerEntity targetEntity = EntityArgumentType.getPlayer(context, "player");
-        User target = User.get(targetEntity.getUuid());
+        String name = StringArgumentType.getString(context, "player");
+
+        User target;
+
+        Optional<GameProfile> profile;
+        if ((profile = source.getServer().getUserCache().findByName(name)).isPresent()) {
+            target = User.get(profile.get().getId());
+        } else {
+            target = User.get(UUID.fromString(name));
+        }
 
         user.setSpoof(target);
 
-        new Message("Set spoof to player %s", targetEntity.getName().getString()).send(player, false);
+        new Message("Set spoof to player %s", name).send(player, false);
 
         return 1;
     }
@@ -135,8 +146,9 @@ public class AdminCommand implements Command {
                 CommandManager.literal("spoof")
                 .requires(Requires.hasPerms("factions.admin.spoof", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
                 .then(
-                    CommandManager.argument("player", EntityArgumentType.player())
-                    .executes(this::spoof)
+                    CommandManager.argument("player", StringArgumentType.string())
+                        .suggests(Suggests.allPlayers())
+                        .executes(this::spoof)
                 )
                 .executes(this::clearSpoof)
             )
