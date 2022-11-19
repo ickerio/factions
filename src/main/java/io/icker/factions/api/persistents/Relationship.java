@@ -16,7 +16,6 @@ public class Relationship {
         USE_BLOCKS,
         PLACE_BLOCKS,
         BREAK_BLOCKS,
-        USE_ITEMS,
         USE_ENTITIES,
         ATTACK_ENTITIES,
         USE_INVENTORIES

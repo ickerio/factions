@@ -38,7 +38,7 @@ public class InteractionManager {
     public static void register() {
         PlayerBlockBreakEvents.BEFORE.register(InteractionManager::onBreakBlock);
         UseBlockCallback.EVENT.register(InteractionManager::onUseBlock);
-        UseItemCallback.EVENT.register(InteractionManager::onUseItem);
+        UseItemCallback.EVENT.register(InteractionManager::onPlaceBucket);
         AttackEntityCallback.EVENT.register(InteractionManager::onAttackEntity);
         PlayerEvents.IS_INVULNERABLE.register(InteractionManager::isInvulnerableTo);
         PlayerEvents.USE_ENTITY.register(InteractionManager::onUseEntity);
@@ -54,7 +54,7 @@ public class InteractionManager {
         return !result;
     }
 
-    private static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) { // FIXME: this creates two warnings
+    private static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
         ItemStack stack = player.getStackInHand(hand);
 
         BlockPos hitPos = hitResult.getBlockPos();
@@ -76,7 +76,7 @@ public class InteractionManager {
 
     private static ActionResult onPlaceBlock(ItemUsageContext context) {
         if (checkPermissions(context.getPlayer(), context.getBlockPos(), context.getWorld(), Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
-            InteractionsUtil.warn((ServerPlayerEntity) context.getPlayer(), "place block");
+            InteractionsUtil.warn((ServerPlayerEntity) context.getPlayer(), "place blocks");
             InteractionsUtil.sync(context.getPlayer(), context.getStack(), context.getHand());
             return ActionResult.FAIL;
         }
@@ -84,13 +84,13 @@ public class InteractionManager {
         return ActionResult.PASS;
     }
 
-    private static TypedActionResult<ItemStack> onUseItem(PlayerEntity player, World world, Hand hand) {
+    private static TypedActionResult<ItemStack> onPlaceBucket(PlayerEntity player, World world, Hand hand) {
         Item item = player.getStackInHand(hand).getItem();
 
         if (item instanceof BucketItem) {
-            ActionResult playerResult = checkPermissions(player, player.getBlockPos(), world, Permissions.USE_ITEMS);
+            ActionResult playerResult = checkPermissions(player, player.getBlockPos(), world, Permissions.PLACE_BLOCKS);
             if (playerResult == ActionResult.FAIL) {
-                InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
+                InteractionsUtil.warn((ServerPlayerEntity) player, "place blocks");
                 InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                 return TypedActionResult.fail(player.getStackInHand(hand));
             }
@@ -102,15 +102,15 @@ public class InteractionManager {
 
             if (raycastResult.getType() != BlockHitResult.Type.MISS) {
                 BlockPos raycastPos = raycastResult.getBlockPos();
-                if (checkPermissions(player, raycastPos, world, Permissions.USE_ITEMS) == ActionResult.FAIL) {
-                    InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
+                if (checkPermissions(player, raycastPos, world, Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
+                    InteractionsUtil.warn((ServerPlayerEntity) player, "place blocks");
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return TypedActionResult.fail(player.getStackInHand(hand));
                 }
 
                 BlockPos placePos = raycastPos.add(raycastResult.getSide().getVector());
-                if (checkPermissions(player, placePos, world, Permissions.USE_ITEMS) == ActionResult.FAIL) {
-                    InteractionsUtil.warn((ServerPlayerEntity) player, "use items");
+                if (checkPermissions(player, placePos, world, Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
+                    InteractionsUtil.warn((ServerPlayerEntity) player, "place blocks");
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return TypedActionResult.fail(player.getStackInHand(hand));
                 }
