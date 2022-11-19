@@ -5,21 +5,32 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
- * All events related to relationships (UNIMPLEMENTED)
+ * All events related to relationships
  */
 public final class RelationshipEvents {
-    public static final Event<NewDecleration> NEW_DECLARATION = EventFactory.createArrayBacked(NewDecleration.class, callbacks -> (claim) -> {
+    /**
+     * When a faction is declared as a different status
+     */
+    public static final Event<NewDecleration> NEW_DECLARATION = EventFactory.createArrayBacked(NewDecleration.class, callbacks -> (relationship) -> {
         for (NewDecleration callback : callbacks) {
-            callback.onNewDecleration(claim);
+            callback.onNewDecleration(relationship);
         }
     });
 
+    /**
+     * When two factions are declared to have the same status
+     *
+     * For example, mutual allies
+     */
     public static final Event<NewMutual> NEW_MUTUAL = EventFactory.createArrayBacked(NewMutual.class, callbacks -> (relationship) -> {
         for (NewMutual callback : callbacks) {
             callback.onNewMutual(relationship);
         }
     });
 
+    /**
+     * When a mutual relationship is ended by either of the two factions
+     */
     public static final Event<EndMutual> END_MUTUAL = EventFactory.createArrayBacked(EndMutual.class, callbacks -> (relationship, oldStatus) -> {
         for (EndMutual callback : callbacks) {
             callback.onEndMutual(relationship, oldStatus);
