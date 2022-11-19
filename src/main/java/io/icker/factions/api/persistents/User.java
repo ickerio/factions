@@ -5,6 +5,7 @@ import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -119,6 +120,7 @@ public class User {
         return getEnumName(sounds);
     }
 
+    @Nullable
     public Faction getFaction() {
         return Faction.get(factionID);
     }

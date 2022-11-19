@@ -74,6 +74,7 @@ public class FactionsMod implements ModInitializer {
             new ModifyCommand(),
             new RankCommand(),
             new SafeCommand(),
+            new PermissionCommand()
         };
 
         for (Command command : commands) {

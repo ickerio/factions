@@ -1,11 +1,6 @@
 package io.icker.factions.database;
 
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.function.Function;
-
-import org.apache.commons.lang3.ArrayUtils;
-
+import io.icker.factions.api.persistents.Relationship.Permissions;
 import io.icker.factions.api.persistents.Relationship.Status;
 import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.api.persistents.User.Rank;
@@ -13,6 +8,11 @@ import io.icker.factions.api.persistents.User.SoundMode;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.HashMap;
+import java.util.UUID;
+import java.util.function.Function;
 
 public class SerializerRegistry {
     private static final HashMap<Class<?>, Serializer<?, ? extends NbtElement>> registry = new HashMap<Class<?>, Serializer<?, ? extends NbtElement>>();
@@ -58,6 +58,7 @@ public class SerializerRegistry {
         registry.put(SoundMode.class, createEnumSerializer(SoundMode.class));
         registry.put(Rank.class, createEnumSerializer(Rank.class));
         registry.put(Status.class, createEnumSerializer(Status.class));
+        registry.put(Permissions.class, createEnumSerializer(Permissions.class));
     }
 
     public static boolean contains(Class<?> clazz) {
