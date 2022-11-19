@@ -8,6 +8,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -20,6 +21,19 @@ public class PlayerEvents {
     public static final Event<UseEntity> USE_ENTITY = EventFactory.createArrayBacked(UseEntity.class, callbacks -> (source, target, world) -> {
         for (UseEntity callback : callbacks) {
             ActionResult result = callback.onUseEntity(source, target, world);
+            if (result != ActionResult.PASS) {
+                return result;
+            }
+        }
+        return ActionResult.PASS;
+    });
+
+    /**
+     * Called when a player tries to use a block that has an inventory (uses the locking mechanism)
+     */
+    public static final Event<UseInventory> USE_INVENTORY = EventFactory.createArrayBacked(UseInventory.class, callbacks -> (source, pos, world) -> {
+        for (UseInventory callback : callbacks) {
+            ActionResult result = callback.onUseInventory(source, pos, world);
             if (result != ActionResult.PASS) {
                 return result;
             }
@@ -84,6 +98,11 @@ public class PlayerEvents {
     @FunctionalInterface
     public interface UseEntity {
         ActionResult onUseEntity(ServerPlayerEntity player, Entity entity, World world);
+    }
+
+    @FunctionalInterface
+    public interface UseInventory {
+        ActionResult onUseInventory(PlayerEntity player, BlockPos pos, World world);
     }
 
     @FunctionalInterface

@@ -40,6 +40,7 @@ public class InteractionManager {
         AttackEntityCallback.EVENT.register(InteractionManager::onAttackEntity);
         PlayerEvents.IS_INVULNERABLE.register(InteractionManager::isInvulnerableTo);
         PlayerEvents.USE_ENTITY.register(InteractionManager::onUseEntity);
+        PlayerEvents.USE_INVENTORY.register(InteractionManager::onUseInventory);
     }
 
     private static boolean onBreakBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
@@ -117,7 +118,21 @@ public class InteractionManager {
     }
 
     private static ActionResult onUseEntity(PlayerEntity player, Entity entity, World world) {
-        return checkPermissions(player, entity.getBlockPos(), world);
+        if (checkPermissions(player, entity.getBlockPos(), world) == ActionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "use entities");
+            return ActionResult.FAIL;
+        }
+
+        return ActionResult.PASS;
+    }
+
+    private static ActionResult onUseInventory(PlayerEntity player, BlockPos pos, World world) {
+        if (checkPermissions(player, pos, world) == ActionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayerEntity) player, "use inventories");
+            return ActionResult.FAIL;
+        }
+
+        return ActionResult.PASS;
     }
 
     private static ActionResult isInvulnerableTo(Entity source, Entity target) {
