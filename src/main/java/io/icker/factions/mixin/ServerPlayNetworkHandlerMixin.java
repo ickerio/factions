@@ -35,7 +35,7 @@ public class ServerPlayNetworkHandlerMixin {
 
     @Inject(method = "handleDecoratedMessage", at = @At("HEAD"), cancellable = true)
     public void handleDecoratedMessage(SignedMessage signedMessage, CallbackInfo ci) {
-        User member = User.get(signedMessage.signedHeader().sender());
+        User member = User.get(signedMessage.link().sender());
 
         boolean factionChat = member.chat == User.ChatMode.FACTION || member.chat == User.ChatMode.FOCUS;
 
@@ -44,7 +44,7 @@ public class ServerPlayNetworkHandlerMixin {
                 .fail()
                 .hover("Click to switch to global chat")
                 .click("/factions settings chat global")
-                .send(server.getPlayerManager().getPlayer(signedMessage.signedHeader().sender()), false);
+                .send(server.getPlayerManager().getPlayer(signedMessage.link().sender()), false);
 
             ci.cancel();
         }
