@@ -4,6 +4,7 @@ import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -21,11 +22,11 @@ public class SoundManager {
         FactionEvents.MEMBER_LEAVE.register((faction, user) -> playFaction(faction, SoundEvents.BLOCK_NOTE_BLOCK_BIT, 0.5F));
     }
 
-    private static void playFaction(Faction faction, SoundEvent soundEvent, float pitch) {
+    private static void playFaction(Faction faction, RegistryEntry.Reference<SoundEvent> soundEvent, float pitch) {
         for (User user : faction.getUsers()) {
             ServerPlayerEntity player = FactionsManager.playerManager.getPlayer(user.getID());
             if (player != null && (user.sounds == User.SoundMode.ALL || user.sounds == User.SoundMode.FACTION)) {
-                player.playSound(soundEvent, SoundCategory.PLAYERS, 0.2F, pitch);
+                player.playSound(soundEvent.value(), SoundCategory.PLAYERS, 0.2F, pitch);
             }
         }
     }
@@ -33,7 +34,7 @@ public class SoundManager {
     public static void warningSound(ServerPlayerEntity player) {
         User user = User.get(player.getUuid());
         if (user.sounds == User.SoundMode.ALL || user.sounds == User.SoundMode.WARNINGS) {
-            player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.PLAYERS, 0.5F, 1.0F);
+            player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), SoundCategory.PLAYERS, 0.5F, 1.0F);
         }
     }
 }
