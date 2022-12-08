@@ -11,6 +11,7 @@ import io.icker.factions.api.persistents.Home;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.entity.damage.DamageRecord;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,13 +19,17 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
+
+import java.util.Objects;
+import java.util.Optional;
 
 public class HomeCommand implements Command {
     private int go(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null) return 0;
 
         Faction faction = Command.getUser(player).getFaction();
         Home home = faction.getHome();
@@ -34,7 +39,16 @@ public class HomeCommand implements Command {
             return 0;
         }
 
-        ServerWorld world = player.getServer().getWorld(RegistryKey.of(Registry.WORLD_KEY, new Identifier(home.level)));
+        if (player.getServer() == null) return 0;
+
+        Optional<RegistryKey<World>> worldKey = player.getServer().getWorldRegistryKeys().stream().filter(key -> Objects.equals(key.getValue(), new Identifier(home.level))).findAny();
+
+        if (worldKey.isEmpty()) {
+            new Message("Cannot find dimension").fail().send(player, false);
+            return 0;
+        }
+
+        ServerWorld world = player.getServer().getWorld(worldKey.get());
 
         if (checkLimitToClaim(faction, world, new BlockPos(home.x, home.y, home.z))) {
             new Message("Cannot warp home to an unclaimed chunk").fail().send(player, false);

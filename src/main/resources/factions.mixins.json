@@ -10,7 +10,6 @@
         "LockableContainerBlockEntityMixin",
         "MinecraftServerMixin",
         "PlayerManagerMixin",
-        "SentMessageAccessor",
         "ServerPlayerEntityMixin",
         "ServerPlayerInteractionManagerMixin",
         "ServerPlayNetworkHandlerMixin"

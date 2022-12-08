@@ -18,6 +18,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 
+import java.util.EnumSet;
+import java.util.List;
+
 public class FactionsManager {
     public static PlayerManager playerManager;
 
@@ -82,7 +85,7 @@ public class FactionsManager {
     }
 
     private static void updatePlayerList(ServerPlayerEntity ...players) {
-        playerManager.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, players));
+        playerManager.sendToAll(new PlayerListS2CPacket(EnumSet.of(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME), List.of(players)));
     }
 
     private static ActionResult openSafe(PlayerEntity player, Faction faction) {
