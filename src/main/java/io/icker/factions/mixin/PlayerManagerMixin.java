@@ -13,7 +13,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class PlayerManagerMixin {
     @Redirect(method = "broadcast(Lnet/minecraft/network/message/SignedMessage;Ljava/util/function/Predicate;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/network/message/MessageType$Parameters;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;sendChatMessage(Lnet/minecraft/network/message/SentMessage;ZLnet/minecraft/network/message/MessageType$Parameters;)V"))
     public void sendChatMessage(ServerPlayerEntity player, SentMessage message, boolean bl, MessageType.Parameters parameters) {
+        if (message instanceof SentMessage.Profileless) {
+            player.sendChatMessage(message, bl, parameters);
+            return;
+        }
+        
         User sender = User.get(((SentMessage.Chat)message).message().link().sender());
+
         User target = User.get(player.getUuid());
 
         if (sender.chat == User.ChatMode.GLOBAL && target.chat != User.ChatMode.FOCUS) {
