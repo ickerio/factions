@@ -37,19 +37,19 @@ public class DeclareCommand implements Command {
         Faction targetFaction = Faction.getByName(name);
 
         if (targetFaction == null) {
-            new Message("Cannot change faction relationship with a faction that doesn't exist").fail().send(player, false);
+            new Message("translate:declare.error.exist").fail().send(player, false);
             return 0;
         }
         
         Faction sourceFaction = Command.getUser(player).getFaction();
 
         if (sourceFaction.equals(targetFaction)) {
-            new Message("Cannot use the declare command on your own faction").fail().send(player, false);
+            new Message("translate:declare.error.own").fail().send(player, false);
             return 0;
         }
 
         if (sourceFaction.getRelationship(targetFaction.getID()).status == status) {
-            new Message("That faction relationship has already been declared with this faction").fail().send(player, false);
+            new Message("translate:declare.error.already").fail().send(player, false);
             return 0;
         }
 
@@ -65,9 +65,9 @@ public class DeclareCommand implements Command {
 
         RelationshipEvents.NEW_DECLARATION.invoker().onNewDecleration(rel);
 
-        Message msgStatus = rel.status == Relationship.Status.ALLY ? new Message("allies").format(Formatting.GREEN) 
-        : rel.status == Relationship.Status.ENEMY ? new Message("enemies").format(Formatting.RED) 
-        : new Message("neutral");
+        Message msgStatus = rel.status == Relationship.Status.ALLY ? new Message("translate:relationship.ally").format(Formatting.GREEN)
+        : rel.status == Relationship.Status.ENEMY ? new Message("translate:relationship.enemy").format(Formatting.RED)
+        : new Message("translate:relationship.neutral");
 
         if (rel.status == rev.status) {
             RelationshipEvents.NEW_MUTUAL.invoker().onNewMutual(rel);
@@ -78,7 +78,7 @@ public class DeclareCommand implements Command {
             RelationshipEvents.END_MUTUAL.invoker().onEndMutual(rel, mutual);
         }
 
-        new Message("You have declared " + targetFaction.getName() + " as ").add(msgStatus).send(sourceFaction);
+        new Message("You have declared %s as ", targetFaction.getName()).add(msgStatus).send(sourceFaction);
 
         if (rel.status != Relationship.Status.NEUTRAL)
             new Message(sourceFaction.getName() + " have declared you as ")

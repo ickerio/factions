@@ -9,6 +9,7 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+import io.icker.factions.util.Translator;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,26 +25,26 @@ public class CreateCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
-            new Message("Cannot create a faction with this name as it is on the blacklist").fail().send(player, false);
+            new Message("translate:create.error.blacklist").fail().send(player, false);
             return 0;
         }
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0 & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH < name.length()) {
-            new Message("Cannot create a faction with this name as it is too long").fail().send(player, false);
+            new Message("translate:create.error.length").fail().send(player, false);
             return 0;
         }
 
         if (Faction.getByName(name) != null) {
-            new Message("Cannot create a faction as a one with that name already exists").fail().send(player, false);
+            new Message("translate:create.error.exists").fail().send(player, false);
             return 0;
         }
 
-        Faction faction = new Faction(name, "No description set", "No faction MOTD set", Formatting.WHITE, false, FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
+        Faction faction = new Faction(name, Translator.get("translate:desc", User.get(player.getUuid()).language), Translator.get("translate:motd", User.get(player.getUuid()).language), Formatting.WHITE, false, FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
         Faction.add(faction);
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.OWNER);
 
         source.getServer().getPlayerManager().sendCommandTree(player);
-        new Message("Successfully created faction").send(player, false);
+        new Message("translate:create").send(player, false);
         return 1;
     }
 

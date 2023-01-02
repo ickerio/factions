@@ -27,10 +27,10 @@ public class AdminCommand implements Command {
         boolean bypass = !user.bypass;
         user.bypass = bypass;
 
-        new Message("Successfully toggled claim bypass")
+        new Message("translate:admin.bypass")
                 .filler("·")
                 .add(
-                    new Message(user.bypass ? "ON" : "OFF")
+                    new Message(user.bypass ? "translate:on" : "translate:off")
                         .format(user.bypass ? Formatting.GREEN : Formatting.RED)
                 )
                 .send(player, false);
@@ -40,7 +40,7 @@ public class AdminCommand implements Command {
 
     private int reload(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         FactionsMod.dynmap.reloadAll();
-        new Message("Reloaded dynmap marker").send(context.getSource().getPlayer(), false);
+        new Message("translate:admin.reload").send(context.getSource().getPlayer(), false);
         return 1;
     }
 
@@ -54,22 +54,22 @@ public class AdminCommand implements Command {
         if (adjusted != 0) {
             if (power > 0) {
                 new Message(
-                    "Admin %s added %d power",
+                    "translate:admin.power.add",
                     player.getName().getString(),
                     adjusted
                 ).send(target);
                 new Message(
-                    "Added %d power",
+                    "translate:admin.power.add.self",
                     adjusted
                 ).send(player, false);
             } else {
                 new Message(
-                    "Admin %s removed %d power",
+                    "translate:admin.power.remove",
                     player.getName().getString(),
                     adjusted
                 ).send(target);
                 new Message(
-                    "Removed %d power",
+                    "translate:admin.power.remove.self",
                     adjusted
                 ).send(player, false);
             }
