@@ -11,12 +11,20 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class Message {
     public static PlayerManager manager;
     private MutableText text;
+    private final ArrayList<Message> children = new ArrayList<>();
 
     public Message(String message) {
         text = (MutableText) Text.of(message);
+    }
+
+    public Message(Text message) {
+        text = (MutableText) message;
     }
 
     public Message(String message, Object... args) {
@@ -24,17 +32,17 @@ public class Message {
     }
 
     public Message add(String message) {
-        text.append(message);
+        children.add(new Message(message));
         return this;
     }
 
     public Message add(String message, Object... args) {
-        text.append(String.format(message, args));
+        children.add(new Message(String.format(message, args)));
         return this;
     }
 
     public Message add(Message message) {
-        text.append(message.raw());
+        children.add(message);
         return this;
     }
 
@@ -59,7 +67,7 @@ public class Message {
     }
 
     public Message send(PlayerEntity player, boolean actionBar) {
-        player.sendMessage(text, actionBar);
+        player.sendMessage(this.build(player.getUuid()), actionBar);
         return this;
     }
 
@@ -87,20 +95,37 @@ public class Message {
     }
 
     public Message prependFaction(Faction faction) {
-        text = new Message("")
-                .add(new Message(faction.getColor().toString() + Formatting.BOLD + faction.getName()).hover(faction.getDescription()))
-                .filler("»")
-                .raw()
-                .append(text);
-        return this;
+        Message message = new Message("").add(new Message(faction.getColor().toString() + Formatting.BOLD + faction.getName()).hover(faction.getDescription()))
+                .filler("»");
+        message.add(this);
+        return message;
     }
 
     public Message filler(String symbol) {
-        text.append(Text.of(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol + Formatting.RESET + " "));
+        children.add(new Message(Text.of(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol + Formatting.RESET + " ")));
         return this;
     }
 
     public MutableText raw() {
-        return text;
+        MutableText built = text;
+
+        for (Message message : children) {
+            built.append(message.raw());
+        }
+
+        return built;
+    }
+
+    public MutableText build(UUID userId) {
+        MutableText built = text;
+        if (text.getString().startsWith("translate:")) {
+            built = Text.of(Translator.get(text.getString(), User.get(userId).language)).copy().setStyle(text.getStyle());
+        }
+
+        for (Message message : children) {
+            built.append(message.build(userId));
+        }
+
+        return built;
     }
 }
