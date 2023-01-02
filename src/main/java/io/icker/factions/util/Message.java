@@ -18,6 +18,7 @@ public class Message {
     public static PlayerManager manager;
     private MutableText text;
     private final ArrayList<Message> children = new ArrayList<>();
+    private Object[] args = new String[0];
 
     public Message(String message) {
         text = (MutableText) Text.of(message);
@@ -28,7 +29,8 @@ public class Message {
     }
 
     public Message(String message, Object... args) {
-        text = (MutableText) Text.of(String.format(message, args));
+        text = (MutableText) Text.of(message);
+        this.args = args;
     }
 
     public Message add(String message) {
@@ -37,7 +39,8 @@ public class Message {
     }
 
     public Message add(String message, Object... args) {
-        children.add(new Message(String.format(message, args)));
+        children.add(new Message(message, args));
+        this.args = args;
         return this;
     }
 
@@ -56,7 +59,7 @@ public class Message {
         return this;
     }
 
-    public Message hover(String message) {
+    public Message hover(String message) { // FIXME: isn't translated
         text.styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(message))));
         return this;
     }
@@ -119,7 +122,7 @@ public class Message {
     public MutableText build(UUID userId) {
         MutableText built = text;
         if (text.getString().startsWith("translate:")) {
-            built = Text.of(Translator.get(text.getString(), User.get(userId).language)).copy().setStyle(text.getStyle());
+            built = Text.of(String.format(Translator.get(text.getString(), User.get(userId).language), args)).copy().setStyle(text.getStyle());
         }
 
         for (Message message : children) {
