@@ -28,7 +28,7 @@
   "translate:claim.auto": "Successfully toggled autoclaim",
   "translate:claim.access.error.unclaimed": "Cannot change access level on unclaimed chunk",
   "translate:claim.access.error.claimed": "Cannot change access level on another factions claim",
-  "translate:claim.access.error.max": "Cannot decrease access level as it is already at its maximum.",
+  "translate:claim.access.error.max": "Cannot increase access level as it is already at its maximum.",
   "translate:claim.access.error.min": "Cannot decrease access level as it is already at its minimum.",
   "translate:claim.access.notification": "Claim (%d, %d) changed to level %s by %s.",
 
