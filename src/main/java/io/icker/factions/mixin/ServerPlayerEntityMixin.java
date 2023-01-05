@@ -4,7 +4,8 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.util.Message;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.PlainText;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -61,13 +62,17 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
             User member = User.get(((ServerPlayerEntity) (Object) this).getUuid());
             if (member.isInFaction()) {
                 Faction faction = member.getFaction();
-                cir.setReturnValue(new Message(String.format("[%s] ", faction.getName())).format(faction.getColor()).add(
-                        new Message(((ServerPlayerEntity) (Object) this).getName().getString()).format(Formatting.WHITE)
-                ).raw());
+                cir.setReturnValue(
+                    new Message()
+                            .append(new PlainText(String.format("[%s] ", faction.getName())).format(faction.getColor()))
+                            .append(new PlainText(((ServerPlayerEntity) (Object) this).getName().getString()).format(Formatting.WHITE))
+                .build(null));
             } else {
-                cir.setReturnValue(new Message("[FACTIONLESS] ").format(Formatting.GRAY).add(
-                        new Message(((ServerPlayerEntity) (Object) this).getName().getString()).format(Formatting.WHITE)
-                ).raw());
+                cir.setReturnValue(
+                    new Message()
+                            .append(new PlainText("[FACTIONLESS] ").format(Formatting.GRAY))
+                            .append(new PlainText(((ServerPlayerEntity) (Object) this).getName().getString()).format(Formatting.WHITE))
+                .build(null));
             }
         }
     }

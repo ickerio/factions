@@ -8,8 +8,10 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.PlainText;
+import io.icker.factions.text.TranslatableText;
 import io.icker.factions.util.Command;
-import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -27,7 +29,7 @@ public class InfoCommand implements Command {
 
         User user = Command.getUser(player);
         if (!user.isInFaction()) {
-            new Message("Command can only be used whilst in a faction").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:info.error.factionless").fail()).send(player, false);
             return 0;
         }
 
@@ -42,7 +44,7 @@ public class InfoCommand implements Command {
 
         Faction faction = Faction.getByName(factionName);
         if (faction == null) {
-            new Message("Faction does not exist").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:info.error.not-exist").fail()).send(player, false);
             return 0;
         }
 
@@ -80,26 +82,15 @@ public class InfoCommand implements Command {
         int numDashes = 32 - faction.getName().length();
         String dashes = new StringBuilder("--------------------------------").substring(0, numDashes/2);
 
-        new Message(Formatting.BLACK + dashes + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes)
-            .send(player, false);
-        new Message(Formatting.GOLD + "Description: ")
-            .add(Formatting.WHITE + faction.getDescription())
-            .send(player, false);
-        new Message(Formatting.GOLD + "Owner: ")
-            .add(Formatting.WHITE + owner)
-            .send(player, false);
-        new Message(Formatting.GOLD + "Members (" + Formatting.WHITE.toString() + users.size() + Formatting.GOLD.toString() + "): ")
-            .add(usersList)
-            .send(player, false);
-        new Message(Formatting.GOLD + "Power: ")
-            .add(Formatting.GREEN.toString() + faction.getPower() + slash() + requiredPower + slash() + maxPower)
-            .hover("Current / Required / Max")
-            .send(player, false);
-        new Message(Formatting.GREEN + "Allies (" + Formatting.WHITE + faction.getMutualAllies().size() + Formatting.GREEN + "): ")
-            .add(mutualAllies)
-            .send(player, false);
-        new Message(Formatting.RED + "Enemies (" + Formatting.WHITE + faction.getEnemiesWith().size() + Formatting.RED + "): ")
-            .add(enemiesWith)
+        new Message()
+            .append(new PlainText(Formatting.BLACK + dashes + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes))
+            .append(new PlainText("\n"))
+            .append(new TranslatableText("translate:info.description", faction.getDescription()))
+            .append(new TranslatableText("translate:info.owner", owner))
+            .append(new TranslatableText("translate:info.members", users.size(), usersList))
+            .append(new TranslatableText("translate:info.power", Formatting.GREEN.toString() + faction.getPower() + slash() + requiredPower + slash() + maxPower).hover("translate:info.power.desc"))
+            .append(new TranslatableText("translate:info.allies", faction.getMutualAllies().size(), mutualAllies))
+            .append(new TranslatableText("translate:info.enemies", faction.getEnemiesWith().size(), enemiesWith))
             .send(player, false);
 
         return 1;

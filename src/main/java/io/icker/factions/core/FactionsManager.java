@@ -5,7 +5,9 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.util.Message;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.TranslatableText;
+import io.icker.factions.util.Translator;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -62,11 +64,11 @@ public class FactionsManager {
         Faction faction = member.getFaction();
 
         int adjusted = faction.adjustPower(-FactionsMod.CONFIG.POWER.DEATH_PENALTY);
-        new Message(
-            "%s lost %d power from dying",
+        new Message().append(new TranslatableText(
+            "translate:power.lost",
             player.getName().getString(),
             adjusted
-        ).send(faction);
+        )).send(faction);
     }
 
     private static void powerTick(ServerPlayerEntity player) {
@@ -77,11 +79,11 @@ public class FactionsManager {
 
         int adjusted = faction.adjustPower(FactionsMod.CONFIG.POWER.POWER_TICKS.REWARD);
         if (adjusted != 0)
-            new Message(
-                "%s gained %d power from surviving",
+            new Message().append(new TranslatableText(
+                "translate:power.gained",
                 player.getName().getString(),
                 adjusted
-            ).send(faction);
+            )).send(faction);
     }
 
     private static void updatePlayerList(ServerPlayerEntity ...players) {
@@ -93,7 +95,7 @@ public class FactionsManager {
 
         if (!user.isInFaction()) {
             if (FactionsMod.CONFIG.SAFE != null && FactionsMod.CONFIG.SAFE.ENDER_CHEST) {
-                new Message("Cannot use enderchests when not in a faction").fail().send(player, false);
+                new Message().append(new TranslatableText("translate:error.enderchest").fail()).send(player, false);
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
@@ -108,7 +110,7 @@ public class FactionsManager {
                         return GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, faction.getSafe());
                     }
                 },
-                Text.of(String.format("%s's Safe", faction.getName()))
+                Text.of(String.format(Translator.get("translate:safe.name", User.get(player.getUuid()).language), faction.getName()))
             )
         );
 

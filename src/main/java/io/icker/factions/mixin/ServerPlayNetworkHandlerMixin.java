@@ -2,7 +2,8 @@ package io.icker.factions.mixin;
 
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.util.Message;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.TranslatableText;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
@@ -40,10 +41,10 @@ public class ServerPlayNetworkHandlerMixin {
         boolean factionChat = member.chat == User.ChatMode.FACTION || member.chat == User.ChatMode.FOCUS;
 
         if (factionChat && !member.isInFaction()) {
-            new Message("You can't send a message to faction chat if you aren't in a faction.")
-                .fail()
-                .hover("Click to switch to global chat")
+            new Message().append(new TranslatableText("translate:chat.faction.error")
+                .hover("translate:chat.faction.error.hover")
                 .click("/factions settings chat global")
+                .fail())
                 .send(server.getPlayerManager().getPlayer(signedMessage.link().sender()), false);
 
             ci.cancel();

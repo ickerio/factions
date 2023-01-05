@@ -7,8 +7,9 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.TranslatableText;
 import io.icker.factions.util.Command;
-import io.icker.factions.util.Message;
 import io.icker.factions.util.Translator;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -25,17 +26,17 @@ public class CreateCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
-            new Message("translate:create.error.blacklist").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:create.error.blacklist").fail()).send(player, false);
             return 0;
         }
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0 & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH < name.length()) {
-            new Message("translate:create.error.length").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:create.error.length").fail()).send(player, false);
             return 0;
         }
 
         if (Faction.getByName(name) != null) {
-            new Message("translate:create.error.exists").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:create.error.exists").fail()).send(player, false);
             return 0;
         }
 
@@ -44,7 +45,7 @@ public class CreateCommand implements Command {
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.OWNER);
 
         source.getServer().getPlayerManager().sendCommandTree(player);
-        new Message("translate:create").send(player, false);
+        new Message().append(new TranslatableText("translate:create")).send(player, false);
         return 1;
     }
 

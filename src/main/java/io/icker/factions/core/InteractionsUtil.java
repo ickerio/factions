@@ -1,7 +1,8 @@
 package io.icker.factions.core;
 
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.util.Message;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.TranslatableText;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,10 +24,10 @@ public class InteractionsUtil {
     public static void warn(ServerPlayerEntity player, String action) {
         SoundManager.warningSound(player);
         User user = User.get(player.getUuid());
-        new Message(
-            "Cannot %s here", 
+        new Message().append(new TranslatableText(
+            "translate:claim-alert",
             action
-        ).fail()
+        ).fail())
             .send(player, !user.radar);
     }
 }

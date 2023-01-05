@@ -7,8 +7,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.text.FactionText;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.PlainText;
+import io.icker.factions.text.TranslatableText;
 import io.icker.factions.util.Command;
-import io.icker.factions.util.Message;
 import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -25,25 +28,25 @@ public class ModifyCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
-            new Message("Cannot rename a faction to that name as it is on the blacklist").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:modify.name.error.blacklist").fail()).send(player, false);
             return 0;
         }
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0 & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > name.length()) {
-            new Message("Cannot rename a faction to this that as it is too long").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:modify.name.error.length").fail()).send(player, false);
             return 0;
         }
 
         if (Faction.getByName(name) != null) {
-            new Message("A faction with that name already exists").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:modify.name.error.exists").fail()).send(player, false);
             return 0;
         }
 
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setName(name);
-        new Message("Successfully renamed faction to '" + name + "'")
-            .prependFaction(faction)
+        new Message().append(new TranslatableText("translate:modify.name", name))
+            .prepend(new FactionText(faction))
             .send(player, false);
 
         return 1;
@@ -58,8 +61,8 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setDescription(description);
-        new Message("Successfully updated faction description to '" + description + "'")
-            .prependFaction(faction)
+        new Message().append(new TranslatableText("translate:modify.desc", description))
+            .prepend(new FactionText(faction))
             .send(player, false);
 
         return 1;
@@ -74,8 +77,8 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setMOTD(motd);
-        new Message("Successfully updated faction MOTD to '" + motd + "'")
-            .prependFaction(faction)
+        new Message().append(new TranslatableText("translate:modify.motd", motd))
+            .prepend(new FactionText(faction))
             .send(player, false);
 
         return 1;
@@ -90,8 +93,9 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setColor(color);
-        new Message("Successfully updated faction color to " + Formatting.BOLD + color + color.name())
-            .prependFaction(faction)
+        new Message().append(new TranslatableText("translate:modify.color"))
+            .append(new PlainText(color.name()).format(color).format(Formatting.BOLD))
+            .prepend(new FactionText(faction))
             .send(player, false);
 
         return 1;
@@ -106,12 +110,11 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setOpen(open);
-        new Message("Successfully updated faction to ")
-            .add(
-                new Message(open ? "Open" : "Closed")
-                    .format(open ? Formatting.GREEN : Formatting.RED)
+        new Message().append(new TranslatableText("translate:modify.open"))
+            .append(
+                new TranslatableText(open ? "translate:modify.open.open" : "translate:modify.open.closed")
             )
-            .prependFaction(faction)
+            .prepend(new FactionText(faction))
             .send(player, false);
             
         return 1;

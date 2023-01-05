@@ -6,8 +6,10 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.text.FactionText;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.TranslatableText;
 import io.icker.factions.util.Command;
-import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,9 +23,9 @@ public class LeaveCommand implements Command {
         Faction faction = user.getFaction();
 
         user.leaveFaction();
-        new Message(player.getName().getString() + " left").send(faction);
-        new Message("You have left this faction.")
-            .prependFaction(faction)
+        new Message().append(new TranslatableText("translate:leave", player.getName().getString())).send(faction);
+        new Message().append(new TranslatableText("translate:leave.self"))
+            .prepend(new FactionText(faction))
             .send(player, false);
 
         context.getSource().getServer().getPlayerManager().sendCommandTree(player);

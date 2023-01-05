@@ -4,7 +4,10 @@ import io.icker.factions.api.events.MiscEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.util.Message;
+import io.icker.factions.text.FactionText;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.PlainText;
+import io.icker.factions.text.TranslatableText;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
@@ -29,8 +32,8 @@ public class ServerManager {
 
         if (user.isInFaction()) {
             Faction faction = user.getFaction();
-            new Message("Welcome back " + player.getName().getString() + "!").send(player, false);
-            new Message(faction.getMOTD()).prependFaction(faction).send(player, false);
+            new Message().append(new TranslatableText("translate:welcome!", player.getName().getString())).send(player, false);
+            new Message().append(new PlainText(faction.getMOTD())).prepend(new FactionText(faction)).send(player, false);
         }
     }
 }

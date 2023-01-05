@@ -7,12 +7,12 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.api.events.RelationshipEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Relationship;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.TranslatableText;
 import io.icker.factions.util.Command;
-import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Formatting;
 
 import java.util.Locale;
 
@@ -37,19 +37,19 @@ public class DeclareCommand implements Command {
         Faction targetFaction = Faction.getByName(name);
 
         if (targetFaction == null) {
-            new Message("translate:declare.error.exist").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:declare.error.exist").fail()).send(player, false);
             return 0;
         }
         
         Faction sourceFaction = Command.getUser(player).getFaction();
 
         if (sourceFaction.equals(targetFaction)) {
-            new Message("translate:declare.error.own").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:declare.error.own").fail()).send(player, false);
             return 0;
         }
 
         if (sourceFaction.getRelationship(targetFaction.getID()).status == status) {
-            new Message("translate:declare.error.already").fail().send(player, false);
+            new Message().append(new TranslatableText("translate:declare.error.already").fail()).send(player, false);
             return 0;
         }
 
@@ -65,26 +65,43 @@ public class DeclareCommand implements Command {
 
         RelationshipEvents.NEW_DECLARATION.invoker().onNewDecleration(rel);
 
-        Message msgStatus = rel.status == Relationship.Status.ALLY ? new Message("translate:relationship.ally").format(Formatting.GREEN)
-        : rel.status == Relationship.Status.ENEMY ? new Message("translate:relationship.enemy").format(Formatting.RED)
-        : new Message("translate:relationship.neutral");
+        TranslatableText msgStatus = rel.status == Relationship.Status.ALLY ? new TranslatableText("translate:relationship.ally")
+        : rel.status == Relationship.Status.ENEMY ? new TranslatableText("translate:relationship.enemy")
+        : new TranslatableText("translate:relationship.neutral");
 
         if (rel.status == rev.status) {
             RelationshipEvents.NEW_MUTUAL.invoker().onNewMutual(rel);
-            new Message("You are now mutually ").add(msgStatus).add(" with " + targetFaction.getName()).send(sourceFaction);
-            new Message("You are now mutually ").add(msgStatus).add(" with " + sourceFaction.getName()).send(targetFaction);
+            new Message()
+                    .append(new TranslatableText("translate:declare.notification.mutual"))
+                    .append(msgStatus)
+                    .append(new TranslatableText("translate:declare.notification.mutual.with", targetFaction.getName()))
+                    .send(sourceFaction);
+
+            new Message()
+                    .append(new TranslatableText("translate:declare.notification.mutual"))
+                    .append(msgStatus)
+                    .append(new TranslatableText("translate:declare.notification.mutual.with", sourceFaction.getName()))
+                    .send(targetFaction);
             return 1;
         } else if (mutual != null) {
             RelationshipEvents.END_MUTUAL.invoker().onEndMutual(rel, mutual);
         }
 
-        new Message("You have declared %s as ", targetFaction.getName()).add(msgStatus).send(sourceFaction);
+        new Message()
+                .append(new TranslatableText("translate:declare.notification", targetFaction.getName())).append(msgStatus).send(sourceFaction);
 
         if (rel.status != Relationship.Status.NEUTRAL)
-            new Message(sourceFaction.getName() + " have declared you as ")
-                .add(msgStatus)
-                .hover("Click to add them back")
-                .click(String.format("/factions declare %s %s", rel.status.toString().toLowerCase(Locale.ROOT), sourceFaction.getName()))
+            new Message()
+                .append(
+                        new TranslatableText("translate:declare.notification.target", sourceFaction.getName())
+                            .hover("translate:declare.click")
+                            .click(String.format("/factions declare %s %s", rel.status.toString().toLowerCase(Locale.ROOT), sourceFaction.getName()))
+                )
+                .append(
+                        msgStatus
+                            .hover("translate:declare.click")
+                            .click(String.format("/factions declare %s %s", rel.status.toString().toLowerCase(Locale.ROOT), sourceFaction.getName()))
+                )
                 .send(targetFaction);
       
         return 1;

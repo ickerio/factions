@@ -3,10 +3,12 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.text.FillerText;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.PlainText;
+import io.icker.factions.text.TranslatableText;
 import io.icker.factions.util.Command;
-import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,10 +20,10 @@ public class SettingsCommand implements Command{
         User user = User.get(player.getUuid());
         user.chat = option;   
 
-        new Message("Successfully set your chat preference")
-            .filler("·")
-            .add(
-                new Message(user.getChatName())
+        new Message().append(new TranslatableText("translate:settings.chat"))
+            .append(new FillerText("·"))
+            .append(
+                new PlainText(user.getChatName())
                     .format(Formatting.BLUE)
             )
             .send(player, false);
@@ -34,10 +36,10 @@ public class SettingsCommand implements Command{
         User user = User.get(player.getUuid());
         user.sounds = option;
 
-        new Message("Successfully set your sound preference")
-            .filler("·")
-            .add(
-                new Message(user.getSoundName())
+        new Message().append(new TranslatableText("translate:settings.sound"))
+            .append(new FillerText("·"))
+            .append(
+                new PlainText(user.getSoundName())
                     .format(Formatting.BLUE)
             )
             .send(player, false);
@@ -53,11 +55,10 @@ public class SettingsCommand implements Command{
         boolean radar = !config.radar;
         config.radar = radar;
 
-        new Message("Successfully toggled claim radar")
-            .filler("·")
-            .add(
-                new Message(radar ? "ON" : "OFF")
-                    .format(radar ? Formatting.GREEN : Formatting.RED)
+        new Message().append(new TranslatableText("translate:settings.claim"))
+            .append(new FillerText("·"))
+            .append(
+                new TranslatableText(radar ? "translate:on" : "translate:off")
             )
             .send(player, false);
 
