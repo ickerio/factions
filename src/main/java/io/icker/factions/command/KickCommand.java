@@ -21,7 +21,7 @@ public class KickCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (target.getUuid().equals(player.getUuid())) {
-            new Message().append(new TranslatableText("translate:kick.error.self").fail()).send(player, false);
+            new Message().append(new TranslatableText("kick.error.self").fail()).send(player, false);
             return 0;
         }
 
@@ -30,20 +30,20 @@ public class KickCommand implements Command {
         Faction faction = selfUser.getFaction();
 
         if (targetUser.getFaction().getID() != faction.getID()) {
-            new Message().append(new TranslatableText("translate:kick.error.not-in-faction").fail()).send(player, false);
+            new Message().append(new TranslatableText("kick.error.not-in-faction").fail()).send(player, false);
             return 0;
         }
 
         if (selfUser.rank == User.Rank.LEADER && (targetUser.rank == User.Rank.LEADER || targetUser.rank == User.Rank.OWNER)) {
-            new Message().append(new TranslatableText("translate:kick.error.rank").fail()).send(player, false);
+            new Message().append(new TranslatableText("kick.error.rank").fail()).send(player, false);
             return 0;
         }
 
         targetUser.leaveFaction();
         context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-        new Message().append(new TranslatableText("translate:kick.notice", player.getName().getString())).send(player, false);
-        new Message().append(new TranslatableText("translate:kick.notice.self",  player.getName().getString())).send(target, false);
+        new Message().append(new TranslatableText("kick.notice", player.getName().getString())).send(player, false);
+        new Message().append(new TranslatableText("kick.notice.self",  player.getName().getString())).send(target, false);
 
         return 1;
     }

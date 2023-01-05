@@ -23,19 +23,19 @@ public class JoinCommand implements Command {
         Faction faction = Faction.getByName(name);
 
         if (faction == null) {
-            new Message().append(new TranslatableText("translate:info.error.not-exist").fail()).send(player, false);
+            new Message().append(new TranslatableText("info.error.not-exist").fail()).send(player, false);
             return 0;
         }
 
         boolean invited = faction.isInvited(player.getUuid());
 
         if (!faction.isOpen() && !invited) {
-            new Message().append(new TranslatableText("translate:invite.error").fail()).send(player, false);
+            new Message().append(new TranslatableText("invite.error").fail()).send(player, false);
             return 0;
         }
 
         if (FactionsMod.CONFIG.MAX_FACTION_SIZE != -1 && faction.getUsers().size() >= FactionsMod.CONFIG.MAX_FACTION_SIZE) {
-            new Message().append(new TranslatableText("translate:invite.error.full").fail()).send(player, false);
+            new Message().append(new TranslatableText("invite.error.full").fail()).send(player, false);
             return 0;
         }
 
@@ -43,7 +43,7 @@ public class JoinCommand implements Command {
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.MEMBER);
         source.getServer().getPlayerManager().sendCommandTree(player);
 
-        new Message().append(new TranslatableText("translate:invite", player.getName().getString())).send(faction);
+        new Message().append(new TranslatableText("invite", player.getName().getString())).send(faction);
         faction.adjustPower(FactionsMod.CONFIG.POWER.MEMBER);
         return 1;
     }

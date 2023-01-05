@@ -25,7 +25,7 @@ public class InteractionsUtil {
         SoundManager.warningSound(player);
         User user = User.get(player.getUuid());
         new Message().append(new TranslatableText(
-            "translate:claim-alert",
+            "claim-alert",
             action
         ).fail())
             .send(player, !user.radar);

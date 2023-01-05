@@ -35,7 +35,7 @@ public class ClaimCommand implements Command {
         int count = claims.size();
 
         new Message()
-                .append(new TranslatableText("translate:claim.info", count))
+                .append(new TranslatableText("claim.info", count))
                 .send(source.getPlayer(), false);
 
         if (count == 0) return 1;
@@ -83,11 +83,11 @@ public class ClaimCommand implements Command {
 
                 if (existingClaim != null) {
                     if (size == 1) {
-                        String owner = existingClaim.getFaction().getID() == faction.getID() ? "translate:claim.owner.self" : "translate:claim.owner.other";
-                        new Message().append(new TranslatableText(owner).fail()).append(new TranslatableText("translate:claim.owner.error").fail()).send(player, false);
+                        String owner = existingClaim.getFaction().getID() == faction.getID() ? "claim.owner.self" : "claim.owner.other";
+                        new Message().append(new TranslatableText(owner).fail()).append(new TranslatableText("claim.owner.error").fail()).send(player, false);
                         return 0;
                     } else if (existingClaim.getFaction().getID() != faction.getID()) {
-                        new Message().append(new TranslatableText("translate:claim.owner.error.generic").fail()).send(player, false);
+                        new Message().append(new TranslatableText("claim.owner.error.generic").fail()).send(player, false);
                         return 0;
                     }
                 }
@@ -99,14 +99,14 @@ public class ClaimCommand implements Command {
         chunks.forEach(chunk -> faction.addClaim(chunk.x, chunk.z, dimension));
         if (size == 1) {
             new Message().append(new TranslatableText(
-                "translate:claim.notification.single",
+                "claim.notification.single",
                 chunks.get(0).x,
                 chunks.get(0).z,
                 player.getName().getString()
             )).send(faction);
         } else {
             new Message().append(new TranslatableText(
-                "translate:claim.notification.many",
+                "claim.notification.many",
                 chunks.get(0).x,
                 chunks.get(0).z,
                 chunks.get(0).x + size - 1,
@@ -126,7 +126,7 @@ public class ClaimCommand implements Command {
         int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
         if (maxPower < requiredPower) {
-            new Message().append(new TranslatableText("translate:claim.error.power.single").fail()).send(player, false);
+            new Message().append(new TranslatableText("claim.error.power.single").fail()).send(player, false);
             return 0;
         }
 
@@ -142,7 +142,7 @@ public class ClaimCommand implements Command {
         int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
         if (maxPower < requiredPower) {
-            new Message().append(new TranslatableText("translate:claim.error.power.many").fail()).send(player, false);
+            new Message().append(new TranslatableText("claim.error.power.many").fail()).send(player, false);
             return 0;
         }
 
@@ -161,7 +161,7 @@ public class ClaimCommand implements Command {
         Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
         if (existingClaim == null) {
-            new Message().append(new TranslatableText("translate:claim.remove.error.unclaimed")
+            new Message().append(new TranslatableText("claim.remove.error.unclaimed")
                 .fail())
                 .send(player, false);
             return 0;
@@ -171,7 +171,7 @@ public class ClaimCommand implements Command {
         Faction faction = user.getFaction();
 
         if (!user.bypass && existingClaim.getFaction().getID() != faction.getID()) {
-            new Message().append(new TranslatableText("translate:claim.remove.error.claimed")
+            new Message().append(new TranslatableText("claim.remove.error.claimed")
                 .fail())
                 .send(player, false);
             return 0;
@@ -179,7 +179,7 @@ public class ClaimCommand implements Command {
 
         existingClaim.remove();
         new Message().append(new TranslatableText(
-            "translate:claim.remove.notification",
+            "claim.remove.notification",
             existingClaim.x,
             existingClaim.z,
             player.getName().getString()
@@ -209,7 +209,7 @@ public class ClaimCommand implements Command {
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos().add((-size + 1) * 16, 0, (-size + 1) * 16)).getPos();
         new Message().append(new TranslatableText(
-            "translate:claim.remove.notification.many",
+            "claim.remove.notification.many",
             chunkPos.x,
             chunkPos.z,
             chunkPos.x + size - 1,
@@ -228,7 +228,7 @@ public class ClaimCommand implements Command {
 
         faction.removeAllClaims();
         new Message().append(new TranslatableText(
-            "translate:claim.remove.notification.all",
+            "claim.remove.notification.all",
             player.getName().getString()
         )).send(faction);
         return 1;
@@ -241,10 +241,10 @@ public class ClaimCommand implements Command {
         User user = Command.getUser(player);
         user.autoclaim = !user.autoclaim;
 
-        new Message().append(new TranslatableText("translate:claim.auto"))
+        new Message().append(new TranslatableText("claim.auto"))
             .append(new FillerText("·"))
             .append(
-                new TranslatableText(user.autoclaim ? "translate:on" : "translate:off")
+                new TranslatableText(user.autoclaim ? "on" : "off")
             )
             .send(player, false);
 
@@ -264,7 +264,7 @@ public class ClaimCommand implements Command {
         Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
         if (claim == null) {
-            new Message().append(new TranslatableText("translate:claim.access.error.unclaimed")
+            new Message().append(new TranslatableText("claim.access.error.unclaimed")
                 .fail())
                 .send(player, false);
             return 0;
@@ -274,7 +274,7 @@ public class ClaimCommand implements Command {
         Faction faction = user.getFaction();
 
         if (!user.bypass && claim.getFaction().getID() != faction.getID()) {
-            new Message().append(new TranslatableText("translate:claim.access.error.claimed")
+            new Message().append(new TranslatableText("claim.access.error.claimed")
                 .fail())
                 .send(player, false);
             return 0;
@@ -283,7 +283,7 @@ public class ClaimCommand implements Command {
         if (increase) {
             switch (claim.accessLevel) {
                 case OWNER -> {
-                    new Message().append(new TranslatableText("translate:claim.access.error.max")
+                    new Message().append(new TranslatableText("claim.access.error.max")
                         .fail())
                         .send(player, false);
                     return 0;
@@ -298,7 +298,7 @@ public class ClaimCommand implements Command {
                 case LEADER -> claim.accessLevel = User.Rank.COMMANDER;
                 case COMMANDER -> claim.accessLevel = User.Rank.MEMBER;
                 case MEMBER -> {
-                    new Message().append(new TranslatableText("translate:claim.access.error.min")
+                    new Message().append(new TranslatableText("claim.access.error.min")
                         .fail())
                         .send(player, false);
                     return 0;
@@ -307,7 +307,7 @@ public class ClaimCommand implements Command {
         }
 
         new Message().append(new TranslatableText(
-            "translate:claim.access.notification",
+            "claim.access.notification",
             claim.x,
             claim.z,
             claim.accessLevel.toString(),

@@ -30,7 +30,7 @@ public class InviteCommand implements Command {
         List<UUID> invites = Command.getUser(source.getPlayer()).getFaction().invites;
         int count = invites.size();
 
-        new Message().append(new TranslatableText("translate:invite.info", count))
+        new Message().append(new TranslatableText("invite.info", count))
                 .send(source.getPlayer(), false);
 
         if (count == 0) return 1;
@@ -52,24 +52,24 @@ public class InviteCommand implements Command {
 
         Faction faction = Command.getUser(source.getPlayer()).getFaction();
         if (faction.isInvited(player.getUuid())) {
-            new Message().append(new TranslatableText("translate:invite.error.already-invited", target.getName().getString()).fail()).send(player, false);
+            new Message().append(new TranslatableText("invite.error.already-invited", target.getName().getString()).fail()).send(player, false);
             return 0;
         }
 
         User targetUser = User.get(target.getUuid());
         UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
         if (faction.getID().equals(targetFaction)) {
-            new Message().append(new TranslatableText("translate:invite.error.already-in", target.getName().getString()).fail()).send(player, false);
+            new Message().append(new TranslatableText("invite.error.already-in", target.getName().getString()).fail()).send(player, false);
             return 0;
         }
 
         faction.invites.add(target.getUuid());
 
-        new Message().append(new TranslatableText("translate:invite.notice.self", target.getName().getString()))
+        new Message().append(new TranslatableText("invite.notice.self", target.getName().getString()))
                 .send(faction);
 
-        new Message().append(new TranslatableText("translate:invite.notice")
-                .hover("translate:invite.notice.hover").click("/factions join " + faction.getName()).format(Formatting.YELLOW))
+        new Message().append(new TranslatableText("invite.notice")
+                .hover("invite.notice.hover").click("/factions join " + faction.getName()).format(Formatting.YELLOW))
                 .prepend(new FactionText(faction))
                 .send(target, false);
         return 1;
@@ -84,7 +84,7 @@ public class InviteCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
         faction.invites.remove(target.getUuid());
 
-        new Message().append(new TranslatableText("translate:invite.notice.not-invited", target.getName().getString())).send(player, false);
+        new Message().append(new TranslatableText("invite.notice.not-invited", target.getName().getString())).send(player, false);
         return 1;
     }
 

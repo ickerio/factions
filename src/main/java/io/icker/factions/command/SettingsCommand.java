@@ -20,7 +20,7 @@ public class SettingsCommand implements Command{
         User user = User.get(player.getUuid());
         user.chat = option;   
 
-        new Message().append(new TranslatableText("translate:settings.chat"))
+        new Message().append(new TranslatableText("settings.chat"))
             .append(new FillerText("·"))
             .append(
                 new PlainText(user.getChatName())
@@ -36,7 +36,7 @@ public class SettingsCommand implements Command{
         User user = User.get(player.getUuid());
         user.sounds = option;
 
-        new Message().append(new TranslatableText("translate:settings.sound"))
+        new Message().append(new TranslatableText("settings.sound"))
             .append(new FillerText("·"))
             .append(
                 new PlainText(user.getSoundName())
@@ -55,10 +55,10 @@ public class SettingsCommand implements Command{
         boolean radar = !config.radar;
         config.radar = radar;
 
-        new Message().append(new TranslatableText("translate:settings.claim"))
+        new Message().append(new TranslatableText("settings.claim"))
             .append(new FillerText("·"))
             .append(
-                new TranslatableText(radar ? "translate:on" : "translate:off")
+                new TranslatableText(radar ? "on" : "off")
             )
             .send(player, false);
 

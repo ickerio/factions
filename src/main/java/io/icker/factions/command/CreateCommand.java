@@ -26,26 +26,26 @@ public class CreateCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
-            new Message().append(new TranslatableText("translate:create.error.blacklist").fail()).send(player, false);
+            new Message().append(new TranslatableText("create.error.blacklist").fail()).send(player, false);
             return 0;
         }
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0 & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH < name.length()) {
-            new Message().append(new TranslatableText("translate:create.error.length").fail()).send(player, false);
+            new Message().append(new TranslatableText("create.error.length").fail()).send(player, false);
             return 0;
         }
 
         if (Faction.getByName(name) != null) {
-            new Message().append(new TranslatableText("translate:create.error.exists").fail()).send(player, false);
+            new Message().append(new TranslatableText("create.error.exists").fail()).send(player, false);
             return 0;
         }
 
-        Faction faction = new Faction(name, Translator.get("translate:desc", User.get(player.getUuid()).language), Translator.get("translate:motd", User.get(player.getUuid()).language), Formatting.WHITE, false, FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
+        Faction faction = new Faction(name, Translator.get("desc", User.get(player.getUuid()).language), Translator.get("motd", User.get(player.getUuid()).language), Formatting.WHITE, false, FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
         Faction.add(faction);
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.OWNER);
 
         source.getServer().getPlayerManager().sendCommandTree(player);
-        new Message().append(new TranslatableText("translate:create")).send(player, false);
+        new Message().append(new TranslatableText("create")).send(player, false);
         return 1;
     }
 

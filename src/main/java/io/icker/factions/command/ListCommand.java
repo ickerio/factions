@@ -22,7 +22,7 @@ public class ListCommand implements Command {
         Collection<Faction> factions = Faction.all();
         int size = factions.size();
 
-        new Message().append(new TranslatableText("translate:list", size))
+        new Message().append(new TranslatableText("list", size))
                 .send(player, false);
 
         if (size == 0) return 1;

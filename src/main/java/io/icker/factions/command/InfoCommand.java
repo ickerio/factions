@@ -29,7 +29,7 @@ public class InfoCommand implements Command {
 
         User user = Command.getUser(player);
         if (!user.isInFaction()) {
-            new Message().append(new TranslatableText("translate:info.error.factionless").fail()).send(player, false);
+            new Message().append(new TranslatableText("info.error.factionless").fail()).send(player, false);
             return 0;
         }
 
@@ -44,7 +44,7 @@ public class InfoCommand implements Command {
 
         Faction faction = Faction.getByName(factionName);
         if (faction == null) {
-            new Message().append(new TranslatableText("translate:info.error.not-exist").fail()).send(player, false);
+            new Message().append(new TranslatableText("info.error.not-exist").fail()).send(player, false);
             return 0;
         }
 
@@ -85,12 +85,12 @@ public class InfoCommand implements Command {
         new Message()
             .append(new PlainText(Formatting.BLACK + dashes + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes))
             .append(new PlainText("\n"))
-            .append(new TranslatableText("translate:info.description", faction.getDescription()))
-            .append(new TranslatableText("translate:info.owner", owner))
-            .append(new TranslatableText("translate:info.members", users.size(), usersList))
-            .append(new TranslatableText("translate:info.power", Formatting.GREEN.toString() + faction.getPower() + slash() + requiredPower + slash() + maxPower).hover("translate:info.power.desc"))
-            .append(new TranslatableText("translate:info.allies", faction.getMutualAllies().size(), mutualAllies))
-            .append(new TranslatableText("translate:info.enemies", faction.getEnemiesWith().size(), enemiesWith))
+            .append(new TranslatableText("info.description", faction.getDescription()))
+            .append(new TranslatableText("info.owner", owner))
+            .append(new TranslatableText("info.members", users.size(), usersList))
+            .append(new TranslatableText("info.power", Formatting.GREEN.toString() + faction.getPower() + slash() + requiredPower + slash() + maxPower).hover("info.power.desc"))
+            .append(new TranslatableText("info.allies", faction.getMutualAllies().size(), mutualAllies))
+            .append(new TranslatableText("info.enemies", faction.getEnemiesWith().size(), enemiesWith))
             .send(player, false);
 
         return 1;

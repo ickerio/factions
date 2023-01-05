@@ -90,7 +90,7 @@ public class InteractionManager {
         if (item instanceof BucketItem) {
             ActionResult playerResult = checkPermissions(player, player.getBlockPos(), world, Permissions.PLACE_BLOCKS);
             if (playerResult == ActionResult.FAIL) {
-                InteractionsUtil.warn((ServerPlayerEntity) player, "translate:claim-alert.liquids");
+                InteractionsUtil.warn((ServerPlayerEntity) player, "claim-alert.liquids");
                 InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                 return TypedActionResult.fail(player.getStackInHand(hand));
             }
@@ -103,14 +103,14 @@ public class InteractionManager {
             if (raycastResult.getType() != BlockHitResult.Type.MISS) {
                 BlockPos raycastPos = raycastResult.getBlockPos();
                 if (checkPermissions(player, raycastPos, world, Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
-                    InteractionsUtil.warn((ServerPlayerEntity) player, "translate:claim-alert.liquids");
+                    InteractionsUtil.warn((ServerPlayerEntity) player, "claim-alert.liquids");
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return TypedActionResult.fail(player.getStackInHand(hand));
                 }
 
                 BlockPos placePos = raycastPos.add(raycastResult.getSide().getVector());
                 if (checkPermissions(player, placePos, world, Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
-                    InteractionsUtil.warn((ServerPlayerEntity) player, "translate:claim-alert.liquids");
+                    InteractionsUtil.warn((ServerPlayerEntity) player, "claim-alert.liquids");
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return TypedActionResult.fail(player.getStackInHand(hand));
                 }
@@ -123,7 +123,7 @@ public class InteractionManager {
 
     private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
         if (entity != null && checkPermissions(player, entity.getBlockPos(), world, Permissions.ATTACK_ENTITIES) == ActionResult.FAIL) {
-            InteractionsUtil.warn((ServerPlayerEntity) player, "translate:claim-alert.attack");
+            InteractionsUtil.warn((ServerPlayerEntity) player, "claim-alert.attack");
             return ActionResult.FAIL;
         }
 
@@ -132,7 +132,7 @@ public class InteractionManager {
 
     private static ActionResult onUseEntity(PlayerEntity player, Entity entity, World world) {
         if (checkPermissions(player, entity.getBlockPos(), world, Permissions.USE_ENTITIES) == ActionResult.FAIL) {
-            InteractionsUtil.warn((ServerPlayerEntity) player, "translate:claim-alert.use-entities");
+            InteractionsUtil.warn((ServerPlayerEntity) player, "claim-alert.use-entities");
             return ActionResult.FAIL;
         }
 
@@ -141,7 +141,7 @@ public class InteractionManager {
 
     private static ActionResult onUseInventory(PlayerEntity player, BlockPos pos, World world) {
         if (checkPermissions(player, pos, world, Permissions.USE_INVENTORIES) == ActionResult.FAIL) {
-            InteractionsUtil.warn((ServerPlayerEntity) player, "translate:claim-alert.inventories");
+            InteractionsUtil.warn((ServerPlayerEntity) player, "claim-alert.inventories");
             return ActionResult.FAIL;
         }
 

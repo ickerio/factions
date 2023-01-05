@@ -39,13 +39,13 @@ public class WorldManager {
             int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
             if (maxPower < requiredPower) {
-                new Message().append(new TranslatableText("translate:autoclaim.off").fail()).send(player, false);
+                new Message().append(new TranslatableText("autoclaim.off").fail()).send(player, false);
                 user.autoclaim = false;
             } else {
                 faction.addClaim(chunkPos.x, chunkPos.z, dimension);
                 claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
                 new Message().append(new TranslatableText(
-                    "translate:claim.notification.single",
+                    "claim.notification.single",
                     chunkPos.x,
                     chunkPos.z,
                     player.getName().getString()
@@ -58,7 +58,7 @@ public class WorldManager {
                     .format(claim.getFaction().getColor()))
                     .send(player, true);
             } else {
-                new Message().append(new TranslatableText("translate:wilderness")
+                new Message().append(new TranslatableText("wilderness")
                     .format(Formatting.GREEN))
                     .send(player, true);
             }

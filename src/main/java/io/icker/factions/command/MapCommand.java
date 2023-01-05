@@ -29,7 +29,7 @@ public class MapCommand implements Command{
         Message message = new Message();
 
         // Print the header of the faction map.
-        message.append(new TranslatableText("translate:map.title"));
+        message.append(new TranslatableText("map.title"));
 
         for (int z = -4; z <= 5; z++) { // Rows (10)
             for (int x = -5; x <= 5; x++) { // Columns (11)

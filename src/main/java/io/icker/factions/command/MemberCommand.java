@@ -30,7 +30,7 @@ public class MemberCommand implements Command {
 
         User user = Command.getUser(player);
         if (!user.isInFaction()) {
-            new Message().append(new TranslatableText("translate:info.error.factionless").fail()).send(player, false);
+            new Message().append(new TranslatableText("info.error.factionless").fail()).send(player, false);
             return 0;
         }
 
@@ -45,7 +45,7 @@ public class MemberCommand implements Command {
 
         Faction faction = Faction.getByName(factionName);
         if (faction == null) {
-            new Message().append(new TranslatableText("translate:info.error.not-exist").fail()).send(player, false);
+            new Message().append(new TranslatableText("info.error.not-exist").fail()).send(player, false);
             return 0;
         }
 
@@ -88,12 +88,12 @@ public class MemberCommand implements Command {
 
         new Message()
                 .append(new PlainText(Formatting.BLACK + dashes + "[ " + faction.getColor() + faction.getName() + Formatting.BLACK + " ]" + dashes))
-                .append(new TranslatableText("translate:member.total", users.size()))
-                .append(new TranslatableText("translate:member.owner", owner))
-                .append(new TranslatableText("translate:member.leaders", leaderCount, leaders))
-                .append(new TranslatableText("translate:member.commanders", commanderCount, commanders))
-                .append(new TranslatableText("translate:member.members", memberCount, members))
-                .append(new TranslatableText("translate:member.guests", guestCount, guests))
+                .append(new TranslatableText("member.total", users.size()))
+                .append(new TranslatableText("member.owner", owner))
+                .append(new TranslatableText("member.leaders", leaderCount, leaders))
+                .append(new TranslatableText("member.commanders", commanderCount, commanders))
+                .append(new TranslatableText("member.members", memberCount, members))
+                .append(new TranslatableText("member.guests", guestCount, guests))
                 .send(player, false);
 
         return 1;

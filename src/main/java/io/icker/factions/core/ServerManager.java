@@ -32,7 +32,7 @@ public class ServerManager {
 
         if (user.isInFaction()) {
             Faction faction = user.getFaction();
-            new Message().append(new TranslatableText("translate:welcome!", player.getName().getString())).send(player, false);
+            new Message().append(new TranslatableText("welcome", player.getName().getString())).send(player, false);
             new Message().append(new PlainText(faction.getMOTD())).prepend(new FactionText(faction)).send(player, false);
         }
     }

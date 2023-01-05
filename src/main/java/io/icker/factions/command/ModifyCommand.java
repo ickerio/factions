@@ -28,24 +28,24 @@ public class ModifyCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
-            new Message().append(new TranslatableText("translate:modify.name.error.blacklist").fail()).send(player, false);
+            new Message().append(new TranslatableText("modify.name.error.blacklist").fail()).send(player, false);
             return 0;
         }
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0 & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > name.length()) {
-            new Message().append(new TranslatableText("translate:modify.name.error.length").fail()).send(player, false);
+            new Message().append(new TranslatableText("modify.name.error.length").fail()).send(player, false);
             return 0;
         }
 
         if (Faction.getByName(name) != null) {
-            new Message().append(new TranslatableText("translate:modify.name.error.exists").fail()).send(player, false);
+            new Message().append(new TranslatableText("modify.name.error.exists").fail()).send(player, false);
             return 0;
         }
 
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setName(name);
-        new Message().append(new TranslatableText("translate:modify.name", name))
+        new Message().append(new TranslatableText("modify.name", name))
             .prepend(new FactionText(faction))
             .send(player, false);
 
@@ -61,7 +61,7 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setDescription(description);
-        new Message().append(new TranslatableText("translate:modify.desc", description))
+        new Message().append(new TranslatableText("modify.desc", description))
             .prepend(new FactionText(faction))
             .send(player, false);
 
@@ -77,7 +77,7 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setMOTD(motd);
-        new Message().append(new TranslatableText("translate:modify.motd", motd))
+        new Message().append(new TranslatableText("modify.motd", motd))
             .prepend(new FactionText(faction))
             .send(player, false);
 
@@ -93,7 +93,7 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setColor(color);
-        new Message().append(new TranslatableText("translate:modify.color"))
+        new Message().append(new TranslatableText("modify.color"))
             .append(new PlainText(color.name()).format(color).format(Formatting.BOLD))
             .prepend(new FactionText(faction))
             .send(player, false);
@@ -110,9 +110,9 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setOpen(open);
-        new Message().append(new TranslatableText("translate:modify.open"))
+        new Message().append(new TranslatableText("modify.open"))
             .append(
-                new TranslatableText(open ? "translate:modify.open.open" : "translate:modify.open.closed")
+                new TranslatableText(open ? "modify.open.open" : "modify.open.closed")
             )
             .prepend(new FactionText(faction))
             .send(player, false);

@@ -25,7 +25,7 @@ public class RankCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (target.getUuid().equals(player.getUuid())) {
-            new Message().append(new TranslatableText("translate:rank.error.self").fail()).send(player, false);
+            new Message().append(new TranslatableText("rank.error.self").fail()).send(player, false);
 
             return 0;
         }
@@ -35,7 +35,7 @@ public class RankCommand implements Command {
         User user = User.get(target.getUuid());
 
         if (!Objects.equals(user.getFaction(), faction)) {
-            new Message().append(new TranslatableText("translate:rank.error.not-in-faction", target.getName().getString()).fail()).send(player, false);
+            new Message().append(new TranslatableText("rank.error.not-in-faction", target.getName().getString()).fail()).send(player, false);
             return 0;
         }
 
@@ -45,32 +45,32 @@ public class RankCommand implements Command {
                 case MEMBER -> user.rank = User.Rank.COMMANDER;
                 case COMMANDER -> user.rank = User.Rank.LEADER;
                 case LEADER -> {
-                    new Message().append(new TranslatableText("translate:rank.error.leader-owner").fail()).send(player, false);
+                    new Message().append(new TranslatableText("rank.error.leader-owner").fail()).send(player, false);
                     return 0;
                 }
                 case OWNER -> {
-                    new Message().append(new TranslatableText("translate:rank.error.owner").fail()).send(player, false);
+                    new Message().append(new TranslatableText("rank.error.owner").fail()).send(player, false);
                     return 0;
                 }
             }
         } else {
             switch (user.rank) {
                 case GUEST -> {
-                    new Message().append(new TranslatableText("translate:rank.error.guest").fail()).send(player, false);
+                    new Message().append(new TranslatableText("rank.error.guest").fail()).send(player, false);
                     return 0;
                 }
                 case MEMBER -> user.rank = User.Rank.GUEST;
                 case COMMANDER -> user.rank = User.Rank.MEMBER;
                 case LEADER -> {
                     if (Command.getUser(player).rank == User.Rank.LEADER) {
-                        new Message().append(new TranslatableText("translate:rank.error.leader").fail()).send(player, false);
+                        new Message().append(new TranslatableText("rank.error.leader").fail()).send(player, false);
                         return 0;
                     }
 
                     user.rank = User.Rank.COMMANDER;
                 }
                 case OWNER -> {
-                    new Message().append(new TranslatableText("translate:rank.error.owner").fail()).send(player, false);
+                    new Message().append(new TranslatableText("rank.error.owner").fail()).send(player, false);
                     return 0;
                 }
             }
@@ -78,7 +78,7 @@ public class RankCommand implements Command {
 
         context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-        new Message().append(new TranslatableText("translate:rank.success", target.getName().getString(), User.get(target.getUuid()).getRankName()))
+        new Message().append(new TranslatableText("rank.success", target.getName().getString(), User.get(target.getUuid()).getRankName()))
                 .prepend(new FactionText(faction))
                 .send(player, false);
 
@@ -100,7 +100,7 @@ public class RankCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (target.getUuid().equals(player.getUuid())) {
-            new Message().append(new TranslatableText("translate:rank.transfer.error.self").fail()).send(player, false);
+            new Message().append(new TranslatableText("rank.transfer.error.self").fail()).send(player, false);
 
             return 0;
         }
@@ -114,14 +114,14 @@ public class RankCommand implements Command {
             context.getSource().getServer().getPlayerManager().sendCommandTree(player);
             context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-            new Message().append(new TranslatableText("translate:rank.transfer.success", target.getName().getString()))
+            new Message().append(new TranslatableText("rank.transfer.success", target.getName().getString()))
                 .prepend(new FactionText(Faction.get(targetFaction)))
                 .send(player, false);
 
             return 1;
         }
 
-        new Message().append(new TranslatableText("translate:rank.error.not-in-faction", target.getName().getString()).fail()).send(player, false);
+        new Message().append(new TranslatableText("rank.error.not-in-faction", target.getName().getString()).fail()).send(player, false);
         return 0;
     }
 

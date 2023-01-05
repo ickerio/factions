@@ -41,8 +41,8 @@ public class ServerPlayNetworkHandlerMixin {
         boolean factionChat = member.chat == User.ChatMode.FACTION || member.chat == User.ChatMode.FOCUS;
 
         if (factionChat && !member.isInFaction()) {
-            new Message().append(new TranslatableText("translate:chat.faction.error")
-                .hover("translate:chat.faction.error.hover")
+            new Message().append(new TranslatableText("chat.faction.error")
+                .hover("chat.faction.error.hover")
                 .click("/factions settings chat global")
                 .fail())
                 .send(server.getPlayerManager().getPlayer(signedMessage.link().sender()), false);

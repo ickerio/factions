@@ -41,12 +41,12 @@ public class PermissionCommand implements Command {
         try {
             permission = Permissions.valueOf(permissionName);
         } catch (IllegalArgumentException e) {
-            new Message().append(new TranslatableText("translate:permission.error.invalid-permission").fail()).send(player, false);
+            new Message().append(new TranslatableText("permission.error.invalid-permission").fail()).send(player, false);
             return 0;
         }
 
         if ((!rel.permissions.contains(permission) && !add) || (rel.permissions.contains(permission) && add)) {
-            new Message().append(new TranslatableText("translate:permission.error.exists").fail()).send(player, false);
+            new Message().append(new TranslatableText("permission.error.exists").fail()).send(player, false);
             return 0;
         }
 
@@ -58,7 +58,7 @@ public class PermissionCommand implements Command {
 
         sourceFaction.setRelationship(rel);
 
-        new Message().append(new TranslatableText("translate:permission.success")).send(player, false);
+        new Message().append(new TranslatableText("permission.success")).send(player, false);
         return 1;
     }
 
@@ -80,7 +80,7 @@ public class PermissionCommand implements Command {
         Faction faction = User.get(player.getUuid()).getFaction();
 
         if (faction == null) {
-            new Message().append(new TranslatableText("translate:info.error.factionless").fail()).send(player, false);
+            new Message().append(new TranslatableText("info.error.factionless").fail()).send(player, false);
             return 0;
         }
 
@@ -89,12 +89,12 @@ public class PermissionCommand implements Command {
         try {
             permission = Permissions.valueOf(permissionName);
         } catch (IllegalArgumentException e) {
-            new Message().append(new TranslatableText("translate:permission.error.invalid-permission").fail()).send(player, false);
+            new Message().append(new TranslatableText("permission.error.invalid-permission").fail()).send(player, false);
             return 0;
         }
 
         if ((!faction.guest_permissions.contains(permission) && !add) || (faction.guest_permissions.contains(permission) && add)) {
-            new Message().append(new TranslatableText("translate:permission.error.exists").fail()).send(player, false);
+            new Message().append(new TranslatableText("permission.error.exists").fail()).send(player, false);
             return 0;
         }
 
@@ -104,7 +104,7 @@ public class PermissionCommand implements Command {
             faction.guest_permissions.remove(permission);
         }
 
-        new Message().append(new TranslatableText("translate:permission.success")).send(player, false);
+        new Message().append(new TranslatableText("permission.success")).send(player, false);
         return 1;
     }
 
@@ -126,7 +126,7 @@ public class PermissionCommand implements Command {
         Faction targetFaction = Faction.getByName(StringArgumentType.getString(context, "faction"));
 
         if (sourceFaction == null || targetFaction == null) {
-            new Message().append(new TranslatableText("translate:permission.error.invalid-faction").fail()).send(player, false);
+            new Message().append(new TranslatableText("permission.error.invalid-faction").fail()).send(player, false);
             return 0;
         }
 
@@ -141,7 +141,7 @@ public class PermissionCommand implements Command {
                     .format(targetFaction.getColor())
                     .format(Formatting.BOLD)
             )
-            .append(new TranslatableText("translate:permission.list", permissionsList))
+            .append(new TranslatableText("permission.list", permissionsList))
             .send(player, false);
 
         return 1;
@@ -155,7 +155,7 @@ public class PermissionCommand implements Command {
         Faction faction = User.get(player.getUuid()).getFaction();
 
         if (faction == null) {
-            new Message().append(new TranslatableText("translate:info.error.factionless").fail()).send(player, false);
+            new Message().append(new TranslatableText("info.error.factionless").fail()).send(player, false);
             return 0;
         }
 
@@ -164,7 +164,7 @@ public class PermissionCommand implements Command {
                 .map(Enum::toString)
                 .collect(Collectors.joining(","));
 
-        new Message().append(new TranslatableText("translate:permission.list.guest", permissionsList)).send(player, false);
+        new Message().append(new TranslatableText("permission.list.guest", permissionsList)).send(player, false);
         return 1;
     }
 

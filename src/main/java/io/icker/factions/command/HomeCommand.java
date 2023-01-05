@@ -36,7 +36,7 @@ public class HomeCommand implements Command {
         Home home = faction.getHome();
 
         if (home == null) {
-            new Message().append(new TranslatableText("translate:home.error.not-set").fail()).send(player, false);
+            new Message().append(new TranslatableText("home.error.not-set").fail()).send(player, false);
             return 0;
         }
 
@@ -45,7 +45,7 @@ public class HomeCommand implements Command {
         Optional<RegistryKey<World>> worldKey = player.getServer().getWorldRegistryKeys().stream().filter(key -> Objects.equals(key.getValue(), new Identifier(home.level))).findAny();
 
         if (worldKey.isEmpty()) {
-            new Message().append(new TranslatableText("translate:home.error.no-dimension").fail()).send(player, false);
+            new Message().append(new TranslatableText("home.error.no-dimension").fail()).send(player, false);
             return 0;
         }
 
@@ -58,9 +58,9 @@ public class HomeCommand implements Command {
                     home.x, home.y, home.z,
                     home.yaw, home.pitch
             );
-            new Message().append(new TranslatableText("translate:home.warped")).send(player, false);
+            new Message().append(new TranslatableText("home.warped")).send(player, false);
         } else {
-            new Message().append(new TranslatableText("translate:home.error.combat").fail()).send(player, false);
+            new Message().append(new TranslatableText("home.error.combat").fail()).send(player, false);
         }
         return 1;
     }
@@ -72,7 +72,7 @@ public class HomeCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         if (checkLimitToClaim(faction, player.getWorld(), player.getBlockPos())) {
-            new Message().append(new TranslatableText("translate:home.error.unclaimed").fail()).send(player, false);
+            new Message().append(new TranslatableText("home.error.unclaimed").fail()).send(player, false);
             return 0;
         }
 
@@ -85,7 +85,7 @@ public class HomeCommand implements Command {
 
         faction.setHome(home);
         new Message().append(new TranslatableText(
-            "translate:home.set",
+            "home.set",
             home.x,
             home.y,
             home.z,

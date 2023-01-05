@@ -21,7 +21,7 @@ public class DisbandCommand implements Command {
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
 
-        new Message().append(new TranslatableText("translate:disband", player.getName().getString())).send(faction);
+        new Message().append(new TranslatableText("disband", player.getName().getString())).send(faction);
         faction.remove();
 
         PlayerManager manager = source.getServer().getPlayerManager();

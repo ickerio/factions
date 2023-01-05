@@ -23,8 +23,8 @@ public class LeaveCommand implements Command {
         Faction faction = user.getFaction();
 
         user.leaveFaction();
-        new Message().append(new TranslatableText("translate:leave", player.getName().getString())).send(faction);
-        new Message().append(new TranslatableText("translate:leave.self"))
+        new Message().append(new TranslatableText("leave", player.getName().getString())).send(faction);
+        new Message().append(new TranslatableText("leave.self"))
             .prepend(new FactionText(faction))
             .send(player, false);
 

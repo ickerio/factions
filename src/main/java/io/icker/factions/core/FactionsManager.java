@@ -65,7 +65,7 @@ public class FactionsManager {
 
         int adjusted = faction.adjustPower(-FactionsMod.CONFIG.POWER.DEATH_PENALTY);
         new Message().append(new TranslatableText(
-            "translate:power.lost",
+            "power.lost",
             player.getName().getString(),
             adjusted
         )).send(faction);
@@ -80,7 +80,7 @@ public class FactionsManager {
         int adjusted = faction.adjustPower(FactionsMod.CONFIG.POWER.POWER_TICKS.REWARD);
         if (adjusted != 0)
             new Message().append(new TranslatableText(
-                "translate:power.gained",
+                "power.gained",
                 player.getName().getString(),
                 adjusted
             )).send(faction);
@@ -95,7 +95,7 @@ public class FactionsManager {
 
         if (!user.isInFaction()) {
             if (FactionsMod.CONFIG.SAFE != null && FactionsMod.CONFIG.SAFE.ENDER_CHEST) {
-                new Message().append(new TranslatableText("translate:error.enderchest").fail()).send(player, false);
+                new Message().append(new TranslatableText("error.enderchest").fail()).send(player, false);
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
@@ -110,7 +110,7 @@ public class FactionsManager {
                         return GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, faction.getSafe());
                     }
                 },
-                Text.of(String.format(Translator.get("translate:safe.name", User.get(player.getUuid()).language), faction.getName()))
+                Text.of(String.format(Translator.get("safe.name", User.get(player.getUuid()).language), faction.getName()))
             )
         );
 
