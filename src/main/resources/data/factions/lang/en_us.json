@@ -7,7 +7,7 @@
   "translate:admin.power.add.self": "Added %d power",
   "translate:admin.power.remove": "Admin %s removed %d power",
   "translate:admin.power.remove.self": "Removed %d power",
-  "translate:admin.power.error": "§cCould not change power",
+  "translate:admin.power.error": "Could not change power",
   "translate:admin.spoof": "Set spoof to player %s",
   "translate:admin.spoof.clear": "Cleared spoof",
 
@@ -102,7 +102,7 @@
 
   "translate:list": "There is/are §e%d§r faction(s)",
 
-  "translate:map.title": "§8──┤ §aFaction Map §8├──\n",
+  "translate:map.title": "§8──┤ §aFaction Map §8├──§r\n",
   "translate:map.you.icon": "⏺",
   "translate:map.you.hover.wilderness": "<You> <Wilderness>",
   "translate:map.you.hover": "<You> <%s>",

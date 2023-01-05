@@ -85,7 +85,7 @@ public class AdminCommand implements Command {
                 ).send(player, false);
             }
         } else {
-            new Message().append(new TranslatableText("translate:admin.power.error")).send(player, false);
+            new Message().append(new TranslatableText("translate:admin.power.error").fail()).send(player, false);
         }
 
         return 1;

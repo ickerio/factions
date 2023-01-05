@@ -8,10 +8,13 @@ import io.icker.factions.core.*;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.PlaceholdersWrapper;
+import io.icker.factions.util.Translator;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +44,7 @@ public class FactionsMod implements ModInitializer {
         WorldManager.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(Translator.listener);
     }
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
