@@ -26,7 +26,7 @@ public class DisbandCommand implements Command {
         assert faction != null;
 
         if (!faction.getSafe().isEmpty() && !confirm) {
-            new Message("Your faction safe isn't empty.").add(new Message("\nContinue and move the items to your inventory").hover("Click to confirm").click("/f disband confirm").format(Formatting.GREEN)).send(player, false);
+            new Message().append(new TranslatableText("disband.safe.not-empty")).append(new TranslatableText("disband.safe.continue").hover("disband.safe.click").click("/f disband confirm")).send(player, false);
             return 0;
         }
 

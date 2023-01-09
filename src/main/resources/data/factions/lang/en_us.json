@@ -54,6 +54,9 @@
   "relationship.neutral": "neutral",
 
   "disband": "%s disbanded the faction",
+  "disband.safe.not-empty": "Your faction safe isn't empty.",
+  "disband.safe.continue": "\n§aContinue and move the items to your inventory§r",
+  "disband.safe.click": "Click to confirm",
 
   "home.error.not-set": "No faction home set",
   "home.error.no-dimension": "Cannot find dimension",
