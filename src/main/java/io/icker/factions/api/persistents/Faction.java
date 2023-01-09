@@ -5,8 +5,11 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -128,6 +131,12 @@ public class Faction {
 
     public SimpleInventory getSafe() {
         return safe;
+    }
+
+    public DefaultedList<ItemStack> clearSafe() {
+        DefaultedList<ItemStack> stacks = this.safe.stacks;
+        this.safe = new SimpleInventory(54);
+        return stacks;
     }
 
     public boolean isOpen() {
