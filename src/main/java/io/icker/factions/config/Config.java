@@ -82,6 +82,9 @@ public class Config {
     @SerializedName("requiredBypassLevel")
     public int REQUIRED_BYPASS_LEVEL = 2;
 
+    @SerializedName("claimProtections")
+    public boolean CLAIM_PROTECTION = true;
+
     public static class DisplayConfig {
         @SerializedName("factionNameMaxLength")
         public int NAME_MAX_LENGTH = -1;

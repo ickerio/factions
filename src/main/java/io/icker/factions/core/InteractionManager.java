@@ -173,6 +173,10 @@ public class InteractionManager {
     }
 
     private static ActionResult checkPermissions(PlayerEntity player, BlockPos position, World world, Permissions permission) {
+        if (!FactionsMod.CONFIG.CLAIM_PROTECTION) {
+            return ActionResult.PASS;
+        }
+
         User user = User.get(player.getUuid());
         if (player.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL) && user.bypass) {
             return ActionResult.PASS;
