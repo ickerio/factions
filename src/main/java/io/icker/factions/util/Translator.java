@@ -51,6 +51,8 @@ public class Translator {
             return CACHE.get(lang).get(key);
         }
 
+        FactionsMod.LOGGER.warn(String.format("Unable to find language %s", lang));
+
         return key;
     }
 
