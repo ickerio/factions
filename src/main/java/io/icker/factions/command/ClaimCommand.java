@@ -8,8 +8,11 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.text.FillerText;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.PlainText;
+import io.icker.factions.text.TranslatableText;
 import io.icker.factions.util.Command;
-import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,9 +34,8 @@ public class ClaimCommand implements Command {
         List<Claim> claims = Command.getUser(player).getFaction().getClaims();
         int count = claims.size();
 
-        new Message("You have ")
-                .add(new Message(String.valueOf(count)).format(Formatting.YELLOW))
-                .add(" claim%s", count == 1 ? "" : "s")
+        new Message()
+                .append(new TranslatableText("claim.info", count))
                 .send(source.getPlayer(), false);
 
         if (count == 0) return 1;
@@ -45,22 +47,22 @@ public class ClaimCommand implements Command {
             claimsMap.get(claim.level).add(claim);
         });
 
-        Message claimText = new Message("");
+        Message claimText = new Message();
         claimsMap.forEach((level, array) -> {
             level = Pattern.compile("_([a-z])")
                     .matcher(level.split(":", 2)[1])
                     .replaceAll(m -> " " + m.group(1).toUpperCase());
             level = level.substring(0, 1).toUpperCase() +
                     level.substring(1);
-            claimText.add("\n");
-            claimText.add(new Message(level).format(Formatting.GRAY));
-            claimText.filler("»");
-            claimText.add(array.stream()
+            claimText.append(new PlainText("\n"));
+            claimText.append(new PlainText(level).format(Formatting.GRAY));
+            claimText.append(new FillerText("»"));
+            claimText.append(new PlainText(array.stream()
                     .map(claim -> String.format("(%d,%d)", claim.x, claim.z))
-                    .collect(Collectors.joining(", ")));
+                    .collect(Collectors.joining(", "))));
         });
 
-        claimText.format(Formatting.ITALIC).send(source.getPlayer(), false);
+        claimText.send(source.getPlayer(), false); // FIXME: used to have italics
         return 1;
     }
 
@@ -81,11 +83,11 @@ public class ClaimCommand implements Command {
 
                 if (existingClaim != null) {
                     if (size == 1) {
-                        String owner = existingClaim.getFaction().getID() == faction.getID() ? "Your" : "Another";
-                        new Message(owner + " faction already owns this chunk").fail().send(player, false);
+                        String owner = existingClaim.getFaction().getID() == faction.getID() ? "claim.owner.self" : "claim.owner.other";
+                        new Message().append(new TranslatableText(owner).fail()).append(new TranslatableText("claim.owner.error").fail()).send(player, false);
                         return 0;
                     } else if (existingClaim.getFaction().getID() != faction.getID()) {
-                        new Message("Another faction already owns a chunk").fail().send(player, false);
+                        new Message().append(new TranslatableText("claim.owner.error.generic").fail()).send(player, false);
                         return 0;
                     }
                 }
@@ -96,21 +98,21 @@ public class ClaimCommand implements Command {
 
         chunks.forEach(chunk -> faction.addClaim(chunk.x, chunk.z, dimension));
         if (size == 1) {
-            new Message(
-                "Chunk (%d, %d) claimed by %s",
+            new Message().append(new TranslatableText(
+                "claim.notification.single",
                 chunks.get(0).x,
                 chunks.get(0).z,
                 player.getName().getString()
-            ).send(faction);
+            )).send(faction);
         } else {
-            new Message(
-                "Chunks (%d, %d) to (%d, %d) claimed by %s",
+            new Message().append(new TranslatableText(
+                "claim.notification.many",
                 chunks.get(0).x,
                 chunks.get(0).z,
                 chunks.get(0).x + size - 1,
                 chunks.get(0).z + size - 1,
                 player.getName().getString()
-            ).send(faction);
+            )).send(faction);
         }
 
         return 1;
@@ -124,7 +126,7 @@ public class ClaimCommand implements Command {
         int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
         if (maxPower < requiredPower) {
-            new Message("Not enough faction power to claim chunk").fail().send(player, false);
+            new Message().append(new TranslatableText("claim.error.power.single").fail()).send(player, false);
             return 0;
         }
 
@@ -140,7 +142,7 @@ public class ClaimCommand implements Command {
         int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 
         if (maxPower < requiredPower) {
-            new Message("Not enough faction power to claim chunks").fail().send(player, false);
+            new Message().append(new TranslatableText("claim.error.power.many").fail()).send(player, false);
             return 0;
         }
 
@@ -159,8 +161,8 @@ public class ClaimCommand implements Command {
         Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
         if (existingClaim == null) {
-            new Message("Cannot remove a claim on an unclaimed chunk")
-                .fail()
+            new Message().append(new TranslatableText("claim.remove.error.unclaimed")
+                .fail())
                 .send(player, false);
             return 0;
         }
@@ -169,19 +171,19 @@ public class ClaimCommand implements Command {
         Faction faction = user.getFaction();
 
         if (!user.bypass && existingClaim.getFaction().getID() != faction.getID()) {
-            new Message("Cannot remove a claim owned by another faction")
-                .fail()
+            new Message().append(new TranslatableText("claim.remove.error.claimed")
+                .fail())
                 .send(player, false);
             return 0;
         }
 
         existingClaim.remove();
-        new Message(
-            "Claim (%d, %d) removed by %s",
+        new Message().append(new TranslatableText(
+            "claim.remove.notification",
             existingClaim.x,
             existingClaim.z,
             player.getName().getString()
-        ).send(faction);
+        )).send(faction);
         return 1;
     }
 
@@ -206,14 +208,14 @@ public class ClaimCommand implements Command {
         }
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos().add((-size + 1) * 16, 0, (-size + 1) * 16)).getPos();
-        new Message(
-            "Claims (%d, %d) to (%d, %d) removed by %s ",
+        new Message().append(new TranslatableText(
+            "claim.remove.notification.many",
             chunkPos.x,
             chunkPos.z,
             chunkPos.x + size - 1,
             chunkPos.z + size - 1,
             player.getName().getString()
-        ).send(faction);
+        )).send(faction);
 
         return 1;
     }
@@ -225,10 +227,10 @@ public class ClaimCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.removeAllClaims();
-        new Message(
-            "All claims removed by %s",
+        new Message().append(new TranslatableText(
+            "claim.remove.notification.all",
             player.getName().getString()
-        ).send(faction);
+        )).send(faction);
         return 1;
     }
 
@@ -239,11 +241,10 @@ public class ClaimCommand implements Command {
         User user = Command.getUser(player);
         user.autoclaim = !user.autoclaim;
 
-        new Message("Successfully toggled autoclaim")
-            .filler("·")
-            .add(
-                new Message(user.autoclaim ? "ON" : "OFF")
-                    .format(user.autoclaim ? Formatting.GREEN : Formatting.RED)
+        new Message().append(new TranslatableText("claim.auto"))
+            .append(new FillerText("·"))
+            .append(
+                new TranslatableText(user.autoclaim ? "on" : "off")
             )
             .send(player, false);
 
@@ -263,8 +264,8 @@ public class ClaimCommand implements Command {
         Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
         if (claim == null) {
-            new Message("Cannot change access level on unclaimed chunk")
-                .fail()
+            new Message().append(new TranslatableText("claim.access.error.unclaimed")
+                .fail())
                 .send(player, false);
             return 0;
         }
@@ -273,8 +274,8 @@ public class ClaimCommand implements Command {
         Faction faction = user.getFaction();
 
         if (!user.bypass && claim.getFaction().getID() != faction.getID()) {
-            new Message("Cannot change access level on another factions claim")
-                .fail()
+            new Message().append(new TranslatableText("claim.access.error.claimed")
+                .fail())
                 .send(player, false);
             return 0;
         }
@@ -282,8 +283,8 @@ public class ClaimCommand implements Command {
         if (increase) {
             switch (claim.accessLevel) {
                 case OWNER -> {
-                    new Message("Cannot increase access level as it is already at its maximum.")
-                        .fail()
+                    new Message().append(new TranslatableText("claim.access.error.max")
+                        .fail())
                         .send(player, false);
                     return 0;
                 }
@@ -297,21 +298,21 @@ public class ClaimCommand implements Command {
                 case LEADER -> claim.accessLevel = User.Rank.COMMANDER;
                 case COMMANDER -> claim.accessLevel = User.Rank.MEMBER;
                 case MEMBER -> {
-                    new Message("Cannot decrease access level as it is already at its minimum.")
-                        .fail()
+                    new Message().append(new TranslatableText("claim.access.error.min")
+                        .fail())
                         .send(player, false);
                     return 0;
                 }
             }
         }
 
-        new Message(
-            "Claim (%d, %d) changed to level %s by %s",
+        new Message().append(new TranslatableText(
+            "claim.access.notification",
             claim.x,
             claim.z,
             claim.accessLevel.toString(),
             player.getName().getString()
-        ).send(faction);
+        )).send(faction);
         return 1;
     }
 

@@ -2,11 +2,11 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.TranslatableText;
 import io.icker.factions.util.Command;
-import io.icker.factions.util.Message;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
@@ -26,7 +26,7 @@ public class DisbandCommand implements Command {
         assert faction != null;
 
         if (!faction.getSafe().isEmpty() && !confirm) {
-            new Message("Your faction safe isn't empty.").add(new Message("\nContinue and move the items to your inventory").hover("Click to confirm").click("/f disband confirm").format(Formatting.GREEN)).send(player, false);
+            new Message().append(new TranslatableText("disband.safe.not-empty")).append(new TranslatableText("disband.safe.continue").hover("disband.safe.click").click("/f disband confirm")).send(player, false);
             return 0;
         }
 
@@ -34,7 +34,7 @@ public class DisbandCommand implements Command {
 
         ItemScatterer.spawn(player.getWorld(), player.getBlockPos(), safe);
 
-        new Message(player.getName().getString() + " disbanded the faction").send(faction);
+        new Message().append(new TranslatableText("disband", player.getName().getString())).send(faction);
         faction.remove();
 
         PlayerManager manager = source.getServer().getPlayerManager();

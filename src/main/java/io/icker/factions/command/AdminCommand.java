@@ -9,12 +9,13 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.text.FillerText;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.TranslatableText;
 import io.icker.factions.util.Command;
-import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Formatting;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -27,11 +28,11 @@ public class AdminCommand implements Command {
         boolean bypass = !user.bypass;
         user.bypass = bypass;
 
-        new Message("Successfully toggled claim bypass")
-                .filler("·")
-                .add(
-                    new Message(user.bypass ? "ON" : "OFF")
-                        .format(user.bypass ? Formatting.GREEN : Formatting.RED)
+        new Message()
+                .append(new TranslatableText("Successfully toggled claim bypass"))
+                .append(new FillerText("·"))
+                .append(
+                    new TranslatableText(user.bypass ? "on" : "off")
                 )
                 .send(player, false);
 
@@ -40,7 +41,7 @@ public class AdminCommand implements Command {
 
     private int reload(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         FactionsMod.dynmap.reloadAll();
-        new Message("Reloaded dynmap marker").send(context.getSource().getPlayer(), false);
+        new Message().append(new TranslatableText("admin.reload")).send(context.getSource().getPlayer(), false);
         return 1;
     }
 
@@ -53,28 +54,38 @@ public class AdminCommand implements Command {
         int adjusted = target.adjustPower(power);
         if (adjusted != 0) {
             if (power > 0) {
-                new Message(
-                    "Admin %s added %d power",
-                    player.getName().getString(),
-                    adjusted
+                new Message().append(
+                    new TranslatableText(
+                        "admin.power.add",
+                        player.getName().getString(),
+                        adjusted
+                    )
                 ).send(target);
-                new Message(
-                    "Added %d power",
-                    adjusted
+
+                new Message().append(
+                        new TranslatableText(
+                                "admin.power.add.self",
+                                adjusted
+                        )
                 ).send(player, false);
             } else {
-                new Message(
-                    "Admin %s removed %d power",
-                    player.getName().getString(),
-                    adjusted
+                new Message().append(
+                        new TranslatableText(
+                                "admin.power.remove",
+                                player.getName().getString(),
+                                adjusted
+                        )
                 ).send(target);
-                new Message(
-                    "Removed %d power",
-                    adjusted
+
+                new Message().append(
+                        new TranslatableText(
+                                "admin.power.add.remove",
+                                adjusted
+                        )
                 ).send(player, false);
             }
         } else {
-            new Message("Could not change power").fail().send(player, false);
+            new Message().append(new TranslatableText("admin.power.error").fail()).send(player, false);
         }
 
         return 1;
@@ -99,7 +110,7 @@ public class AdminCommand implements Command {
 
         user.setSpoof(target);
 
-        new Message("Set spoof to player %s", name).send(player, false);
+        new Message().append(new TranslatableText("admin.spoof", name)).send(player, false);
 
         return 1;
     }
@@ -112,7 +123,7 @@ public class AdminCommand implements Command {
 
         user.setSpoof(null);
 
-        new Message("Cleared spoof").send(player, false);
+        new Message().append(new TranslatableText("admin.spoof.clear")).send(player, false);
 
         return 1;
     }

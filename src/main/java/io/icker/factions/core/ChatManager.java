@@ -3,7 +3,9 @@ package io.icker.factions.core;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.util.Message;
+import io.icker.factions.text.FillerText;
+import io.icker.factions.text.Message;
+import io.icker.factions.text.PlainText;
 import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -42,23 +44,23 @@ public class ChatManager {
     }
 
     private static Text global(ServerPlayerEntity sender, String message) {
-        return new Message(message).format(Formatting.GRAY)
-                .raw();
+        return new PlainText(message).format(Formatting.GRAY)
+                .build(sender.getUuid());
     }
 
     private static Text inFactionGlobal(ServerPlayerEntity sender, Faction faction, String message) {
-        return new Message("")
-                .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
-                .filler("»")
-                .add(new Message(message).format(Formatting.GRAY))
-                .raw();
+        return new Message()
+                .append(new PlainText(faction.getName()).format(Formatting.BOLD, faction.getColor()))
+                .append(new FillerText("»"))
+                .append(new PlainText(message).format(Formatting.GRAY))
+                .build(sender.getUuid());
     }
 
     private static Text faction(ServerPlayerEntity sender, Faction faction, String message) {
-        return new Message("")
-                .add(new Message("F").format(Formatting.BOLD, faction.getColor()))
-                .filler("»")
-                .add(new Message(message).format(Formatting.GRAY))
-                .raw();
+        return new Message()
+                .append(new PlainText("F").format(Formatting.BOLD, faction.getColor()))
+                .append(new FillerText("»"))
+                .append(new PlainText(message).format(Formatting.GRAY))
+                .build(sender.getUuid());
     }
 }
