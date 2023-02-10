@@ -1,23 +1,36 @@
 package io.icker.factions.util;
 
+import io.icker.factions.FactionsMod;
+import io.icker.factions.api.events.ClaimEvents;
+import io.icker.factions.api.events.FactionEvents;
+import io.icker.factions.api.persistents.Claim;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Home;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
+import org.jetbrains.annotations.Nullable;
 
-import io.icker.factions.api.events.ClaimEvents;
-import io.icker.factions.api.events.FactionEvents;
-import io.icker.factions.api.persistents.Claim;
-import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Home;
-import net.minecraft.util.math.ChunkPos;
+import java.util.Objects;
+import java.util.Optional;
 
 public class DynmapWrapper {
     private DynmapCommonAPI api;
     private MarkerAPI markerApi;
     private MarkerSet markerSet;
+    @Nullable
+    private MinecraftServer server;
+    private boolean loadWhenReady = false;
 
     public DynmapWrapper() {
         DynmapCommonAPIListener.register(new DynmapCommonAPIListener() {
@@ -36,6 +49,15 @@ public class DynmapWrapper {
         ClaimEvents.ADD.register(this::addClaim);
         ClaimEvents.REMOVE.register(this::removeClaim);
 
+        ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
+            this.server = server;
+            if (loadWhenReady) {
+                loadWhenReady = false;
+
+                generateMarkers();
+            }
+        });
+
         FactionEvents.SET_HOME.register(this::setHome);
         FactionEvents.MODIFY.register(faction -> updateFaction(faction));
         FactionEvents.MEMBER_JOIN.register((faction, user) -> updateFaction(faction));
@@ -44,6 +66,12 @@ public class DynmapWrapper {
     }
 
     private void generateMarkers() {
+        if (server == null) {
+            loadWhenReady = true;
+            FactionsMod.LOGGER.info("Server hasn't loaded, postponing dynmap marker loading");
+            return;
+        }
+
         for (Faction faction : Faction.all()) {
             Home home = faction.getHome();
             if (home != null) {
@@ -104,11 +132,35 @@ public class DynmapWrapper {
         }
     }
 
-    private String dimensionTagToID(String level) { // TODO: allow custom dimensions
-        if (level.equals("minecraft:overworld")) return "world";
-        if (level.equals("minecraft:the_nether")) return "DIM-1";
-        if (level.equals("minecraft:the_end")) return "DIM1";
-        return level;
+    public String getWorldName(World w) { // Taken from the Dynmap mod (Credit to them)
+        RegistryKey<World> rk = w.getRegistryKey();
+        if (rk == World.OVERWORLD) {
+            return w.getServer().getSaveProperties().getLevelName();
+        } else if (rk == World.END) {
+            return "DIM1";
+        } else if (rk == World.NETHER) {
+            return "DIM-1";
+        } else {
+            return rk.getValue().getNamespace() + "_" + rk.getValue().getPath();
+        }
+    }
+
+    public String dimensionTagToID(String dimension_id) {
+        if (server == null) {
+            FactionsMod.LOGGER.warn("Server object has not been initialized please run the dynmap reload command");
+            return dimension_id;
+        }
+
+        Optional<RegistryKey<World>> worldKey = server.getWorldRegistryKeys().stream().filter(key -> Objects.equals(key.getValue(), new Identifier(dimension_id))).findAny();
+
+        if (worldKey.isEmpty()) {
+            FactionsMod.LOGGER.error("Unable to find world");
+            return dimension_id;
+        }
+
+        ServerWorld world = server.getWorld(worldKey.get());
+
+        return getWorldName(world);
     }
 
     private String getInfo(Faction faction) {
