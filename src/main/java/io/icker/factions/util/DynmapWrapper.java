@@ -15,10 +15,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.DynmapCommonAPIListener;
-import org.dynmap.markers.AreaMarker;
-import org.dynmap.markers.Marker;
-import org.dynmap.markers.MarkerAPI;
-import org.dynmap.markers.MarkerSet;
+import org.dynmap.markers.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -42,6 +39,7 @@ public class DynmapWrapper {
                 if (markerSet == null) {
                     markerSet = markerApi.createMarkerSet("dynmap-factions", "The Dynmap Factions integration", null, true);
                 }
+                markerSet.getMarkers().forEach(GenericMarker::deleteMarker);
                 generateMarkers();
             }
         });
@@ -124,9 +122,10 @@ public class DynmapWrapper {
     }
 
     private void setHome(Faction faction, Home home) {
+        FactionsMod.LOGGER.info("Set home");
         Marker marker = markerSet.findMarker(faction.getID().toString() + "-home");
         if (marker == null) {
-            markerSet.createMarker("home", faction.getName() + "'s Home", dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
+            markerSet.createMarker(faction.getID().toString() + "-home", faction.getName() + "'s Home", dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
         } else {
             marker.setLocation(dimensionTagToID(home.level), home.x, home.y, home.z);
         }
