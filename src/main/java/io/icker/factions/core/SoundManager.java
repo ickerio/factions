@@ -5,6 +5,7 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
