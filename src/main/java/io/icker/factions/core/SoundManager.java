@@ -24,17 +24,17 @@ public class SoundManager {
 
     private static void playFaction(Faction faction, RegistryEntry.Reference<SoundEvent> soundEvent, float pitch) {
         for (User user : faction.getUsers()) {
-            ServerPlayerEntity player = FactionsManager.playerManager.getPlayer(user.getID());
+            PlayerEntity player = FactionsManager.playerManager.getPlayer(user.getID());
             if (player != null && (user.sounds == User.SoundMode.ALL || user.sounds == User.SoundMode.FACTION)) {
                 player.playSound(soundEvent.value(), SoundCategory.PLAYERS, 0.2F, pitch);
             }
         }
     }
 
-    public static void warningSound(ServerPlayerEntity player) {
+    public static void warningSound(PlayerEntity player) {
         User user = User.get(player.getUuid());
         if (user.sounds == User.SoundMode.ALL || user.sounds == User.SoundMode.WARNINGS) {
-            player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), SoundCategory.PLAYERS, 0.5F, 1.0F);
+        	player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), SoundCategory.PLAYERS, 0.5F, 1.0F);
         }
     }
 }
