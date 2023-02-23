@@ -50,7 +50,7 @@ public class HomeCommand implements Command {
 
         ServerWorld world = player.getServer().getWorld(worldKey.get());
 
-        if (checkLimitToClaim(faction, world, new BlockPos(home.x, home.y, home.z))) {
+        if (checkLimitToClaim(faction, world, new BlockPos((int) home.x, (int) home.y, (int) home.z))) {
             new Message("Cannot warp home to an unclaimed chunk").fail().send(player, false);
             return 0;
         }
