@@ -7,8 +7,8 @@
 Highly customizable, lightweight and elegant factions mod for the [Fabric loader][fabric] in Minecraft 1.19
 
 [![Release](https://img.shields.io/github/v/release/ickerio/factions?style=for-the-badge&include_prereleases&sort=semver)][github:releases]
-[![Available For](https://img.shields.io/badge/dynamic/json?label=Available%20For&style=for-the-badge&color=e64626&query=version&url=https%3A%2F%2Fapi.blueish.dev%2Fapi%2Fminecraft%2Fversion%3Fid%3Dfactions)][curseforge]
- [![Downloads](https://img.shields.io/badge/dynamic/json?label=Downloads&style=for-the-badge&color=e64626&query=downloads&url=https%3A%2F%2Fapi.blueish.dev%2Fapi%2Fminecraft%2Fdownloads%3Fcurseid%3D497362%26modrinthid%3Dfactions)][curseforge:releases]
+[![Available For](https://img.shields.io/badge/dynamic/json?label=Available%20For&style=for-the-badge&color=e64626&query=version&url=https%3A%2F%2Fapi.blueish.dev%2Fapi%2Fminecraft%2Fversion%3Fid%3Dfactions)][modrinth]
+ [![Downloads](https://img.shields.io/badge/dynamic/json?label=Downloads&style=for-the-badge&color=e64626&query=downloads&url=https%3A%2F%2Fapi.blueish.dev%2Fapi%2Fminecraft%2Fdownloads%3Fcurseid%3D497362%26modrinthid%3Dfactions)][modrinth:releases]
 
 </div>
 
@@ -45,8 +45,8 @@ Have an issue or a suggestion? Join [our discord][discord]
 [MIT](LICENSE)
 
 [fabric]: https://fabricmc.net/
-[curseforge]: https://www.curseforge.com/minecraft/mc-mods/factions-fabric
-[curseforge:releases]: https://www.curseforge.com/minecraft/mc-mods/factions-fabric/files
+[modrinth]: https://modrinth.com/mod/factions
+[modrinth:releases]: https://modrinth.com/mod/factions/versions
 [github:releases]: https://github.com/ickerio/factions/releases
 [wiki]: https://github.com/ickerio/factions/wiki
 [wiki:config]: https://github.com/ickerio/factions/wiki/Config
