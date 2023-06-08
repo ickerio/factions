@@ -8,9 +8,9 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
+import io.icker.factions.mixin.DamageTrackerAccessor;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import net.minecraft.entity.damage.DamageRecord;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -50,13 +50,12 @@ public class HomeCommand implements Command {
 
         ServerWorld world = player.getServer().getWorld(worldKey.get());
 
-        if (checkLimitToClaim(faction, world, new BlockPos(home.x, home.y, home.z))) {
+        if (checkLimitToClaim(faction, world, new BlockPos((int) home.x, (int) home.y, (int) home.z))) {
             new Message("Cannot warp home to an unclaimed chunk").fail().send(player, false);
             return 0;
         }
 
-        DamageRecord damageRecord = player.getDamageTracker().getMostRecentDamage();
-        if (damageRecord == null || player.age - damageRecord.getEntityAge() > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
+        if (((DamageTrackerAccessor)player.getDamageTracker()).getAgeOnLastDamage() == 0 || player.age - ((DamageTrackerAccessor)player.getDamageTracker()).getAgeOnLastDamage() > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) { // damageRecord == null || player.age - damageRecord.getEntityAge() > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN
             player.teleport(
                     world,
                     home.x, home.y, home.z,
@@ -75,7 +74,7 @@ public class HomeCommand implements Command {
 
         Faction faction = Command.getUser(player).getFaction();
 
-        if (checkLimitToClaim(faction, player.getWorld(), player.getBlockPos())) {
+        if (checkLimitToClaim(faction, (ServerWorld) player.getWorld(), player.getBlockPos())) {
             new Message("Cannot set home to an unclaimed chunk").fail().send(player, false);
             return 0;
         }

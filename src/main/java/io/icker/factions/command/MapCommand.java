@@ -3,7 +3,6 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.util.Command;
@@ -20,7 +19,7 @@ public class MapCommand implements Command{
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayer();
-        ServerWorld world = player.getWorld();
+        ServerWorld world = (ServerWorld) player.getWorld();
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
         String dimension = world.getRegistryKey().getValue().toString();

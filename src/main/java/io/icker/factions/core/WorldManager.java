@@ -25,7 +25,7 @@ public class WorldManager {
  
     private static void onMove(ServerPlayerEntity player) {
         User user = User.get(player.getUuid());
-        ServerWorld world = player.getWorld();
+        ServerWorld world = (ServerWorld) player.getWorld();
         String dimension = world.getRegistryKey().getValue().toString();
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();

@@ -9,6 +9,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -55,14 +56,14 @@ public class ServerPlayNetworkHandlerMixin {
         packet.handle(new PlayerInteractEntityC2SPacket.Handler() {
             @Override
             public void interact(Hand hand) {
-                if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, packet.getEntity(player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
+                if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, packet.getEntity((ServerWorld) player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
                     ci.cancel();
                 }
             }
 
             @Override
             public void interactAt(Hand hand, Vec3d pos) {
-                if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, packet.getEntity(player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
+                if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, packet.getEntity((ServerWorld) player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
                     ci.cancel();
                 }
             }
