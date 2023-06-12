@@ -50,31 +50,32 @@ public class AdminCommand implements Command {
         Faction target = Faction.getByName(StringArgumentType.getString(context, "faction"));
         int power = IntegerArgumentType.getInteger(context, "power");
 
-        int adjusted = target.adjustPower(power);
-        if (adjusted != 0) {
+        target.addAdminPower(power);
+
+        if (power != 0) {
             if (power > 0) {
                 new Message(
                     "Admin %s added %d power",
                     player.getName().getString(),
-                    adjusted
+                    power
                 ).send(target);
                 new Message(
                     "Added %d power",
-                    adjusted
+                    power
                 ).send(player, false);
             } else {
                 new Message(
                     "Admin %s removed %d power",
                     player.getName().getString(),
-                    adjusted
+                    power
                 ).send(target);
                 new Message(
                     "Removed %d power",
-                    adjusted
+                    power
                 ).send(player, false);
             }
         } else {
-            new Message("Could not change power").fail().send(player, false);
+            new Message("No change to power").fail().send(player, false);
         }
 
         return 1;

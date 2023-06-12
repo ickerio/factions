@@ -5,7 +5,6 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Formatting;
@@ -41,6 +40,9 @@ public class Faction {
 
     @Field("Power")
     private int power;
+
+    @Field("AdminPower")
+    private int admin_power;
 
     @Field("Home")
     private Home home;
@@ -126,7 +128,7 @@ public class Faction {
     }
 
     public int getPower() {
-        return power;
+        return power + admin_power;
     }
 
     public SimpleInventory getSafe() {
@@ -178,6 +180,14 @@ public class Faction {
         power = newPower;
         FactionEvents.POWER_CHANGE.invoker().onPowerChange(this, oldPower);
         return Math.abs(newPower - oldPower);
+    }
+
+    public int getAdminPower() {
+        return admin_power;
+    }
+
+    public void addAdminPower(int amount) {
+        admin_power += amount;
     }
 
     public List<User> getUsers() {
