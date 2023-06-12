@@ -97,6 +97,9 @@ public class Config {
 
         @SerializedName("nameBlackList")
         public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless");
+
+        @SerializedName("powerMessage")
+        public boolean POWER_MESSAGE = true;
     }
 
     public static class RelationshipConfig {

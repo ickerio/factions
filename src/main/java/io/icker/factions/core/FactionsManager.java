@@ -109,7 +109,7 @@ public class FactionsManager {
         Faction faction = member.getFaction();
 
         int adjusted = faction.adjustPower(FactionsMod.CONFIG.POWER.POWER_TICKS.REWARD);
-        if (adjusted != 0)
+        if (adjusted != 0 && FactionsMod.CONFIG.DISPLAY.POWER_MESSAGE)
             new Message(
                 "%s gained %d power from surviving",
                 player.getName().getString(),
