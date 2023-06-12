@@ -42,7 +42,7 @@ public class Faction {
     private int power;
 
     @Field("AdminPower")
-    private int admin_power;
+    private int adminPower;
 
     @Field("Home")
     private Home home;
@@ -128,7 +128,7 @@ public class Faction {
     }
 
     public int getPower() {
-        return power + admin_power;
+        return power + adminPower;
     }
 
     public SimpleInventory getSafe() {
@@ -183,11 +183,11 @@ public class Faction {
     }
 
     public int getAdminPower() {
-        return admin_power;
+        return adminPower;
     }
 
     public void addAdminPower(int amount) {
-        admin_power += amount;
+        adminPower += amount;
     }
 
     public List<User> getUsers() {

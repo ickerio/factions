@@ -1,28 +1,39 @@
 package io.icker.factions.core;
 
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Home;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class FactionsManager {
     public static PlayerManager playerManager;
+    private static MinecraftServer server;
 
     public static void register() {
         ServerLifecycleEvents.SERVER_STARTED.register(FactionsManager::serverStarted);
@@ -32,10 +43,32 @@ public class FactionsManager {
         PlayerEvents.ON_KILLED_BY_PLAYER.register(FactionsManager::playerDeath);
         PlayerEvents.ON_POWER_TICK.register(FactionsManager::powerTick);
         PlayerEvents.OPEN_SAFE.register(FactionsManager::openSafe);
+
+        if (FactionsMod.CONFIG.HOME != null && FactionsMod.CONFIG.HOME.CLAIM_ONLY) {
+            ClaimEvents.REMOVE.register((x, z, level, faction) -> {
+                Home home = faction.getHome();
+
+                if (!Objects.equals(home.level, level)) {
+                    return;
+                }
+
+                BlockPos homePos = BlockPos.ofFloored(home.x, home.y, home.z);
+
+                Optional<RegistryKey<World>> worldKey = server.getWorldRegistryKeys().stream().filter(key -> Objects.equals(key.getValue(), new Identifier(home.level))).findAny();
+                ServerWorld world = server.getWorld(worldKey.get());
+
+                ChunkPos homeChunkPos = world.getChunk(homePos).getPos();
+
+                if (homeChunkPos.x == x && homeChunkPos.z == z) {
+                    faction.setHome(null);
+                }
+            });
+        }
     }
 
     private static void serverStarted(MinecraftServer server) {
         playerManager = server.getPlayerManager();
+        FactionsManager.server = server;
         Message.manager = server.getPlayerManager();
     }
 
