@@ -39,7 +39,7 @@ public class FactionsMod implements ModInitializer {
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         bluemap = FabricLoader.getInstance().isModLoaded("bluemap") ? new BlueMapWrapper() : null;
 
-        if (FabricLoader.getInstance().isModLoaded("placeholder-api"))
+        if (FabricLoader.getInstance().isModLoaded("placeholder-api")) {
             PlaceholdersWrapper.init();
         }
 
