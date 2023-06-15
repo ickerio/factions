@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
@@ -118,6 +119,21 @@ public class AdminCommand implements Command {
         return 1;
     }
 
+    private int audit(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+
+        Claim.audit();
+        Faction.audit();
+        User.audit();
+
+        if (player != null) {
+            new Message("Successful audit (it is recommended to run this command at least twice to fix possible side effects)").send(player, false);
+        }
+
+        return 1;
+    }
+
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
             .literal("admin")
@@ -152,6 +168,11 @@ public class AdminCommand implements Command {
                         .executes(this::spoof)
                 )
                 .executes(this::clearSpoof)
+            )
+            .then(
+                CommandManager.literal("audit")
+                .requires(Requires.hasPerms("factions.admin.audit", FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                .executes(this::audit)
             )
             .build();
     }

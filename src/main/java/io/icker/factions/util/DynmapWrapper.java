@@ -10,16 +10,12 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.markers.*;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.Optional;
 
 public class DynmapWrapper {
     private DynmapCommonAPI api;
@@ -150,14 +146,12 @@ public class DynmapWrapper {
             return dimension_id;
         }
 
-        Optional<RegistryKey<World>> worldKey = server.getWorldRegistryKeys().stream().filter(key -> Objects.equals(key.getValue(), new Identifier(dimension_id))).findAny();
+        ServerWorld world = WorldUtils.getWorld(dimension_id);
 
-        if (worldKey.isEmpty()) {
+        if (world == null) {
             FactionsMod.LOGGER.error("Unable to find world");
             return dimension_id;
         }
-
-        ServerWorld world = server.getWorld(worldKey.get());
 
         return getWorldName(world);
     }

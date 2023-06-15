@@ -11,18 +11,13 @@ import io.icker.factions.api.persistents.Home;
 import io.icker.factions.mixin.DamageTrackerAccessor;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import net.minecraft.registry.RegistryKey;
+import io.icker.factions.util.WorldUtils;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
-
-import java.util.Objects;
-import java.util.Optional;
 
 public class HomeCommand implements Command {
     private int go(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -41,14 +36,12 @@ public class HomeCommand implements Command {
 
         if (player.getServer() == null) return 0;
 
-        Optional<RegistryKey<World>> worldKey = player.getServer().getWorldRegistryKeys().stream().filter(key -> Objects.equals(key.getValue(), new Identifier(home.level))).findAny();
+        ServerWorld world = WorldUtils.getWorld(home.level);
 
-        if (worldKey.isEmpty()) {
+        if (world == null) {
             new Message("Cannot find dimension").fail().send(player, false);
             return 0;
         }
-
-        ServerWorld world = player.getServer().getWorld(worldKey.get());
 
         if (checkLimitToClaim(faction, world, BlockPos.ofFloored(home.x, home.y, home.z))) {
             new Message("Cannot warp home to an unclaimed chunk").fail().send(player, false);

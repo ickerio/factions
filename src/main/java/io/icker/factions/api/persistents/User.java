@@ -148,6 +148,18 @@ public class User {
         return STORE.values();
     }
 
+    public static void audit() {
+        STORE.values().forEach((user) -> {
+            if (Faction.get(user.factionID) == null) {
+                user.factionID = null;
+            }
+
+            if (!user.isInFaction()) {
+                user.rank = null;
+            }
+        });
+    }
+
     public static void save() {
         Database.save(User.class, STORE.values().stream().toList());
     }

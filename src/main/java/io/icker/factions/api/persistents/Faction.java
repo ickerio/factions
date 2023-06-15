@@ -5,6 +5,7 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
+import io.icker.factions.util.WorldUtils;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Formatting;
@@ -280,6 +281,18 @@ public class Faction {
         if (o == null || getClass() != o.getClass()) return false;
         Faction faction = (Faction) o;
         return id.equals(faction.id);
+    }
+
+    public static void audit() {
+        STORE.values().removeIf((faction) -> {
+            if (faction.home != null && !WorldUtils.isValid(faction.home.level)) {
+                faction.setHome(null);
+            }
+
+            faction.relationships.removeIf((rel) -> Faction.get(rel.target) == null);
+
+            return faction.getUsers().stream().noneMatch((user) -> user.rank == User.Rank.OWNER);
+        });
     }
 
     public static void save() {

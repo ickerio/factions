@@ -8,6 +8,7 @@ import io.icker.factions.core.*;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.PlaceholdersWrapper;
+import io.icker.factions.util.WorldUtils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
@@ -39,6 +40,7 @@ public class FactionsMod implements ModInitializer {
         ServerManager.register();
         SoundManager.register();
         WorldManager.register();
+        WorldUtils.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
     }

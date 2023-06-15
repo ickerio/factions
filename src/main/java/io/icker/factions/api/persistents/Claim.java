@@ -5,6 +5,7 @@ import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
+import io.icker.factions.util.WorldUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +57,10 @@ public class Claim {
             .stream()
             .filter(c -> c.factionID.equals(factionID))
             .toList();
+    }
+
+    public static void audit() {
+        STORE.values().removeIf((claim) -> Faction.get(claim.factionID) == null || !WorldUtils.isValid(claim.level));
     }
 
     public static void add(Claim claim) {

@@ -8,11 +8,11 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+import io.icker.factions.util.WorldUtils;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
@@ -21,19 +21,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class FactionsManager {
     public static PlayerManager playerManager;
-    private static MinecraftServer server;
 
     public static void register() {
         ServerLifecycleEvents.SERVER_STARTED.register(FactionsManager::serverStarted);
@@ -54,8 +50,7 @@ public class FactionsManager {
 
                 BlockPos homePos = BlockPos.ofFloored(home.x, home.y, home.z);
 
-                Optional<RegistryKey<World>> worldKey = server.getWorldRegistryKeys().stream().filter(key -> Objects.equals(key.getValue(), new Identifier(home.level))).findAny();
-                ServerWorld world = server.getWorld(worldKey.get());
+                ServerWorld world = WorldUtils.getWorld(home.level);
 
                 ChunkPos homeChunkPos = world.getChunk(homePos).getPos();
 
@@ -68,7 +63,6 @@ public class FactionsManager {
 
     private static void serverStarted(MinecraftServer server) {
         playerManager = server.getPlayerManager();
-        FactionsManager.server = server;
         Message.manager = server.getPlayerManager();
     }
 
