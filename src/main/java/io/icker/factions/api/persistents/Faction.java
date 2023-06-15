@@ -264,7 +264,10 @@ public class Faction {
             user.leaveFaction();
         }
         for (Relationship rel : relationships) {
-            Faction.get(rel.target).removeRelationship(id);
+            Faction target = Faction.get(rel.target);
+            if (target != null) {
+                target.removeRelationship(id);
+            }
         }
         removeAllClaims();
         STORE.remove(id);

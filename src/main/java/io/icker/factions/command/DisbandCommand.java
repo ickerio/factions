@@ -2,7 +2,6 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
@@ -20,6 +19,10 @@ public class DisbandCommand implements Command {
     private int run(CommandContext<ServerCommandSource> context, boolean confirm) {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+
+        if (player == null) {
+            return 0;
+        }
 
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
