@@ -24,7 +24,7 @@ jobs:
           ./gradlew build
           ./gradlew javadoc
       - name: Create hash
-          uses: BlueZeeKing/fabric-mod-hash@v1.1
+        uses: BlueZeeKing/fabric-mod-hash@v1.1
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
