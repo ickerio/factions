@@ -1,13 +1,13 @@
 name: publish
 
 on:
-  release:
-     types:
-       - published
+  push:
+    tags:
+      - "v*.*.*"
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: checkout repository
         uses: actions/checkout@v2
@@ -18,17 +18,20 @@ jobs:
         with:
           java-version: 17
       - name: make gradle wrapper executable
-        if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
       - name: build and generate javadoc
         run: |
           ./gradlew build
           ./gradlew javadoc
-      - name: Upload assets to GitHub
-        uses: AButler/upload-release-assets@v2.0
+      - name: Create hash
+          uses: BlueZeeKing/fabric-mod-hash@v1.1
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          files: 'build/libs/*.jar;!build/libs/*-dev.jar'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            ./build/libs/factions-mc*.*.*-*.*.*[0-9].jar
+            ./*.sha512
+          draft: true
       - name: Deploy javadoc
         uses: crazy-max/ghaction-github-pages@v3
         with:
