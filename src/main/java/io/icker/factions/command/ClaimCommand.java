@@ -121,7 +121,7 @@ public class ClaimCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
+        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE + faction.getAdminPower();
 
         if (maxPower < requiredPower) {
             new Message("Not enough faction power to claim chunk").fail().send(player, false);
@@ -137,7 +137,7 @@ public class ClaimCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
+        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE + faction.getAdminPower();
 
         if (maxPower < requiredPower) {
             new Message("Not enough faction power to claim chunks").fail().send(player, false);
