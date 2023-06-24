@@ -36,6 +36,8 @@ public class FactionsMod implements ModInitializer {
     public void onInitialize() {
         LOGGER.info("Initialized Factions Mod for Minecraft v1.19");
 
+        WorldUtils.register();
+
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         bluemap = FabricLoader.getInstance().isModLoaded("bluemap") ? new BlueMapWrapper() : null;
 
@@ -49,7 +51,6 @@ public class FactionsMod implements ModInitializer {
         ServerManager.register();
         SoundManager.register();
         WorldManager.register();
-        WorldUtils.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
     }
