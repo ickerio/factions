@@ -1,5 +1,7 @@
 package io.icker.factions.util;
 
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -11,8 +13,21 @@ import java.util.Objects;
 public class WorldUtils {
     public static MinecraftServer server;
 
+    public static final Event<Ready> ON_READY = EventFactory.createArrayBacked(Ready.class, callbacks -> () -> {
+        for (Ready callback: callbacks) {
+            callback.onReady();
+        }
+    });
+
     public static void register() {
-        ServerLifecycleEvents.SERVER_STARTED.register((server1 -> WorldUtils.server = server1));
+        ServerLifecycleEvents.SERVER_STARTING.register((server1) -> {
+            WorldUtils.server = server1;
+            ON_READY.invoker().onReady();
+        });
+    }
+
+    public static boolean isReady() {
+        return server != null;
     }
 
     public static boolean isValid(String level) {
@@ -28,5 +43,10 @@ public class WorldUtils {
         } else {
             return server.getWorld(key.get());
         }
+    }
+
+    @FunctionalInterface
+    public interface Ready {
+        void onReady();
     }
 }

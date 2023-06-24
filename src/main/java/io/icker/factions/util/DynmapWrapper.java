@@ -6,23 +6,18 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.markers.*;
-import org.jetbrains.annotations.Nullable;
 
 public class DynmapWrapper {
     private DynmapCommonAPI api;
     private MarkerAPI markerApi;
     private MarkerSet markerSet;
-    @Nullable
-    private MinecraftServer server;
     private boolean loadWhenReady = false;
 
     public DynmapWrapper() {
@@ -43,8 +38,7 @@ public class DynmapWrapper {
         ClaimEvents.ADD.register(this::addClaim);
         ClaimEvents.REMOVE.register(this::removeClaim);
 
-        ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
-            this.server = server;
+        WorldUtils.ON_READY.register(() -> {
             if (loadWhenReady) {
                 loadWhenReady = false;
 
@@ -60,7 +54,7 @@ public class DynmapWrapper {
     }
 
     private void generateMarkers() {
-        if (server == null) {
+        if (!WorldUtils.isReady()) {
             loadWhenReady = true;
             FactionsMod.LOGGER.info("Server hasn't loaded, postponing dynmap marker loading");
             return;
@@ -120,6 +114,11 @@ public class DynmapWrapper {
     private void setHome(Faction faction, Home home) {
         FactionsMod.LOGGER.info("Set home");
         Marker marker = markerSet.findMarker(faction.getID().toString() + "-home");
+        if (home == null && marker != null) {
+            marker.deleteMarker();
+            return;
+        }
+
         if (marker == null) {
             markerSet.createMarker(faction.getID().toString() + "-home", faction.getName() + "'s Home", dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
         } else {
@@ -141,7 +140,7 @@ public class DynmapWrapper {
     }
 
     public String dimensionTagToID(String dimension_id) {
-        if (server == null) {
+        if (!WorldUtils.isReady()) {
             FactionsMod.LOGGER.warn("Server object has not been initialized please run the dynmap reload command");
             return dimension_id;
         }
