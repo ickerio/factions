@@ -123,12 +123,14 @@ public class AdminCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Claim.audit();
-        Faction.audit();
-        User.audit();
+        for (int i = 0; i < 4; i++){
+            Claim.audit();
+            Faction.audit();
+            User.audit();
+        }
 
         if (player != null) {
-            new Message("Successful audit (it is recommended to run this command at least twice to fix possible side effects)").send(player, false);
+            new Message("Successful audit").send(player, false);
         }
 
         return 1;
