@@ -44,7 +44,7 @@ public class FactionsManager {
             ClaimEvents.REMOVE.register((x, z, level, faction) -> {
                 Home home = faction.getHome();
 
-                if (!Objects.equals(home.level, level)) {
+                if (home == null || !Objects.equals(home.level, level)) {
                     return;
                 }
 
