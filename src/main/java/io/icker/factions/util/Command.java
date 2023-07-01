@@ -60,7 +60,13 @@ public interface Command {
         }
 
         public static Predicate<ServerCommandSource> hasPerms(String permission, int defaultValue) {
-            return source -> !permissions || Permissions.check(source, permission, defaultValue);
+            return source -> {
+                if (permissions) {
+                    return Permissions.check(source, permission, defaultValue);
+                } else {
+                    return source.hasPermissionLevel(defaultValue);
+                }
+            };
         }
 
         public static Predicate<ServerCommandSource> require(Requires req) {
