@@ -3,7 +3,6 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.util.Command;
@@ -26,9 +25,8 @@ public class MapCommand implements Command {
         String dimension = world.getRegistryKey().getValue().toString();
 
         // Print the header of the faction map.
-        new Message(Formatting.DARK_GRAY + "──┤" + Formatting.GREEN +
-                " Faction Map" + Formatting.DARK_GRAY + "├──")
-                .send(player, false);
+        new Message(Formatting.DARK_GRAY + "──┤" + Formatting.GREEN + " Faction Map"
+                + Formatting.DARK_GRAY + "├──").send(player, false);
 
         for (int z = -4; z <= 5; z++) { // Rows (10)
             Message row = new Message("");
@@ -36,10 +34,12 @@ public class MapCommand implements Command {
                 Claim claim = Claim.get(chunkPos.x + x, chunkPos.z + z, dimension);
                 if (x == 0 && z == 0) { // Check if middle (your chunk)
                     if (claim == null) {
-                        row.add(new Message("⏺").format(Formatting.DARK_GRAY).hover("<You> <Wilderness>"));
+                        row.add(new Message("⏺").format(Formatting.DARK_GRAY)
+                                .hover("<You> <Wilderness>"));
                     } else {
                         Faction owner = claim.getFaction();
-                        row.add(new Message("⏺").format(owner.getColor()).hover("<You> " + owner.getName()));
+                        row.add(new Message("⏺").format(owner.getColor())
+                                .hover("<You> " + owner.getName()));
                     }
                 } else {
                     if (claim == null) {
@@ -59,10 +59,7 @@ public class MapCommand implements Command {
 
     @Override
     public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager
-                .literal("map")
-                .requires(Requires.hasPerms("factions.map", 0))
-                .executes(this::run)
-                .build();
+        return CommandManager.literal("map").requires(Requires.hasPerms("factions.map", 0))
+                .executes(this::run).build();
     }
 }

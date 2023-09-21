@@ -7,7 +7,6 @@ import org.dynmap.markers.GenericMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.events.FactionEvents;
@@ -33,8 +32,8 @@ public class DynmapWrapper {
                 markerApi = api.getMarkerAPI();
                 markerSet = markerApi.getMarkerSet("dynmap-factions");
                 if (markerSet == null) {
-                    markerSet = markerApi.createMarkerSet("dynmap-factions", "The Dynmap Factions integration", null,
-                            true);
+                    markerSet = markerApi.createMarkerSet("dynmap-factions",
+                            "The Dynmap Factions integration", null, true);
                 }
                 markerSet.getMarkers().forEach(GenericMarker::deleteMarker);
                 generateMarkers();
@@ -83,15 +82,13 @@ public class DynmapWrapper {
         Faction faction = claim.getFaction();
         ChunkPos pos = new ChunkPos(claim.x, claim.z);
 
-        AreaMarker marker = markerSet.createAreaMarker(
-                claim.getKey(), factionInfo,
-                true, dimensionTagToID(claim.level),
-                new double[] { pos.getStartX(), pos.getEndX() + 1 },
-                new double[] { pos.getStartZ(), pos.getEndZ() + 1 },
-                true);
+        AreaMarker marker = markerSet.createAreaMarker(claim.getKey(), factionInfo, true,
+                dimensionTagToID(claim.level), new double[] {pos.getStartX(), pos.getEndX() + 1},
+                new double[] {pos.getStartZ(), pos.getEndZ() + 1}, true);
         if (marker != null) {
             marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColorValue());
-            marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(), faction.getColor().getColorValue());
+            marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(),
+                    faction.getColor().getColorValue());
         }
     }
 
@@ -111,7 +108,8 @@ public class DynmapWrapper {
             AreaMarker marker = markerSet.findAreaMarker(claim.getKey());
 
             marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColorValue());
-            marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(), faction.getColor().getColorValue());
+            marker.setLineStyle(marker.getLineWeight(), marker.getLineOpacity(),
+                    faction.getColor().getColorValue());
             marker.setDescription(info);
         }
     }
@@ -125,8 +123,9 @@ public class DynmapWrapper {
         }
 
         if (marker == null) {
-            markerSet.createMarker(faction.getID().toString() + "-home", faction.getName() + "'s Home",
-                    dimensionTagToID(home.level), home.x, home.y, home.z, null, true);
+            markerSet.createMarker(faction.getID().toString() + "-home",
+                    faction.getName() + "'s Home", dimensionTagToID(home.level), home.x, home.y,
+                    home.z, null, true);
         } else {
             marker.setLocation(dimensionTagToID(home.level), home.x, home.y, home.z);
         }
@@ -147,14 +146,16 @@ public class DynmapWrapper {
 
     public String dimensionTagToID(String dimension_id) {
         if (!WorldUtils.isReady()) {
-            FactionsMod.LOGGER.warn("Server object has not been initialized please run the dynmap reload command");
+            FactionsMod.LOGGER.warn(
+                    "Server object has not been initialized please run the dynmap reload command");
             return dimension_id;
         }
 
         ServerWorld world = WorldUtils.getWorld(dimension_id);
 
         if (world == null) {
-            FactionsMod.LOGGER.error(String.format("Unable to find dimension id: %s", dimension_id));
+            FactionsMod.LOGGER
+                    .error(String.format("Unable to find dimension id: %s", dimension_id));
             return dimension_id;
         }
 
@@ -162,17 +163,17 @@ public class DynmapWrapper {
     }
 
     private String getInfo(Faction faction) {
-        return "Name: " + faction.getName() + "<br>"
-                + "Description: " + faction.getDescription() + "<br>"
-                + "Power: " + faction.getPower() + "<br>"
-                + "Number of members: " + faction.getUsers().size();// + "<br>"
+        return "Name: " + faction.getName() + "<br>" + "Description: " + faction.getDescription()
+                + "<br>" + "Power: " + faction.getPower() + "<br>" + "Number of members: "
+                + faction.getUsers().size();// + "<br>"
         // + "Allies: " + Ally.getAllies(faction.getName).stream().map(ally ->
         // ally.target).collect(Collectors.joining(", "));
     }
 
     public void reloadAll() {
         markerSet.deleteMarkerSet();
-        markerSet = markerApi.createMarkerSet("dynmap-factions", "The Dynmap Factions integration", null, true);
+        markerSet = markerApi.createMarkerSet("dynmap-factions", "The Dynmap Factions integration",
+                null, true);
         generateMarkers();
     }
 }

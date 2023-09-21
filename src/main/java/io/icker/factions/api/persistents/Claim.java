@@ -3,7 +3,6 @@ package io.icker.factions.api.persistents;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-
 import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.database.Database;
@@ -42,8 +41,7 @@ public class Claim {
     }
 
     @SuppressWarnings("unused")
-    public Claim() {
-    }
+    public Claim() {}
 
     public String getKey() {
         return String.format("%s-%d-%d", level, x, z);
@@ -54,14 +52,12 @@ public class Claim {
     }
 
     public static List<Claim> getByFaction(UUID factionID) {
-        return STORE.values()
-                .stream()
-                .filter(c -> c.factionID.equals(factionID))
-                .toList();
+        return STORE.values().stream().filter(c -> c.factionID.equals(factionID)).toList();
     }
 
     public static void audit() {
-        STORE.values().removeIf((claim) -> Faction.get(claim.factionID) == null || !WorldUtils.isValid(claim.level));
+        STORE.values().removeIf((claim) -> Faction.get(claim.factionID) == null
+                || !WorldUtils.isValid(claim.level));
     }
 
     public static void add(Claim claim) {

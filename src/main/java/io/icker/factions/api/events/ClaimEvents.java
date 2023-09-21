@@ -12,17 +12,18 @@ public final class ClaimEvents {
     /**
      * Called when a chunk claim is added by a faction (See {@link Claim})
      */
-    public static final Event<Add> ADD = EventFactory.createArrayBacked(Add.class, callbacks -> (claim) -> {
-        for (Add callback : callbacks) {
-            callback.onAdd(claim);
-        }
-    });
+    public static final Event<Add> ADD =
+            EventFactory.createArrayBacked(Add.class, callbacks -> (claim) -> {
+                for (Add callback : callbacks) {
+                    callback.onAdd(claim);
+                }
+            });
 
     /**
      * Called when a faction removes a claim (See {@link Claim})
      */
-    public static final Event<Remove> REMOVE = EventFactory.createArrayBacked(Remove.class,
-            callbacks -> (x, z, level, faction) -> {
+    public static final Event<Remove> REMOVE =
+            EventFactory.createArrayBacked(Remove.class, callbacks -> (x, z, level, faction) -> {
                 for (Remove callback : callbacks) {
                     callback.onRemove(x, z, level, faction);
                 }

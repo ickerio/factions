@@ -4,7 +4,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -23,14 +22,16 @@ public class JoinCommand implements Command {
         Faction faction = Faction.getByName(name);
 
         if (faction == null) {
-            new Message("Cannot join faction as none exist with that name").fail().send(player, false);
+            new Message("Cannot join faction as none exist with that name").fail().send(player,
+                    false);
             return 0;
         }
 
         boolean invited = faction.isInvited(player.getUuid());
 
         if (!faction.isOpen() && !invited) {
-            new Message("Cannot join faction as it is not open and you are not invited").fail().send(player, false);
+            new Message("Cannot join faction as it is not open and you are not invited").fail()
+                    .send(player, false);
             return 0;
         }
 
@@ -51,13 +52,11 @@ public class JoinCommand implements Command {
     }
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager
-                .literal("join")
-                .requires(Requires.multiple(Requires.isFactionless(), Requires.hasPerms("factions.join", 0)))
-                .then(
-                        CommandManager.argument("name", StringArgumentType.greedyString())
-                                .suggests(Suggests.openInvitedFactions())
-                                .executes(this::run))
+        return CommandManager.literal("join")
+                .requires(Requires.multiple(Requires.isFactionless(),
+                        Requires.hasPerms("factions.join", 0)))
+                .then(CommandManager.argument("name", StringArgumentType.greedyString())
+                        .suggests(Suggests.openInvitedFactions()).executes(this::run))
                 .build();
     }
 }

@@ -49,7 +49,8 @@ public class Message {
     }
 
     public Message hover(String message) {
-        text.styled(s -> s.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(message))));
+        text.styled(s -> s
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(message))));
         return this;
     }
 
@@ -89,17 +90,16 @@ public class Message {
     }
 
     public Message prependFaction(Faction faction) {
-        text = new Message("")
-                .add(new Message(faction.getColor().toString() + Formatting.BOLD + faction.getName())
+        text = new Message("").add(
+                new Message(faction.getColor().toString() + Formatting.BOLD + faction.getName())
                         .hover(faction.getDescription()))
-                .filler("»")
-                .raw()
-                .append(text);
+                .filler("»").raw().append(text);
         return this;
     }
 
     public Message filler(String symbol) {
-        text.append(Text.of(" " + Formatting.RESET + Formatting.DARK_GRAY + symbol + Formatting.RESET + " "));
+        text.append(Text.of(
+                " " + Formatting.RESET + Formatting.DARK_GRAY + symbol + Formatting.RESET + " "));
         return this;
     }
 

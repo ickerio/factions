@@ -2,7 +2,6 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
@@ -32,8 +31,9 @@ public class DisbandCommand implements Command {
 
         if (!faction.getSafe().isEmpty() && !confirm) {
             new Message("Your faction safe isn't empty.")
-                    .add(new Message("\nContinue and move the items to your inventory").hover("Click to confirm")
-                            .click("/f disband confirm").format(Formatting.GREEN))
+                    .add(new Message("\nContinue and move the items to your inventory")
+                            .hover("Click to confirm").click("/f disband confirm")
+                            .format(Formatting.GREEN))
                     .send(player, false);
             return 0;
         }
@@ -54,11 +54,11 @@ public class DisbandCommand implements Command {
 
     @Override
     public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager
-                .literal("disband")
-                .requires(Requires.multiple(Requires.isOwner(), Requires.hasPerms("factions.disband", 0)))
-                .executes(context -> this.run(context, false))
-                .then(CommandManager.literal("confirm").executes(context -> this.run(context, true)))
+        return CommandManager.literal("disband")
+                .requires(Requires.multiple(Requires.isOwner(),
+                        Requires.hasPerms("factions.disband", 0)))
+                .executes(context -> this.run(context, false)).then(CommandManager
+                        .literal("confirm").executes(context -> this.run(context, true)))
                 .build();
     }
 }

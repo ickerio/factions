@@ -72,39 +72,22 @@ public class FactionsMod implements ModInitializer {
     }
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher,
-            CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-        LiteralCommandNode<ServerCommandSource> factions = CommandManager
-                .literal("factions")
-                .build();
+            CommandRegistryAccess registryAccess,
+            CommandManager.RegistrationEnvironment environment) {
+        LiteralCommandNode<ServerCommandSource> factions =
+                CommandManager.literal("factions").build();
 
-        LiteralCommandNode<ServerCommandSource> alias = CommandManager
-                .literal("f")
-                .build();
+        LiteralCommandNode<ServerCommandSource> alias = CommandManager.literal("f").build();
 
         dispatcher.getRoot().addChild(factions);
         dispatcher.getRoot().addChild(alias);
 
-        Command[] commands = new Command[] {
-                new AdminCommand(),
-                new SettingsCommand(),
-                new ClaimCommand(),
-                new CreateCommand(),
-                new DeclareCommand(),
-                new DisbandCommand(),
-                new HomeCommand(),
-                new InfoCommand(),
-                new InviteCommand(),
-                new JoinCommand(),
-                new KickCommand(),
-                new LeaveCommand(),
-                new ListCommand(),
-                new MapCommand(),
-                new MemberCommand(),
-                new ModifyCommand(),
-                new RankCommand(),
-                new SafeCommand(),
-                new PermissionCommand()
-        };
+        Command[] commands = new Command[] {new AdminCommand(), new SettingsCommand(),
+                new ClaimCommand(), new CreateCommand(), new DeclareCommand(), new DisbandCommand(),
+                new HomeCommand(), new InfoCommand(), new InviteCommand(), new JoinCommand(),
+                new KickCommand(), new LeaveCommand(), new ListCommand(), new MapCommand(),
+                new MemberCommand(), new ModifyCommand(), new RankCommand(), new SafeCommand(),
+                new PermissionCommand()};
 
         for (Command command : commands) {
             factions.addChild(command.getNode());

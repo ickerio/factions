@@ -4,7 +4,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.User;
@@ -20,8 +19,8 @@ import net.minecraft.world.World;
 @Mixin(EnderChestBlock.class)
 public class EnderChestBlockMixin {
     @Inject(method = "onUse", at = @At("HEAD"), cancellable = true)
-    public void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit,
-            CallbackInfoReturnable<ActionResult> info) {
+    public void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand,
+            BlockHitResult hit, CallbackInfoReturnable<ActionResult> info) {
         if (FactionsMod.CONFIG.SAFE == null || !FactionsMod.CONFIG.SAFE.ENDER_CHEST)
             return;
 

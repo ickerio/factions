@@ -5,7 +5,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
@@ -40,7 +39,8 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         Entity entity = source.getSource();
         if (entity == null || !entity.isPlayer())
             return;
-        PlayerEvents.ON_KILLED_BY_PLAYER.invoker().onKilledByPlayer((ServerPlayerEntity) (Object) this, source);
+        PlayerEvents.ON_KILLED_BY_PLAYER.invoker()
+                .onKilledByPlayer((ServerPlayerEntity) (Object) this, source);
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
@@ -55,8 +55,10 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         Entity source = damageSource.getAttacker();
         if (source == null)
             return;
-        ActionResult result = PlayerEvents.IS_INVULNERABLE.invoker().isInvulnerable(damageSource.getAttacker(),
-                (ServerPlayerEntity) (Object) this);
+
+        ActionResult result = PlayerEvents.IS_INVULNERABLE.invoker()
+                .isInvulnerable(damageSource.getAttacker(), (ServerPlayerEntity) (Object) this);
+
         if (result != ActionResult.PASS)
             info.setReturnValue(result == ActionResult.SUCCESS);
     }
@@ -67,14 +69,14 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
             User member = User.get(((ServerPlayerEntity) (Object) this).getUuid());
             if (member.isInFaction()) {
                 Faction faction = member.getFaction();
-                cir.setReturnValue(new Message(String.format("[%s] ", faction.getName())).format(faction.getColor())
-                        .add(
-                                new Message(((ServerPlayerEntity) (Object) this).getName().getString())
-                                        .format(Formatting.WHITE))
+                cir.setReturnValue(new Message(String.format("[%s] ", faction.getName()))
+                        .format(faction.getColor())
+                        .add(new Message(((ServerPlayerEntity) (Object) this).getName().getString())
+                                .format(Formatting.WHITE))
                         .raw());
             } else {
-                cir.setReturnValue(new Message("[FACTIONLESS] ").format(Formatting.GRAY).add(
-                        new Message(((ServerPlayerEntity) (Object) this).getName().getString())
+                cir.setReturnValue(new Message("[FACTIONLESS] ").format(Formatting.GRAY)
+                        .add(new Message(((ServerPlayerEntity) (Object) this).getName().getString())
                                 .format(Formatting.WHITE))
                         .raw());
             }

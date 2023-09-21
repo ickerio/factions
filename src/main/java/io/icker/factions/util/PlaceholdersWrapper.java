@@ -1,7 +1,6 @@
 package io.icker.factions.util;
 
 import java.util.function.Function;
-
 import eu.pb4.placeholders.api.PlaceholderResult;
 import eu.pb4.placeholders.api.Placeholders;
 import io.icker.factions.FactionsMod;
@@ -15,7 +14,8 @@ import net.minecraft.util.Identifier;
 
 public class PlaceholdersWrapper {
     private static final Text UNFORMATTED_NULL = Text.of("N/A");
-    private static final Text FORMATTED_NULL = UNFORMATTED_NULL.copy().formatted(Formatting.DARK_GRAY);
+    private static final Text FORMATTED_NULL =
+            UNFORMATTED_NULL.copy().formatted(Formatting.DARK_GRAY);
 
     private static void register(String identifier, Function<User, Text> handler) {
         Placeholders.register(new Identifier(FactionsMod.MODID, identifier), (ctx, argument) -> {
@@ -97,9 +97,9 @@ public class PlaceholdersWrapper {
 
             int red = mapBoundRange(faction.calculateMaxPower(), 0, 170, 255, faction.getPower());
             int green = mapBoundRange(0, faction.calculateMaxPower(), 170, 255, faction.getPower());
-            return Text.literal(String.valueOf(faction.getPower())).setStyle(
-                    Style.EMPTY.withColor(
-                            TextColor.parse("#" + Integer.toHexString(red) + Integer.toHexString(green) + "AA")));
+            return Text.literal(String.valueOf(faction.getPower()))
+                    .setStyle(Style.EMPTY.withColor(TextColor.parse(
+                            "#" + Integer.toHexString(red) + Integer.toHexString(green) + "AA")));
         });
 
         register("max_power", (member) -> {
@@ -119,7 +119,8 @@ public class PlaceholdersWrapper {
             if (faction == null)
                 return UNFORMATTED_NULL;
 
-            return Text.of(String.valueOf(faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT));
+            return Text.of(String
+                    .valueOf(faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT));
         });
 
         register("required_power_formatted", (member) -> {
@@ -129,13 +130,14 @@ public class PlaceholdersWrapper {
 
             int reqPower = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
             int red = mapBoundRange(0, faction.getPower(), 85, 255, reqPower);
-            return Text.literal(String.valueOf(reqPower))
-                    .setStyle(Style.EMPTY.withColor(TextColor.parse("#" + Integer.toHexString(red) + "5555")));
+            return Text.literal(String.valueOf(reqPower)).setStyle(Style.EMPTY
+                    .withColor(TextColor.parse("#" + Integer.toHexString(red) + "5555")));
         });
     }
 
-    private static int mapBoundRange(int from_min, int from_max, int to_min, int to_max, int value) {
-        return Math.min(to_max,
-                Math.max(to_min, to_min + ((value - from_min) * (to_max - to_min)) / (from_max - from_min)));
+    private static int mapBoundRange(int from_min, int from_max, int to_min, int to_max,
+            int value) {
+        return Math.min(to_max, Math.max(to_min,
+                to_min + ((value - from_min) * (to_max - to_min)) / (from_max - from_min)));
     }
 }

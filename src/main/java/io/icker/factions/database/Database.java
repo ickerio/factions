@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-
 import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
@@ -18,8 +17,10 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 
 public class Database {
-    private static final File BASE_PATH = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
-    private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<Class<?>, HashMap<String, Field>>();
+    private static final File BASE_PATH =
+            FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
+    private static final HashMap<Class<?>, HashMap<String, Field>> cache =
+            new HashMap<Class<?>, HashMap<String, Field>>();
     private static final String KEY = "CORE";
 
     public static <T, E> HashMap<E, T> load(Class<T> clazz, Function<T, E> getStoreKey) {
@@ -112,7 +113,8 @@ public class Database {
         }
     }
 
-    private static <T> NbtElement serialize(Class<T> clazz, T item) throws IOException, ReflectiveOperationException {
+    private static <T> NbtElement serialize(Class<T> clazz, T item)
+            throws IOException, ReflectiveOperationException {
         if (SerializerRegistry.contains(clazz)) {
             return SerializerRegistry.toNbtElement(clazz, item);
         }
@@ -158,7 +160,8 @@ public class Database {
         for (Field field : clazz.getDeclaredFields()) {
             if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
                 field.setAccessible(true);
-                fields.put(field.getAnnotation(io.icker.factions.database.Field.class).value(), field);
+                fields.put(field.getAnnotation(io.icker.factions.database.Field.class).value(),
+                        field);
 
                 Class<?> type = field.getType();
                 if (!SerializerRegistry.contains(type)) {

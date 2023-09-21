@@ -1,11 +1,9 @@
 package io.icker.factions.command;
 
 import java.util.Collection;
-
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -24,8 +22,7 @@ public class ListCommand implements Command {
 
         new Message("There %s ", size == 1 ? "is" : "are")
                 .add(new Message(String.valueOf(size)).format(Formatting.YELLOW))
-                .add(" faction%s", size == 1 ? "" : "s")
-                .send(player, false);
+                .add(" faction%s", size == 1 ? "" : "s").send(player, false);
 
         if (size == 0)
             return 1;
@@ -33,7 +30,8 @@ public class ListCommand implements Command {
         Message list = new Message("");
         for (Faction faction : factions) {
             String name = faction.getName();
-            list.add(new Message(name).click("/factions info " + name).format(faction.getColor())).add(", ");
+            list.add(new Message(name).click("/factions info " + name).format(faction.getColor()))
+                    .add(", ");
         }
 
         list.send(player, false);
@@ -41,10 +39,7 @@ public class ListCommand implements Command {
     }
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager
-                .literal("list")
-                .requires(Requires.hasPerms("factions.list", 0))
-                .executes(this::run)
-                .build();
+        return CommandManager.literal("list").requires(Requires.hasPerms("factions.list", 0))
+                .executes(this::run).build();
     }
 }

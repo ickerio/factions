@@ -3,7 +3,6 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
@@ -37,8 +36,8 @@ public class KickCommand implements Command {
 
         if (selfUser.rank == User.Rank.LEADER
                 && (targetUser.rank == User.Rank.LEADER || targetUser.rank == User.Rank.OWNER)) {
-            new Message("Cannot kick members with a higher of equivalent rank").format(Formatting.RED).send(player,
-                    false);
+            new Message("Cannot kick members with a higher of equivalent rank")
+                    .format(Formatting.RED).send(player, false);
             return 0;
         }
 
@@ -46,17 +45,18 @@ public class KickCommand implements Command {
         context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
         new Message("Kicked " + player.getName().getString()).send(player, false);
-        new Message("You have been kicked from the faction by " + player.getName().getString()).send(target, false);
+        new Message("You have been kicked from the faction by " + player.getName().getString())
+                .send(target, false);
 
         return 1;
     }
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager
-                .literal("kick")
-                .requires(Requires.multiple(Requires.isLeader(), Requires.hasPerms("factions.kick", 0)))
-                .then(
-                        CommandManager.argument("player", EntityArgumentType.player()).executes(this::run))
+        return CommandManager.literal("kick")
+                .requires(Requires.multiple(Requires.isLeader(),
+                        Requires.hasPerms("factions.kick", 0)))
+                .then(CommandManager.argument("player", EntityArgumentType.player())
+                        .executes(this::run))
                 .build();
     }
 }

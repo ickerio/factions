@@ -23,7 +23,8 @@ public class ServerManager {
         User.save();
     }
 
-    private static void playerJoin(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+    private static void playerJoin(ServerPlayNetworkHandler handler, PacketSender sender,
+            MinecraftServer server) {
         ServerPlayerEntity player = handler.getPlayer();
         User user = User.get(player.getUuid());
 

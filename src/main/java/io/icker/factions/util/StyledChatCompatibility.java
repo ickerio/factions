@@ -1,7 +1,6 @@
 package io.icker.factions.util;
 
 import java.util.UUID;
-
 import eu.pb4.styledchat.other.StyledChatSentMessage;
 import net.minecraft.network.message.SentMessage;
 

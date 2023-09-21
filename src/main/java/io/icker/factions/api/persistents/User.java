@@ -6,10 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
@@ -20,24 +18,15 @@ public class User {
     private static final HashMap<UUID, User> STORE = Database.load(User.class, User::getID);
 
     public enum ChatMode {
-        FOCUS,
-        FACTION,
-        GLOBAL
+        FOCUS, FACTION, GLOBAL
     }
 
     public enum Rank {
-        OWNER,
-        LEADER,
-        COMMANDER,
-        MEMBER,
-        GUEST
+        OWNER, LEADER, COMMANDER, MEMBER, GUEST
     }
 
     public enum SoundMode {
-        NONE,
-        WARNINGS,
-        FACTION,
-        ALL
+        NONE, WARNINGS, FACTION, ALL
     }
 
     @Field("ID")
@@ -68,8 +57,7 @@ public class User {
         this.id = id;
     }
 
-    public User() {
-    }
+    public User() {}
 
     @SuppressWarnings("unused")
     public String getKey() {
@@ -85,9 +73,7 @@ public class User {
     }
 
     public static List<User> getByFaction(UUID factionID) {
-        return STORE.values()
-                .stream()
-                .filter(m -> m.isInFaction() && m.factionID.equals(factionID))
+        return STORE.values().stream().filter(m -> m.isInFaction() && m.factionID.equals(factionID))
                 .toList();
     }
 
@@ -104,11 +90,9 @@ public class User {
     }
 
     private String getEnumName(Enum<?> value) {
-        return Arrays
-                .stream(value.name().split("_"))
+        return Arrays.stream(value.name().split("_"))
                 .map(word -> word.isEmpty() ? word
-                        : Character.toTitleCase(word.charAt(0)) +
-                                word.substring(1).toLowerCase())
+                        : Character.toTitleCase(word.charAt(0)) + word.substring(1).toLowerCase())
                 .collect(Collectors.joining(" "));
     }
 
