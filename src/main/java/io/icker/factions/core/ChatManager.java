@@ -1,8 +1,5 @@
 package io.icker.factions.core;
 
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -12,13 +9,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.UUID;
+
 public class ChatManager {
     public static void register() {
         ServerMessageDecoratorEvent.EVENT.register(ServerMessageDecoratorEvent.CONTENT_PHASE, (sender, message) -> {
             if (sender != null && FactionsMod.CONFIG.DISPLAY.MODIFY_CHAT) {
-                return CompletableFuture.completedFuture(ChatManager.handleMessage(sender, message.getString()));
+                return ChatManager.handleMessage(sender, message.getString());
             }
-            return CompletableFuture.completedFuture(message);
+            return message;
         });
     }
 

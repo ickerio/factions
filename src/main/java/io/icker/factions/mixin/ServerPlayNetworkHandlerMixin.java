@@ -1,20 +1,13 @@
 package io.icker.factions.mixin;
 
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+import io.icker.factions.util.WorldUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -22,15 +15,16 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerPlayNetworkHandlerMixin {
     @Shadow
     public ServerPlayerEntity player;
-
-    @Final
-    @Shadow
-    private MinecraftServer server;
 
     @Inject(method = "onPlayerMove", at = @At("HEAD"))
     public void onPlayerMove(PlayerMoveC2SPacket packet, CallbackInfo ci) {
@@ -48,7 +42,7 @@ public class ServerPlayNetworkHandlerMixin {
             new Message("You can't send a message to faction chat if you aren't in a faction.")
                     .fail().hover("Click to switch to global chat")
                     .click("/factions settings chat global")
-                    .send(server.getPlayerManager().getPlayer(signedMessage.link().sender()),
+                    .send(WorldUtils.server.getPlayerManager().getPlayer(signedMessage.link().sender()),
                             false);
 
             ci.cancel();

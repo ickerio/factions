@@ -1,10 +1,5 @@
 package io.icker.factions.mixin;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
@@ -14,24 +9,22 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     protected ServerPlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
-    }
-
-    @Inject(at = @At("HEAD"), method = "setClientSettings")
-    public void setClientSettings(ClientSettingsC2SPacket packet, CallbackInfo info) {
-        User member = User.get(((ServerPlayerEntity) (Object) this).getUuid());
-        member.language = packet.language();
     }
 
     @Inject(at = @At("HEAD"), method = "onDeath")
