@@ -10,7 +10,7 @@ import net.minecraft.server.MinecraftServer;
 
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
-    @Inject(at = @At("HEAD"), method="Lnet/minecraft/server/MinecraftServer;save(ZZZ)Z")
+    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/server/MinecraftServer;save(ZZZ)Z")
     public void save(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> ci) {
         MiscEvents.ON_SAVE.invoker().onSave((MinecraftServer) (Object) this);
     }

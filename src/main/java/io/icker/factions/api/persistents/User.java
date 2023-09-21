@@ -1,14 +1,19 @@
 package io.icker.factions.api.persistents;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Name("User")
 public class User {
@@ -63,7 +68,8 @@ public class User {
         this.id = id;
     }
 
-    public User() {}
+    public User() {
+    }
 
     @SuppressWarnings("unused")
     public String getKey() {
@@ -100,9 +106,9 @@ public class User {
     private String getEnumName(Enum<?> value) {
         return Arrays
                 .stream(value.name().split("_"))
-                .map(word -> word.isEmpty() ? word :
-                        Character.toTitleCase(word.charAt(0)) +
-                        word.substring(1).toLowerCase())
+                .map(word -> word.isEmpty() ? word
+                        : Character.toTitleCase(word.charAt(0)) +
+                                word.substring(1).toLowerCase())
                 .collect(Collectors.joining(" "));
     }
 

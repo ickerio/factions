@@ -1,31 +1,39 @@
 package io.icker.factions.config;
 
-import com.google.gson.*;
-import com.google.gson.annotations.SerializedName;
-import io.icker.factions.FactionsMod;
-import io.icker.factions.api.persistents.Relationship;
-import net.fabricmc.loader.api.FabricLoader;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.annotations.SerializedName;
+
+import io.icker.factions.FactionsMod;
+import io.icker.factions.api.persistents.Relationship;
+import net.fabricmc.loader.api.FabricLoader;
+
 public class Config {
     private static final int REQUIRED_VERSION = 3;
-    private static final File file = FabricLoader.getInstance().getGameDir().resolve("config").resolve("factions.json").toFile();
+    private static final File file = FabricLoader.getInstance().getGameDir().resolve("config").resolve("factions.json")
+            .toFile();
 
     public static Config load() {
         Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .disableHtmlEscaping()
-            .serializeNulls()
-            .registerTypeAdapter(HomeConfig.class, new Deserializer<>(HomeConfig.class))
-            .registerTypeAdapter(PowerConfig.class, new Deserializer<>(PowerConfig.class))
-            .registerTypeAdapter(SafeConfig.class, new Deserializer<>(SafeConfig.class))
-            .create();
+                .setPrettyPrinting()
+                .disableHtmlEscaping()
+                .serializeNulls()
+                .registerTypeAdapter(HomeConfig.class, new Deserializer<>(HomeConfig.class))
+                .registerTypeAdapter(PowerConfig.class, new Deserializer<>(PowerConfig.class))
+                .registerTypeAdapter(SafeConfig.class, new Deserializer<>(SafeConfig.class))
+                .create();
 
         try {
             if (!file.exists()) {
@@ -39,11 +47,12 @@ public class Config {
 
                 return defaults;
             }
-    
+
             Config config = gson.fromJson(new FileReader(file), Config.class);
-    
+
             if (config.VERSION != REQUIRED_VERSION) {
-                FactionsMod.LOGGER.error(String.format("Config file incompatible (requires version %d)", REQUIRED_VERSION));
+                FactionsMod.LOGGER
+                        .error(String.format("Config file incompatible (requires version %d)", REQUIRED_VERSION));
             }
 
             return config;
@@ -107,7 +116,8 @@ public class Config {
         public boolean ALLY_OVERRIDES_PERMISSIONS = true;
 
         @SerializedName("defaultGuestPermissions")
-        public List<Relationship.Permissions> DEFAULT_GUEST_PERMISSIONS = List.of(Relationship.Permissions.USE_BLOCKS, Relationship.Permissions.USE_ENTITIES);
+        public List<Relationship.Permissions> DEFAULT_GUEST_PERMISSIONS = List.of(Relationship.Permissions.USE_BLOCKS,
+                Relationship.Permissions.USE_ENTITIES);
     }
 
     public static class Deserializer<T> implements JsonDeserializer<T> {
@@ -118,7 +128,8 @@ public class Config {
         }
 
         @Override
-        public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
             if (!json.isJsonObject() && !json.getAsBoolean()) {
                 return null;
             }

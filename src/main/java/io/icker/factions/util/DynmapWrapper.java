@@ -1,5 +1,13 @@
 package io.icker.factions.util;
 
+import org.dynmap.DynmapCommonAPI;
+import org.dynmap.DynmapCommonAPIListener;
+import org.dynmap.markers.AreaMarker;
+import org.dynmap.markers.GenericMarker;
+import org.dynmap.markers.Marker;
+import org.dynmap.markers.MarkerAPI;
+import org.dynmap.markers.MarkerSet;
+
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.events.FactionEvents;
@@ -10,9 +18,6 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import org.dynmap.DynmapCommonAPI;
-import org.dynmap.DynmapCommonAPIListener;
-import org.dynmap.markers.*;
 
 public class DynmapWrapper {
     private DynmapCommonAPI api;

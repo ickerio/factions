@@ -23,9 +23,8 @@ public class InteractionsUtil {
         SoundManager.warningSound(player);
         User user = User.get(player.getUuid());
         new Message(
-            "Cannot %s here", 
-            action
-        ).fail()
-            .send(player, !user.radar);
+                "Cannot %s here",
+                action).fail()
+                .send(player, !user.radar);
     }
 }

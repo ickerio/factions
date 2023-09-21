@@ -26,12 +26,14 @@ public class Database {
         String name = clazz.getAnnotation(Name.class).value();
         File file = new File(BASE_PATH, name.toLowerCase() + ".dat");
 
-        if (!cache.containsKey(clazz)) setup(clazz);
+        if (!cache.containsKey(clazz))
+            setup(clazz);
 
         HashMap<E, T> store = new HashMap<E, T>();
 
         if (!file.exists()) {
-            if (!BASE_PATH.exists()) BASE_PATH.mkdir();
+            if (!BASE_PATH.exists())
+                BASE_PATH.mkdir();
             try {
                 file.createNewFile();
             } catch (IOException e) {
@@ -52,7 +54,8 @@ public class Database {
         return store;
     }
 
-    private static <T> T deserialize(Class<T> clazz, NbtElement value) throws IOException, ReflectiveOperationException {
+    private static <T> T deserialize(Class<T> clazz, NbtElement value)
+            throws IOException, ReflectiveOperationException {
         if (SerializerRegistry.contains(clazz)) {
             return SerializerRegistry.fromNbtElement(clazz, value);
         }
@@ -65,12 +68,14 @@ public class Database {
             String key = entry.getKey();
             Field field = entry.getValue();
 
-            if (!compound.contains(key)) continue;
+            if (!compound.contains(key))
+                continue;
 
             Class<?> type = field.getType();
 
             if (ArrayList.class.isAssignableFrom(type)) {
-                Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+                Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType())
+                        .getActualTypeArguments()[0];
                 field.set(item, deserializeList(genericType, (NbtList) compound.get(key)));
             } else {
                 field.set(item, deserialize(type, compound.get(key)));
@@ -80,7 +85,8 @@ public class Database {
         return item;
     }
 
-    private static <T> ArrayList<T> deserializeList(Class<T> clazz, NbtList list) throws IOException, ReflectiveOperationException {
+    private static <T> ArrayList<T> deserializeList(Class<T> clazz, NbtList list)
+            throws IOException, ReflectiveOperationException {
         ArrayList<T> store = new ArrayList<T>();
 
         for (int i = 0; i < list.size(); i++) {
@@ -94,11 +100,12 @@ public class Database {
         String name = clazz.getAnnotation(Name.class).value();
         File file = new File(BASE_PATH, name.toLowerCase() + ".dat");
 
-        if (!cache.containsKey(clazz)) setup(clazz);
+        if (!cache.containsKey(clazz))
+            setup(clazz);
 
         try {
             NbtCompound fileData = new NbtCompound();
-            fileData.put(KEY,  serializeList(clazz, items));
+            fileData.put(KEY, serializeList(clazz, items));
             NbtIo.writeCompressed(fileData, file);
         } catch (IOException | ReflectiveOperationException e) {
             FactionsMod.LOGGER.error("Failed to write NBT data ({})", file, e);
@@ -119,10 +126,12 @@ public class Database {
             Class<?> type = field.getType();
             Object data = field.get(item);
 
-            if (data == null) continue;
+            if (data == null)
+                continue;
 
             if (ArrayList.class.isAssignableFrom(type)) {
-                Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+                Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType())
+                        .getActualTypeArguments()[0];
                 compound.put(key, serializeList(genericType, cast(data)));
             } else {
                 compound.put(key, serialize(type, cast(data)));
@@ -132,7 +141,8 @@ public class Database {
         return compound;
     }
 
-    private static <T> NbtList serializeList(Class<T> clazz, List<T> items) throws IOException, ReflectiveOperationException {
+    private static <T> NbtList serializeList(Class<T> clazz, List<T> items)
+            throws IOException, ReflectiveOperationException {
         NbtList list = new NbtList();
 
         for (T item : items) {

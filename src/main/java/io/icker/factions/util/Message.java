@@ -67,7 +67,8 @@ public class Message {
         Message message = this.prependFaction(faction);
         for (User member : faction.getUsers()) {
             ServerPlayerEntity player = manager.getPlayer(member.getID());
-            if (player != null) message.send(player, false);
+            if (player != null)
+                message.send(player, false);
         }
         return this;
     }
@@ -75,7 +76,8 @@ public class Message {
     public void sendToGlobalChat() {
         for (ServerPlayerEntity player : manager.getPlayerList()) {
             User.ChatMode option = User.get(player.getUuid()).chat;
-            if (option != User.ChatMode.FOCUS) player.sendMessage(text, false);
+            if (option != User.ChatMode.FOCUS)
+                player.sendMessage(text, false);
         }
     }
 
@@ -88,7 +90,8 @@ public class Message {
 
     public Message prependFaction(Faction faction) {
         text = new Message("")
-                .add(new Message(faction.getColor().toString() + Formatting.BOLD + faction.getName()).hover(faction.getDescription()))
+                .add(new Message(faction.getColor().toString() + Formatting.BOLD + faction.getName())
+                        .hover(faction.getDescription()))
                 .filler("»")
                 .raw()
                 .append(text);

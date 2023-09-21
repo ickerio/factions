@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -33,12 +34,14 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        if (FactionsMod.CONFIG.MAX_FACTION_SIZE != -1 && faction.getUsers().size() >= FactionsMod.CONFIG.MAX_FACTION_SIZE) {
+        if (FactionsMod.CONFIG.MAX_FACTION_SIZE != -1
+                && faction.getUsers().size() >= FactionsMod.CONFIG.MAX_FACTION_SIZE) {
             new Message("Cannot join faction as it is currently full").fail().send(player, false);
             return 0;
         }
 
-        if (invited) faction.invites.remove(player.getUuid());
+        if (invited)
+            faction.invites.remove(player.getUuid());
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.MEMBER);
         source.getServer().getPlayerManager().sendCommandTree(player);
 
@@ -49,13 +52,12 @@ public class JoinCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-            .literal("join")
-            .requires(Requires.multiple(Requires.isFactionless(), Requires.hasPerms("factions.join", 0)))
-            .then(
-                CommandManager.argument("name", StringArgumentType.greedyString())
-                .suggests(Suggests.openInvitedFactions())
-                .executes(this::run)
-            )
-            .build();
+                .literal("join")
+                .requires(Requires.multiple(Requires.isFactionless(), Requires.hasPerms("factions.join", 0)))
+                .then(
+                        CommandManager.argument("name", StringArgumentType.greedyString())
+                                .suggests(Suggests.openInvitedFactions())
+                                .executes(this::run))
+                .build();
     }
 }

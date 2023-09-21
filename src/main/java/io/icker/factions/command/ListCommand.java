@@ -27,7 +27,8 @@ public class ListCommand implements Command {
                 .add(" faction%s", size == 1 ? "" : "s")
                 .send(player, false);
 
-        if (size == 0) return 1;
+        if (size == 0)
+            return 1;
 
         Message list = new Message("");
         for (Faction faction : factions) {
@@ -41,9 +42,9 @@ public class ListCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-            .literal("list")
-            .requires(Requires.hasPerms("factions.list", 0))
-            .executes(this::run)
-            .build();
+                .literal("list")
+                .requires(Requires.hasPerms("factions.list", 0))
+                .executes(this::run)
+                .build();
     }
 }

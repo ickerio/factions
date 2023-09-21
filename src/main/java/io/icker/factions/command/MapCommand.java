@@ -3,6 +3,7 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.util.Command;
@@ -14,7 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 
-public class MapCommand implements Command{
+public class MapCommand implements Command {
     private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
@@ -27,7 +28,7 @@ public class MapCommand implements Command{
         // Print the header of the faction map.
         new Message(Formatting.DARK_GRAY + "──┤" + Formatting.GREEN +
                 " Faction Map" + Formatting.DARK_GRAY + "├──")
-            .send(player, false);
+                .send(player, false);
 
         for (int z = -4; z <= 5; z++) { // Rows (10)
             Message row = new Message("");
@@ -59,9 +60,9 @@ public class MapCommand implements Command{
     @Override
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-            .literal("map")
-            .requires(Requires.hasPerms("factions.map", 0))
-            .executes(this::run)
-            .build();
+                .literal("map")
+                .requires(Requires.hasPerms("factions.map", 0))
+                .executes(this::run)
+                .build();
     }
 }

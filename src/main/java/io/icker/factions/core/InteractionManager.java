@@ -45,7 +45,8 @@ public class InteractionManager {
         PlayerEvents.PLACE_BLOCK.register(InteractionManager::onPlaceBlock);
     }
 
-    private static boolean onBreakBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+    private static boolean onBreakBlock(World world, PlayerEntity player, BlockPos pos, BlockState state,
+            BlockEntity blockEntity) {
         boolean result = checkPermissions(player, pos, world, Permissions.BREAK_BLOCKS) == ActionResult.FAIL;
         if (result) {
             InteractionsUtil.warn(player, "break blocks");
@@ -74,7 +75,8 @@ public class InteractionManager {
     }
 
     private static ActionResult onPlaceBlock(ItemUsageContext context) {
-        if (checkPermissions(context.getPlayer(), context.getBlockPos(), context.getWorld(), Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
+        if (checkPermissions(context.getPlayer(), context.getBlockPos(), context.getWorld(),
+                Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
             InteractionsUtil.warn(context.getPlayer(), "place blocks");
             InteractionsUtil.sync(context.getPlayer(), context.getStack(), context.getHand());
             return ActionResult.FAIL;
@@ -93,9 +95,10 @@ public class InteractionManager {
                 InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                 return TypedActionResult.fail(player.getStackInHand(hand));
             }
-                
+
             Fluid fluid = ((BucketItemMixin) item).getFluid();
-            FluidHandling handling = fluid == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
+            FluidHandling handling = fluid == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY
+                    : RaycastContext.FluidHandling.NONE;
 
             BlockHitResult raycastResult = ItemMixin.raycast(world, player, handling);
 
@@ -116,12 +119,13 @@ public class InteractionManager {
             }
         }
 
-
         return TypedActionResult.pass(player.getStackInHand(hand));
     }
 
-    private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
-        if (entity != null && checkPermissions(player, entity.getBlockPos(), world, Permissions.ATTACK_ENTITIES) == ActionResult.FAIL) {
+    private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand, Entity entity,
+            EntityHitResult hitResult) {
+        if (entity != null && checkPermissions(player, entity.getBlockPos(), world,
+                Permissions.ATTACK_ENTITIES) == ActionResult.FAIL) {
             InteractionsUtil.warn(player, "attack entities");
             return ActionResult.FAIL;
         }
@@ -148,7 +152,8 @@ public class InteractionManager {
     }
 
     private static ActionResult isInvulnerableTo(Entity source, Entity target) {
-        if (!source.isPlayer() || FactionsMod.CONFIG.FRIENDLY_FIRE) return ActionResult.PASS;
+        if (!source.isPlayer() || FactionsMod.CONFIG.FRIENDLY_FIRE)
+            return ActionResult.PASS;
 
         User sourceUser = User.get(source.getUuid());
         User targetUser = User.get(target.getUuid());
@@ -171,7 +176,8 @@ public class InteractionManager {
         return ActionResult.PASS;
     }
 
-    private static ActionResult checkPermissions(PlayerEntity player, BlockPos position, World world, Permissions permission) {
+    private static ActionResult checkPermissions(PlayerEntity player, BlockPos position, World world,
+            Permissions permission) {
         if (!FactionsMod.CONFIG.CLAIM_PROTECTION) {
             return ActionResult.PASS;
         }
@@ -185,7 +191,8 @@ public class InteractionManager {
         ChunkPos chunkPosition = world.getChunk(position).getPos();
 
         Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
-        if (claim == null) return ActionResult.PASS;
+        if (claim == null)
+            return ActionResult.PASS;
 
         Faction claimFaction = claim.getFaction();
 
@@ -199,15 +206,19 @@ public class InteractionManager {
 
         Faction userFaction = user.getFaction();
 
-        if (claimFaction == userFaction && (getRankLevel(claim.accessLevel) <= getRankLevel(user.rank) || (user.rank == User.Rank.GUEST && claimFaction.guest_permissions.contains(permission) && claim.accessLevel == User.Rank.MEMBER))) {
+        if (claimFaction == userFaction && (getRankLevel(claim.accessLevel) <= getRankLevel(user.rank)
+                || (user.rank == User.Rank.GUEST && claimFaction.guest_permissions.contains(permission)
+                        && claim.accessLevel == User.Rank.MEMBER))) {
             return ActionResult.SUCCESS;
         }
 
-        if (FactionsMod.CONFIG.RELATIONSHIPS.ALLY_OVERRIDES_PERMISSIONS && claimFaction.isMutualAllies(userFaction.getID()) && claim.accessLevel == User.Rank.MEMBER) {
+        if (FactionsMod.CONFIG.RELATIONSHIPS.ALLY_OVERRIDES_PERMISSIONS
+                && claimFaction.isMutualAllies(userFaction.getID()) && claim.accessLevel == User.Rank.MEMBER) {
             return ActionResult.SUCCESS;
         }
 
-        if (claimFaction.getRelationship(userFaction.getID()).permissions.contains(permission) && claim.accessLevel == User.Rank.MEMBER) {
+        if (claimFaction.getRelationship(userFaction.getID()).permissions.contains(permission)
+                && claim.accessLevel == User.Rank.MEMBER) {
             return ActionResult.SUCCESS;
         }
 
@@ -216,12 +227,24 @@ public class InteractionManager {
 
     private static int getRankLevel(User.Rank rank) {
         switch (rank) {
-            case OWNER -> { return 3; }
-            case LEADER -> { return 2; }
-            case COMMANDER -> { return 1; }
-            case MEMBER -> { return 0; }
-            case GUEST -> { return -1; }
-            default -> { return -2; }
+            case OWNER -> {
+                return 3;
+            }
+            case LEADER -> {
+                return 2;
+            }
+            case COMMANDER -> {
+                return 1;
+            }
+            case MEMBER -> {
+                return 0;
+            }
+            case GUEST -> {
+                return -1;
+            }
+            default -> {
+                return -2;
+            }
         }
     }
 }

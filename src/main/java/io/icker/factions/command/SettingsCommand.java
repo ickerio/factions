@@ -12,19 +12,19 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
-public class SettingsCommand implements Command{
-    private int setChat(CommandContext<ServerCommandSource> context, User.ChatMode option) throws CommandSyntaxException {
+public class SettingsCommand implements Command {
+    private int setChat(CommandContext<ServerCommandSource> context, User.ChatMode option)
+            throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         User user = User.get(player.getUuid());
-        user.chat = option;   
+        user.chat = option;
 
         new Message("Successfully set your chat preference")
-            .filler("·")
-            .add(
-                new Message(user.getChatName())
-                    .format(Formatting.BLUE)
-            )
-            .send(player, false);
+                .filler("·")
+                .add(
+                        new Message(user.getChatName())
+                                .format(Formatting.BLUE))
+                .send(player, false);
 
         return 1;
     }
@@ -35,13 +35,12 @@ public class SettingsCommand implements Command{
         user.sounds = option;
 
         new Message("Successfully set your sound preference")
-            .filler("·")
-            .add(
-                new Message(user.getSoundName())
-                    .format(Formatting.BLUE)
-            )
-            .send(player, false);
-            
+                .filler("·")
+                .add(
+                        new Message(user.getSoundName())
+                                .format(Formatting.BLUE))
+                .send(player, false);
+
         return 1;
     }
 
@@ -54,40 +53,43 @@ public class SettingsCommand implements Command{
         config.radar = radar;
 
         new Message("Successfully toggled claim radar")
-            .filler("·")
-            .add(
-                new Message(radar ? "ON" : "OFF")
-                    .format(radar ? Formatting.GREEN : Formatting.RED)
-            )
-            .send(player, false);
+                .filler("·")
+                .add(
+                        new Message(radar ? "ON" : "OFF")
+                                .format(radar ? Formatting.GREEN : Formatting.RED))
+                .send(player, false);
 
         return 1;
     }
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-            .literal("settings")
-            .requires(Requires.hasPerms("factions.settings", 0))
-            .then(
-                CommandManager.literal("chat")
-                .requires(Requires.hasPerms("factions.settings.chat", 0))
-                .then(CommandManager.literal("global").executes(context -> setChat(context, User.ChatMode.GLOBAL)))
-                .then(CommandManager.literal("faction").executes(context -> setChat(context, User.ChatMode.FACTION)))
-                .then(CommandManager.literal("focus").executes(context -> setChat(context, User.ChatMode.FOCUS)))
-            )
-            .then(
-                CommandManager.literal("radar")
-                .requires(Requires.hasPerms("factions.settings.radar", 0))
-                .executes(this::radar)
-            )
-            .then(
-                CommandManager.literal("sounds")
-                .requires(Requires.hasPerms("factions.settings.sounds", 0))
-                .then(CommandManager.literal("none").executes(context -> setSounds(context, User.SoundMode.NONE)))
-                .then(CommandManager.literal("warnings").executes(context -> setSounds(context, User.SoundMode.WARNINGS)))
-                .then(CommandManager.literal("faction").executes(context -> setSounds(context, User.SoundMode.FACTION)))
-                .then(CommandManager.literal("all").executes(context -> setSounds(context, User.SoundMode.ALL)))
-            )
-            .build();
+                .literal("settings")
+                .requires(Requires.hasPerms("factions.settings", 0))
+                .then(
+                        CommandManager.literal("chat")
+                                .requires(Requires.hasPerms("factions.settings.chat", 0))
+                                .then(CommandManager.literal("global")
+                                        .executes(context -> setChat(context, User.ChatMode.GLOBAL)))
+                                .then(CommandManager.literal("faction")
+                                        .executes(context -> setChat(context, User.ChatMode.FACTION)))
+                                .then(CommandManager.literal("focus")
+                                        .executes(context -> setChat(context, User.ChatMode.FOCUS))))
+                .then(
+                        CommandManager.literal("radar")
+                                .requires(Requires.hasPerms("factions.settings.radar", 0))
+                                .executes(this::radar))
+                .then(
+                        CommandManager.literal("sounds")
+                                .requires(Requires.hasPerms("factions.settings.sounds", 0))
+                                .then(CommandManager.literal("none")
+                                        .executes(context -> setSounds(context, User.SoundMode.NONE)))
+                                .then(CommandManager.literal("warnings")
+                                        .executes(context -> setSounds(context, User.SoundMode.WARNINGS)))
+                                .then(CommandManager.literal("faction")
+                                        .executes(context -> setSounds(context, User.SoundMode.FACTION)))
+                                .then(CommandManager.literal("all")
+                                        .executes(context -> setSounds(context, User.SoundMode.ALL))))
+                .build();
     }
 }

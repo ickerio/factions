@@ -16,10 +16,14 @@ public class SoundManager {
 
     public static void register() {
         ClaimEvents.ADD.register(claim -> playFaction(claim.getFaction(), SoundEvents.BLOCK_NOTE_BLOCK_PLING, 2.0F));
-        ClaimEvents.REMOVE.register((x, z, level, faction) -> playFaction(faction, SoundEvents.BLOCK_NOTE_BLOCK_PLING, 0.5F));
-        FactionEvents.POWER_CHANGE.register((faction, oldPower) -> playFaction(faction, SoundEvents.BLOCK_NOTE_BLOCK_CHIME, 1F));
-        FactionEvents.MEMBER_JOIN.register((faction, user) -> playFaction(faction, SoundEvents.BLOCK_NOTE_BLOCK_BIT, 2.0F));
-        FactionEvents.MEMBER_LEAVE.register((faction, user) -> playFaction(faction, SoundEvents.BLOCK_NOTE_BLOCK_BIT, 0.5F));
+        ClaimEvents.REMOVE
+                .register((x, z, level, faction) -> playFaction(faction, SoundEvents.BLOCK_NOTE_BLOCK_PLING, 0.5F));
+        FactionEvents.POWER_CHANGE
+                .register((faction, oldPower) -> playFaction(faction, SoundEvents.BLOCK_NOTE_BLOCK_CHIME, 1F));
+        FactionEvents.MEMBER_JOIN
+                .register((faction, user) -> playFaction(faction, SoundEvents.BLOCK_NOTE_BLOCK_BIT, 2.0F));
+        FactionEvents.MEMBER_LEAVE
+                .register((faction, user) -> playFaction(faction, SoundEvents.BLOCK_NOTE_BLOCK_BIT, 0.5F));
     }
 
     private static void playFaction(Faction faction, RegistryEntry.Reference<SoundEvent> soundEvent, float pitch) {

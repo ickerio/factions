@@ -1,9 +1,12 @@
 package io.icker.factions.command;
 
+import java.util.Locale;
+
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import io.icker.factions.api.events.RelationshipEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Relationship;
@@ -13,8 +16,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
-
-import java.util.Locale;
 
 public class DeclareCommand implements Command {
     private int ally(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -29,7 +30,8 @@ public class DeclareCommand implements Command {
         return updateRelationship(context, Relationship.Status.ENEMY);
     }
 
-    private int updateRelationship(CommandContext<ServerCommandSource> context, Relationship.Status status) throws CommandSyntaxException {
+    private int updateRelationship(CommandContext<ServerCommandSource> context, Relationship.Status status)
+            throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, "faction");
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
@@ -37,10 +39,11 @@ public class DeclareCommand implements Command {
         Faction targetFaction = Faction.getByName(name);
 
         if (targetFaction == null) {
-            new Message("Cannot change faction relationship with a faction that doesn't exist").fail().send(player, false);
+            new Message("Cannot change faction relationship with a faction that doesn't exist").fail().send(player,
+                    false);
             return 0;
         }
-        
+
         Faction sourceFaction = Command.getUser(player).getFaction();
 
         if (sourceFaction.equals(targetFaction)) {
@@ -49,13 +52,15 @@ public class DeclareCommand implements Command {
         }
 
         if (sourceFaction.getRelationship(targetFaction.getID()).status == status) {
-            new Message("That faction relationship has already been declared with this faction").fail().send(player, false);
+            new Message("That faction relationship has already been declared with this faction").fail().send(player,
+                    false);
             return 0;
         }
 
         Relationship.Status mutual = null;
 
-        if (sourceFaction.getRelationship(targetFaction.getID()).status == targetFaction.getRelationship(sourceFaction.getID()).status) {
+        if (sourceFaction.getRelationship(targetFaction.getID()).status == targetFaction
+                .getRelationship(sourceFaction.getID()).status) {
             mutual = sourceFaction.getRelationship(targetFaction.getID()).status;
         }
 
@@ -65,14 +70,16 @@ public class DeclareCommand implements Command {
 
         RelationshipEvents.NEW_DECLARATION.invoker().onNewDecleration(rel);
 
-        Message msgStatus = rel.status == Relationship.Status.ALLY ? new Message("allies").format(Formatting.GREEN) 
-        : rel.status == Relationship.Status.ENEMY ? new Message("enemies").format(Formatting.RED) 
-        : new Message("neutral");
+        Message msgStatus = rel.status == Relationship.Status.ALLY ? new Message("allies").format(Formatting.GREEN)
+                : rel.status == Relationship.Status.ENEMY ? new Message("enemies").format(Formatting.RED)
+                        : new Message("neutral");
 
         if (rel.status == rev.status) {
             RelationshipEvents.NEW_MUTUAL.invoker().onNewMutual(rel);
-            new Message("You are now mutually ").add(msgStatus).add(" with " + targetFaction.getName()).send(sourceFaction);
-            new Message("You are now mutually ").add(msgStatus).add(" with " + sourceFaction.getName()).send(targetFaction);
+            new Message("You are now mutually ").add(msgStatus).add(" with " + targetFaction.getName())
+                    .send(sourceFaction);
+            new Message("You are now mutually ").add(msgStatus).add(" with " + sourceFaction.getName())
+                    .send(targetFaction);
             return 1;
         } else if (mutual != null) {
             RelationshipEvents.END_MUTUAL.invoker().onEndMutual(rel, mutual);
@@ -82,47 +89,42 @@ public class DeclareCommand implements Command {
 
         if (rel.status != Relationship.Status.NEUTRAL)
             new Message(sourceFaction.getName() + " have declared you as ")
-                .add(msgStatus)
-                .hover("Click to add them back")
-                .click(String.format("/factions declare %s %s", rel.status.toString().toLowerCase(Locale.ROOT), sourceFaction.getName()))
-                .send(targetFaction);
-      
+                    .add(msgStatus)
+                    .hover("Click to add them back")
+                    .click(String.format("/factions declare %s %s", rel.status.toString().toLowerCase(Locale.ROOT),
+                            sourceFaction.getName()))
+                    .send(targetFaction);
+
         return 1;
     }
 
     @Override
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-            .literal("declare")
-            .requires(Requires.isLeader())
-            .then(
-                CommandManager.literal("ally")
-                .requires(Requires.hasPerms("factions.declare.ally", 0))
+                .literal("declare")
+                .requires(Requires.isLeader())
                 .then(
-                    CommandManager.argument("faction", StringArgumentType.greedyString())
-                    .suggests(Suggests.allFactions(false))
-                    .executes(this::ally)
-                )
-            )
-            .then(
-                CommandManager.literal("neutral")
-                .requires(Requires.hasPerms("factions.declare.neutral", 0))
+                        CommandManager.literal("ally")
+                                .requires(Requires.hasPerms("factions.declare.ally", 0))
+                                .then(
+                                        CommandManager.argument("faction", StringArgumentType.greedyString())
+                                                .suggests(Suggests.allFactions(false))
+                                                .executes(this::ally)))
                 .then(
-                    CommandManager.argument("faction", StringArgumentType.greedyString())
-                    .suggests(Suggests.allFactions(false))
-                    .executes(this::neutral)
-                )
-            )
-            .then(
-                CommandManager.literal("enemy")
-                .requires(Requires.hasPerms("factions.declare.enemy", 0))
+                        CommandManager.literal("neutral")
+                                .requires(Requires.hasPerms("factions.declare.neutral", 0))
+                                .then(
+                                        CommandManager.argument("faction", StringArgumentType.greedyString())
+                                                .suggests(Suggests.allFactions(false))
+                                                .executes(this::neutral)))
                 .then(
-                    CommandManager.argument("faction", StringArgumentType.greedyString())
-                    .suggests(Suggests.allFactions(false))
-                    .executes(this::enemy)
-                )
-            )
-            .build();
+                        CommandManager.literal("enemy")
+                                .requires(Requires.hasPerms("factions.declare.enemy", 0))
+                                .then(
+                                        CommandManager.argument("faction", StringArgumentType.greedyString())
+                                                .suggests(Suggests.allFactions(false))
+                                                .executes(this::enemy)))
+                .build();
     }
-    
+
 }

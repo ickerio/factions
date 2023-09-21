@@ -2,6 +2,7 @@ package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.util.Command;
@@ -20,15 +21,13 @@ public class SafeCommand implements Command {
     @Override
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-            .literal("safe")
-            .requires(
-                Requires.multiple(
-                    Requires.hasPerms("faction.safe", 0),
-                    Requires.isMember(),
-                    s -> FactionsMod.CONFIG.SAFE != null
-                )
-            )
-            .executes(this::run)
-            .build();
+                .literal("safe")
+                .requires(
+                        Requires.multiple(
+                                Requires.hasPerms("faction.safe", 0),
+                                Requires.isMember(),
+                                s -> FactionsMod.CONFIG.SAFE != null))
+                .executes(this::run)
+                .build();
     }
 }

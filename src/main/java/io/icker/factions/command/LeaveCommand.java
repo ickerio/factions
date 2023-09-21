@@ -3,6 +3,7 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
@@ -23,8 +24,8 @@ public class LeaveCommand implements Command {
         user.leaveFaction();
         new Message(player.getName().getString() + " left").send(faction);
         new Message("You have left this faction.")
-            .prependFaction(faction)
-            .send(player, false);
+                .prependFaction(faction)
+                .send(player, false);
 
         context.getSource().getServer().getPlayerManager().sendCommandTree(player);
 
@@ -39,9 +40,10 @@ public class LeaveCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-            .literal("leave")
-            .requires(Requires.multiple(Requires.require(m -> m.isInFaction() && m.rank != User.Rank.OWNER), Requires.hasPerms("factions.leave", 0)))
-            .executes(this::run)
-            .build();
+                .literal("leave")
+                .requires(Requires.multiple(Requires.require(m -> m.isInFaction() && m.rank != User.Rank.OWNER),
+                        Requires.hasPerms("factions.leave", 0)))
+                .executes(this::run)
+                .build();
     }
 }

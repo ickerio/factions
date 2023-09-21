@@ -1,250 +1,141 @@
 package io.icker.factions.util;
 
+import java.util.function.Function;
+
+import eu.pb4.placeholders.api.PlaceholderResult;
+import eu.pb4.placeholders.api.Placeholders;
 import io.icker.factions.FactionsMod;
+import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import static eu.pb4.placeholders.api.PlaceholderResult.invalid;
-import static eu.pb4.placeholders.api.PlaceholderResult.value;
-import static eu.pb4.placeholders.api.Placeholders.register;
-import static io.icker.factions.FactionsMod.MODID;
-import static java.lang.Integer.*;
-import static net.minecraft.util.Formatting.DARK_GRAY;
-
 public class PlaceholdersWrapper {
-    public static final Identifier FACTION_NAME_ID = new Identifier(MODID, "name");
-    public static final Identifier FACTION_COLORLESS_NAME_ID = new Identifier(MODID, "colorless_name");
-    public static final Identifier FACTION_CHAT_ID = new Identifier(MODID, "chat");
-    public static final Identifier FACTION_RANK_ID = new Identifier(MODID, "rank");
-    public static final Identifier FACTION_COLOR_ID = new Identifier(MODID, "color");
-    public static final Identifier FACTION_DESCRIPTION_ID = new Identifier(MODID, "description");
-    public static final Identifier FACTION_STATE_ID = new Identifier(MODID, "state");
-    public static final Identifier FACTION_POWER_ID = new Identifier(MODID, "power");
-    public static final Identifier FACTION_POWER_FORMATTED_ID = new Identifier(MODID, "power_formatted");
-    public static final Identifier FACTION_MAX_POWER_ID = new Identifier(MODID, "max_power");
-    public static final Identifier FACTION_PLAYER_POWER_ID = new Identifier(MODID, "player_power");
-    public static final Identifier FACTION_REQUIRED_POWER_ID = new Identifier(MODID, "required_power");
-    public static final Identifier FACTION_REQUIRED_POWER_FORMATTED_ID = new Identifier(MODID,
-            "required_power_formatted");
-    public static final String NULL_STRING = "N/A";
-    public static final Text NULL_TEXT = Text.literal(NULL_STRING).formatted(DARK_GRAY);
+    private static final Text UNFORMATTED_NULL = Text.of("N/A");
+    private static final Text FORMATTED_NULL = UNFORMATTED_NULL.copy().formatted(Formatting.DARK_GRAY);
 
-    public static void init() {
-        register(FACTION_NAME_ID, (ctx, argument) -> {
+    private static void register(String identifier, Function<User, Text> handler) {
+        Placeholders.register(new Identifier(FactionsMod.MODID, identifier), (ctx, argument) -> {
             if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
+                return PlaceholderResult.invalid("No player found");
 
-            Text r = NULL_TEXT;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            final var faction = member.getFaction();
-
-            if (faction != null)
-                r = Text.literal(faction.getName()).formatted(member.getFaction().getColor());
-
-            return value(r);
-        });
-
-        register(FACTION_COLORLESS_NAME_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            Text r = NULL_TEXT;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            final var faction = member.getFaction();
-
-            if (faction != null)
-                r = Text.literal(faction.getName());
-
-            return value(r);
-        });
-
-        register(FACTION_CHAT_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            Text r = Text.of("Faction Chat");
-
-            final var member = User.get(ctx.player().getUuid());
-            if (member.chat == User.ChatMode.GLOBAL || !member.isInFaction())
-                r = Text.of("Global Chat");
-
-            return value(r);
-        });
-
-        register(FACTION_RANK_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            Text r = NULL_TEXT;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            if (member.isInFaction())
-                r = Text.of(member.getRankName());
-
-            return value(r);
-        });
-
-        register(FACTION_COLOR_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            if (member.isInFaction()) {
-                return value(member.getFaction().getColor().getName());
-            }
-
-            return value(NULL_TEXT);
-        });
-
-        register(FACTION_DESCRIPTION_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            String r = NULL_STRING;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            final var faction = member.getFaction();
-
-            if (faction != null)
-                r = faction.getDescription();
-
-            return value(r);
-        });
-
-        register(FACTION_STATE_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            String r = NULL_STRING;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            final var faction = member.getFaction();
-
-            if (faction != null)
-                r = "" + faction.isOpen();
-
-            return value(r);
-        });
-
-        register(FACTION_POWER_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            String r = NULL_STRING;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            final var faction = member.getFaction();
-
-            if (faction != null)
-                r = "" + faction.getPower();
-
-            return value(r);
-        });
-
-        register(FACTION_POWER_FORMATTED_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            Text r = NULL_TEXT;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            final var faction = member.getFaction();
-
-            if (faction != null) {
-                final int red = mapBoundRange(faction.calculateMaxPower(), 0, 170, 255, faction.getPower());
-                final int green = mapBoundRange(0, faction.calculateMaxPower(), 170, 255, faction.getPower());
-                r = Text.literal("" + faction.getPower()).setStyle(
-                        Style.EMPTY.withColor(TextColor.parse("#" + toHexString(red) + toHexString(green) + "AA")));
-            }
-
-            return value(r);
-        });
-
-        register(FACTION_MAX_POWER_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            String r = NULL_STRING;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            final var faction = member.getFaction();
-
-            if (faction != null)
-                r = "" + faction.calculateMaxPower();
-
-            return value(r);
-        });
-
-        register(FACTION_PLAYER_POWER_ID, (ctx, argument) -> {
-            String r = "" + FactionsMod.CONFIG.POWER.MEMBER;
-            return value(r);
-        });
-
-        register(FACTION_REQUIRED_POWER_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            String r = NULL_STRING;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            final var faction = member.getFaction();
-
-            if (faction != null)
-                r = "" + faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-
-            return value(r);
-        });
-
-        register(FACTION_REQUIRED_POWER_FORMATTED_ID, (ctx, argument) -> {
-            if (!ctx.hasPlayer())
-                return invalid("No Player!");
-            assert ctx.player() != null;
-
-            Text r = NULL_TEXT;
-
-            final var member = User.get(ctx.player().getUuid());
-
-            final var faction = member.getFaction();
-
-            if (faction != null) {
-                final int reqPower = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-                final int red = mapBoundRange(0, faction.getPower(), 85, 255, reqPower);
-                r = Text.literal("" + reqPower)
-                        .setStyle(Style.EMPTY.withColor(TextColor.parse("#" + toHexString(red) + "5555")));
-            }
-
-            return value(r);
+            User member = User.get(ctx.player().getUuid());
+            return PlaceholderResult.value(handler.apply(member));
         });
     }
 
-    @SuppressWarnings("all")
-    private static int mapBoundRange(int a1, int a2, int b1, int b2, int s) {
-        return min(b2, max(b1, b1 + ((s - a1) * (b2 - b1)) / (a2 - a1)));
+    public static void init() {
+        register("name", (member) -> {
+            Faction faction = member.getFaction();
+            if (faction == null)
+                return FORMATTED_NULL;
+
+            return Text.literal(faction.getName()).formatted(member.getFaction().getColor());
+        });
+
+        register("colorless_name", (member) -> {
+            Faction faction = member.getFaction();
+            if (faction == null)
+                return FORMATTED_NULL;
+
+            return Text.of(faction.getName());
+        });
+
+        register("chat", (member) -> {
+            if (member.chat == User.ChatMode.GLOBAL || !member.isInFaction())
+                return Text.of("Global Chat");
+
+            return Text.of("Faction Chat");
+        });
+
+        register("rank", (member) -> {
+            if (!member.isInFaction())
+                return FORMATTED_NULL;
+
+            return Text.of(member.getRankName());
+        });
+
+        register("color", (member) -> {
+            if (!member.isInFaction())
+                return FORMATTED_NULL;
+
+            return Text.of(member.getFaction().getColor().getName());
+        });
+
+        register("description", (member) -> {
+            Faction faction = member.getFaction();
+            if (faction == null)
+                return FORMATTED_NULL;
+
+            return Text.of(faction.getDescription());
+        });
+
+        register("state", (member) -> {
+            Faction faction = member.getFaction();
+            if (faction == null)
+                return UNFORMATTED_NULL;
+
+            return Text.of(String.valueOf(faction.isOpen()));
+
+        });
+
+        register("power", (member) -> {
+            Faction faction = member.getFaction();
+            if (faction == null)
+                return UNFORMATTED_NULL;
+
+            return Text.of(String.valueOf(faction.getPower()));
+        });
+
+        register("power_formatted", (member) -> {
+            Faction faction = member.getFaction();
+            if (faction == null)
+                return FORMATTED_NULL;
+
+            int red = mapBoundRange(faction.calculateMaxPower(), 0, 170, 255, faction.getPower());
+            int green = mapBoundRange(0, faction.calculateMaxPower(), 170, 255, faction.getPower());
+            return Text.literal(String.valueOf(faction.getPower())).setStyle(
+                    Style.EMPTY.withColor(
+                            TextColor.parse("#" + Integer.toHexString(red) + Integer.toHexString(green) + "AA")));
+        });
+
+        register("max_power", (member) -> {
+            Faction faction = member.getFaction();
+            if (faction == null)
+                return UNFORMATTED_NULL;
+
+            return Text.of(String.valueOf(faction.calculateMaxPower()));
+        });
+
+        register("player_power", (member) -> {
+            return Text.of(String.valueOf(FactionsMod.CONFIG.POWER.MEMBER));
+        });
+
+        register("required_power", (member) -> {
+            Faction faction = member.getFaction();
+            if (faction == null)
+                return UNFORMATTED_NULL;
+
+            return Text.of(String.valueOf(faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT));
+        });
+
+        register("required_power_formatted", (member) -> {
+            Faction faction = member.getFaction();
+            if (faction == null)
+                return FORMATTED_NULL;
+
+            int reqPower = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+            int red = mapBoundRange(0, faction.getPower(), 85, 255, reqPower);
+            return Text.literal(String.valueOf(reqPower))
+                    .setStyle(Style.EMPTY.withColor(TextColor.parse("#" + Integer.toHexString(red) + "5555")));
+        });
+    }
+
+    private static int mapBoundRange(int from_min, int from_max, int to_min, int to_max, int value) {
+        return Math.min(to_max,
+                Math.max(to_min, to_min + ((value - from_min) * (to_max - to_min)) / (from_max - from_min)));
     }
 }

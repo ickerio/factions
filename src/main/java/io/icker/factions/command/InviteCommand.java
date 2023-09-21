@@ -33,12 +33,14 @@ public class InviteCommand implements Command {
                 .add(" outgoing invite%s", count == 1 ? "" : "s")
                 .send(source.getPlayer(), false);
 
-        if (count == 0) return 1;
+        if (count == 0)
+            return 1;
 
         UserCache cache = source.getServer().getUserCache();
         String players = invites.stream()
-            .map(invite -> cache.getByUuid(invite).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-            .collect(Collectors.joining(", "));
+                .map(invite -> cache.getByUuid(invite).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}"))
+                        .getName())
+                .collect(Collectors.joining(", "));
 
         new Message(players).format(Formatting.ITALIC).send(source.getPlayer(), false);
         return 1;
@@ -52,14 +54,16 @@ public class InviteCommand implements Command {
 
         Faction faction = Command.getUser(source.getPlayer()).getFaction();
         if (faction.isInvited(player.getUuid())) {
-            new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
+            new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED)
+                    .send(player, false);
             return 0;
         }
 
         User targetUser = User.get(target.getUuid());
         UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
         if (faction.getID().equals(targetFaction)) {
-            new Message(target.getName().getString() + " is already in your faction").format(Formatting.RED).send(player, false);
+            new Message(target.getName().getString() + " is already in your faction").format(Formatting.RED)
+                    .send(player, false);
             return 0;
         }
 
@@ -89,32 +93,27 @@ public class InviteCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager
-            .literal("invite")
-            .requires(Requires.isCommander())
-            .then(
-                CommandManager
-                .literal("list")
-                .requires(Requires.hasPerms("factions.invite.list", 0))
-                .executes(this::list)
-            )
-            .then(
-                CommandManager
-                .literal("add")
-                .requires(Requires.hasPerms("factions.invite.add", 0))
+                .literal("invite")
+                .requires(Requires.isCommander())
                 .then(
-                    CommandManager.argument("player", EntityArgumentType.player())
-                    .executes(this::add)
-                )
-            )
-            .then(
-                CommandManager
-                .literal("remove")
-                .requires(Requires.hasPerms("factions.invite.remove", 0))
+                        CommandManager
+                                .literal("list")
+                                .requires(Requires.hasPerms("factions.invite.list", 0))
+                                .executes(this::list))
                 .then(
-                    CommandManager.argument("player", EntityArgumentType.player())
-                    .executes(this::remove)
-                )
-            )
-            .build();
+                        CommandManager
+                                .literal("add")
+                                .requires(Requires.hasPerms("factions.invite.add", 0))
+                                .then(
+                                        CommandManager.argument("player", EntityArgumentType.player())
+                                                .executes(this::add)))
+                .then(
+                        CommandManager
+                                .literal("remove")
+                                .requires(Requires.hasPerms("factions.invite.remove", 0))
+                                .then(
+                                        CommandManager.argument("player", EntityArgumentType.player())
+                                                .executes(this::remove)))
+                .build();
     }
 }

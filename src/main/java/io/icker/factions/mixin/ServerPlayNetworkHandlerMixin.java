@@ -1,5 +1,12 @@
 package io.icker.factions.mixin;
 
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
@@ -13,12 +20,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerPlayNetworkHandlerMixin {
@@ -42,10 +43,10 @@ public class ServerPlayNetworkHandlerMixin {
 
         if (factionChat && !member.isInFaction()) {
             new Message("You can't send a message to faction chat if you aren't in a faction.")
-                .fail()
-                .hover("Click to switch to global chat")
-                .click("/factions settings chat global")
-                .send(server.getPlayerManager().getPlayer(signedMessage.link().sender()), false);
+                    .fail()
+                    .hover("Click to switch to global chat")
+                    .click("/factions settings chat global")
+                    .send(server.getPlayerManager().getPlayer(signedMessage.link().sender()), false);
 
             ci.cancel();
         }
@@ -56,20 +57,23 @@ public class ServerPlayNetworkHandlerMixin {
         packet.handle(new PlayerInteractEntityC2SPacket.Handler() {
             @Override
             public void interact(Hand hand) {
-                if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, packet.getEntity((ServerWorld) player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
+                if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player,
+                        packet.getEntity((ServerWorld) player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
                     ci.cancel();
                 }
             }
 
             @Override
             public void interactAt(Hand hand, Vec3d pos) {
-                if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, packet.getEntity((ServerWorld) player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
+                if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player,
+                        packet.getEntity((ServerWorld) player.getWorld()), player.getWorld()) == ActionResult.FAIL) {
                     ci.cancel();
                 }
             }
 
             @Override
-            public void attack() {}
+            public void attack() {
+            }
         });
     }
 }

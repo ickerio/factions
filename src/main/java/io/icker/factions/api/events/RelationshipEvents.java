@@ -11,31 +11,34 @@ public final class RelationshipEvents {
     /**
      * When a faction is declared as a different status
      */
-    public static final Event<NewDecleration> NEW_DECLARATION = EventFactory.createArrayBacked(NewDecleration.class, callbacks -> (relationship) -> {
-        for (NewDecleration callback : callbacks) {
-            callback.onNewDecleration(relationship);
-        }
-    });
+    public static final Event<NewDecleration> NEW_DECLARATION = EventFactory.createArrayBacked(NewDecleration.class,
+            callbacks -> (relationship) -> {
+                for (NewDecleration callback : callbacks) {
+                    callback.onNewDecleration(relationship);
+                }
+            });
 
     /**
      * When two factions are declared to have the same status
      *
      * For example, mutual allies
      */
-    public static final Event<NewMutual> NEW_MUTUAL = EventFactory.createArrayBacked(NewMutual.class, callbacks -> (relationship) -> {
-        for (NewMutual callback : callbacks) {
-            callback.onNewMutual(relationship);
-        }
-    });
+    public static final Event<NewMutual> NEW_MUTUAL = EventFactory.createArrayBacked(NewMutual.class,
+            callbacks -> (relationship) -> {
+                for (NewMutual callback : callbacks) {
+                    callback.onNewMutual(relationship);
+                }
+            });
 
     /**
      * When a mutual relationship is ended by either of the two factions
      */
-    public static final Event<EndMutual> END_MUTUAL = EventFactory.createArrayBacked(EndMutual.class, callbacks -> (relationship, oldStatus) -> {
-        for (EndMutual callback : callbacks) {
-            callback.onEndMutual(relationship, oldStatus);
-        }
-    });
+    public static final Event<EndMutual> END_MUTUAL = EventFactory.createArrayBacked(EndMutual.class,
+            callbacks -> (relationship, oldStatus) -> {
+                for (EndMutual callback : callbacks) {
+                    callback.onEndMutual(relationship, oldStatus);
+                }
+            });
 
     @FunctionalInterface
     public interface NewDecleration {

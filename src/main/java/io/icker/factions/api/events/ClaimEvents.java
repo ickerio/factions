@@ -6,8 +6,8 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
-* Events related to {@link Claim}
-*/
+ * Events related to {@link Claim}
+ */
 public final class ClaimEvents {
     /**
      * Called when a chunk claim is added by a faction (See {@link Claim})
@@ -21,11 +21,12 @@ public final class ClaimEvents {
     /**
      * Called when a faction removes a claim (See {@link Claim})
      */
-    public static final Event<Remove> REMOVE = EventFactory.createArrayBacked(Remove.class, callbacks -> (x, z, level, faction) -> {
-        for (Remove callback : callbacks) {
-            callback.onRemove(x, z, level, faction);
-        }
-    });
+    public static final Event<Remove> REMOVE = EventFactory.createArrayBacked(Remove.class,
+            callbacks -> (x, z, level, faction) -> {
+                for (Remove callback : callbacks) {
+                    callback.onRemove(x, z, level, faction);
+                }
+            });
 
     @FunctionalInterface
     public interface Add {
