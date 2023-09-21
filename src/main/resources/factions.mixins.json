@@ -4,10 +4,10 @@
     "package": "io.icker.factions.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "BucketItemMixin",
+        "BucketItemAccessor",
         "DamageTrackerAccessor",
         "EnderChestBlockMixin",
-        "ItemMixin",
+        "ItemInvoker",
         "LockableContainerBlockEntityMixin",
         "MinecraftServerMixin",
         "PlayerManagerMixin",

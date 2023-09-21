@@ -2,10 +2,8 @@ package io.icker.factions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import io.icker.factions.command.AdminCommand;
 import io.icker.factions.command.ClaimCommand;
 import io.icker.factions.command.CreateCommand;
@@ -52,14 +50,13 @@ public class FactionsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Initialized Factions Mod for Minecraft v1.19");
+        LOGGER.info("Initialized Factions Mod for Minecraft v1.20.1");
 
         WorldUtils.register();
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
-        if (FabricLoader.getInstance().isModLoaded("placeholder-api")) {
+        if (FabricLoader.getInstance().isModLoaded("placeholder-api"))
             PlaceholdersWrapper.init();
-        }
 
         ChatManager.register();
         FactionsManager.register();
