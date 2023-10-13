@@ -211,8 +211,12 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
-        if (!user.isInFaction()) {
-            return ActionResult.FAIL;
+        if (!user.isInFaction()){
+            if (claimFaction.guest_permissions.contains(permission)) {
+                return ActionResult.SUCCESS;
+            }else{
+                return ActionResult.FAIL;
+            }
         }
 
         Faction userFaction = user.getFaction();
