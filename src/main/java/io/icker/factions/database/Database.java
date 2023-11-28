@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtTagSizeTracker;
 
 public class Database {
     private static final File BASE_PATH =
@@ -44,7 +46,7 @@ public class Database {
         }
 
         try {
-            NbtList list = (NbtList) NbtIo.readCompressed(file).get(KEY);
+            NbtList list = (NbtList) NbtIo.readCompressed(Path.of(file.getPath()), NbtTagSizeTracker.ofUnlimitedBytes()).get(KEY);
             for (T item : deserializeList(clazz, list)) {
                 store.put(getStoreKey.apply(item), item);
             }
@@ -107,7 +109,7 @@ public class Database {
         try {
             NbtCompound fileData = new NbtCompound();
             fileData.put(KEY, serializeList(clazz, items));
-            NbtIo.writeCompressed(fileData, file);
+            NbtIo.writeCompressed(fileData, Path.of(file.getPath()));
         } catch (IOException | ReflectiveOperationException e) {
             FactionsMod.LOGGER.error("Failed to write NBT data ({})", file, e);
         }

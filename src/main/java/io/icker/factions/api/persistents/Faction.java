@@ -136,7 +136,7 @@ public class Faction {
     }
 
     public DefaultedList<ItemStack> clearSafe() {
-        DefaultedList<ItemStack> stacks = this.safe.stacks;
+        DefaultedList<ItemStack> stacks = this.safe.heldStacks;
         this.safe = new SimpleInventory(54);
         return stacks;
     }
