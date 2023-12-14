@@ -21,20 +21,31 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.RaycastContext.FluidHandling;
 import net.minecraft.world.World;
 
 public class InteractionManager {
     public static void register() {
-        PlayerEvents.BREAK_BLOCK.register(InteractionManager::checkPermissions);
+        PlayerEvents.BREAK_BLOCK.register(InteractionManager::onBlockBreak);
         PlayerEvents.USE_BLOCK.register(InteractionManager::onUseBlock);
         PlayerEvents.USE_ITEM.register(InteractionManager::onUseItem);
         AttackEntityCallback.EVENT.register(InteractionManager::onAttackEntity);
         PlayerEvents.IS_INVULNERABLE.register(InteractionManager::isInvulnerableTo);
     }
 
+    private static ActionResult onBlockBreak(PlayerEntity player, BlockPos blockPos, World world) {
+        if (checkPermissions(player, blockPos, world) == ActionResult.FAIL && !isExemptedForBreaking(world, blockPos)) {
+            return ActionResult.FAIL;
+        };
+        return ActionResult.PASS;
+    }
+
+
+
     private static ActionResult onUseBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
+        if(isExemptedForInteraction(world, hitResult.getBlockPos()))return ActionResult.PASS;
         if (checkPermissions(player, player.getBlockPos(), world) == ActionResult.FAIL) {
             return ActionResult.FAIL;
         }
@@ -142,20 +153,32 @@ public class InteractionManager {
             return ActionResult.PASS;
         }
 
-        if (!user.isInFaction()) {
-            return ActionResult.FAIL;
-        }
+        if (user.isInFaction()) {
+            Faction userFaction = user.getFaction();
 
-        Faction userFaction = user.getFaction();
+            if (claimFaction == userFaction) {
+                return ActionResult.PASS;
+            }
 
-        if (claimFaction == userFaction) {
-            return ActionResult.PASS;
-        }
-
-        if (claimFaction.isMutualAllies(userFaction.getID())) {
-            return ActionResult.SUCCESS;
+            if (claimFaction.isMutualAllies(userFaction.getID())) {
+                return ActionResult.SUCCESS;
+            }
         }
 
         return ActionResult.FAIL;
+    }
+
+    public static boolean isExemptedForInteraction(World world, BlockPos position) {
+        if(FactionsMod.CONFIG.USABLE_ON_CLAIMS.isEmpty())return false;
+        var blockId = Registry.BLOCK.getId(world.getBlockState(position).getBlock()).toString();
+
+        return FactionsMod.CONFIG.USABLE_ON_CLAIMS.contains(blockId);
+    }
+
+    private static boolean isExemptedForBreaking(World world, BlockPos position) {
+        if(FactionsMod.CONFIG.BREAKABLE_ON_CLAIMS.isEmpty())return false;
+        var blockId = Registry.BLOCK.getId(world.getBlockState(position).getBlock()).toString();
+
+        return FactionsMod.CONFIG.BREAKABLE_ON_CLAIMS.contains(blockId);
     }
 }

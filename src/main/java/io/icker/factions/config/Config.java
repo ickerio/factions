@@ -3,6 +3,8 @@ package io.icker.factions.config;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,6 +12,7 @@ import com.google.gson.annotations.SerializedName;
 
 import io.icker.factions.FactionsMod;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.util.Identifier;
 
 public class Config {
     private static final int REQUIRED_VERSION = 2;
@@ -116,4 +119,10 @@ public class Config {
 
     @SerializedName("factionSafeDouble")
     public boolean FACTION_SAFE_DOUBLE = true;
+
+    @SerializedName("usableOnClaims")
+    public List<String> USABLE_ON_CLAIMS = new ArrayList<>();
+
+    @SerializedName("breakableOnClaims")
+    public List<String> BREAKABLE_ON_CLAIMS = new ArrayList<>();
 }
