@@ -15,6 +15,9 @@ public class PowerConfig {
     @SerializedName("deathPenalty")
     public int DEATH_PENALTY = 10;
 
+    @SerializedName("powerPerAlly")
+    public int POWER_PER_ALLY = 0;
+
     @SerializedName("powerTicks")
     public PowerTicks POWER_TICKS = new PowerTicks();
 
