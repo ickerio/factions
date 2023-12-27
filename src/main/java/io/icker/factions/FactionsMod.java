@@ -34,6 +34,7 @@ import io.icker.factions.util.BlueMapWrapper;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.PlaceholdersWrapper;
+import io.icker.factions.util.SquareMapWrapper;
 import io.icker.factions.util.WorldUtils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -49,6 +50,7 @@ public class FactionsMod implements ModInitializer {
     public static Config CONFIG = Config.load();
     public static DynmapWrapper dynmap;
     public static BlueMapWrapper bluemap;
+    public static SquareMapWrapper squaremap;
 
     @Override
     public void onInitialize() {
@@ -58,6 +60,8 @@ public class FactionsMod implements ModInitializer {
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         bluemap = FabricLoader.getInstance().isModLoaded("bluemap") ? new BlueMapWrapper() : null;
+        squaremap = FabricLoader.getInstance().isModLoaded("squaremap") ? new SquareMapWrapper() : null;
+
         if (FabricLoader.getInstance().isModLoaded("placeholder-api"))
             PlaceholdersWrapper.init();
 

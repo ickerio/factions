@@ -43,6 +43,8 @@ dependencies {
     compileOnly "us.dynmap:DynmapCoreAPI:${project.dynmap_api_version}"
     compileOnly "com.github.BlueMap-Minecraft:BlueMapAPI:${project.bluemap_api_version}"
     modCompileOnly "maven.modrinth:styled-chat:${project.styled_chat_version}"
+
+    compileOnly "xyz.jpenilla:squaremap-api:${project.squaremap_api_version}"
 }
 
 processResources {
