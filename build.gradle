@@ -12,6 +12,7 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+    maven { url 'https://jitpack.io' }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url = "https://repo.mikeprimm.com/" }
     maven { url "https://maven.nucleoid.xyz/" }
@@ -41,6 +42,7 @@ dependencies {
     modImplementation "me.lucko:fabric-permissions-api:${project.lucko_permissions_version}"
     modImplementation "eu.pb4:placeholder-api:${project.papi_version}"
     compileOnly "us.dynmap:DynmapCoreAPI:${project.dynmap_api_version}"
+    compileOnly "com.github.BlueMap-Minecraft:BlueMapAPI:${project.bluemap_api_version}"
     modCompileOnly "maven.modrinth:styled-chat:${project.styled_chat_version}"
 }
 
