@@ -133,18 +133,14 @@ public class SquareMapWrapper {
         SimpleLayerProvider layer = layers.get(home.level);
 
         if (layer == null) {
-            FactionsMod.LOGGER.info("No layer yet");
             layer = SimpleLayerProvider.builder("factions-"+home.level).showControls(true).build();
 
             MapWorld world = api.getWorldIfEnabled(WorldIdentifier.parse(home.level)).orElse(null);
             if (world != null) {
                 world.layerRegistry().register(Key.of("factions-"+home.level.replace(':', '-')), layer);
             } else {
-                FactionsMod.LOGGER.info("No world yet");
             }
 
-            FactionsMod.LOGGER.info(api.mapWorlds().size());
-        
             layers.put(home.level, layer);
         }
 

@@ -115,7 +115,6 @@ public class DynmapWrapper {
     }
 
     private void setHome(Faction faction, Home home) {
-        FactionsMod.LOGGER.info("Set home");
         Marker marker = markerSet.findMarker(faction.getID().toString() + "-home");
         if (home == null && marker != null) {
             marker.deleteMarker();
