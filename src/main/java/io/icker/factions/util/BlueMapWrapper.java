@@ -8,7 +8,7 @@ import de.bluecolored.bluemap.api.BlueMapMap;
 import de.bluecolored.bluemap.api.markers.Marker;
 import de.bluecolored.bluemap.api.markers.MarkerSet;
 import de.bluecolored.bluemap.api.markers.POIMarker;
-import de.bluecolored.bluemap.api.markers.ShapeMarker;
+import de.bluecolored.bluemap.api.markers.ExtrudeMarker;
 import de.bluecolored.bluemap.api.math.Color;
 import de.bluecolored.bluemap.api.math.Shape;
 import io.icker.factions.FactionsMod;
@@ -85,10 +85,10 @@ public class BlueMapWrapper {
             markerSets.put(claim.level, markerSet);
         }
 
-        ShapeMarker marker = ShapeMarker.builder()
+        ExtrudeMarker marker = ExtrudeMarker.builder()
             .position((double) pos.getCenterX(), 100, (double) pos.getCenterZ())
-            .shape(Shape.createRect(pos.getStartX(), pos.getStartZ(), pos.getEndX(), pos.getEndZ()), 100)
-            .fillColor(new Color(faction.getColor().getColorValue() | 0x80000000))
+            .shape(Shape.createRect(pos.getStartX(), pos.getStartZ(), pos.getEndX(), pos.getEndZ()), -64, 320)
+            .fillColor(new Color(faction.getColor().getColorValue() | 0x40000000))
             .lineColor(new Color(faction.getColor().getColorValue() | 0xFF000000))
             .label(faction.getName())
             .detail(factionInfo)
@@ -121,9 +121,9 @@ public class BlueMapWrapper {
             }
 
             String areaMarkerId = String.format("%s-%d-%d", claim.level, claim.x, claim.z);
-            ShapeMarker marker = (ShapeMarker) markerSet.get(areaMarkerId);
+            ExtrudeMarker marker = (ExtrudeMarker) markerSet.get(areaMarkerId);
 
-            marker.setFillColor(new Color(faction.getColor().getColorValue() | 0x80000000));
+            marker.setFillColor(new Color(faction.getColor().getColorValue() | 0x40000000));
             marker.setLineColor(new Color(faction.getColor().getColorValue() | 0xFF000000));
             marker.setLabel(faction.getName()); 
             marker.setDetail(info); 
