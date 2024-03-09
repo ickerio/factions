@@ -19,6 +19,7 @@ import net.minecraft.nbt.NbtList;
 
 public class Database {
     private static final File BASE_PATH = FabricLoader.getInstance().getGameDir().resolve("factions").toFile();
+    private static final File BACKUP_PATH = FabricLoader.getInstance().getGameDir().resolve("backupFactions").toFile();
     private static final HashMap<Class<?>, HashMap<String, Field>> cache = new HashMap<Class<?>, HashMap<String, Field>>();
     private static final String KEY = "CORE";
 
@@ -93,6 +94,30 @@ public class Database {
     public static <T> void save(Class<T> clazz, List<T> items) {
         String name = clazz.getAnnotation(Name.class).value();
         File file = new File(BASE_PATH, name.toLowerCase() + ".dat");
+
+        if (!cache.containsKey(clazz)) setup(clazz);
+
+        try {
+            NbtCompound fileData = new NbtCompound();
+            fileData.put(KEY,  serializeList(clazz, items));
+            NbtIo.writeCompressed(fileData, file);
+        } catch (IOException | ReflectiveOperationException e) {
+            FactionsMod.LOGGER.error("Failed to write NBT data ({})", file, e);
+        }
+    }
+
+    public static <T> void saveBackup(Class<T> clazz, List<T> items) {
+        String name = clazz.getAnnotation(Name.class).value();
+        File file = new File(BACKUP_PATH, name.toLowerCase() + ".dat");
+
+        if (!file.exists()) {
+            if (!BACKUP_PATH.exists()) BACKUP_PATH.mkdir();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                FactionsMod.LOGGER.error("Failed to create file ({})", file, e);
+            }
+        }
 
         if (!cache.containsKey(clazz)) setup(clazz);
 

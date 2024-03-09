@@ -37,6 +37,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void tick(CallbackInfo info) {
+        if(FactionsMod.CONFIG.TICKS_FOR_POWER < 0 ) return;
         if (age % FactionsMod.CONFIG.TICKS_FOR_POWER != 0 || age == 0) return;
         PlayerEvents.ON_POWER_TICK.invoker().onPowerTick((ServerPlayerEntity) (Object) this);
     }
@@ -51,15 +52,23 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "getPlayerListName", at = @At("HEAD"), cancellable = true)
     public void getPlayerListName(CallbackInfoReturnable<Text> cir) {
-        User member = User.get(((ServerPlayerEntity)(Object) this).getUuid());
+        User member = User.get(((ServerPlayerEntity)(Object) this).getName().getString());
+        String prefix = "";
+        net.luckperms.api.model.user.User lp_user = FactionsMod.LUCK_API.getUserManager().getUser(((ServerPlayerEntity)(Object) this).getName().getString());
+
+        if(lp_user != null) prefix = lp_user.getCachedData().getMetaData().getPrefix();
+
+        if(prefix == null) prefix = "";
+        prefix = prefix.isEmpty() ? "[player]." : "§6["+prefix+"§6]§r.";
+
         if (member.isInFaction()) {
             Faction faction = member.getFaction();
-            cir.setReturnValue(new Message(String.format("[%s] ", faction.getName())).format(faction.getColor()).add(
+            cir.setReturnValue(new Message(prefix+String.format("[%s] ", faction.getName())).format(faction.getColor()).add(
                     new Message(((ServerPlayerEntity)(Object) this).getName().getString()).format(Formatting.WHITE)
             ).raw());
         } else {
             cir.setReturnValue(new Message("[FACTIONLESS] ").format(Formatting.GRAY).add(
-                    new Message(((ServerPlayerEntity)(Object) this).getName().getString()).format(Formatting.WHITE)
+                    new Message(prefix+((ServerPlayerEntity)(Object) this).getName().getString()).format(Formatting.WHITE)
             ).raw());
         }
     }

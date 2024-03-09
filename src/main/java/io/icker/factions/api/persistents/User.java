@@ -13,7 +13,7 @@ import io.icker.factions.database.Name;
 
 @Name("User")
 public class User {
-    private static final HashMap<UUID, User> STORE = Database.load(User.class, p -> p.getID());
+    private static final HashMap<String, User> STORE = Database.load(User.class, User::getName);
 
     public enum ChatMode {
         FOCUS,
@@ -35,8 +35,8 @@ public class User {
         ALL
     }
 
-    @Field("ID")
-    private UUID id;
+    @Field("Name")
+    private String name;
 
     @Field("FactionID")
     private UUID factionID;
@@ -56,21 +56,21 @@ public class User {
     public boolean autoclaim = false;
     public boolean bypass = false;
 
-    public User(UUID id) {
-        this.id = id;
+    public User(String name) {
+        this.name = name;
     }
 
     public User() { ; }
 
     public String getKey() {
-        return id.toString();
+        return name;
     }
 
-    public static User get(UUID id) {
-        if (!STORE.containsKey(id)) {
-            User.add(new User(id));
+    public static User get(String name) {
+        if (!STORE.containsKey(name)) {
+            User.add(new User(name));
         }
-        return STORE.get(id);
+        return STORE.get(name);
     }
 
     public static List<User> getByFaction(UUID factionID) {
@@ -81,11 +81,11 @@ public class User {
     }
 
     public static void add(User user) {
-        STORE.put(user.id, user);
+        STORE.put(user.name, user);
     }
 
-    public UUID getID() {
-        return id;
+    public String getName() {
+        return name;
     }
 
     public boolean isInFaction() {

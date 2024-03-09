@@ -4,6 +4,7 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.mixin.BucketItemMixin;
 import io.icker.factions.mixin.ItemMixin;
@@ -24,6 +25,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.RaycastContext.FluidHandling;
 import net.minecraft.world.World;
+
+import java.util.Date;
 
 public class InteractionManager {
     public static void register() {
@@ -101,10 +104,14 @@ public class InteractionManager {
     }
 
     private static ActionResult isInvulnerableTo(Entity source, Entity target) {
+        boolean isOnSpawn = source.isPlayer() &&
+                source.getBlockPos().getX() < FactionsMod.CONFIG.SPAWN_RADIUS && source.getBlockPos().getX() > -FactionsMod.CONFIG.SPAWN_RADIUS
+                && source.getBlockPos().getZ() < FactionsMod.CONFIG.SPAWN_RADIUS && source.getBlockPos().getZ() > -FactionsMod.CONFIG.SPAWN_RADIUS;
+        if(isOnSpawn) return ActionResult.SUCCESS;
         if (!source.isPlayer() || FactionsMod.CONFIG.FRIENDLY_FIRE) return ActionResult.PASS;
 
-        User sourceUser = User.get(source.getUuid());
-        User targetUser = User.get(target.getUuid());
+        User sourceUser = User.get(source.getName().getString());
+        User targetUser = User.get(target.getName().getString());
 
         if (!sourceUser.isInFaction() || !targetUser.isInFaction()) {
             return ActionResult.PASS;
@@ -125,7 +132,7 @@ public class InteractionManager {
     }
 
     private static ActionResult checkPermissions(PlayerEntity player, BlockPos position, World world) {
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getName().getString());
         if (player.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL) && user.bypass) {
             return ActionResult.PASS;
         }
@@ -136,17 +143,18 @@ public class InteractionManager {
         Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
         if (claim == null) return ActionResult.PASS;
 
-        Faction claimFaction = claim.getFaction();
+        if(user == null) return ActionResult.FAIL;
 
-        if (claimFaction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT > claimFaction.getPower()) {
-            return ActionResult.PASS;
-        }
+        Faction claimFaction = claim.getFaction();
+        Faction userFaction = user.getFaction();
 
         if (!user.isInFaction()) {
             return ActionResult.FAIL;
         }
 
-        Faction userFaction = user.getFaction();
+        int hours = new Date().getHours();
+
+
 
         if (claimFaction == userFaction) {
             return ActionResult.PASS;

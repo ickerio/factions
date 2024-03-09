@@ -8,6 +8,7 @@ import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
+import net.minecraft.util.math.BlockPos;
 
 @Name("Claim")
 public class Claim {
@@ -19,17 +20,25 @@ public class Claim {
     @Field("Z")
     public int z;
 
-    @Field("Level")
+    @Field("level")
     public String level;
 
-    @Field("FactionID")
+    @Field("factionID")
     public UUID factionID;
 
-    public Claim(int x, int z, String level, UUID factionID) {
+    @Field("create")
+    public boolean create;
+
+    @Field("outpost")
+    public Outpost outpost;
+
+    public Claim(int x, int z, String level, UUID factionID, boolean create, Outpost outpost) {
         this.x = x;
         this.z = z;
         this.level = level;
         this.factionID = factionID;
+        this.create = create;
+        this.outpost = outpost;
     }
 
     public Claim() { ; }
@@ -54,6 +63,10 @@ public class Claim {
         ClaimEvents.ADD.invoker().onAdd(claim);
     }
 
+    public boolean isOutpost(){
+        return this.outpost != null;
+    }
+
     public Faction getFaction() {
         return Faction.get(factionID);
     }
@@ -65,5 +78,26 @@ public class Claim {
 
     public static void save() {
         Database.save(Claim.class, STORE.values().stream().toList());
+    }
+
+    public static class Outpost {
+        @Field("homePos")
+        public BlockPos homePos;
+
+        @Field("x")
+        public int x;
+        @Field("z")
+        public int z;
+        @Field("index")
+        public int index;
+
+        @Field("level")
+        public String level;
+        public Outpost(int x, int z, BlockPos homePos, int index, String level){
+            this.x = x; this.z = z;
+            this.homePos = homePos;
+            this.index = index;
+            this.level = level;
+        }
     }
 }

@@ -29,7 +29,7 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        List<Claim> claims = User.get(player.getUuid()).getFaction().getClaims();
+        List<Claim> claims = User.get(player.getName().getString()).getFaction().getClaims();
         int count = claims.size();
 
         new Message("You have ")
@@ -39,10 +39,10 @@ public class ClaimCommand implements Command {
 
         if (count == 0) return 1;
 
-        HashMap<String, ArrayList<Claim>> claimsMap = new HashMap<String, ArrayList<Claim>>();
+        HashMap<String, ArrayList<Claim>> claimsMap = new HashMap<>();
 
         claims.forEach(claim -> {
-            claimsMap.putIfAbsent(claim.level, new ArrayList<Claim>());
+            claimsMap.putIfAbsent(claim.level, new ArrayList<>());
             claimsMap.get(claim.level).add(claim);
         });
 
@@ -71,13 +71,13 @@ public class ClaimCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
         ServerWorld world = player.getWorld();
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getName().getString()).getFaction();
         String dimension = world.getRegistryKey().getValue().toString();
-        ArrayList<ChunkPos> chunks = new ArrayList<ChunkPos>();
+        ArrayList<ChunkPos> chunks = new ArrayList<>();
 
         for (int x = -size + 1; x < size; x++) {
             for (int y = -size + 1; y < size; y++) {
-                ChunkPos chunkPos = world.getChunk(player.getBlockPos().add(x * 16, 0, y * 16)).getPos();
+                ChunkPos chunkPos = world.getChunk(player.getBlockPos().add(x << 4, 0, y << 4)).getPos();
                 Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
                 if (existingClaim != null) {
@@ -108,28 +108,96 @@ public class ClaimCommand implements Command {
         return 1;
     }
 
-    private int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int addForcedOutpost(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayer();
+        ServerWorld world = player.getWorld();
+
+        Faction faction = User.get(player.getName().getString()).getFaction();
+        String dimension = world.getRegistryKey().getValue().toString();
+        ArrayList<ChunkPos> chunks = new ArrayList<>();
+
+        ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
+        Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+
+        int outpostName = faction.homesLength();
+        if (existingClaim != null) {
+            if (existingClaim.getFaction().getID() != faction.getID()) {
+                new Message("Another faction already owns a chunk").fail().send(player, false);
+                return 0;
+            }
+            String owner = existingClaim.getFaction().getID() == faction.getID() ? "Your" : "Another";
+            new Message(owner + " faction already owns this chunk").fail().send(player, false);
+            return 0;
+        }
+        chunks.add(chunkPos);
+
+
+        chunks.forEach(chunk -> faction.addOutpost(chunk.x, chunk.z, dimension, new Claim.Outpost(player.getBlockX(), player.getBlockZ(), player.getBlockPos(), outpostName, dimension)));
+            new Message("Chunk (%d, %d) claimed by %s", chunks.get(0).x, chunks.get(0).z, player.getName().getString())
+                    .send(faction);
+
+        return 1;
+    }
+
+
+
+    private int outpost(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getName().getString()).getFaction();
 
-        int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.CLAIM_WEIGHT;
-        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
+        int requiredPower = FactionsMod.CONFIG.OUTPOST_COST;
+        int maxPower = FactionsMod.CONFIG.MAX_POWER;
 
-        if (maxPower < requiredPower) {
-            new Message("Not enough faction power to claim chunk").fail().send(player, false);
+
+        ChunkPos chunkPos = player.getChunkPos();
+        boolean isBordering = faction.getClaims().stream().anyMatch(claim -> (claim.x + 1 == chunkPos.x && claim.z == chunkPos.z) ||
+                (claim.z + 1 == chunkPos.z && claim.x == chunkPos.x) ||
+                (claim.x - 1 == chunkPos.x && claim.z == chunkPos.z) ||
+                (claim.z - 1 == chunkPos.z && claim.x == chunkPos.x)) || faction.getClaims().isEmpty();
+        if(isBordering) {
+            new Message("The outpost is bordering with the base! Remember, this is an outpost, not a common claim! It must be far away from your town!").fail().send(player, false);
             return 0;
         }
 
+        if(requiredPower > faction.getPower()){
+            new Message("Not enough power; You have " + requiredPower + " power on your cash.").fail().send(player, false);
+            return 0;
+        }
+        faction.adjustPower(-FactionsMod.CONFIG.OUTPOST_COST);
+        return addForcedOutpost(context);
+    }
+
+    private int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        Faction faction = User.get(player.getName().getString()).getFaction();
+
+        int requiredPower = FactionsMod.CONFIG.CLAIM_WEIGHT;
+        ChunkPos chunkPos = player.getChunkPos();
+        boolean isBordering = faction.getClaims().stream().anyMatch(claim -> (claim.x + 1 == chunkPos.x && claim.z == chunkPos.z) ||
+                (claim.z + 1 == chunkPos.z && claim.x == chunkPos.x) ||
+                (claim.x - 1 == chunkPos.x && claim.z == chunkPos.z) ||
+                (claim.z - 1 == chunkPos.z && claim.x == chunkPos.x)) || faction.getClaims().isEmpty();
+        if(!isBordering) {
+            new Message("The chunk is not bordering with the base!").fail().send(player, false);
+            return 0;
+        }
+
+        if (requiredPower > faction.getPower()) {
+            new Message("Not enough faction power to claim chunk").fail().send(player, false);
+            return 0;
+        }
+        faction.adjustPower(requiredPower);
         return addForced(context, 1);
     }
 
     private int addSize(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         int size = IntegerArgumentType.getInteger(context, "size");
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getName().getString()).getFaction();
 
         int requiredPower = (faction.getClaims().size() + (int)Math.pow(size * 2 - 1, 2)) * FactionsMod.CONFIG.CLAIM_WEIGHT;
-        int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
+        int maxPower = FactionsMod.CONFIG.MAX_POWER;
 
         if (maxPower < requiredPower) {
             new Message("Not enough faction power to claim chunks").fail().send(player, false);
@@ -155,7 +223,7 @@ public class ClaimCommand implements Command {
             return 0;
         }
 
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getName().getString());
         Faction faction = user.getFaction();
 
         if (!user.bypass && existingClaim.getFaction().getID() != faction.getID()) {
@@ -176,7 +244,7 @@ public class ClaimCommand implements Command {
         ServerWorld world = player.getWorld();
         String dimension = world.getRegistryKey().getValue().toString();
 
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getName().getString());
         Faction faction = user.getFaction();
 
         for (int x = -size + 1; x < size; x++) {
@@ -200,7 +268,7 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getName().getString()).getFaction();
 
         faction.removeAllClaims();
         new Message("All claims removed by %s", player.getName().getString()).send(faction);
@@ -211,7 +279,7 @@ public class ClaimCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getName().getString());
         user.autoclaim = !user.autoclaim;
 
         new Message("Successfully toggled autoclaim")
@@ -243,7 +311,7 @@ public class ClaimCommand implements Command {
                     )
                     .executes(this::addSize)
                 )
-                .executes(this::add)
+            .executes(this::add).then(CommandManager.literal("outpost").requires(Requires.isCommander().or(Requires.isOwner())).executes(this::outpost))
             )
             .then(
                 CommandManager.literal("list")

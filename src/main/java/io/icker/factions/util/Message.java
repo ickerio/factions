@@ -66,7 +66,7 @@ public class Message {
     public Message send(Faction faction) {
         Message message = this.prependFaction(faction);
         for (User member : faction.getUsers()) {
-            ServerPlayerEntity player = manager.getPlayer(member.getID());
+            ServerPlayerEntity player = manager.getPlayer(member.getName());
             if (player != null) message.send(player, false);
         }
         return this;
@@ -74,14 +74,14 @@ public class Message {
 
     public void sendToGlobalChat() {
         for (ServerPlayerEntity player : manager.getPlayerList()) {
-            User.ChatMode option = User.get(player.getUuid()).chat;
+            User.ChatMode option = User.get(player.getName().getString()).chat;
             if (option != User.ChatMode.FOCUS) player.sendMessage(text, false);
         }
     }
 
     public void sendToFactionChat(Faction faction) {
         for (User member : faction.getUsers()) {
-            ServerPlayerEntity player = manager.getPlayer(member.getID());
+            ServerPlayerEntity player = manager.getPlayer(member.getName());
             if (player != null) {
                 player.sendMessage(text, false);
             }

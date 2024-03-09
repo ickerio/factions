@@ -8,15 +8,23 @@ import java.util.UUID;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
+import io.icker.factions.core.ChatManager;
+import io.icker.factions.core.FactionsManager;
+import io.icker.factions.core.ServerManager;
+import io.icker.factions.core.WorldManager;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.network.MessageType;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockPos;
 
 @Name("Faction")
 public class Faction {
-    private static final HashMap<UUID, Faction> STORE = Database.load(Faction.class, f -> f.getID());
+    private static final HashMap<UUID, Faction> STORE = Database.load(Faction.class, Faction::getID);
 
     @Field("ID")
     private UUID id;
@@ -39,26 +47,33 @@ public class Faction {
     @Field("Power")
     private int power;
 
+    @Field("Admin")
+    private boolean admin;
+
     @Field("Home")
     private Home home;
 
-    @Field("Safe")
-    private SimpleInventory safe = new SimpleInventory(54);
-
     @Field("Invites")
-    public ArrayList<UUID> invites = new ArrayList<UUID>();
+    public ArrayList<String> invites = new ArrayList<String>();
 
     @Field("Relationships")
     private ArrayList<Relationship> relationships = new ArrayList<Relationship>();
 
-    public Faction(String name, String description, String motd, Formatting color, boolean open, int power) {
+    @Field("relationsLastUpdate")
+    public long relationsLastUpdate;
+
+    public Faction(String name, String description, String motd, Formatting color, boolean open, int power, boolean admin, long relationsLastUpdate) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.motd = motd;
         this.description = description;
         this.color = color.getName();
         this.open = open;
-        this.power = power;
+        this.admin = admin;
+        this.power = admin ? Integer.MAX_VALUE : power;
+        Safe safe = new Safe(name);
+        Safe.add(safe);
+        this.relationsLastUpdate = relationsLastUpdate;
     }
 
     public Faction() { ; }
@@ -119,11 +134,11 @@ public class Faction {
     }
 
     public SimpleInventory getSafe() {
-        return safe;
+        return Safe.getSafe(name).inventory;
     }
 
     public void setSafe(SimpleInventory safe) {
-        this.safe = safe;
+        Safe.getSafe(name).inventory = safe;
     }
 
     public boolean isOpen() {
@@ -133,6 +148,10 @@ public class Faction {
     public void setName(String name) {
         this.name = name;
         FactionEvents.MODIFY.invoker().onModify(this);
+    }
+
+    public boolean isAdmin(){
+        return admin;
     }
 
     public void setDescription(String description) {
@@ -155,16 +174,23 @@ public class Faction {
         FactionEvents.MODIFY.invoker().onModify(this);
     }
 
+    public void setAdmin(boolean admin){
+        this.admin = admin;
+    }
+
     public int adjustPower(int adjustment) {
-        int maxPower = FactionsMod.CONFIG.BASE_POWER + (getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER);
-        int newPower = Math.min(Math.max(0, power + adjustment), maxPower);
+        int maxPower = FactionsMod.CONFIG.MAX_POWER;
+        int newPower = Math.min(power + adjustment, maxPower);
         int oldPower = this.power;
 
         if (newPower == oldPower) return 0;
-
+        if(admin) return 0;
         power = newPower;
         FactionEvents.POWER_CHANGE.invoker().onPowerChange(this, oldPower);
-        return Math.abs(newPower - oldPower);
+        if(power < 0) {
+            this.remove();
+        }
+        return newPower - oldPower;
     }
 
     public List<User> getUsers() {
@@ -183,15 +209,33 @@ public class Faction {
     }
 
     public void addClaim(int x, int z, String level) {
-        Claim.add(new Claim(x, z, level, id));
+        Claim.add(new Claim(x, z, level, id, false, null));
     }
 
-    public boolean isInvited(UUID playerID) {
-        return invites.stream().anyMatch(invite -> invite.equals(playerID));
+    public void addOutpost(int x, int z, String level, Claim.Outpost outpost) {
+        Claim.add(new Claim(x, z, level, id, false, outpost));
+    }
+
+    public boolean isInvited(String playerName) {
+        return invites.stream().anyMatch(invite -> invite.equals(playerName));
     }
 
     public Home getHome() {
         return home;
+    }
+
+    public Claim.Outpost getHome(int index) {
+        Claim origin = this.getClaims().stream().filter(Claim::isOutpost)
+                .filter(claim ->
+                        claim.outpost.index == index).findFirst().get();
+        Claim.Outpost pos = null;
+        if(origin != null) pos = origin.outpost;
+        pos = pos == null ? new Claim.Outpost((int)home.x>>4, (int)home.z>>4,new BlockPos(home.x, home.y, home.z), 0, home.level) : pos;
+        return pos;
+    }
+
+    public int homesLength(){
+        return (int) this.getClaims().stream().filter(Claim::isOutpost).count()+1;
     }
 
     public void setHome(Home home) {
@@ -200,7 +244,7 @@ public class Faction {
     }
 
     public Relationship getRelationship(UUID target) {
-        return relationships.stream().filter(rel -> rel.target.equals(target)).findFirst().orElse(new Relationship(target, Relationship.Status.NEUTRAL));
+        return relationships.stream().filter(rel -> rel.target.equals(target)).findFirst().orElse(new Relationship(target, 0));
     }
 
     public Relationship getReverse(Relationship rel) {
@@ -237,12 +281,17 @@ public class Faction {
     }
 
     public void remove() {
+        FactionsManager.playerManager.getServer().getPlayerManager().broadcast(
+                new LiteralText("§eThe §9" + this.name + " §efaction has been disbanded!"), MessageType.CHAT, Util.NIL_UUID
+        );
         for (User user : getUsers()) {
             user.leaveFaction();
         }
         removeAllClaims();
+        Safe.getSafe(name).remove();
         STORE.remove(id);
         FactionEvents.DISBAND.invoker().onDisband(this);
+
     }
 
     public static void save() {

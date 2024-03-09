@@ -1,5 +1,6 @@
 package io.icker.factions.api.events;
 
+import io.icker.factions.api.persistents.Claim;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.Entity;

@@ -19,7 +19,7 @@
 
     "environment": "*",
     "entrypoints": {
-        "main": [
+        "server": [
         "io.icker.factions.FactionsMod"
         ]
     },
@@ -31,7 +31,10 @@
     "fabricloader": ">=0.13.3",
     "minecraft": "1.18.X",
     "java": ">=17",
-    "fabric": "*"
+    "fabric": "*",
+    "luckperms": "*",
+    "create": "*",
+    "createbigcannons": "*"
   },
   "suggests": {
     "fabric-permissions-api-v0": "*",

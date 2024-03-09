@@ -40,18 +40,18 @@ public class FactionsManager {
     private static void factionModified(Faction faction) {
         ServerPlayerEntity[] players = faction.getUsers()
             .stream()
-            .map(user -> playerManager.getPlayer(user.getID()))
+            .map(user -> playerManager.getPlayer(user.getName()))
             .filter(player -> player != null)
             .toArray(ServerPlayerEntity[]::new);
         updatePlayerList(players);
     }
 
     private static void memberChange(Faction faction, User user) {
-        updatePlayerList(playerManager.getPlayer(user.getID()));
+        updatePlayerList(playerManager.getPlayer(user.getName()));
     }
 
     private static void playerDeath(ServerPlayerEntity player, DamageSource source) {
-        User member = User.get(player.getUuid());
+        User member = User.get(player.getName().getString());
         if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();
@@ -61,7 +61,7 @@ public class FactionsManager {
     }
 
     private static void powerTick(ServerPlayerEntity player) {
-        User member = User.get(player.getUuid());
+        User member = User.get(player.getName().getString());
         if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();
@@ -76,7 +76,7 @@ public class FactionsManager {
     }
 
     private static ActionResult openSafe(PlayerEntity player) {
-        User user =  User.get(player.getUuid());
+        User user =  User.get(player.getName().getString());
 
         if (!user.isInFaction()) {
             if (FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ENDERCHEST || FactionsMod.CONFIG.FACTION_SAFE == Config.SafeOptions.ENABLED) {

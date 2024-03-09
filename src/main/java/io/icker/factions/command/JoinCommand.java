@@ -27,7 +27,7 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        boolean invited = faction.isInvited(player.getUuid());
+        boolean invited = faction.isInvited(player.getName().getString());
 
         if (!faction.isOpen() && !invited) {
             new Message("Cannot join faction as it is not open and you are not invited").fail().send(player, false);
@@ -39,8 +39,8 @@ public class JoinCommand implements Command {
             return 0;
         }
 
-        if (invited) faction.invites.remove(player.getUuid());
-        User.get(player.getUuid()).joinFaction(faction.getID(), User.Rank.MEMBER);
+        if (invited) faction.invites.remove(player.getName().getString());
+        User.get(player.getName().getString()).joinFaction(faction.getID(), User.Rank.MEMBER);
         source.getServer().getPlayerManager().sendCommandTree(player);
 
         new Message(player.getName().getString() + " joined").send(faction);

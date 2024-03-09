@@ -22,14 +22,19 @@ public class CreateCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
+        if (!name.matches("^[a-zA-Z0-9_]{2,16}$")){
+            new Message("Faction name must be 2-16 characters long, and only contains english letters and numbers!").fail().send(player, false);
+            return 0;
+        }
+
         if (Faction.getByName(name) != null) {
             new Message("Cannot create a faction as a one with that name already exists").fail().send(player, false);
             return 0;
         }
 
-        Faction faction = new Faction(name, "No description set", "No faction MOTD set", Formatting.WHITE, false, FactionsMod.CONFIG.BASE_POWER + FactionsMod.CONFIG.MEMBER_POWER);
+        Faction faction = new Faction(name, "No description set", "No faction MOTD set", Formatting.WHITE, false, FactionsMod.CONFIG.BASE_POWER + FactionsMod.CONFIG.MEMBER_POWER, false, 0);
         Faction.add(faction);
-        User.get(player.getUuid()).joinFaction(faction.getID(), User.Rank.OWNER);
+        User.get(player.getName().getString()).joinFaction(faction.getID(), User.Rank.OWNER);
 
         source.getServer().getPlayerManager().sendCommandTree(player);
         new Message("Successfully created faction").send(player, false);

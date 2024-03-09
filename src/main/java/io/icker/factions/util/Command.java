@@ -68,7 +68,7 @@ public interface Command {
                 } catch (CommandSyntaxException e) {
                     FactionsMod.LOGGER.info("Error in command requirements", e);
                 }
-                User user = User.get(entity.getUuid());
+                User user = User.get(entity.getName().getString());
                 return req.run(user);
             };
         }
@@ -80,7 +80,6 @@ public interface Command {
         public static SuggestionProvider<ServerCommandSource> allFactions() {
             return allFactions(true);
         }
-
         public static SuggestionProvider<ServerCommandSource> allFactions(boolean includeYou) {
             return suggest(user -> 
                 Faction.all()
@@ -105,7 +104,7 @@ public interface Command {
             return suggest(user ->
                 Faction.all()
                     .stream()
-                    .filter(f -> f.isOpen() || f.isInvited(user.getID()))
+                    .filter(f -> f.isOpen() || f.isInvited(user.getName()))
                     .map(f -> f.getName())
                     .toArray(String[]::new)
             );
@@ -114,7 +113,7 @@ public interface Command {
         public static SuggestionProvider<ServerCommandSource> suggest(Suggests sug) {
             return (context, builder) -> {
                 ServerPlayerEntity entity = context.getSource().getPlayer();
-                User user = User.get(entity.getUuid());
+                User user = User.get(entity.getName().getString());
                 for (String suggestion : sug.run(user)) {
                     builder.suggest(suggestion);
                 }

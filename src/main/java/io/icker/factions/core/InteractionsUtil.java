@@ -22,7 +22,7 @@ public class InteractionsUtil {
 
     public static void warn(ServerPlayerEntity player, String action) {
         SoundManager.warningSound(player);
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getName().getString());
         new Message("Cannot %s here", action)
             .fail()
             .send(player, !user.radar);

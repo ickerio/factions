@@ -29,10 +29,10 @@ public class RankCommand implements Command {
             return 0;
         }
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getName().getString()).getFaction();
 
         for (User users : faction.getUsers())
-            if (users.getID().equals(target.getUuid())) {
+            if (users.getName().equals(target.getName().getString())) {
 
                 switch (users.rank) {
                     case MEMBER -> users.rank = User.Rank.COMMANDER;
@@ -49,7 +49,7 @@ public class RankCommand implements Command {
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message("Promoted " + target.getName().getString() + " to " + User.get(target.getUuid()).getRankName())
+                new Message("Promoted " + target.getName().getString() + " to " + User.get(target.getName().getString()).getRankName())
                     .prependFaction(faction)
                     .send(player, false);
                 
@@ -71,10 +71,10 @@ public class RankCommand implements Command {
             return 0;
         }
 
-        Faction faction = User.get(player.getUuid()).getFaction();
+        Faction faction = User.get(player.getName().getString()).getFaction();
 
         for (User user : faction.getUsers())
-            if (user.getID().equals(target.getUuid())) {
+            if (user.getName().equals(target.getName().getString())) {
 
                 switch (user.rank) {
                     case MEMBER -> {
@@ -83,7 +83,7 @@ public class RankCommand implements Command {
                     }
                     case COMMANDER -> user.rank = User.Rank.MEMBER;
                     case LEADER -> {
-                        if (User.get(player.getUuid()).rank == User.Rank.LEADER) {
+                        if (User.get(player.getName().getString()).rank == User.Rank.LEADER) {
                             new Message("You cannot demote a fellow Co-Owner").format(Formatting.RED).send(player, false);
                             return 0;
                         }
@@ -98,7 +98,7 @@ public class RankCommand implements Command {
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message("Demoted " + target.getName().getString() + " to " + User.get(target.getUuid()).getRankName())
+                new Message("Demoted " + target.getName().getString() + " to " + User.get(target.getName().getString()).getRankName())
                     .prependFaction(faction)
                     .send(player, false);
                 
@@ -121,11 +121,11 @@ public class RankCommand implements Command {
             return 0;
         }
 
-        User targetUser = User.get(target.getUuid());
+        User targetUser = User.get(target.getName().getString());
         UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
-        if (User.get(player.getUuid()).getFaction().getID().equals(targetFaction)) {
+        if (User.get(player.getName().getString()).getFaction().getID().equals(targetFaction)) {
             targetUser.rank = User.Rank.OWNER;
-            User.get(player.getUuid()).rank = User.Rank.LEADER;
+            User.get(player.getName().getString()).rank = User.Rank.LEADER;
 
             context.getSource().getServer().getPlayerManager().sendCommandTree(player);
             context.getSource().getServer().getPlayerManager().sendCommandTree(target);

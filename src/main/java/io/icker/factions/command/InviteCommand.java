@@ -1,8 +1,11 @@
 package io.icker.factions.command;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
@@ -25,7 +28,7 @@ public class InviteCommand implements Command {
     private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        List<UUID> invites = User.get(source.getPlayer().getUuid()).getFaction().invites;
+        List<String> invites = User.get(source.getPlayer().getName().getString()).getFaction().invites;
         int count = invites.size();
 
         new Message("You have ")
@@ -35,12 +38,14 @@ public class InviteCommand implements Command {
 
         if (count == 0) return 1;
 
-        UserCache cache = source.getServer().getUserCache();
-        String players = invites.stream()
-            .map(invite -> cache.getByUuid(invite).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
-            .collect(Collectors.joining(", "));
+        StringBuilder players = new StringBuilder();
+        int length = invites.size();
+        for(int i = 0; i < length; i++){
+            players.append(invites.get(i));
+            if(i == length - 1) players.append(",");
+        }
 
-        new Message(players).format(Formatting.ITALIC).send(source.getPlayer(), false);
+        new Message(players.toString()).format(Formatting.ITALIC).send(source.getPlayer(), false);
         return 1;
     }
 
@@ -50,20 +55,20 @@ public class InviteCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = User.get(source.getPlayer().getUuid()).getFaction();
-        if (faction.isInvited(player.getUuid())) {
+        Faction faction = User.get(source.getPlayer().getName().getString()).getFaction();
+        if (faction.isInvited(player.getName().getString())) {
             new Message(target.getName().getString() + " was already invited to your faction").format(Formatting.RED).send(player, false);
             return 0;
         }
 
-        User targetUser = User.get(target.getUuid());
+        User targetUser = User.get(target.getName().getString());
         UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
         if (faction.getID().equals(targetFaction)) {
             new Message(target.getName().getString() + " is already in your faction").format(Formatting.RED).send(player, false);
             return 0;
         }
 
-        faction.invites.add(target.getUuid());
+        faction.invites.add(target.getName().getString());
 
         new Message(target.getName().getString() + " has been invited")
                 .send(faction);
@@ -80,8 +85,8 @@ public class InviteCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        Faction faction = User.get(player.getUuid()).getFaction();
-        faction.invites.remove(target.getUuid());
+        Faction faction = User.get(player.getName().getString()).getFaction();
+        faction.invites.remove(target.getName().getString());
 
         new Message(target.getName().getString() + " is no longer invited to your faction").send(player, false);
         return 1;

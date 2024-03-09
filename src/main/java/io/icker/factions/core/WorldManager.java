@@ -24,7 +24,7 @@ public class WorldManager {
     }
  
     private static void onMove(ServerPlayerEntity player) {
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getName().getString());
         ServerWorld world = player.getWorld();
         String dimension = world.getRegistryKey().getValue().toString();
 
@@ -34,7 +34,7 @@ public class WorldManager {
         if (user.autoclaim && claim == null) {
             Faction faction = user.getFaction();
             int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.CLAIM_WEIGHT;
-            int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
+            int maxPower = FactionsMod.CONFIG.MAX_POWER;
 
             if (maxPower < requiredPower) {
                 new Message("Not enough faction power to claim chunk, autoclaim toggled off").fail().send(player, false);

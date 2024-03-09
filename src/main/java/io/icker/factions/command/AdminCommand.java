@@ -8,6 +8,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
@@ -17,11 +18,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
+import java.util.Date;
+
 public class AdminCommand implements Command {
     private int bypass(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getName().getString());
         boolean bypass = !user.bypass;
         user.bypass = bypass;
 
@@ -115,7 +118,37 @@ public class AdminCommand implements Command {
                         .executes(this::power)
                     )
                 )
-            )
+            ).then(CommandManager.literal("war").requires(Requires.hasPerms("factions.admin.war", 4))
+                        .then(CommandManager.argument("sourceFaction", StringArgumentType.string())
+                                .suggests(Suggests.allFactions())
+                                .then(CommandManager.argument("targetFaction", StringArgumentType.string())
+                                        .suggests(Suggests.allFactions()).executes(this::war))))
             .build();
+    }
+
+    private int war(CommandContext<ServerCommandSource> context) {
+
+        Faction source = Faction.getByName(StringArgumentType.getString(context, "sourceFaction"));
+        Faction target = Faction.getByName(StringArgumentType.getString(context, "targetFaction"));
+
+        if(source.getID().equals(target.getID())) {
+            new Message("§cSource and target factions are the same! Cannot declare war!");
+        }
+
+        if(source.isAdmin() || target.isAdmin()) {
+            new Message("§cCannot declare war on admin faction!");
+        }
+
+        Relationship sourceRel = new Relationship(target.getID(), -FactionsMod.CONFIG.DAYS_TO_FABRICATE - 1);
+        Relationship targetRel = new Relationship(source.getID(), -FactionsMod.CONFIG.DAYS_TO_FABRICATE - 1);
+
+        source.setRelationship(targetRel);
+        target.setRelationship(targetRel);
+        long dateofwar = new Date(new Date().getTime() + (1000 * 3600 * 24 * 3)).getTime();
+        source.relationsLastUpdate = dateofwar;
+        target.relationsLastUpdate = dateofwar;
+        new Message("§4There will be blood...").sendToGlobalChat();
+        new Message("§4The §r" +source.getColor() + source.getName() + "§4 declares war on §r" + target.getColor() + target.getName() + "§4!").sendToGlobalChat();
+        return 1;
     }
 }

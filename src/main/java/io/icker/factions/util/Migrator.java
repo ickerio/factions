@@ -33,7 +33,7 @@ public class Migrator {
 
             Query query = new Query("SELECT * FROM Faction;").executeQuery();
             while (query.next()) {
-                Faction faction = new Faction(query.getString("name"), query.getString("description"), "No faction MOTD set", Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power"));
+                Faction faction = new Faction(query.getString("name"), query.getString("description"), "No faction MOTD set", Formatting.byName(query.getString("color")), query.getBool("open"), query.getInt("power"), query.getBool("admin"), query.getLong("relationsLastUpdate"));
                 Faction.add(faction);
 
                 Query homeQuery = new Query("SELECT * FROM Home WHERE faction = ?;").set(faction.getName()).executeQuery();
@@ -44,13 +44,13 @@ public class Migrator {
 
                 Query claimQuery = new Query("SELECT * FROM Claim WHERE faction = ?;").set(faction.getName()).executeQuery();
                 while (claimQuery.next()) {
-                    Claim claim = new Claim(claimQuery.getInt("x"), claimQuery.getInt("z"), claimQuery.getString("level"), faction.getID());
+                    Claim claim = new Claim(claimQuery.getInt("x"), claimQuery.getInt("z"), claimQuery.getString("level"), faction.getID(), claimQuery.getBool("create"), claimQuery.getOutpost("outpost"));
                     Claim.add(claim);
                 }
 
                 Query inviteQuery = new Query("SELECT * FROM Invite WHERE faction = ?;").set(faction.getName()).executeQuery();
                 while (inviteQuery.next()) {
-                    faction.invites.add(inviteQuery.getUUID("player"));
+                    faction.invites.add(inviteQuery.getString("player"));
                 }
             }
 
@@ -63,7 +63,7 @@ public class Migrator {
                     rank = OldRank.CIVILIAN;
                 }
 
-                User user = new User(query.getUUID("uuid"));
+                User user = new User(query.getString("Name"));
                 user.joinFaction(Faction.getByName(query.getString("faction")).getID(), migrateRank(rank));
                 User.add(user);
             }
@@ -77,7 +77,7 @@ public class Migrator {
                     opt = User.ChatMode.GLOBAL;
                 }
 
-                User user = User.get(query.getUUID("uuid"));
+                User user = User.get(query.getString("Name"));
                 user.chat = opt;
                 user.radar = query.getBool("zone");
             }
@@ -87,11 +87,11 @@ public class Migrator {
                 Faction source = Faction.getByName(query.getString("source"));
                 Faction target = Faction.getByName(query.getString("target"));
 
-                Relationship rel = new Relationship(target.getID(), Relationship.Status.ALLY);
+                Relationship rel = new Relationship(target.getID(), FactionsMod.CONFIG.DAYS_TO_FABRICATE + 1);
                 source.setRelationship(rel);
 
                 if (query.getBool("accept")) {
-                    Relationship rev = new Relationship(source.getID(), Relationship.Status.ALLY);
+                    Relationship rev = new Relationship(source.getID(), FactionsMod.CONFIG.DAYS_TO_FABRICATE + 1);
                     source.setRelationship(rev);
                 }
             }
@@ -181,10 +181,27 @@ public class Migrator {
             return null;
         }
 
+        public Claim.Outpost getOutpost(String columnName) {
+            try {
+                return result.getObject(columnName, Claim.Outpost.class);
+            } catch (SQLException e) {
+                error(e);
+            }
+            return null;
+        }
+
         public int getInt(String columnName) {
             try {
                 return result.getInt(columnName);
             } catch (SQLException e) {
+                error(e);
+            }
+            return 0;
+        }
+        public long getLong(String columnName){
+            try{
+                return result.getLong(columnName);
+            } catch (SQLException e){
                 error(e);
             }
             return 0;

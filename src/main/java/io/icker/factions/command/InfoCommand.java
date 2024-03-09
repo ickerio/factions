@@ -27,7 +27,7 @@ public class InfoCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getName().getString());
         if (!user.isInFaction()) {
             new Message("Command can only be used whilst in a faction").fail().send(player, false);
             return 0;
@@ -65,7 +65,7 @@ public class InfoCommand implements Command {
 
         UserCache cache = player.getServer().getUserCache();
         String usersList = users.stream()
-            .map(user -> cache.getByUuid(user.getID()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
+            .map(user -> cache.findByName(user.getName()).orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}")).getName())
             .collect(Collectors.joining(", "));
         
         String mutualAllies = faction.getMutualAllies().stream()
@@ -83,8 +83,8 @@ public class InfoCommand implements Command {
             .map(fac -> fac.getColor() + fac.getName())
             .collect(Collectors.joining(Formatting.GRAY + ", "));
 
-        int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.CLAIM_WEIGHT;
-        int maxPower = users.size() * FactionsMod.CONFIG.MEMBER_POWER + FactionsMod.CONFIG.BASE_POWER;
+        int tax = faction.getClaims().size() * FactionsMod.CONFIG.DAILY_TAX_PER_CHUNK;
+        int maxPower = FactionsMod.CONFIG.MAX_POWER;
 
         new Message(Formatting.GRAY + faction.getDescription())
             .prependFaction(faction)
@@ -98,8 +98,8 @@ public class InfoCommand implements Command {
             .send(player, false);
         new Message("Power")
             .filler("·")
-            .add(Formatting.GREEN.toString() + faction.getPower() + slash() + requiredPower + slash() + maxPower)
-            .hover("Current / Required / Max")
+            .add(Formatting.GREEN.toString() + faction.getPower() + slash() + Formatting.RED.toString() + tax + Formatting.GREEN.toString() + slash() + maxPower)
+            .hover("Current / Taxes / Max")
             .send(player, false);
         if (mutualAllies.length() > 0)
             new Message("Mutual allies: ")
@@ -114,7 +114,7 @@ public class InfoCommand implements Command {
                 .add(enemiesOf)
                 .send(player, false);
 
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getName().getString());
         UUID userFaction = user.isInFaction() ? user.getFaction().getID() : null;
         if (faction.getID().equals(userFaction))
             new Message("Your Rank: ")

@@ -23,7 +23,7 @@ public class SoundManager {
 
     private static void playFaction(Faction faction, SoundEvent soundEvent, float pitch) {
         for (User user : faction.getUsers()) {
-            ServerPlayerEntity player = FactionsManager.playerManager.getPlayer(user.getID());
+            ServerPlayerEntity player = FactionsManager.playerManager.getPlayer(user.getName());
             if (player != null && (user.sounds == User.SoundMode.ALL || user.sounds == User.SoundMode.FACTION)) {
                 player.playSound(soundEvent, SoundCategory.PLAYERS, 0.2F, pitch);
             }
@@ -31,7 +31,7 @@ public class SoundManager {
     }
 
     public static void warningSound(ServerPlayerEntity player) {
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getName().getString());
         if (user.sounds == User.SoundMode.ALL || user.sounds == User.SoundMode.WARNINGS) {
             player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.PLAYERS, 0.5F, 1.0F);
         }
