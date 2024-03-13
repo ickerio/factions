@@ -38,8 +38,6 @@ public class ServerPlayerInteractionManagerMixin {
 
     @Inject(at = @At("HEAD"), method = "interactBlock", cancellable = true)
     public void interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> info) {
-        if (stack.getItem() instanceof BucketItem) return;
-
         ActionResult result = PlayerEvents.USE_BLOCK.invoker().onUseBlock(player, world, hand, hitResult);
 
         if (result == ActionResult.FAIL) {

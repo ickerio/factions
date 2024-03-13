@@ -59,7 +59,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         if(lp_user != null) prefix = lp_user.getCachedData().getMetaData().getPrefix();
 
         if(prefix == null) prefix = "";
-        prefix = prefix.isEmpty() ? "[player]." : "§6["+prefix+"§6]§r.";
+        prefix = prefix.isEmpty() ? "[player]" : "§6["+prefix+"§6]§8.§r";
 
         if (member.isInFaction()) {
             Faction faction = member.getFaction();

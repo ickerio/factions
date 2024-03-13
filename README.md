@@ -31,6 +31,47 @@ A faction's power cap increases as new members join, expanding their ability to 
 - 🚀 Event driven API for further extensibility 
 - 💬 Strong [community][discord] and active developer support
 
+**UPDATE FROM RASUS:**
+
+- Compatible with `Create` and `Create: Big Cannons`
+- Has a daily tax system and resource-based economy (Diamond-currency)
+- Has a simple relations and war system (if relationship is at minimum - there is a war)
+
+
+### **WHAT SHOULD RASUS DO IN THE NEXT UPDATES:**
+- **Making a simple interface based on double-chest ScreenHandler**
+
+- **Upgrading the war system:**
+
+  - Implementing a "dishonor" variable (Like in `Victoria II`):
+    - The more "dishonor" you have - the less it will take to justify war goal on you or for you
+    - The more "dishonor" you have - the more it will take you to improve relations with others or others with you
+    - If you take too much land in wars - you will gain dishonor
+    - The more cost will have your war justification - the more dishonor you gain
+    - If you share the land with others or lose war - you will lower your dishonor
+    - With each member of your alliance - you will lower your dishonor
+  - Vassal-suzerain realization:
+    - Free states can join the kingdoms or subjugate another states or join alliances
+    - Kingdoms can only subjugate anothers or join the alliances
+    - Vassals can't do anything except grant territories to metropoly or declare the war of independence
+    - Vassals will have zero dishonor value in any case
+    - Vassals will have to pay taxes to their suzerain. Maximum tax from metropoly is configurable.
+  - Making the war goal types with different declaring cost multipliers from lowest to highest:
+    - Liberation: liberate yourself or another vassal. Modifier - 0.2
+    - Vassalization: Make another state (re-)vassalized. Modifier - 0.2
+      - Occupied chunks will be granted to the metropoly during war.
+      - After victory, it will be transfered to previous leader of this state, but it will be your vassal
+      - If the agressor defeats - he will be forced to pay the reparations
+    - Puppeting: Same as above, but changing the leader to that one that you have written in war goal.
+      - When the war starts - there will be created another puppet faction
+      - The newborn puppet faction will have your vassal that you have declared in war goal
+      - The newborn puppet faction will have maximum relationship points with you mutually.
+      - If agressor fails - he will be forced to pay reparations
+    - Integration: The enemy's chunks will be granted to your metropoly
+      - If the agressor fails - he will be vassalized to the victor
+    - Henocide: The enemy state will be vanished
+      - If the agressor fails - he will be puppeted by the victor
+
 &nbsp;
 
 ### **GET STARTED**
