@@ -16,7 +16,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtTagSizeTracker;
+import net.minecraft.nbt.NbtSizeTracker;
 
 public class Database {
     private static final File BASE_PATH =
@@ -46,7 +46,7 @@ public class Database {
         }
 
         try {
-            NbtList list = (NbtList) NbtIo.readCompressed(Path.of(file.getPath()), NbtTagSizeTracker.ofUnlimitedBytes()).get(KEY);
+            NbtList list = (NbtList) NbtIo.readCompressed(Path.of(file.getPath()), NbtSizeTracker.ofUnlimitedBytes()).get(KEY);
             for (T item : deserializeList(clazz, list)) {
                 store.put(getStoreKey.apply(item), item);
             }

@@ -33,7 +33,7 @@ public class SoundManager {
             PlayerEntity player = FactionsManager.playerManager.getPlayer(user.getID());
             if (player != null && (user.sounds == User.SoundMode.ALL
                     || user.sounds == User.SoundMode.FACTION)) {
-                player.playSound(soundEvent.value(), SoundCategory.PLAYERS, 0.2F, pitch);
+                player.playSoundToPlayer(soundEvent.value(), SoundCategory.PLAYERS, 0.2F, pitch);
             }
         }
     }
@@ -41,7 +41,7 @@ public class SoundManager {
     public static void warningSound(PlayerEntity player) {
         User user = User.get(player.getUuid());
         if (user.sounds == User.SoundMode.ALL || user.sounds == User.SoundMode.WARNINGS) {
-            player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), SoundCategory.PLAYERS, 0.5F,
+            player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), SoundCategory.PLAYERS, 0.5F,
                     1.0F);
         }
     }

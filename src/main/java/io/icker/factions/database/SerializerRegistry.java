@@ -25,6 +25,7 @@ import net.minecraft.nbt.NbtLong;
 import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.nbt.NbtShort;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.registry.DynamicRegistryManager;
 
 public class SerializerRegistry {
     private static final HashMap<Class<?>, Serializer<?, ? extends NbtElement>> registry =
@@ -120,7 +121,7 @@ public class SerializerRegistry {
                 if (!itemStack.isEmpty()) {
                     NbtCompound nbtCompound = new NbtCompound();
                     nbtCompound.putByte("Slot", (byte) i);
-                    itemStack.writeNbt(nbtCompound);
+                    nbtCompound.put("Data", itemStack.encode(DynamicRegistryManager.EMPTY));
                     nbtList.add(nbtCompound);
                 }
             }
@@ -137,7 +138,7 @@ public class SerializerRegistry {
                 NbtCompound nbtCompound = el.getCompound(i);
                 int slot = nbtCompound.getByte("Slot") & 255;
                 if (slot >= 0 && slot < size) {
-                    inventory.setStack(slot, ItemStack.fromNbt(nbtCompound));
+                    inventory.setStack(slot, ItemStack.fromNbt(DynamicRegistryManager.EMPTY, nbtCompound.get("Data")).get());
                 }
             }
 
