@@ -30,6 +30,7 @@ jobs:
         with:
           files: |
             ./build/libs/factions-mc*.*.*-*.*.*[0-9].jar
+            ./build/libs/factions-mc*.*-*.*.*[0-9].jar
             ./*.sha512
           draft: true
       - name: Deploy javadoc
