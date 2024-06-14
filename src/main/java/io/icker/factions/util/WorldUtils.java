@@ -35,13 +35,13 @@ public class WorldUtils {
 
     public static boolean isValid(String level) {
         return WorldUtils.server.getWorldRegistryKeys().stream()
-                .anyMatch(key -> Objects.equals(key.getValue(), new Identifier(level)));
+                .anyMatch(key -> Objects.equals(key.getValue(), Identifier.of(level)));
     }
 
     @Nullable
     public static ServerWorld getWorld(String level) {
         Optional<RegistryKey<World>> key = WorldUtils.server.getWorldRegistryKeys().stream()
-                .filter(testKey -> Objects.equals(testKey.getValue(), new Identifier(level)))
+                .filter(testKey -> Objects.equals(testKey.getValue(), Identifier.of(level)))
                 .findAny();
 
         if (key.isEmpty()) {

@@ -18,7 +18,7 @@ public class PlaceholdersWrapper {
             UNFORMATTED_NULL.copy().formatted(Formatting.DARK_GRAY);
 
     private static void register(String identifier, Function<User, Text> handler) {
-        Placeholders.register(new Identifier(FactionsMod.MODID, identifier), (ctx, argument) -> {
+        Placeholders.register(Identifier.of(FactionsMod.MODID, identifier), (ctx, argument) -> {
             if (!ctx.hasPlayer())
                 return PlaceholderResult.invalid("No player found");
 
