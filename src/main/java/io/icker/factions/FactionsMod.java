@@ -30,6 +30,7 @@ import io.icker.factions.core.InteractionManager;
 import io.icker.factions.core.ServerManager;
 import io.icker.factions.core.SoundManager;
 import io.icker.factions.core.WorldManager;
+import io.icker.factions.database.SerializerRegistry; // Ensure this import is added
 import io.icker.factions.util.BlueMapWrapper;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
@@ -55,6 +56,9 @@ public class FactionsMod implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Initialized Factions Mod for Minecraft v1.20.1");
+
+        // Initialize SerializerRegistry
+        SerializerRegistry.initialize();
 
         WorldUtils.register();
 
