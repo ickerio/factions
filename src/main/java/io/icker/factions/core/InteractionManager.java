@@ -142,8 +142,14 @@ public class InteractionManager {
     }
 
     private static ActionResult onUseEntity(PlayerEntity player, Entity entity, World world) {
-        if (checkPermissions(player, entity.getBlockPos(), world,
-                Permissions.USE_ENTITIES) == ActionResult.FAIL) {
+        BlockPos pos;
+        if (entity == null) {
+            pos = player.getBlockPos();
+        } else {
+            pos = entity.getBlockPos();
+        }
+
+        if (checkPermissions(player, pos, world, Permissions.USE_ENTITIES) == ActionResult.FAIL) {
             InteractionsUtil.warn(player, "use entities");
             return ActionResult.FAIL;
         }
