@@ -9,6 +9,7 @@ import io.icker.factions.api.persistents.Relationship.Status;
 import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.api.persistents.User.SoundMode;
+import io.icker.factions.util.WorldUtils;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtByte;
@@ -25,7 +26,6 @@ import net.minecraft.nbt.NbtLong;
 import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.nbt.NbtShort;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.registry.DynamicRegistryManager;
 
 public class SerializerRegistry {
     private static final HashMap<Class<?>, Serializer<?, ? extends NbtElement>> registry =
@@ -121,7 +121,7 @@ public class SerializerRegistry {
                 if (!itemStack.isEmpty()) {
                     NbtCompound nbtCompound = new NbtCompound();
                     nbtCompound.putByte("Slot", (byte) i);
-                    nbtCompound.put("Data", itemStack.encode(DynamicRegistryManager.EMPTY));
+                    nbtCompound.put("Data", itemStack.encode(WorldUtils.server.getRegistryManager()));
                     nbtList.add(nbtCompound);
                 }
             }
@@ -138,7 +138,7 @@ public class SerializerRegistry {
                 NbtCompound nbtCompound = el.getCompound(i);
                 int slot = nbtCompound.getByte("Slot") & 255;
                 if (slot >= 0 && slot < size) {
-                    inventory.setStack(slot, ItemStack.fromNbt(DynamicRegistryManager.EMPTY, nbtCompound.get("Data")).get());
+                    inventory.setStack(slot, ItemStack.fromNbt(WorldUtils.server.getRegistryManager(), nbtCompound.get("Data")).get());
                 }
             }
 
