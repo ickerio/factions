@@ -86,7 +86,7 @@ public class BlueMapWrapper {
         }
 
         ExtrudeMarker marker = ExtrudeMarker.builder()
-            .position((double) pos.getCenterX(), 100, (double) pos.getCenterZ())
+            .position((double) pos.getCenterX(), 320, (double) pos.getCenterZ())
             .shape(Shape.createRect(pos.getStartX(), pos.getStartZ(), pos.getEndX(), pos.getEndZ()), -64, 320)
             .fillColor(new Color(faction.getColor().getColorValue() | 0x40000000))
             .lineColor(new Color(faction.getColor().getColorValue() | 0xFF000000))
