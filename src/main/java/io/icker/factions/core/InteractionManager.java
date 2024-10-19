@@ -24,7 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -88,7 +87,7 @@ public class InteractionManager {
         return ActionResult.PASS;
     }
 
-    private static TypedActionResult<ItemStack> onUseBucket(PlayerEntity player, World world,
+    private static ActionResult onUseBucket(PlayerEntity player, World world,
             Hand hand) {
         Item item = player.getStackInHand(hand).getItem();
 
@@ -98,7 +97,7 @@ public class InteractionManager {
             if (playerResult == ActionResult.FAIL) {
                 InteractionsUtil.warn(player, "pick up/place liquids");
                 InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
-                return TypedActionResult.fail(player.getStackInHand(hand));
+                return ActionResult.FAIL;
             }
 
             Fluid fluid = ((BucketItemAccessor) item).getFluid();
@@ -114,7 +113,7 @@ public class InteractionManager {
                         Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
                     InteractionsUtil.warn(player, "pick up/place liquids");
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
-                    return TypedActionResult.fail(player.getStackInHand(hand));
+                    return ActionResult.FAIL;
                 }
 
                 BlockPos placePos = raycastPos.add(raycastResult.getSide().getVector());
@@ -122,12 +121,12 @@ public class InteractionManager {
                         Permissions.PLACE_BLOCKS) == ActionResult.FAIL) {
                     InteractionsUtil.warn(player, "pick up/place liquids");
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
-                    return TypedActionResult.fail(player.getStackInHand(hand));
+                    return ActionResult.FAIL;
                 }
             }
         }
 
-        return TypedActionResult.pass(player.getStackInHand(hand));
+        return ActionResult.PASS;
     }
 
     private static ActionResult onAttackEntity(PlayerEntity player, World world, Hand hand,

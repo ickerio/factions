@@ -54,7 +54,7 @@ public class FactionsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Initialized Factions Mod for Minecraft v1.20.1");
+        LOGGER.info("Initialized Factions Mod for Minecraft v1.21.2");
 
         WorldUtils.register();
 

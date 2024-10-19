@@ -121,7 +121,7 @@ public class SerializerRegistry {
                 if (!itemStack.isEmpty()) {
                     NbtCompound nbtCompound = new NbtCompound();
                     nbtCompound.putByte("Slot", (byte) i);
-                    nbtCompound.put("Data", itemStack.encode(WorldUtils.server.getRegistryManager()));
+                    nbtCompound.put("Data", itemStack.toNbt(WorldUtils.server.getRegistryManager()));
                     nbtList.add(nbtCompound);
                 }
             }

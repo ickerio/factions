@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -44,7 +45,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
     }
 
     @Inject(method = "isInvulnerableTo", at = @At("RETURN"), cancellable = true)
-    private void isInvulnerableTo(DamageSource damageSource, CallbackInfoReturnable<Boolean> info) {
+    public void isInvulnerableTo(ServerWorld world, DamageSource damageSource, CallbackInfoReturnable<Boolean> info) {
         Entity source = damageSource.getAttacker();
         if (source == null)
             return;

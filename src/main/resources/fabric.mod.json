@@ -30,12 +30,14 @@
 
   "depends": {
     "fabricloader": ">=0.13.3",
-    "minecraft": ">=1.20.2",
+    "minecraft": ">=1.21.2-rc.1",
     "java": ">=17",
     "fabric-api": "*"
   },
   "suggests": {
     "fabric-permissions-api-v0": "*",
-    "dynmap": ">=3.0"
+    "dynmap": ">=3.0",
+    "squaremap": ">=1.0",
+    "bluemap": ">=2.0"
   }
 }

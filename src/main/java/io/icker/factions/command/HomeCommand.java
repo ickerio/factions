@@ -1,5 +1,7 @@
 package io.icker.factions.command;
 
+import java.util.HashSet;
+
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -60,7 +62,7 @@ public class HomeCommand implements Command {
                                                                                            // damageRecord.getEntityAge()
                                                                                            // >
                                                                                            // FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN
-            player.teleport(world, home.x, home.y, home.z, home.yaw, home.pitch);
+            player.teleport(world, home.x, home.y, home.z, new HashSet<>(), home.yaw, home.pitch, false);
             new Message("Warped to faction home").send(player, false);
         } else {
             new Message("Cannot warp while in combat").fail().send(player, false);
