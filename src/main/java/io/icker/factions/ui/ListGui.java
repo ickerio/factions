@@ -1,5 +1,6 @@
 package io.icker.factions.ui;
 
+import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
@@ -56,10 +57,20 @@ public class ListGui extends PagedGui {
 
             List<Text> lore = new ArrayList<>(List.of(Text.literal(faction.getDescription()).setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))));
             if (isInFaction && home != null) {
-                lore.add(Text.literal("Click to teleport to faction home").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.AQUA)));
-                icon.setCallback((x, y, z) -> {
-                    new HomeCommand().execGo(player, faction);
-                    this.close();
+                lore.add(Text.literal("Click to view faction info.").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
+                lore.add(Text.literal("Right-click to teleport to faction home.").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_AQUA)));
+                icon.setCallback((index, clickType, actionType) -> {
+                    if (clickType == ClickType.MOUSE_RIGHT) {
+                        new HomeCommand().execGo(player, faction);
+                        this.close();
+                        return;
+                    }
+                    InfoGui infoGui = new InfoGui(player, faction, this::open);
+                });
+            } else {
+                lore.add(Text.literal("Click to view faction info.").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
+                icon.setCallback((index, clickType, actionType) -> {
+                    InfoGui infoGui = new InfoGui(player, faction, this::open);
                 });
             }
             icon.setLore(lore);

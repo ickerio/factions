@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.ui.ModifyGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.ColorArgumentType;
@@ -17,6 +18,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
 public class ModifyCommand implements Command {
+    private int gui(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        Faction faction = Command.getUser(player).getFaction();
+
+        new ModifyGui(player, faction);
+        return 1;
+    }
     private int name(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, "name");
 
@@ -116,6 +124,8 @@ public class ModifyCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager.literal("modify").requires(Requires.isLeader())
+                .requires(Requires.isOwner())
+                .executes(this::gui)
                 .then(CommandManager.literal("name")
                         .requires(Requires.multiple(Requires.hasPerms("factions.modify.name", 0),
                                 Requires.isOwner()))
