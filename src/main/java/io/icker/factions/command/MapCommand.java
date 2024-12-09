@@ -28,7 +28,7 @@ public class MapCommand implements Command {
         new Message(Formatting.DARK_GRAY + "──┤" + Formatting.GREEN + " Faction Map"
                 + Formatting.DARK_GRAY + "├──").send(player, false);
 
-        for (int z = -4; z <= 5; z++) { // Rows (10)
+        for (int z = -5; z <= 5; z++) { // Rows (10)
             Message row = new Message("");
             for (int x = -5; x <= 5; x++) { // Columns (11)
                 Claim claim = Claim.get(chunkPos.x + x, chunkPos.z + z, dimension);
