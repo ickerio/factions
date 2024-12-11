@@ -3,8 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 archivesBaseName = "${project.name}-mc${project.minecraft_version}"
 version = project.mod_version
@@ -41,6 +41,7 @@ dependencies {
     
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "me.lucko:fabric-permissions-api:${project.lucko_permissions_version}"
+    modImplementation "eu.pb4:sgui:${project.sgui_version}"
     modImplementation "eu.pb4:placeholder-api:${project.papi_version}"
     compileOnly "us.dynmap:DynmapCoreAPI:${project.dynmap_api_version}"
     compileOnly "de.bluecolored.bluemap:BlueMapAPI:${project.bluemap_api_version}"
@@ -58,7 +59,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 17
+    it.options.release = 21
 }
 
 java {
