@@ -1,11 +1,13 @@
 package io.icker.factions.ui;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
@@ -20,9 +22,14 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class ModifyGui extends SimpleGui {
     Runnable closeCallback;
+    private final Runnable defaultReturn = () -> {
+        GuiInteract.playClickSound(player);
+        this.open();
+    };
 
     /**
      * Constructs a new simple container gui for the supplied player.
@@ -42,82 +49,21 @@ public class ModifyGui extends SimpleGui {
                 .setSkullOwner(Icons.GUI_TV_TEXT)
                 .setName(Text.literal("Change name"))
                 .setCallback((index, clickType, actionType) -> {
-                    GuiInteract.playClickSound(player);
-                    AnvilInputGui inputGui = new AnvilInputGui(player, false);
-                    inputGui.setTitle(Text.literal("Specify a name..."));
-                    inputGui.setDefaultInputValue(faction.getName());
-                    inputGui.setSlot(1, new GuiElementBuilder(Items.BARRIER)
-                            .setName(Text.literal("Cancel"))
-                            .setCallback(() -> {
-                                GuiInteract.playClickSound(player);
-                                this.open();
-                            })
-                    );
-                    inputGui.setSlot(2, new GuiElementBuilder(Items.SLIME_BALL)
-                            .setName(Text.literal("Confirm"))
-                            .setCallback(() -> {
-                                GuiInteract.playClickSound(player);
-                                String name = inputGui.getInput();
-                                faction.setName(name);
-                                new Message("Successfully renamed faction to '" + name + "'").prependFaction(faction)
-                                        .send(player, false);
-                                this.open();
-                            })
-                    );
-                    inputGui.open();
+                    this.execName(faction);
                 })
         );
         this.setSlot(1, new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(Icons.GUI_BOOK)
                 .setName(Text.literal("Change description"))
                 .setCallback((index, clickType, actionType) -> {
-                    GuiInteract.playClickSound(player);
-                    AnvilInputGui inputGui = new AnvilInputGui(player, false);
-                    inputGui.setTitle(Text.literal("Specify a description..."));
-                    inputGui.setDefaultInputValue(faction.getDescription());
-                    inputGui.setSlot(1, new GuiElementBuilder(Items.BARRIER)
-                            .setName(Text.literal("Cancel"))
-                            .setCallback(() -> {
-                                GuiInteract.playClickSound(player);
-                                this.open();
-                            })
-                    );
-                    inputGui.setSlot(2, new GuiElementBuilder(Items.SLIME_BALL)
-                            .setName(Text.literal("Confirm"))
-                            .setCallback(() -> {
-                                GuiInteract.playClickSound(player);
-                                String description = inputGui.getInput();
-                                faction.setDescription(description);
-                                new Message("Successfully updated faction description to '" + description + "'")
-                                        .prependFaction(faction).send(player, false);
-                                this.open();
-                            })
-                    );
-                    inputGui.open();
+                    this.execDesc(faction);
                 })
         );
         this.setSlot(2, new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(Icons.GUI_RADIO)
                 .setName(Text.literal("Change MOTD"))
                 .setCallback((index, clickType, actionType) -> {
-                    AnvilInputGui inputGui = new AnvilInputGui(player, false);
-                    inputGui.setTitle(Text.literal("Specify a MOTD..."));
-                    inputGui.setDefaultInputValue(faction.getMOTD());
-                    inputGui.setSlot(1, new GuiElementBuilder(Items.BARRIER)
-                            .setName(Text.literal("Cancel"))
-                            .setCallback(this::open)
-                    );
-                    inputGui.setSlot(2, new GuiElementBuilder(Items.SLIME_BALL)
-                            .setName(Text.literal("Confirm"))
-                            .setCallback(() -> {
-                                String motd = inputGui.getInput();
-                                faction.setMOTD(motd);
-                                new Message("Successfully updated faction MOTD to '" + motd + "'")
-                                        .prependFaction(faction).send(player, false);
-                                this.open();
-                            })
-                    );
-                    inputGui.open();
+                    this.execMOTD(faction);
                 })
         );
         this.setSlot(4, new GuiElementBuilder(Items.PLAYER_HEAD)
@@ -159,6 +105,64 @@ public class ModifyGui extends SimpleGui {
         );
 
         this.open();
+    }
+
+    private void execName(Faction faction) {
+        InputGui inputGui = new InputGui(player);
+
+        inputGui.setTitle(Text.literal("Specify a name..."));
+        inputGui.setDefaultInputValue("New Faction Name");
+
+        inputGui.returnBtn.setCallback(defaultReturn);
+        inputGui.confirmBtn.setCallback(
+                (index, clickType, actionType) -> {
+                    String name = inputGui.getInput();
+                    faction.setName(name);
+                    new Message("Successfully renamed faction to '" + name + "'").prependFaction(faction)
+                            .send(player, false);
+                    this.open();
+                }
+        );
+
+        inputGui.open();
+    }
+
+    private void execDesc(Faction faction) {
+        InputGui inputGui = new InputGui(player);
+
+        inputGui.setTitle(Text.literal("Specify new text..."));
+        inputGui.setDefaultInputValue("New Faction Description");
+
+        inputGui.returnBtn.setCallback(defaultReturn);
+        inputGui.confirmBtn.setCallback(
+                (index, clickType, actionType) -> {
+                    String desc = inputGui.getInput();
+                    faction.setDescription(desc);
+                    new Message("Successfully updated faction description to '" + desc + "'")
+                            .prependFaction(faction).send(player, false);
+                }
+        );
+
+        inputGui.open();
+    }
+
+    private void execMOTD(Faction faction) {
+        InputGui inputGui = new InputGui(player);
+
+        inputGui.setTitle(Text.literal("Specify a MOTD..."));
+        inputGui.setDefaultInputValue("New Faction MOTD");
+
+        inputGui.returnBtn.setCallback(defaultReturn);
+        inputGui.confirmBtn.setCallback(
+                (index, clickType, actionType) -> {
+                    String motd = inputGui.getInput();
+                    faction.setMOTD(motd);
+                    new Message("Successfully updated faction MOTD to '" + motd + "'")
+                            .prependFaction(faction).send(player, false);
+                }
+        );
+
+        inputGui.open();
     }
 }
 

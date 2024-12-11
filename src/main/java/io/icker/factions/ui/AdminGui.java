@@ -31,6 +31,11 @@ import net.minecraft.util.Identifier;
 import java.util.*;
 
 public class AdminGui extends SimpleGui {
+    private final Runnable defaultReturn = () -> {
+        GuiInteract.playClickSound(player);
+        this.open();
+    };
+
     /**
      * Constructs a new simple container gui for the supplied player.
      *
@@ -90,7 +95,7 @@ public class AdminGui extends SimpleGui {
                 .setLore(List.of(Text.literal("Click to change faction's name and power.").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))))
                 .setCallback((index, clickType, actionType) -> {
                     GuiInteract.playClickSound(player);
-                    new FactionPowerInputUI(player, this);
+                    this.execPower();
                 })
         );
 
@@ -109,7 +114,7 @@ public class AdminGui extends SimpleGui {
                         new Message("Cleared spoof").send(player, false);
                         return;
                     }
-                    new SpoofPlayerInputUI(player, user, this);
+                    this.execSpoof();
                 })
         );
 
@@ -146,137 +151,24 @@ public class AdminGui extends SimpleGui {
 
         this.open();
     }
-}
 
-class FactionPowerInputUI extends AnvilInputGui {
-    Faction selectedFaction;
-    int selectedPower;
+    private void execSpoof() {
+        InputGui inputGui = new InputGui(player);
 
-    /**
-     * Constructs a new simple container gui for the supplied player.
-     *
-     * @param player the player to server this gui to
-     *               will be treated as slots of this gui
-     */
-    public FactionPowerInputUI(ServerPlayerEntity player, AdminGui parentUi) {
-        super(player, false);
-        Timer timer = new Timer();
+        inputGui.setTitle(Text.literal("Specify a player..."));
+        inputGui.setDefaultInputValue("Player Name");
 
-        this.setTitle(Text.literal("Specify a faction..."));
-        this.setDefaultInputValue("Faction Name");
-
-        this.setSlot(1, new GuiElementBuilder(Items.STRUCTURE_VOID)
-                .setName(Text.literal("Go back").formatted(Formatting.RED))
-                .setCallback(() -> {
+        inputGui.returnBtn.setCallback(defaultReturn);
+        inputGui.confirmBtn.setCallback(
+                (index, clickType, actionType) -> {
                     GuiInteract.playClickSound(player);
-                    this.close();
-                    parentUi.open();
-                })
-        );
-        this.setSlot(2, new GuiElementBuilder(Items.SLIME_BALL)
-                .setName(Text.literal("Confirm"))
-                .setCallback((index, clickType, actionType) -> {
-                    GuiInteract.playClickSound(player);
-                    this.selectedFaction = Faction.getByName(this.getInput());
-                    if (this.selectedFaction == null) {
-                        ItemStack item = Objects.requireNonNull(this.getSlot(index)).getItemStack();
-                        item.set(DataComponentTypes.CUSTOM_NAME, Text.literal("No such faction!").formatted(Formatting.RED));
-                        player.playSoundToPlayer(SoundEvent.of(Identifier.of("minecraft:item.shield.break")), SoundCategory.BLOCKS, 1, 1);
-                        timer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                item.remove(DataComponentTypes.CUSTOM_NAME);
-                            }
-                        }, 1500);
-                        return;
-                    }
 
-                    this.setTitle(Text.literal("Specify power..."));
-                    this.setDefaultInputValue("Faction Power");
-                    this.setSlot(2, new GuiElementBuilder(Items.SLIME_BALL)
-                            .setName(Text.literal("Confirm"))
-                            .setCallback((index2, clickType2, actionType2) -> {
-                                GuiInteract.playClickSound(player);
-                                try {
-                                    this.selectedPower = Integer.parseInt(this.getInput());
-                                } catch (Exception e) {
-                                    ItemStack item = Objects.requireNonNull(this.getSlot(index)).getItemStack();
-                                    item.set(DataComponentTypes.CUSTOM_NAME, Text.literal("Not a number!").formatted(Formatting.RED));
-                                    player.playSoundToPlayer(SoundEvent.of(Identifier.of("minecraft:item.shield.break")), SoundCategory.BLOCKS, 1, 1);
-                                    timer.schedule(new TimerTask() {
-                                        @Override
-                                        public void run() {
-                                            item.remove(DataComponentTypes.CUSTOM_NAME);
-                                        }
-                                    }, 1500);
-                                    return;
-                                }
-
-                                selectedFaction.addAdminPower(selectedPower);
-
-                                if (selectedPower != 0) {
-                                    if (selectedPower > 0) {
-                                        new Message("Admin %s added %d power", player.getName().getString(), selectedPower)
-                                                .send(selectedFaction);
-                                        new Message("Added %d power", selectedPower).send(player, false);
-                                    } else {
-                                        new Message("Admin %s removed %d power", player.getName().getString(), selectedPower)
-                                                .send(selectedFaction);
-                                        new Message("Removed %d power", selectedPower).send(player, false);
-                                    }
-                                } else {
-                                    new Message("No change to power").fail().send(player, false);
-                                }
-                                parentUi.open();
-                            })
-                    );
-                })
-        );
-        this.open();
-    }
-}
-
-class SpoofPlayerInputUI extends AnvilInputGui {
-
-    /**
-     * Constructs a new input gui for the provided player.
-     *
-     * @param player the player to serve this gui to
-     *               will be treated as slots of this gui
-     */
-    public SpoofPlayerInputUI(ServerPlayerEntity player, User user, AdminGui parentUi) {
-        super(player, false);
-        Timer timer = new Timer();
-
-        this.setTitle(Text.literal("Specify a player..."));
-        this.setDefaultInputValue("Player Name");
-
-        this.setSlot(1, new GuiElementBuilder(Items.BARRIER)
-                .setName(Text.literal("Go back").formatted(Formatting.RED))
-                .setCallback(() -> {
-                    this.close();
-                    parentUi.open();
-                })
-        );
-        this.setSlot(2, new GuiElementBuilder(Items.SLIME_BALL)
-                .setName(Text.literal("Confirm"))
-                .setCallback((index, clickType, actionType) -> {
-                    GuiInteract.playClickSound(player);
-                    String input = this.getInput();
+                    String input = inputGui.getInput();
 
                     if (!input.matches("^[a-zA-Z0-9_]{2,16}$")) {
-                        ItemStack item = Objects.requireNonNull(this.getSlot(index)).getItemStack();
-                        item.set(DataComponentTypes.CUSTOM_NAME, Text.literal(String.format("Invalid name %s!", input)).formatted(Formatting.RED));
-                        player.playSoundToPlayer(SoundEvent.of(Identifier.of("minecraft:item.shield.break")), SoundCategory.BLOCKS, 1, 1);
-                        timer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                item.remove(DataComponentTypes.CUSTOM_NAME);
-                            }
-                        }, 1500);
+                        inputGui.showErrorMessage(Text.literal(String.format("Invalid name %s!", input)).formatted(Formatting.RED), index);
                         return;
                     }
-
                     User target;
                     Optional<GameProfile> profile;
                     if ((profile = player.getServer().getUserCache().findByName(input)).isPresent()) {
@@ -285,24 +177,76 @@ class SpoofPlayerInputUI extends AnvilInputGui {
                         try {
                             target = User.get(UUID.fromString(input));
                         } catch (Exception e) {
-                            ItemStack item = Objects.requireNonNull(this.getSlot(index)).getItemStack();
-                            item.set(DataComponentTypes.CUSTOM_NAME, Text.literal(String.format("No such player %s!", input)).formatted(Formatting.RED));
-                            player.playSoundToPlayer(SoundEvent.of(Identifier.of("minecraft:item.shield.break")), SoundCategory.BLOCKS, 1, 1);
-                            timer.schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    item.remove(DataComponentTypes.CUSTOM_NAME);
-                                }
-                            }, 1500);
+                            inputGui.showErrorMessage(Text.literal(String.format("No such player %s!", input)).formatted(Formatting.RED), index);
                             return;
                         }
                     }
-                    user.setSpoof(target);
+                    User.get(player.getUuid()).setSpoof(target);
                     new Message("Set spoof to player %s", input).send(player, false);
-                    this.close();
-                    parentUi.open();
-                })
+                    this.open();
+                }
         );
-        this.open();
+
+        inputGui.open();
+    }
+
+    private void execPower() {
+        InputGui inputFacGui = new InputGui(player);
+        InputGui inputPowGui = new InputGui(player);
+
+        final Faction[] selectedFac = new Faction[1];
+        final int[] selectedPow = new int[1];
+
+
+        inputFacGui.setTitle(Text.literal("Specify a faction..."));
+        inputFacGui.setDefaultInputValue("Faction Name");
+
+        inputFacGui.returnBtn.setCallback(defaultReturn);
+        inputFacGui.confirmBtn.setCallback(
+                (index, clickType, actionType) -> {
+                    GuiInteract.playClickSound(player);
+                    selectedFac[0] = Faction.getByName(inputFacGui.getInput());
+                    if (selectedFac[0] == null) {
+                        inputFacGui.showErrorMessage(Text.literal("No such faction!").formatted(Formatting.RED), index);
+                        return;
+                    }
+                    inputPowGui.open();
+                }
+        );
+
+        inputPowGui.setTitle(Text.literal("Specify power..."));
+        inputPowGui.setDefaultInputValue("Power Level");
+
+        inputPowGui.returnBtn.setCallback(defaultReturn);
+        inputPowGui.confirmBtn.setCallback(
+                (index, clickType, actionType) -> {
+                    GuiInteract.playClickSound(player);
+                    try {
+                        selectedPow[0] = Integer.parseInt(inputPowGui.getInput());
+                    } catch (Exception e) {
+                        inputPowGui.showErrorMessage(Text.literal("Not a number!").formatted(Formatting.RED), index);
+                        return;
+                    }
+
+                    selectedFac[0].addAdminPower(selectedPow[0]);
+
+                    if (selectedPow[0] != 0) {
+                        if (selectedPow[0] > 0) {
+                            new Message("Admin %s added %d power", player.getName().getString(), selectedPow[0])
+                                    .send(selectedFac[0]);
+                            new Message("Added %d power", selectedPow[0]).send(player, false);
+                        } else {
+                            new Message("Admin %s removed %d power", player.getName().getString(), selectedPow[0])
+                                    .send(selectedFac[0]);
+                            new Message("Removed %d power", selectedPow[0]).send(player, false);
+                        }
+                    } else {
+                        new Message("No change to power").fail().send(player, false);
+                    }
+                    this.open();
+                }
+        );
+
+        inputFacGui.open();
     }
 }
