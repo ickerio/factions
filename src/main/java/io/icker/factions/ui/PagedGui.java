@@ -107,13 +107,13 @@ public abstract class PagedGui extends SimpleGui {
             case 1 -> DisplayElement.previousPage(this);
             case 3 -> DisplayElement.nextPage(this);
             case 7 -> DisplayElement.of(
-                new GuiElementBuilder(Items.STRUCTURE_VOID)
-                    .setName(Text.translatable(this.closeCallback != null ? "text.goml.gui.back" : "text.goml.gui.close").formatted(Formatting.RED))
-                    .hideDefaultTooltip()
-                    .setCallback((x, y, z) -> {
-                        playClickSound(this.player);
-                        this.close(this.closeCallback != null);
-                    })
+                    new GuiElementBuilder(Items.STRUCTURE_VOID)
+                            .setName(Text.literal(this.closeCallback != null ? "Go back" : "Close").formatted(Formatting.RED))
+                            .hideDefaultTooltip()
+                            .setCallback((x, y, z) -> {
+                                playClickSound(this.player);
+                                this.close(this.closeCallback != null);
+                            })
             );
             default -> DisplayElement.filler();
         };
@@ -122,9 +122,9 @@ public abstract class PagedGui extends SimpleGui {
     public record DisplayElement(@Nullable GuiElementInterface element, @Nullable Slot slot) {
         private static final DisplayElement EMPTY = DisplayElement.of(new GuiElement(ItemStack.EMPTY, GuiElementInterface.EMPTY_CALLBACK));
         private static final DisplayElement FILLER = DisplayElement.of(
-            new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)
-                .setName(Text.empty())
-                .hideTooltip()
+                new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)
+                        .setName(Text.empty())
+                        .hideTooltip()
         );
 
         public static DisplayElement of(GuiElementInterface element) {
@@ -142,21 +142,21 @@ public abstract class PagedGui extends SimpleGui {
         public static DisplayElement nextPage(PagedGui gui) {
             if (gui.canNextPage()) {
                 return DisplayElement.of(
-                    new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setName(Text.translatable("text.goml.gui.next_page").formatted(Formatting.WHITE))
-                        .hideDefaultTooltip()
-                        .setSkullOwner(Icons.GUI_NEXT_PAGE)
-                        .setCallback((x, y, z) -> {
-                            playClickSound(gui.player);
-                            gui.nextPage();
-                        })
+                        new GuiElementBuilder(Items.PLAYER_HEAD)
+                                .setName(Text.literal("Next page").formatted(Formatting.WHITE))
+                                .hideDefaultTooltip()
+                                .setSkullOwner(Icons.GUI_NEXT_PAGE)
+                                .setCallback((x, y, z) -> {
+                                    playClickSound(gui.player);
+                                    gui.nextPage();
+                                })
                 );
             } else {
                 return DisplayElement.of(
-                    new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setName(Text.translatable("text.goml.gui.next_page").formatted(Formatting.DARK_GRAY))
-                        .hideDefaultTooltip()
-                        .setSkullOwner(Icons.GUI_NEXT_PAGE_BLOCKED)
+                        new GuiElementBuilder(Items.PLAYER_HEAD)
+                                .setName(Text.literal("Next page").formatted(Formatting.DARK_GRAY))
+                                .hideDefaultTooltip()
+                                .setSkullOwner(Icons.GUI_NEXT_PAGE_BLOCKED)
                 );
             }
         }
@@ -164,21 +164,21 @@ public abstract class PagedGui extends SimpleGui {
         public static DisplayElement previousPage(PagedGui gui) {
             if (gui.canPreviousPage()) {
                 return DisplayElement.of(
-                    new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setName(Text.translatable("text.goml.gui.previous_page").formatted(Formatting.WHITE))
-                        .hideDefaultTooltip()
-                        .setSkullOwner(Icons.GUI_PREVIOUS_PAGE)
-                        .setCallback((x, y, z) -> {
-                            playClickSound(gui.player);
-                            gui.previousPage();
-                        })
+                        new GuiElementBuilder(Items.PLAYER_HEAD)
+                                .setName(Text.literal("Previous page").formatted(Formatting.WHITE))
+                                .hideDefaultTooltip()
+                                .setSkullOwner(Icons.GUI_PREVIOUS_PAGE)
+                                .setCallback((x, y, z) -> {
+                                    playClickSound(gui.player);
+                                    gui.previousPage();
+                                })
                 );
             } else {
                 return DisplayElement.of(
-                    new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setName(Text.translatable("text.goml.gui.previous_page").formatted(Formatting.DARK_GRAY))
-                        .hideDefaultTooltip()
-                        .setSkullOwner(Icons.GUI_PREVIOUS_PAGE_BLOCKED)
+                        new GuiElementBuilder(Items.PLAYER_HEAD)
+                                .setName(Text.literal("Previous page").formatted(Formatting.DARK_GRAY))
+                                .hideDefaultTooltip()
+                                .setSkullOwner(Icons.GUI_PREVIOUS_PAGE_BLOCKED)
                 );
             }
         }

@@ -1,6 +1,5 @@
 package io.icker.factions.command;
 
-import java.util.UUID;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -13,6 +12,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
+
+import java.util.UUID;
 
 public class RankCommand implements Command {
     private int promote(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -29,30 +30,22 @@ public class RankCommand implements Command {
 
         Faction faction = Command.getUser(player).getFaction();
 
-        for (User users : faction.getUsers())
-            if (users.getID().equals(target.getUuid())) {
+        for (User user : faction.getUsers())
+            if (user.getID().equals(target.getUuid())) {
 
-                switch (users.rank) {
-                    case GUEST -> users.rank = User.Rank.MEMBER;
-                    case MEMBER -> users.rank = User.Rank.COMMANDER;
-                    case COMMANDER -> users.rank = User.Rank.LEADER;
-                    case LEADER -> {
-                        new Message("You cannot promote a Leader to Owner").format(Formatting.RED)
-                                .send(player, false);
-                        return 0;
-                    }
-                    case OWNER -> {
-                        new Message("You cannot promote the Owner").format(Formatting.RED)
-                                .send(player, false);
-                        return 0;
-                    }
+                try {
+                    execPromote(user, player);
+                } catch (Exception e) {
+                    new Message(e.getMessage()).format(Formatting.RED)
+                            .send(player, false);
+                    return 0;
                 }
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
                 new Message("Promoted " + target.getName().getString() + " to "
                         + User.get(target.getUuid()).getRankName()).prependFaction(faction)
-                                .send(player, false);
+                        .send(player, false);
 
                 return 1;
             }
@@ -60,6 +53,21 @@ public class RankCommand implements Command {
         new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED)
                 .send(player, false);
         return 0;
+    }
+
+    public static void execPromote(User target, ServerPlayerEntity initiator) throws Exception {
+        switch (target.rank) {
+            case GUEST -> target.rank = User.Rank.MEMBER;
+            case MEMBER -> target.rank = User.Rank.COMMANDER;
+            case COMMANDER -> target.rank = User.Rank.LEADER;
+            case LEADER -> {
+                throw new Exception("You cannot promote a Leader to Owner");
+                // When adding translations you can replace this with translation key and use `Text.translatable` in exception handler
+            }
+            case OWNER -> {
+                throw new Exception("You cannot promote the Owner");
+            }
+        }
     }
 
     private int demote(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -78,35 +86,19 @@ public class RankCommand implements Command {
         for (User user : faction.getUsers())
             if (user.getID().equals(target.getUuid())) {
 
-                switch (user.rank) {
-                    case GUEST -> {
-                        new Message("You cannot demote a Guest").format(Formatting.RED).send(player,
-                                false);
-                        return 0;
-                    }
-                    case MEMBER -> user.rank = User.Rank.GUEST;
-                    case COMMANDER -> user.rank = User.Rank.MEMBER;
-                    case LEADER -> {
-                        if (Command.getUser(player).rank == User.Rank.LEADER) {
-                            new Message("You cannot demote a fellow Co-Owner")
-                                    .format(Formatting.RED).send(player, false);
-                            return 0;
-                        }
-
-                        user.rank = User.Rank.COMMANDER;
-                    }
-                    case OWNER -> {
-                        new Message("You cannot demote the Owner").format(Formatting.RED)
-                                .send(player, false);
-                        return 0;
-                    }
+                try {
+                    execDemote(user, player);
+                } catch (Exception e) {
+                    new Message(e.getMessage()).format(Formatting.RED)
+                            .send(player, false);
+                    return 0;
                 }
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
                 new Message("Demoted " + target.getName().getString() + " to "
                         + User.get(target.getUuid()).getRankName()).prependFaction(faction)
-                                .send(player, false);
+                        .send(player, false);
 
                 return 1;
             }
@@ -114,6 +106,21 @@ public class RankCommand implements Command {
         new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED)
                 .send(player, false);
         return 0;
+    }
+
+    public static void execDemote(User target, ServerPlayerEntity initiator) throws Exception {
+        switch (target.rank) {
+            case GUEST -> throw new Exception("You cannot demote a Guest");
+            case MEMBER -> target.rank = User.Rank.GUEST;
+            case COMMANDER -> target.rank = User.Rank.MEMBER;
+            case LEADER -> {
+                if (Command.getUser(initiator).rank == User.Rank.LEADER) {
+                    throw new Exception("You cannot demote a fellow Co-Owner");
+                }
+                target.rank = User.Rank.COMMANDER;
+            }
+            case OWNER -> throw new Exception("You cannot demote the Owner");
+        }
     }
 
     private int transfer(CommandContext<ServerCommandSource> context)

@@ -2,18 +2,18 @@ package io.icker.factions.ui;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.command.HomeCommand;
+import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
-import io.icker.factions.util.WorldUtils;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +23,8 @@ public class ListGui extends PagedGui {
     int size;
     User user;
 
-    public ListGui(ServerPlayerEntity player, User user) {
-        super(player, null);
+    public ListGui(ServerPlayerEntity player, User user, @Nullable Runnable closeCallback) {
+        super(player, closeCallback);
         this.user = user;
 
         Faction userFaction = user.getFaction();
@@ -52,25 +52,27 @@ public class ListGui extends PagedGui {
             Home home = faction.getHome();
 
             var icon = new GuiElementBuilder(Items.PLAYER_HEAD);
-            icon.setSkullOwner(isInFaction ? Icons.GUI_FACTION_MEMBER : Icons.GUI_FACTION_GUEST);
-            icon.setName(Text.literal(faction.getName()));
+            icon.setSkullOwner(isInFaction ? Icons.GUI_CASTLE_NORMAL : Icons.GUI_CASTLE_OPEN);
+            icon.setName(Text.literal(faction.getColor() + faction.getName()));
 
             List<Text> lore = new ArrayList<>(List.of(Text.literal(faction.getDescription()).setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))));
             if (isInFaction && home != null) {
                 lore.add(Text.literal("Click to view faction info.").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
                 lore.add(Text.literal("Right-click to teleport to faction home.").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_AQUA)));
                 icon.setCallback((index, clickType, actionType) -> {
+                    GuiInteract.playClickSound(player);
                     if (clickType == ClickType.MOUSE_RIGHT) {
                         new HomeCommand().execGo(player, faction);
                         this.close();
                         return;
                     }
-                    InfoGui infoGui = new InfoGui(player, faction, this::open);
+                    new InfoGui(player, faction, this::open);
                 });
             } else {
                 lore.add(Text.literal("Click to view faction info.").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
                 icon.setCallback((index, clickType, actionType) -> {
-                    InfoGui infoGui = new InfoGui(player, faction, this::open);
+                    GuiInteract.playClickSound(player);
+                    new InfoGui(player, faction, this::open);
                 });
             }
             icon.setLore(lore);

@@ -1,7 +1,5 @@
 package io.icker.factions.command;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -9,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.ui.MemberGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -17,6 +16,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MemberCommand implements Command {
     private int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -29,6 +31,7 @@ public class MemberCommand implements Command {
             return 0;
         }
 
+        new MemberGui(player, user.getFaction(), null);
         return members(player, user.getFaction());
     }
 
@@ -44,6 +47,7 @@ public class MemberCommand implements Command {
             return 0;
         }
 
+        new MemberGui(player, faction, null);
         return members(player, faction);
     }
 

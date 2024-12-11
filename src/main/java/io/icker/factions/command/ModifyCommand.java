@@ -1,6 +1,5 @@
 package io.icker.factions.command;
 
-import java.util.Locale;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -17,14 +16,17 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
+import java.util.Locale;
+
 public class ModifyCommand implements Command {
     private int gui(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
         Faction faction = Command.getUser(player).getFaction();
 
-        new ModifyGui(player, faction);
+        new ModifyGui(player, faction, null);
         return 1;
     }
+
     private int name(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, "name");
 
@@ -100,7 +102,7 @@ public class ModifyCommand implements Command {
         faction.setColor(color);
         new Message(
                 "Successfully updated faction color to " + Formatting.BOLD + color + color.name())
-                        .prependFaction(faction).send(player, false);
+                .prependFaction(faction).send(player, false);
 
         return 1;
     }
