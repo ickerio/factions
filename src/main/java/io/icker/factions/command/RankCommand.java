@@ -115,7 +115,7 @@ public class RankCommand implements Command {
             case COMMANDER -> target.rank = User.Rank.MEMBER;
             case LEADER -> {
                 if (Command.getUser(initiator).rank == User.Rank.LEADER) {
-                    throw new Exception("You cannot demote a fellow Co-Owner");
+                    throw new Exception("You cannot demote a Leader");
                 }
                 target.rank = User.Rank.COMMANDER;
             }

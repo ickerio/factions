@@ -20,7 +20,6 @@ public class ListCommand implements Command {
 
         User user = User.get(player.getUuid());
 
-
         Collection<Faction> factions = Faction.all();
         int size = factions.size();
 

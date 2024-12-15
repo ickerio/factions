@@ -140,6 +140,7 @@ public class ModifyGui extends SimpleGui {
                     faction.setDescription(desc);
                     new Message("Successfully updated faction description to '" + desc + "'")
                             .prependFaction(faction).send(player, false);
+                    this.open();
                 }
         );
 
@@ -159,6 +160,7 @@ public class ModifyGui extends SimpleGui {
                     faction.setMOTD(motd);
                     new Message("Successfully updated faction MOTD to '" + motd + "'")
                             .prependFaction(faction).send(player, false);
+                    this.open();
                 }
         );
 

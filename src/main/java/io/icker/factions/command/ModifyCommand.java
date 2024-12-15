@@ -126,7 +126,8 @@ public class ModifyCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager.literal("modify").requires(Requires.isLeader())
-                .requires(Requires.isOwner())
+                .requires(Requires.multiple(Requires.hasPerms("factions.modify.gui", 0),
+                        Requires.isOwner()))
                 .executes(this::gui)
                 .then(CommandManager.literal("name")
                         .requires(Requires.multiple(Requires.hasPerms("factions.modify.name", 0),

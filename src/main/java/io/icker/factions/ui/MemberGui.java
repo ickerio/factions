@@ -1,6 +1,9 @@
 package io.icker.factions.ui;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
+
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -9,6 +12,7 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.command.RankCommand;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.GuiInteract;
+import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
@@ -23,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MemberGui extends PagedGui {
     Faction faction;
@@ -57,11 +62,20 @@ public class MemberGui extends PagedGui {
     protected DisplayElement getElement(int id) {
         if (this.size > id) {
             var targetUser = this.members.get(id);
-            GameProfile profile = cache.getByUuid(targetUser.getID()).orElseThrow();
+            GameProfile unknownPlayer =  new GameProfile(UUID.randomUUID(), "{Unknown Player}");
+            unknownPlayer.getProperties().put("textures", new Property("textures", Icons.GUI_UNKNOWN_PLAYER, null));
+            
+            GameProfile profile = cache.getByUuid(targetUser.getID()).orElse(unknownPlayer);
 
             var icon = new GuiElementBuilder(Items.PLAYER_HEAD);
             icon.setComponent(DataComponentTypes.PROFILE, new ProfileComponent(profile));
             icon.setName(Text.literal(profile.getName()));
+
+            if (profile == unknownPlayer) {
+                List<Text> lore = List.of(Text.literal("No info available").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
+                icon.setLore(lore);
+                return DisplayElement.of(icon);
+            }
 
             List<Text> lore = new ArrayList<>(List.of(Text.literal("Rank: ")
                     .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))

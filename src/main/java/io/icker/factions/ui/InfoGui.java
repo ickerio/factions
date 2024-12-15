@@ -45,7 +45,7 @@ public class InfoGui extends SimpleGui {
 
         String owner = members.stream().filter(u -> u.rank == User.Rank.OWNER)
                 .map(u -> cache.getByUuid(u.getID())
-                        .orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}"))
+                        .orElse(new GameProfile(Util.NIL_UUID, "{Unknown Player}"))
                         .getName()
                 )
                 .collect(Collectors.joining(", "));

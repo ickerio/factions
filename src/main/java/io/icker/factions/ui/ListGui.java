@@ -27,10 +27,12 @@ public class ListGui extends PagedGui {
         super(player, closeCallback);
         this.user = user;
 
-        Faction userFaction = user.getFaction();
         this.factions = new ArrayList<>(Faction.all().stream().toList());
-        this.factions.remove(userFaction);
-        this.factions.addFirst(userFaction);
+        Faction userFaction;
+        if ((userFaction = user.getFaction()) != null) {
+            this.factions.remove(userFaction);
+            this.factions.addFirst(userFaction);
+        }
         this.size = factions.size();
 
         this.setTitle(Text.literal("Factions list"));

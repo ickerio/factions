@@ -5,7 +5,6 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
@@ -21,12 +20,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 
 import java.util.*;
 
@@ -169,18 +165,12 @@ public class AdminGui extends SimpleGui {
                         inputGui.showErrorMessage(Text.literal(String.format("Invalid name %s!", input)).formatted(Formatting.RED), index);
                         return;
                     }
-                    User target;
                     Optional<GameProfile> profile;
-                    if ((profile = player.getServer().getUserCache().findByName(input)).isPresent()) {
-                        target = User.get(profile.get().getId());
-                    } else {
-                        try {
-                            target = User.get(UUID.fromString(input));
-                        } catch (Exception e) {
-                            inputGui.showErrorMessage(Text.literal(String.format("No such player %s!", input)).formatted(Formatting.RED), index);
-                            return;
-                        }
+                    if (!(profile = player.getServer().getUserCache().findByName(input)).isPresent()) {
+                        inputGui.showErrorMessage(Text.literal(String.format("No such player %s!", input)).formatted(Formatting.RED), index);
+                        return;
                     }
+                    User target = User.get(profile.get().getId());
                     User.get(player.getUuid()).setSpoof(target);
                     new Message("Set spoof to player %s", input).send(player, false);
                     this.open();
