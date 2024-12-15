@@ -1,14 +1,15 @@
 package io.icker.factions.api.persistents;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.util.WorldUtils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 @Name("Claim")
 public class Claim {
@@ -20,9 +21,7 @@ public class Claim {
     @Field("Z")
     public int z;
 
-    /**
-     * The dimension of the claim
-     */
+    /** The dimension of the claim */
     @Field("Level")
     public String level;
 
@@ -56,8 +55,11 @@ public class Claim {
     }
 
     public static void audit() {
-        STORE.values().removeIf((claim) -> Faction.get(claim.factionID) == null
-                || !WorldUtils.isValid(claim.level));
+        STORE.values()
+                .removeIf(
+                        (claim) ->
+                                Faction.get(claim.factionID) == null
+                                        || !WorldUtils.isValid(claim.level));
     }
 
     public static void add(Claim claim) {

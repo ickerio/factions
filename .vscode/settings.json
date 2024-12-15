@@ -1,0 +1,12 @@
+{
+    "java.format.settings.profile": "AOSPStyle",
+    "java.format.settings.url": "https://raw.github.com/android/platform_development/master/ide/eclipse/android-formatting.xml",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+    },
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false, // For whatever reason AOSP style messes with VSCode indentation auto-detection
+    "java.format.settings.google.extra": "--aosp"
+}

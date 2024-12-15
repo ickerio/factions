@@ -2,6 +2,7 @@ package io.icker.factions.core;
 
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;

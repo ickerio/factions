@@ -3,10 +3,12 @@ package io.icker.factions.command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -37,7 +39,8 @@ public class KickCommand implements Command {
         if (selfUser.rank == User.Rank.LEADER
                 && (targetUser.rank == User.Rank.LEADER || targetUser.rank == User.Rank.OWNER)) {
             new Message("Cannot kick members with a higher of equivalent rank")
-                    .format(Formatting.RED).send(player, false);
+                    .format(Formatting.RED)
+                    .send(player, false);
             return 0;
         }
 
@@ -53,10 +56,12 @@ public class KickCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager.literal("kick")
-                .requires(Requires.multiple(Requires.isLeader(),
-                        Requires.hasPerms("factions.kick", 0)))
-                .then(CommandManager.argument("player", EntityArgumentType.player())
-                        .executes(this::run))
+                .requires(
+                        Requires.multiple(
+                                Requires.isLeader(), Requires.hasPerms("factions.kick", 0)))
+                .then(
+                        CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(this::run))
                 .build();
     }
 }

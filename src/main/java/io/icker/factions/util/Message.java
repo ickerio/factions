@@ -2,6 +2,7 @@ package io.icker.factions.util;
 
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -49,8 +50,10 @@ public class Message {
     }
 
     public Message hover(String message) {
-        text.styled(s -> s
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(message))));
+        text.styled(
+                s ->
+                        s.withHoverEvent(
+                                new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(message))));
         return this;
     }
 
@@ -68,8 +71,7 @@ public class Message {
         Message message = this.prependFaction(faction);
         for (User member : faction.getUsers()) {
             ServerPlayerEntity player = manager.getPlayer(member.getID());
-            if (player != null)
-                message.send(player, false);
+            if (player != null) message.send(player, false);
         }
         return this;
     }
@@ -77,8 +79,7 @@ public class Message {
     public void sendToGlobalChat() {
         for (ServerPlayerEntity player : manager.getPlayerList()) {
             User.ChatMode option = User.get(player.getUuid()).chat;
-            if (option != User.ChatMode.FOCUS)
-                player.sendMessage(text, false);
+            if (option != User.ChatMode.FOCUS) player.sendMessage(text, false);
         }
     }
 
@@ -90,16 +91,29 @@ public class Message {
     }
 
     public Message prependFaction(Faction faction) {
-        text = new Message("").add(
-                new Message(faction.getColor().toString() + Formatting.BOLD + faction.getName())
-                        .hover(faction.getDescription()))
-                .filler("»").raw().append(text);
+        text =
+                new Message("")
+                        .add(
+                                new Message(
+                                                faction.getColor().toString()
+                                                        + Formatting.BOLD
+                                                        + faction.getName())
+                                        .hover(faction.getDescription()))
+                        .filler("»")
+                        .raw()
+                        .append(text);
         return this;
     }
 
     public Message filler(String symbol) {
-        text.append(Text.of(
-                " " + Formatting.RESET + Formatting.DARK_GRAY + symbol + Formatting.RESET + " "));
+        text.append(
+                Text.of(
+                        " "
+                                + Formatting.RESET
+                                + Formatting.DARK_GRAY
+                                + symbol
+                                + Formatting.RESET
+                                + " "));
         return this;
     }
 
