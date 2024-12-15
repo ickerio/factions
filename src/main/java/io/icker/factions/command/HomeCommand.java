@@ -27,6 +27,14 @@ public class HomeCommand implements Command {
             return 0;
 
         Faction faction = Command.getUser(player).getFaction();
+
+        if (faction == null)
+            return 0;
+
+        return execGo(player, faction);
+    }
+
+    public int execGo(ServerPlayerEntity player, Faction faction) {
         Home home = faction.getHome();
 
         if (home == null) {
@@ -51,15 +59,7 @@ public class HomeCommand implements Command {
 
         if (((DamageTrackerAccessor) player.getDamageTracker()).getAgeOnLastDamage() == 0
                 || player.age - ((DamageTrackerAccessor) player.getDamageTracker())
-                        .getAgeOnLastDamage() > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) { // damageRecord
-                                                                                           // ==
-                                                                                           // null
-                                                                                           // ||
-                                                                                           // player.age
-                                                                                           // -
-                                                                                           // damageRecord.getEntityAge()
-                                                                                           // >
-                                                                                           // FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN
+                    .getAgeOnLastDamage() > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
             player.teleport(world, home.x, home.y, home.z, home.yaw, home.pitch);
             new Message("Warped to faction home").send(player, false);
         } else {
