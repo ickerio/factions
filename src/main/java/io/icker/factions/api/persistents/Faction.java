@@ -82,10 +82,8 @@ public class Faction {
         this.power = power;
     }
 
-    @SuppressWarnings("unused")
     public Faction() {}
 
-    @SuppressWarnings("unused")
     public String getKey() {
         return id.toString();
     }
@@ -108,7 +106,6 @@ public class Faction {
         return STORE.values();
     }
 
-    @SuppressWarnings("unused")
     public static List<Faction> allBut(UUID id) {
         return STORE.values().stream().filter(f -> f.id != id).toList();
     }

@@ -36,7 +36,6 @@ public class Home {
         this.level = level;
     }
 
-    @SuppressWarnings("unused")
     public Home() {}
 
     public Faction getFaction() {

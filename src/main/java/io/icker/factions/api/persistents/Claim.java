@@ -39,7 +39,6 @@ public class Claim {
         this.accessLevel = Rank.MEMBER;
     }
 
-    @SuppressWarnings("unused")
     public Claim() {}
 
     public String getKey() {
