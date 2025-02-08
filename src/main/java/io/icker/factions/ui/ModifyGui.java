@@ -31,12 +31,6 @@ public class ModifyGui extends SimpleGui {
         this.open();
     };
 
-    /**
-     * Constructs a new simple container gui for the supplied player.
-     *
-     * @param player the player to server this gui to
-     *               will be treated as slots of this gui
-     */
     public ModifyGui(ServerPlayerEntity player, Faction faction, @Nullable Runnable closeCallback) {
         super(ScreenHandlerType.GENERIC_9X1, player, false);
         this.closeCallback = closeCallback;
@@ -173,12 +167,6 @@ class ColorGui extends SimpleGui {
     Faction faction;
     Runnable returnCallback;
 
-    /**
-     * Constructs a new simple container gui for the supplied player.
-     *
-     * @param player the player to server this gui to
-     *               will be treated as slots of this gui
-     */
     public ColorGui(ServerPlayerEntity player, Faction faction, @Nullable Runnable returnCallback) {
         super(ScreenHandlerType.GENERIC_9X2, player, false);
         this.player = player;

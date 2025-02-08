@@ -26,12 +26,6 @@ import java.util.stream.Collectors;
 public class InfoGui extends SimpleGui {
     protected final Runnable closeCallback;
 
-    /**
-     * Constructs a new simple container gui for the supplied player.
-     *
-     * @param player the player to server this gui to
-     *               will be treated as slots of this gui
-     */
     public InfoGui(ServerPlayerEntity player, Faction faction, @Nullable Runnable closeCallback) {
         super(ScreenHandlerType.GENERIC_9X1, player, false);
         this.closeCallback = closeCallback;

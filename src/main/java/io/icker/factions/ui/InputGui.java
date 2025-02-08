@@ -21,12 +21,6 @@ public class InputGui extends AnvilInputGui {
     public GuiElementBuilder confirmBtn;
     private final Timer timer = new Timer();
 
-    /**
-     * Constructs a new input gui for the provided player.
-     *
-     * @param player                the player to serve this gui to
-     *                              will be treated as slots of this gui
-     */
     public InputGui(ServerPlayerEntity player) {
         super(player, false);
 

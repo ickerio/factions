@@ -32,12 +32,6 @@ public class AdminGui extends SimpleGui {
         this.open();
     };
 
-    /**
-     * Constructs a new simple container gui for the supplied player.
-     *
-     * @param player the player to server this gui to
-     *               will be treated as slots of this gui
-     */
     public AdminGui(ServerPlayerEntity player) {
         super(ScreenHandlerType.GENERIC_9X1, player, false);
         User user = User.get(player.getUuid());
