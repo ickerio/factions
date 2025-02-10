@@ -1,6 +1,5 @@
 package io.icker.factions.command;
 
-import java.util.Locale;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -8,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.ui.ModifyGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.command.argument.ColorArgumentType;
@@ -16,7 +16,17 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
+import java.util.Locale;
+
 public class ModifyCommand implements Command {
+    private int gui(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        Faction faction = Command.getUser(player).getFaction();
+
+        new ModifyGui(player, faction, null);
+        return 1;
+    }
+
     private int name(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, "name");
 
@@ -92,7 +102,7 @@ public class ModifyCommand implements Command {
         faction.setColor(color);
         new Message(
                 "Successfully updated faction color to " + Formatting.BOLD + color + color.name())
-                        .prependFaction(faction).send(player, false);
+                .prependFaction(faction).send(player, false);
 
         return 1;
     }
@@ -116,6 +126,9 @@ public class ModifyCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager.literal("modify").requires(Requires.isLeader())
+                .requires(Requires.multiple(Requires.hasPerms("factions.modify.gui", 0),
+                        Requires.isOwner()))
+                .executes(this::gui)
                 .then(CommandManager.literal("name")
                         .requires(Requires.multiple(Requires.hasPerms("factions.modify.name", 0),
                                 Requires.isOwner()))

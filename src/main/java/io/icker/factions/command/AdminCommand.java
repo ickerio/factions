@@ -12,6 +12,7 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.ui.AdminGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
@@ -20,6 +21,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Formatting;
 
 public class AdminCommand implements Command {
+    private int gui(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+
+        // Show UI
+        new AdminGui(player);
+
+        return 1;
+    }
+
     private int bypass(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayer();
 
@@ -80,7 +90,12 @@ public class AdminCommand implements Command {
         if ((profile = source.getServer().getUserCache().findByName(name)).isPresent()) {
             target = User.get(profile.get().getId());
         } else {
-            target = User.get(UUID.fromString(name));
+            try {
+                target = User.get(UUID.fromString(name));
+            } catch (Exception e) {
+                new Message("No such player %s", name).format(Formatting.RED).send(player, false);
+                return 0;
+            }
         }
 
         user.setSpoof(target);
@@ -123,6 +138,9 @@ public class AdminCommand implements Command {
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager.literal("admin")
+                .requires(Requires.hasPerms("factions.admin.gui",
+                    FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                .executes(this::gui)
                 .then(CommandManager.literal("bypass")
                         .requires(Requires.hasPerms("factions.admin.bypass",
                                 FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
