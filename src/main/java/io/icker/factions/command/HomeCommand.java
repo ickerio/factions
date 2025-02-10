@@ -20,8 +20,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
-import java.util.HashSet;
-
 public class HomeCommand implements Command {
     private int go(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
@@ -30,6 +28,13 @@ public class HomeCommand implements Command {
         if (player == null) return 0;
 
         Faction faction = Command.getUser(player).getFaction();
+
+        if (faction == null) return 0;
+
+        return execGo(player, faction);
+    }
+
+    public int execGo(ServerPlayerEntity player, Faction faction) {
         Home home = faction.getHome();
 
         if (home == null) {
@@ -55,17 +60,8 @@ public class HomeCommand implements Command {
                 || player.age
                                 - ((DamageTrackerAccessor) player.getDamageTracker())
                                         .getAgeOnLastDamage()
-                        > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) { // damageRecord
-            // ==
-            // null
-            // ||
-            // player.age
-            // -
-            // damageRecord.getEntityAge()
-            // >
-            // FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN
-            player.teleport(
-                    world, home.x, home.y, home.z, new HashSet<>(), home.yaw, home.pitch, false);
+                        > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
+            player.teleport(world, home.x, home.y, home.z, home.yaw, home.pitch);
             new Message("Warped to faction home").send(player, false);
         } else {
             new Message("Cannot warp while in combat").fail().send(player, false);

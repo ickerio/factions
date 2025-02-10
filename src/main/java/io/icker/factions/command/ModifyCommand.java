@@ -8,6 +8,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.ui.ModifyGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 
@@ -20,6 +21,14 @@ import net.minecraft.util.Formatting;
 import java.util.Locale;
 
 public class ModifyCommand implements Command {
+    private int gui(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        Faction faction = Command.getUser(player).getFaction();
+
+        new ModifyGui(player, faction, null);
+        return 1;
+    }
+
     private int name(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, "name");
 
@@ -131,6 +140,10 @@ public class ModifyCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager.literal("modify")
                 .requires(Requires.isLeader())
+                .requires(
+                        Requires.multiple(
+                                Requires.hasPerms("factions.modify.gui", 0), Requires.isOwner()))
+                .executes(this::gui)
                 .then(
                         CommandManager.literal("name")
                                 .requires(

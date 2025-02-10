@@ -9,6 +9,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.ui.InfoGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 
@@ -52,6 +53,10 @@ public class InfoCommand implements Command {
     }
 
     public static int info(ServerPlayerEntity player, Faction faction) {
+        if (FactionsMod.CONFIG.GUI) {
+            new InfoGui(player, faction, null);
+            return 1;
+        }
         List<User> users = faction.getUsers();
 
         UserCache cache = player.getServer().getUserCache();

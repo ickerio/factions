@@ -4,7 +4,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.User;
+import io.icker.factions.ui.ListGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 
@@ -19,6 +22,13 @@ public class ListCommand implements Command {
     private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
+
+        User user = User.get(player.getUuid());
+
+        if (FactionsMod.CONFIG.GUI) {
+            new ListGui(player, user, null);
+            return 1;
+        }
 
         Collection<Faction> factions = Faction.all();
         int size = factions.size();
@@ -38,6 +48,7 @@ public class ListCommand implements Command {
         }
 
         list.send(player, false);
+
         return 1;
     }
 
