@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.ui.MemberGui;
@@ -31,7 +33,6 @@ public class MemberCommand implements Command {
             return 0;
         }
 
-        new MemberGui(player, user.getFaction(), null);
         return members(player, user.getFaction());
     }
 
@@ -47,11 +48,14 @@ public class MemberCommand implements Command {
             return 0;
         }
 
-        new MemberGui(player, faction, null);
         return members(player, faction);
     }
 
     public static int members(ServerPlayerEntity player, Faction faction) {
+        if (FactionsMod.CONFIG.GUI) {
+            new MemberGui(player, faction, null);
+            return 1;
+        }
         List<User> users = faction.getUsers();
         UserCache cache = player.getServer().getUserCache();
 
