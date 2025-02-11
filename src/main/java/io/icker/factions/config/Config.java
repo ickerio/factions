@@ -74,7 +74,7 @@ public class Config {
     @SerializedName("version")
     public int VERSION = REQUIRED_VERSION;
 
-    @SerializedName("version")
+    @SerializedName("gui")
     public boolean GUI = false;
 
     @SerializedName("power")
