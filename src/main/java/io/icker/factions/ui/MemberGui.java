@@ -77,7 +77,7 @@ public class MemberGui extends PagedGui {
             icon.setComponent(DataComponentTypes.PROFILE, new ProfileComponent(profile));
             icon.setName(Text.literal(profile.getName()));
 
-            if (profile == unknownPlayer) {
+            if (profile.equals(unknownPlayer)) {
                 List<Text> lore =
                         List.of(
                                 Text.literal("No info available")
@@ -108,7 +108,8 @@ public class MemberGui extends PagedGui {
             if (!profile.getId().equals(player.getUuid())
                     && Command.Requires.isLeader().test(player.getCommandSource())
                     && Command.Requires.hasPerms("factions.rank.promote", 0)
-                            .test(player.getCommandSource())) {
+                            .test(player.getCommandSource())
+                    && user.getFaction().equals(faction)) {
                 lore.add(
                         Text.literal("Click to promote.")
                                 .setStyle(

@@ -164,7 +164,7 @@ public class BlueMapWrapper {
         }
 
         for (Map.Entry<String, MarkerSet> entry : markerSets.entrySet()) {
-            if (entry.getKey() == home.level) {
+            if (entry.getKey().equals(home.level)) {
                 continue;
             }
 

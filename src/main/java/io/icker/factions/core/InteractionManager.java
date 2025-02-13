@@ -190,7 +190,7 @@ public class InteractionManager {
         Faction sourceFaction = sourceUser.getFaction();
         Faction targetFaction = targetUser.getFaction();
 
-        if (sourceFaction.getID() == targetFaction.getID()) {
+        if (sourceFaction.equals(targetFaction)) {
             return ActionResult.SUCCESS;
         }
 
@@ -233,7 +233,7 @@ public class InteractionManager {
 
         Faction userFaction = user.getFaction();
 
-        if (claimFaction == userFaction
+        if (claimFaction.equals(userFaction)
                 && (getRankLevel(claim.accessLevel) <= getRankLevel(user.rank)
                         || (user.rank == User.Rank.GUEST
                                 && claimFaction.guest_permissions.contains(permission)

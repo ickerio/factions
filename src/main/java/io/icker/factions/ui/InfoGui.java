@@ -38,7 +38,7 @@ public class InfoGui extends SimpleGui {
         UserCache cache = server.getUserCache();
 
         User user = User.get(player.getUuid());
-        boolean isMember = faction == user.getFaction();
+        boolean isMember = faction.equals(user.getFaction());
         List<User> members = faction.getUsers();
 
         String owner =
@@ -243,7 +243,7 @@ public class InfoGui extends SimpleGui {
                                                         .formatted(Formatting.GREEN)))
                         .setLore(enemies));
 
-        if (Command.Requires.isOwner().test(player.getCommandSource())) {
+        if (Command.Requires.isOwner().test(player.getCommandSource()) && isMember) {
             this.setSlot(
                     6,
                     new GuiElementBuilder(Items.PLAYER_HEAD)

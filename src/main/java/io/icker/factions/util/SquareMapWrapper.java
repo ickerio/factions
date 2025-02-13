@@ -158,7 +158,7 @@ public class SquareMapWrapper {
         }
 
         for (Map.Entry<String, SimpleLayerProvider> entry : layers.entrySet()) {
-            if (entry.getKey() == home.level) {
+            if (entry.getKey().equals(home.level)) {
                 continue;
             }
 

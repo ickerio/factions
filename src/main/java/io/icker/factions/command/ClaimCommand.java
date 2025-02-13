@@ -89,14 +89,12 @@ public class ClaimCommand implements Command {
                 if (existingClaim != null) {
                     if (size == 1) {
                         String owner =
-                                existingClaim.getFaction().getID() == faction.getID()
-                                        ? "Your"
-                                        : "Another";
+                                existingClaim.getFaction().equals(faction) ? "Your" : "Another";
                         new Message(owner + " faction already owns this chunk")
                                 .fail()
                                 .send(player, false);
                         return 0;
-                    } else if (existingClaim.getFaction().getID() != faction.getID()) {
+                    } else if (!existingClaim.getFaction().equals(faction)) {
                         new Message("Another faction already owns a chunk")
                                 .fail()
                                 .send(player, false);
@@ -220,7 +218,7 @@ public class ClaimCommand implements Command {
                 Claim existingClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
                 if (existingClaim != null
-                        && (user.bypass || existingClaim.getFaction().getID() == faction.getID()))
+                        && (user.bypass || existingClaim.getFaction().equals(faction)))
                     existingClaim.remove();
             }
         }
