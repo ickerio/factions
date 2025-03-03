@@ -296,6 +296,13 @@ public class ClaimCommand implements Command {
         }
 
         if (increase) {
+            if (claim.accessLevel.ordinal() <= user.rank.ordinal()) {
+                new Message("Cannot increase access level to higher then your rank")
+                        .fail()
+                        .send(player, false);
+                return 0;
+            }
+
             switch (claim.accessLevel) {
                 case OWNER -> {
                     new Message("Cannot increase access level as it is already at its maximum.")
@@ -311,6 +318,13 @@ public class ClaimCommand implements Command {
                 }
             }
         } else {
+            if (claim.accessLevel.ordinal() <= user.rank.ordinal()) {
+                new Message("Cannot decrease access level from higher then your rank")
+                        .fail()
+                        .send(player, false);
+                return 0;
+            }
+
             switch (claim.accessLevel) {
                 case OWNER -> claim.accessLevel = User.Rank.LEADER;
                 case LEADER -> claim.accessLevel = User.Rank.COMMANDER;
@@ -354,8 +368,11 @@ public class ClaimCommand implements Command {
                                                         CommandManager.literal("force")
                                                                 .requires(
                                                                         Requires.hasPerms(
-                                                                                "factions.claim.add.force",
-                                                                                0))
+                                                                                        "factions.claim.add.force",
+                                                                                        0)
+                                                                                .and(
+                                                                                        Requires
+                                                                                                .isLeader()))
                                                                 .executes(
                                                                         context ->
                                                                                 addForced(
@@ -372,7 +389,9 @@ public class ClaimCommand implements Command {
                                 .executes(this::list))
                 .then(
                         CommandManager.literal("remove")
-                                .requires(Requires.hasPerms("factions.claim.remove", 0))
+                                .requires(
+                                        Requires.hasPerms("factions.claim.remove", 0)
+                                                .and(Requires.isLeader()))
                                 .then(
                                         CommandManager.argument(
                                                         "size", IntegerArgumentType.integer(1, 7))

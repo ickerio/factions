@@ -46,8 +46,10 @@ public class MemberGui extends PagedGui {
         this.user = User.get(player.getUuid());
 
         this.members = new ArrayList<>(faction.getUsers());
-        this.members.remove(user);
-        this.members.addFirst(user);
+        if (faction.equals(this.user.getFaction())) {
+            this.members.remove(user);
+            this.members.addFirst(user);
+        }
         this.size = members.size();
 
         this.setTitle(
@@ -109,7 +111,7 @@ public class MemberGui extends PagedGui {
                     && Command.Requires.isLeader().test(player.getCommandSource())
                     && Command.Requires.hasPerms("factions.rank.promote", 0)
                             .test(player.getCommandSource())
-                    && user.getFaction().equals(faction)) {
+                    && faction.equals(user.getFaction())) {
                 lore.add(
                         Text.literal("Click to promote.")
                                 .setStyle(

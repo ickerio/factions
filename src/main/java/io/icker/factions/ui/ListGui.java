@@ -53,7 +53,7 @@ public class ListGui extends PagedGui {
         if (this.size > id) {
             var faction = this.factions.get(id);
 
-            boolean isInFaction = this.user.getFaction().equals(faction);
+            boolean isInFaction = faction.equals(this.user.getFaction());
             Home home = faction.getHome();
 
             var icon = new GuiElementBuilder(Items.PLAYER_HEAD);
