@@ -189,6 +189,25 @@ public class MemberGui extends PagedGui {
                                                                 .formatted(Formatting.GREEN))
                                                 .setCallback(
                                                         ((index2, clickType2, actionType2) -> {
+                                                            if (user.rank == User.Rank.LEADER
+                                                                    && (targetUser.rank
+                                                                                    == User.Rank
+                                                                                            .LEADER
+                                                                            || targetUser.rank
+                                                                                    == User.Rank
+                                                                                            .OWNER)) {
+                                                                new Message(
+                                                                                "Cannot kick"
+                                                                                    + " members"
+                                                                                    + " with a"
+                                                                                    + " higher of"
+                                                                                    + " equivalent"
+                                                                                    + " rank")
+                                                                        .format(Formatting.RED)
+                                                                        .send(player, false);
+                                                                return;
+                                                            }
+
                                                             GuiInteract.playClickSound(player);
                                                             targetUser.leaveFaction();
                                                             new Message(
