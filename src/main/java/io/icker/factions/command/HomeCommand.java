@@ -19,7 +19,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import org.apache.logging.log4j.core.jmx.Server;
 
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class HomeCommand implements Command {
@@ -58,6 +62,12 @@ public class HomeCommand implements Command {
             return 0;
         }
 
+        if (!(checkHomeCooldownPassed(home, player)))
+        {
+            new Message("Cannot warp home while on warp cooldown").fail().send(player, false);
+            return 0;
+        }
+
         if (((DamageTrackerAccessor) player.getDamageTracker()).getAgeOnLastDamage() == 0
                 || player.age
                                 - ((DamageTrackerAccessor) player.getDamageTracker())
@@ -65,6 +75,7 @@ public class HomeCommand implements Command {
                         > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
             player.teleport(
                     world, home.x, home.y, home.z, new HashSet<>(), home.yaw, home.pitch, false);
+            home.setPlayerLastWarpTime(player);
             new Message("Warped to faction home").send(player, false);
         } else {
             new Message("Cannot warp while in combat").fail().send(player, false);
@@ -99,6 +110,19 @@ public class HomeCommand implements Command {
                         home.x, home.y, home.z, player.getName().getString())
                 .send(faction);
         return 1;
+    }
+    private static boolean checkHomeCooldownPassed(Home home, ServerPlayerEntity player)
+    {
+        HashMap<ServerPlayerEntity, Long> homeCooldownData = home.HomeCooldown;
+
+        Long playerLastWarpTime = homeCooldownData.get(player);
+        if (playerLastWarpTime == null) return true;
+
+        Long timePassedSinceLastWarp = Date.from(Instant.now()).getTime() - playerLastWarpTime;
+        Long homeCooldownInMS = (long) FactionsMod.CONFIG.HOME.HOME_WARP_COOLDOWN_SECOND * 1000;
+
+        return timePassedSinceLastWarp.compareTo(homeCooldownInMS) > 0 ||
+                timePassedSinceLastWarp.compareTo(homeCooldownInMS) == 0;
     }
 
     private static boolean checkLimitToClaim(Faction faction, ServerWorld world, BlockPos pos) {
