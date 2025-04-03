@@ -10,5 +10,5 @@ public class HomeConfig {
     public int DAMAGE_COOLDOWN = 100;
 
     @SerializedName("homeWarpCooldownSecond")
-    public int HOME_WARP_COOLDOWN_SECOND = 30;
+    public int HOME_WARP_COOLDOWN_SECOND = 15;
 }

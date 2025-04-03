@@ -62,9 +62,17 @@ public class HomeCommand implements Command {
             return 0;
         }
 
-        if (Date.from(Instant.now()).getTime() - user.homeCooldown
-                < FactionsMod.CONFIG.HOME.HOME_WARP_COOLDOWN_SECOND) {
-            new Message("Cannot warp home while on warp cooldown").fail().send(player, false);
+        long elapsed_time = Date.from(Instant.now()).getTime() - user.homeCooldown;
+        if (elapsed_time < FactionsMod.CONFIG.HOME.HOME_WARP_COOLDOWN_SECOND * 1000) {
+            new Message(
+                            "Cannot warp home while on warp cooldown, please wait %.0f seconds",
+                            (double)
+                                            (FactionsMod.CONFIG.HOME.HOME_WARP_COOLDOWN_SECOND
+                                                            * 1000
+                                                    - elapsed_time)
+                                    / 1000.0)
+                    .fail()
+                    .send(player, false);
             return 0;
         }
 
@@ -75,6 +83,7 @@ public class HomeCommand implements Command {
                         > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
             player.teleport(
                     world, home.x, home.y, home.z, new HashSet<>(), home.yaw, home.pitch, false);
+            user.homeCooldown = Date.from(Instant.now()).getTime();
 
             new Message("Warped to faction home").send(player, false);
         } else {
