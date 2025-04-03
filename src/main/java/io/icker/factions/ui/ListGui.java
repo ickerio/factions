@@ -83,7 +83,7 @@ public class ListGui extends PagedGui {
                         (index, clickType, actionType) -> {
                             GuiInteract.playClickSound(player);
                             if (clickType == ClickType.MOUSE_RIGHT) {
-                                new HomeCommand().execGo(player, faction);
+                                new HomeCommand().execGo(player, user, faction);
                                 this.close();
                                 return;
                             }

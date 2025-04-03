@@ -61,6 +61,9 @@ public class User {
     @Field("Sounds")
     public SoundMode sounds = SoundMode.ALL;
 
+    @Field("HomeCooldown")
+    public long homeCooldown = -1;
+
     public boolean autoclaim = false;
     public boolean bypass = false;
 
