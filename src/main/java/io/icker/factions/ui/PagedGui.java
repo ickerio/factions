@@ -31,7 +31,6 @@ public abstract class PagedGui extends SimpleGui {
         this.closeCallback = closeCallback;
     }
 
-
     public void refreshOpen() {
         this.updateDisplay();
         this.open();
@@ -108,24 +107,24 @@ public abstract class PagedGui extends SimpleGui {
             case 3 -> DisplayElement.nextPage(this);
             case 7 -> DisplayElement.of(
                     new GuiElementBuilder(Items.STRUCTURE_VOID)
-                            .setName(Text.literal(this.closeCallback != null ? "Go back" : "Close").formatted(Formatting.RED))
+                            .setName(Text.literal(this.closeCallback != null ? "Go back" : "Close")
+                                    .formatted(Formatting.RED))
                             .hideDefaultTooltip()
                             .setCallback((x, y, z) -> {
                                 playClickSound(this.player);
                                 this.close(this.closeCallback != null);
-                            })
-            );
+                            }));
             default -> DisplayElement.filler();
         };
     }
 
     public record DisplayElement(@Nullable GuiElementInterface element, @Nullable Slot slot) {
-        private static final DisplayElement EMPTY = DisplayElement.of(new GuiElement(ItemStack.EMPTY, GuiElementInterface.EMPTY_CALLBACK));
+        private static final DisplayElement EMPTY = DisplayElement
+                .of(new GuiElement(ItemStack.EMPTY, GuiElementInterface.EMPTY_CALLBACK));
         private static final DisplayElement FILLER = DisplayElement.of(
                 new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)
                         .setName(Text.empty())
-                        .hideTooltip()
-        );
+                        .hideTooltip());
 
         public static DisplayElement of(GuiElementInterface element) {
             return new DisplayElement(element, null);
@@ -143,21 +142,21 @@ public abstract class PagedGui extends SimpleGui {
             if (gui.canNextPage()) {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
-                                .setName(Text.translatable("gui.generic.next_page").formatted(Formatting.WHITE))
+                                .setName(
+                                        Text.translatable("factions.gui.generic.next_page").formatted(Formatting.WHITE))
                                 .hideDefaultTooltip()
                                 .setSkullOwner(Icons.GUI_NEXT_PAGE)
                                 .setCallback((x, y, z) -> {
                                     playClickSound(gui.player);
                                     gui.nextPage();
-                                })
-                );
+                                }));
             } else {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
-                                .setName(Text.translatable("gui.generic.next_page").formatted(Formatting.DARK_GRAY))
+                                .setName(Text.translatable("factions.gui.generic.next_page")
+                                        .formatted(Formatting.DARK_GRAY))
                                 .hideDefaultTooltip()
-                                .setSkullOwner(Icons.GUI_NEXT_PAGE_BLOCKED)
-                );
+                                .setSkullOwner(Icons.GUI_NEXT_PAGE_BLOCKED));
             }
         }
 
@@ -165,21 +164,21 @@ public abstract class PagedGui extends SimpleGui {
             if (gui.canPreviousPage()) {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
-                                .setName(Text.translatable("gui.generic.previous_page").formatted(Formatting.WHITE))
+                                .setName(Text.translatable("factions.gui.generic.previous_page")
+                                        .formatted(Formatting.WHITE))
                                 .hideDefaultTooltip()
                                 .setSkullOwner(Icons.GUI_PREVIOUS_PAGE)
                                 .setCallback((x, y, z) -> {
                                     playClickSound(gui.player);
                                     gui.previousPage();
-                                })
-                );
+                                }));
             } else {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
-                                .setName(Text.translatable("gui.generic.previous_page").formatted(Formatting.DARK_GRAY))
+                                .setName(Text.translatable("factions.gui.generic.previous_page")
+                                        .formatted(Formatting.DARK_GRAY))
                                 .hideDefaultTooltip()
-                                .setSkullOwner(Icons.GUI_PREVIOUS_PAGE_BLOCKED)
-                );
+                                .setSkullOwner(Icons.GUI_PREVIOUS_PAGE_BLOCKED));
             }
         }
 

@@ -50,7 +50,8 @@ public class MemberGui extends PagedGui {
         this.size = members.size();
 
         this.setTitle(
-                Text.translatable("gui.members.title", Text.literal(faction.getColor() + faction.getName()), size));
+                Text.translatable("factions.gui.members.title", Text.literal(faction.getColor() + faction.getName()),
+                        size));
         this.updateDisplay();
         this.open();
     }
@@ -65,7 +66,7 @@ public class MemberGui extends PagedGui {
         if (this.size > id) {
             var targetUser = this.members.get(id);
             GameProfile unknownPlayer = new GameProfile(UUID.randomUUID(),
-                    Localization.raw("gui.generic.unknown_player", player));
+                    Localization.raw("factions.gui.generic.unknown_player", player));
             unknownPlayer.getProperties().put("textures", new Property("textures", Icons.GUI_UNKNOWN_PLAYER, null));
 
             GameProfile profile = cache.getByUuid(targetUser.getID()).orElse(unknownPlayer);
@@ -75,24 +76,24 @@ public class MemberGui extends PagedGui {
             icon.setName(Text.literal(profile.getName()));
 
             if (profile == unknownPlayer) {
-                List<Text> lore = List.of(Text.translatable("gui.members.entry.unknown_player")
+                List<Text> lore = List.of(Text.translatable("factions.gui.members.entry.unknown_player")
                         .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
                 icon.setLore(lore);
                 return DisplayElement.of(icon);
             }
 
             List<Text> lore = new ArrayList<>(List.of(Text
-                    .translatable("gui.members.entry.info.rank",
+                    .translatable("factions.gui.members.entry.info.rank",
                             Text.literal(targetUser.getRankName())
                                     .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GREEN)))
                     .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))));
             if (!profile.getId().equals(player.getUuid()) && Command.Requires.isLeader().test(player.getCommandSource())
                     && Command.Requires.hasPerms("factions.rank.promote", 0).test(player.getCommandSource())) {
-                lore.add(Text.translatable("gui.members.entry.manage.promote")
+                lore.add(Text.translatable("factions.gui.members.entry.manage.promote")
                         .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_GREEN)));
-                lore.add(Text.translatable("gui.members.entry.manage.demote")
+                lore.add(Text.translatable("factions.gui.members.entry.manage.demote")
                         .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_RED)));
-                lore.add(Text.translatable("gui.members.entry.manage.kick")
+                lore.add(Text.translatable("factions.gui.members.entry.manage.kick")
                         .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_RED)));
                 ServerPlayerEntity targetPlayer = player.getServer().getPlayerManager().getPlayer(targetUser.getID());
                 icon.setCallback((index, clickType, actionType) -> {
@@ -101,7 +102,7 @@ public class MemberGui extends PagedGui {
                         try {
                             RankCommand.execPromote(targetUser, player);
                             new Message(
-                                    Text.translatable("gui.members.entry.manage.promote.result",
+                                    Text.translatable("factions.gui.members.entry.manage.promote.result",
                                             profile.getName(),
                                             User.get(profile.getId()).getRankName()))
                                     .prependFaction(faction)
@@ -117,7 +118,7 @@ public class MemberGui extends PagedGui {
                             RankCommand.execDemote(targetUser, player);
 
                             new Message(
-                                    Text.translatable("gui.members.entry.manage.demote.result",
+                                    Text.translatable("factions.gui.members.entry.manage.demote.result",
                                             profile.getName(),
                                             User.get(profile.getId()).getRankName()))
                                     .prependFaction(faction)
@@ -132,30 +133,30 @@ public class MemberGui extends PagedGui {
                         SimpleGui gui = new SimpleGui(ScreenHandlerType.HOPPER, player, false);
                         for (int i = 0; i < 5; i++)
                             gui.setSlot(i, new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip());
-                        gui.setTitle(Text.translatable("gui.members.entry.manage.kick.confirm.title"));
+                        gui.setTitle(Text.translatable("factions.gui.members.entry.manage.kick.confirm.title"));
                         gui.setSlot(1, new GuiElementBuilder(Items.SLIME_BALL)
-                                .setName(Text.translatable("gui.members.entry.manage.kick.confirm.yes",
+                                .setName(Text.translatable("factions.gui.members.entry.manage.kick.confirm.yes",
                                         targetPlayer.getName().getString()).formatted(Formatting.GREEN))
                                 .setCallback(((index2, clickType2, actionType2) -> {
                                     GuiInteract.playClickSound(player);
                                     targetUser.leaveFaction();
                                     new Message(
                                             Text.translatable(
-                                                    "gui.members.entry.manage.kick.result.actor",
+                                                    "factions.gui.members.entry.manage.kick.result.actor",
                                                     targetPlayer.getName().getString()))
                                             .send(player, false);
 
                                     if (targetPlayer != null) {
                                         new Message(
                                                 Text.translatable(
-                                                        "gui.members.entry.manage.kick.result.subject",
+                                                        "factions.gui.members.entry.manage.kick.result.subject",
                                                         player.getName().getString()))
                                                 .send(targetPlayer, false);
                                     }
                                     this.open();
                                 })));
                         gui.setSlot(3, new GuiElementBuilder(Items.STRUCTURE_VOID)
-                                .setName(Text.translatable("gui.members.entry.manage.kick.confirm.no")
+                                .setName(Text.translatable("factions.gui.members.entry.manage.kick.confirm.no")
                                         .formatted(Formatting.RED))
                                 .setCallback(() -> {
                                     GuiInteract.playClickSound(player);
@@ -165,7 +166,7 @@ public class MemberGui extends PagedGui {
                     }
                     lore.removeFirst();
                     lore.addFirst(Text
-                            .translatable("gui.members.entry.info.rank",
+                            .translatable("factions.gui.members.entry.info.rank",
                                     Text.literal(targetUser.getRankName())
                                             .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GREEN)))
                             .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));

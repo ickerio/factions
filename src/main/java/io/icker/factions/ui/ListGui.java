@@ -35,7 +35,7 @@ public class ListGui extends PagedGui {
         }
         this.size = factions.size();
 
-        this.setTitle(Text.translatable("gui.list.title"));
+        this.setTitle(Text.translatable("factions.gui.list.title"));
         this.updateDisplay();
         this.open();
     }
@@ -57,10 +57,13 @@ public class ListGui extends PagedGui {
             icon.setSkullOwner(isInFaction ? Icons.GUI_CASTLE_NORMAL : Icons.GUI_CASTLE_OPEN);
             icon.setName(Text.literal(faction.getColor() + faction.getName()));
 
-            List<Text> lore = new ArrayList<>(List.of(Text.literal(faction.getDescription()).setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))));
+            List<Text> lore = new ArrayList<>(List.of(Text.literal(faction.getDescription())
+                    .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))));
             if (isInFaction && home != null) {
-                lore.add(Text.translatable("gui.list.entry.view_info").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
-                lore.add(Text.translatable("gui.list.entry.teleport").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_AQUA)));
+                lore.add(Text.translatable("factions.gui.list.entry.view_info")
+                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
+                lore.add(Text.translatable("factions.gui.list.entry.teleport")
+                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_AQUA)));
                 icon.setCallback((index, clickType, actionType) -> {
                     GuiInteract.playClickSound(player);
                     if (clickType == ClickType.MOUSE_RIGHT) {
@@ -71,7 +74,8 @@ public class ListGui extends PagedGui {
                     new InfoGui(player, faction, this::open);
                 });
             } else {
-                lore.add(Text.translatable("gui.list.entry.view_info").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
+                lore.add(Text.translatable("factions.gui.list.entry.view_info")
+                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
                 icon.setCallback((index, clickType, actionType) -> {
                     GuiInteract.playClickSound(player);
                     new InfoGui(player, faction, this::open);
