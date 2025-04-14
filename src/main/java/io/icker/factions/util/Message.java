@@ -58,6 +58,12 @@ public class Message {
         return this;
     }
 
+    public Message hover(MutableText text) {
+        text.styled(s -> s
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text)));
+        return this;
+    }
+
     public Message click(String message) {
         text.styled(s -> s.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, message)));
         return this;
