@@ -35,7 +35,7 @@ public class ListGui extends PagedGui {
         }
         this.size = factions.size();
 
-        this.setTitle(Text.literal("Factions list"));
+        this.setTitle(Text.translatable("gui.list.title"));
         this.updateDisplay();
         this.open();
     }
@@ -59,8 +59,8 @@ public class ListGui extends PagedGui {
 
             List<Text> lore = new ArrayList<>(List.of(Text.literal(faction.getDescription()).setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))));
             if (isInFaction && home != null) {
-                lore.add(Text.literal("Click to view faction info.").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
-                lore.add(Text.literal("Right-click to teleport to faction home.").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_AQUA)));
+                lore.add(Text.translatable("gui.list.entry.view_info").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
+                lore.add(Text.translatable("gui.list.entry.teleport").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.DARK_AQUA)));
                 icon.setCallback((index, clickType, actionType) -> {
                     GuiInteract.playClickSound(player);
                     if (clickType == ClickType.MOUSE_RIGHT) {
@@ -71,7 +71,7 @@ public class ListGui extends PagedGui {
                     new InfoGui(player, faction, this::open);
                 });
             } else {
-                lore.add(Text.literal("Click to view faction info.").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
+                lore.add(Text.translatable("gui.list.entry.view_info").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
                 icon.setCallback((index, clickType, actionType) -> {
                     GuiInteract.playClickSound(player);
                     new InfoGui(player, faction, this::open);

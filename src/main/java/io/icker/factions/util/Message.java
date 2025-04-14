@@ -23,6 +23,10 @@ public class Message {
         text = (MutableText) Text.of(String.format(message, args));
     }
 
+    public Message(MutableText text) {
+        this.text = text;
+    }
+
     public Message add(String message) {
         text.append(message);
         return this;

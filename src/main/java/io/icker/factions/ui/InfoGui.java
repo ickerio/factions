@@ -18,6 +18,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
+import xyz.nucleoid.server.translations.api.Localization;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -39,12 +41,12 @@ public class InfoGui extends SimpleGui {
 
         String owner = members.stream().filter(u -> u.rank == User.Rank.OWNER)
                 .map(u -> cache.getByUuid(u.getID())
-                        .orElse(new GameProfile(Util.NIL_UUID, "{Unknown Player}"))
+                        .orElse(new GameProfile(Util.NIL_UUID, Localization.raw("gui.generic.unknown_player", player)))
                         .getName()
                 )
                 .collect(Collectors.joining(", "));
 
-        this.setTitle(Text.literal("Faction info"));
+        this.setTitle(Text.translatable("gui.info.title"));
 
         for (int i = 0; i < 9; i++)
             this.setSlot(i, new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip());
@@ -55,23 +57,11 @@ public class InfoGui extends SimpleGui {
                 .setName(Text.literal(faction.getColor() + faction.getName()))
                 .setLore(List.of(
                                 Text.literal(faction.getDescription())
-                                        .setStyle(
-                                                Style.EMPTY
-                                                        .withItalic(false)
-                                                        .withColor(Formatting.WHITE)
-                                        ),
-                                Text.literal("Owner: ")
-                                        .setStyle(
-                                                Style.EMPTY
-                                                        .withItalic(false)
-                                                        .withColor(Formatting.GRAY)
-                                        ).append(
-                                                Text.literal(owner).setStyle(
-                                                        Style.EMPTY
-                                                                .withItalic(false)
-                                                                .withColor(Formatting.YELLOW)
-                                                )
+                                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.WHITE)),
+                                Text.translatable("gui.info.owner", 
+                                                Text.literal(owner).setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.YELLOW))
                                         )
+                                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))
                         )
                 )
         );
@@ -82,7 +72,7 @@ public class InfoGui extends SimpleGui {
 
         List<Text> membersLore = new java.util.ArrayList<>(members.stream()
                 .map(u -> Text.literal(cache.getByUuid(u.getID())
-                                .orElse(new GameProfile(Util.NIL_UUID, "{Uncached Player}"))
+                                .orElse(new GameProfile(Util.NIL_UUID, Localization.raw("gui.info.members.uncached", player)))
                                 .getName())
                         .setStyle(
                                 Style.EMPTY
@@ -95,7 +85,7 @@ public class InfoGui extends SimpleGui {
         if (membersLore.size() > 4) membersLore = membersLore.subList(0, 3);
         membersLore.add(Text.empty());
         membersLore.add(
-                Text.literal("Click to view all members")
+                Text.translatable("gui.info.members.viewall")
                         .setStyle(
                                 Style.EMPTY
                                         .withItalic(false)
@@ -105,7 +95,7 @@ public class InfoGui extends SimpleGui {
 
         this.setSlot(1, new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(Icons.GUI_PLAYER)
-                .setName(Text.literal("Members ").append(Text.literal("(" + members.size() + (isMaxSize ? "/" + maxSize : "") + ")").formatted(Formatting.GREEN)))
+                .setName(Text.translatable("gui.info.members", Text.literal(members.size() + (isMaxSize ? ("/" + maxSize) : "")).formatted(Formatting.GREEN)))
                 .setLore(membersLore)
                 .setCallback(() -> {
                     GuiInteract.playClickSound(player);
@@ -118,60 +108,32 @@ public class InfoGui extends SimpleGui {
         int maxPower = members.size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
         this.setSlot(2, new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(Icons.GUI_FIST)
-                .setName(Text.literal("Faction Powers"))
+                .setName(Text.translatable("gui.info.power"))
                 .setLore(
                         List.of(
-                                Text.literal(String.valueOf(faction.getPower()))
-                                        .setStyle(
-                                                Style.EMPTY
-                                                        .withItalic(false)
-                                                        .withColor(Formatting.GREEN)
+                                Text.translatable("gui.info.power.total", 
+                                        Text.literal(String.valueOf(faction.getPower()))
+                                                .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GREEN))
                                         )
-                                        .append(Text.literal(" faction power")
-                                                .setStyle(
-                                                        Style.EMPTY
-                                                                .withItalic(false)
-                                                                .withColor(Formatting.GRAY)
-                                                )
-                                        ),
-                                Text.literal(String.valueOf(requiredPower))
-                                        .setStyle(
-                                                Style.EMPTY
-                                                        .withItalic(false)
-                                                        .withColor(Formatting.GREEN)
+                                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)),
+                                Text.translatable("gui.info.power.claims", 
+                                        Text.literal(String.valueOf(requiredPower))
+                                                .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GREEN))
                                         )
-                                        .append(Text.literal(" claims required power")
-                                                .setStyle(
-                                                        Style.EMPTY
-                                                                .withItalic(false)
-                                                                .withColor(Formatting.GRAY)
-                                                )
-                                        ),
-                                Text.literal(String.valueOf(maxPower))
-                                        .setStyle(
-                                                Style.EMPTY
-                                                        .withItalic(false)
-                                                        .withColor(Formatting.GREEN)
+                                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)),
+                                Text.translatable("gui.info.power.max", 
+                                        Text.literal(String.valueOf(maxPower))
+                                                .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GREEN))
                                         )
-                                        .append(Text.literal(" max faction power")
-                                                .setStyle(
-                                                        Style.EMPTY
-                                                                .withItalic(false)
-                                                                .withColor(Formatting.GRAY)
-                                                )
-                                        )
+                                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))
                         )
                 )
         );
 
         // Allies info
         List<Text> allies = faction.getMutualAllies().isEmpty() ?
-                List.of(Text.literal("No allies.")
-                        .setStyle(
-                                Style.EMPTY
-                                        .withItalic(false)
-                                        .withColor(Formatting.GRAY)
-                        )
+                List.of(Text.translatable("gui.info.allies.none")
+                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))
                 ) :
                 faction.getMutualAllies().stream()
                         .map(rel -> Faction.get(rel.target))
@@ -179,17 +141,13 @@ public class InfoGui extends SimpleGui {
                         .toList();
         this.setSlot(3, new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(Icons.GUI_CASTLE_ALLY)
-                .setName(Text.literal("Ally factions ").append(Text.literal(String.format("(%s)", faction.getMutualAllies().size())).formatted(Formatting.GREEN)))
+                .setName(Text.translatable("gui.info.allies.some", faction.getMutualAllies().size()).formatted(Formatting.GREEN))
                 .setLore(allies)
         );
         // Enemies info
         List<Text> enemies = faction.getEnemiesWith().isEmpty() ?
-                List.of(Text.literal("No enemies.")
-                        .setStyle(
-                                Style.EMPTY
-                                        .withItalic(false)
-                                        .withColor(Formatting.GRAY)
-                        )
+                List.of(Text.translatable("gui.info.enemies.none")
+                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))
                 ) :
                 faction.getEnemiesWith().stream()
                         .map(rel -> Faction.get(rel.target))
@@ -197,16 +155,16 @@ public class InfoGui extends SimpleGui {
                         .toList();
         this.setSlot(4, new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(Icons.GUI_CASTLE_ENEMY)
-                .setName(Text.literal("Enemy factions ").append(Text.literal(String.format("(%s)", faction.getEnemiesWith().size())).formatted(Formatting.GREEN)))
+                .setName(Text.translatable("gui.info.enemies.some", faction.getEnemiesWith().size()).formatted(Formatting.RED))
                 .setLore(enemies)
         );
 
         if (Command.Requires.isOwner().test(player.getCommandSource())) {
             this.setSlot(6, new GuiElementBuilder(Items.PLAYER_HEAD)
                     .setSkullOwner(Icons.GUI_LECTERN)
-                    .setName(Text.literal("Faction settings"))
+                    .setName(Text.translatable("gui.info.settings"))
                     .setLore(List.of(
-                            Text.literal("Click to change settings").formatted(Formatting.GRAY)
+                            Text.translatable("gui.info.settings.lore").formatted(Formatting.GRAY)
                     ))
                     .setCallback(() -> {
                         GuiInteract.playClickSound(player);
@@ -216,7 +174,7 @@ public class InfoGui extends SimpleGui {
         }
 
         this.setSlot(8, new GuiElementBuilder(Items.STRUCTURE_VOID)
-                .setName(Text.literal(closeCallback == null ? "Close" : "Go back").formatted(Formatting.RED))
+                .setName(Text.translatable(closeCallback == null ? "gui.generic.close" : "gui.generic.back").formatted(Formatting.RED))
                 .setCallback(() -> {
                     GuiInteract.playClickSound(player);
                     if (closeCallback == null) {

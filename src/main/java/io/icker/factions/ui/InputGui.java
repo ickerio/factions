@@ -25,10 +25,10 @@ public class InputGui extends AnvilInputGui {
         super(player, false);
 
         this.returnBtn = new GuiElementBuilder(Items.BARRIER)
-                .setName(Text.literal("Go back")
+                .setName(Text.translatable("gui.generic.back")
                         .formatted(Formatting.RED));
         this.confirmBtn = new GuiElementBuilder(Items.SLIME_BALL)
-                .setName(Text.literal("Confirm")
+                .setName(Text.translatable("gui.generic.confirm")
                         .formatted(Formatting.GREEN));
     }
 
