@@ -122,35 +122,46 @@ public class AdminGui extends SimpleGui {
                 }));
 
         // Audit icon
-        this.setSlot(indexes.get(3), new GuiElementBuilder(Items.PLAYER_HEAD)
-                .setSkullOwner(Icons.GUI_BOOK)
-                .setName(Text.translatable("factions.gui.admin.options.audit"))
-                .setLore(List.of(Text.translatable("factions.gui.admin.options.audit.lore")
-                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))))
-                .setCallback((index, clickType, actionType) -> {
-                    GuiInteract.playClickSound(player);
-                    for (int i = 0; i < 4; i++) {
-                        Claim.audit();
-                        Faction.audit();
-                        User.audit();
-                    }
+        this.setSlot(
+                indexes.get(3),
+                new GuiElementBuilder(Items.PLAYER_HEAD)
+                        .setSkullOwner(Icons.GUI_BOOK)
+                        .setName(Text.translatable("factions.gui.admin.options.audit"))
+                        .setLore(
+                                List.of(
+                                        Text.translatable("factions.gui.admin.options.audit.lore")
+                                                .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))))
+                        .setCallback((index, clickType, actionType) -> {
+                            GuiInteract.playClickSound(player);
+                            for (int i = 0; i < 4; i++) {
+                                Claim.audit();
+                                Faction.audit();
+                                User.audit();
+                            }
 
-                    new Message(Text.translatable("factions.gui.admin.options.audit.success")).send(player, false);
-                }));
+                            new Message(Text.translatable("factions.gui.admin.options.audit.success")).send(player,
+                                    false);
+                        }));
 
         if (indexes.size() > 4) {
             // Dynmap reload icon
-            this.setSlot(indexes.get(4), new GuiElementBuilder(Items.PLAYER_HEAD)
-                    .setSkullOwner(Icons.GUI_EARTH_RELOAD)
-                    .setName(Text.translatable("factions.gui.admin.options.reload_dynmap"))
-                    .setLore(List.of(Text.translatable("factions.gui.admin.options.reload_dynmap.lore")
-                            .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))))
-                    .setCallback((index, clickType, actionType) -> {
-                        GuiInteract.playClickSound(player);
-                        FactionsMod.dynmap.reloadAll();
-                        new Message(Text.translatable("factions.gui.admin.options.reload_dynmap.success")).send(player,
-                                false);
-                    }));
+            this.setSlot(
+                    indexes.get(4),
+                    new GuiElementBuilder(Items.PLAYER_HEAD)
+                            .setSkullOwner(Icons.GUI_EARTH_RELOAD)
+                            .setName(Text.translatable("factions.gui.admin.options.reload_dynmap"))
+                            .setLore(
+                                    List.of(
+                                            Text.translatable("factions.gui.admin.options.reload_dynmap.lore")
+                                                    .setStyle(
+                                                            Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))))
+                            .setCallback((index, clickType, actionType) -> {
+                                GuiInteract.playClickSound(player);
+                                FactionsMod.dynmap.reloadAll();
+                                new Message(Text.translatable("factions.gui.admin.options.reload_dynmap.success")).send(
+                                        player,
+                                        false);
+                            }));
         }
 
         this.open();
@@ -200,8 +211,8 @@ public class AdminGui extends SimpleGui {
         final Faction[] selectedFac = new Faction[1];
         final int[] selectedPow = new int[1];
 
-        inputFacGui.setTitle(Text.translatable("factions.gui.power.title.1"));
-        inputFacGui.setDefaultInputValue(Localization.raw("factions.gui.power.default.1", player));
+        inputFacGui.setTitle(Text.translatable("factions.gui.power.setfaction.title"));
+        inputFacGui.setDefaultInputValue(Localization.raw("factions.gui.power.setfaction.default", player));
 
         inputFacGui.returnBtn.setCallback(defaultReturn);
         inputFacGui.confirmBtn.setCallback(
@@ -210,15 +221,16 @@ public class AdminGui extends SimpleGui {
                     selectedFac[0] = Faction.getByName(inputFacGui.getInput());
                     if (selectedFac[0] == null) {
                         inputFacGui.showErrorMessage(
-                                Text.translatable("factions.gui.power.error.no_faction").formatted(Formatting.RED),
+                                Text.translatable("factions.gui.power.setfaction.fail.no_faction")
+                                        .formatted(Formatting.RED),
                                 index);
                         return;
                     }
                     inputPowGui.open();
                 });
 
-        inputPowGui.setTitle(Text.translatable("factions.gui.power.title.2"));
-        inputPowGui.setDefaultInputValue(Localization.raw("factions.gui.power.default.2", player));
+        inputPowGui.setTitle(Text.translatable("factions.gui.power.setpower.title"));
+        inputPowGui.setDefaultInputValue(Localization.raw("factions.gui.power.setpower.default", player));
         inputPowGui.returnBtn.setCallback(defaultReturn);
         inputPowGui.confirmBtn.setCallback(
                 (index, clickType, actionType) -> {
@@ -227,7 +239,7 @@ public class AdminGui extends SimpleGui {
                         selectedPow[0] = Integer.parseInt(inputPowGui.getInput());
                     } catch (Exception e) {
                         inputPowGui.showErrorMessage(
-                                Text.translatable("factions.gui.power.error.nan").formatted(Formatting.RED),
+                                Text.translatable("factions.gui.power.setpower.fail.nan").formatted(Formatting.RED),
                                 index);
                         return;
                     }
@@ -237,7 +249,8 @@ public class AdminGui extends SimpleGui {
                     if (selectedPow[0] != 0) {
                         if (selectedPow[0] > 0) {
                             new Message(
-                                    Text.translatable("factions.gui.power.success.added.admin",
+                                    Text.translatable(
+                                            "factions.gui.power.success.added.admin",
                                             player.getName().getString(),
                                             selectedPow[0]))
                                     .send(selectedFac[0]);
@@ -245,7 +258,8 @@ public class AdminGui extends SimpleGui {
                                     .send(player, false);
                         } else {
                             new Message(
-                                    Text.translatable("factions.gui.power.success.removed.admin",
+                                    Text.translatable(
+                                            "factions.gui.power.success.removed.admin",
                                             player.getName().getString(),
                                             selectedPow[0]))
                                     .send(selectedFac[0]);
@@ -253,7 +267,8 @@ public class AdminGui extends SimpleGui {
                                     .send(player, false);
                         }
                     } else {
-                        new Message(Text.translatable("factions.gui.power.success.nochange")).fail().send(player,
+                        new Message(Text.translatable("factions.gui.power.success.nochange")).fail().send(
+                                player,
                                 false);
                     }
                     this.open();
