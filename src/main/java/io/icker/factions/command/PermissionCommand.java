@@ -13,6 +13,7 @@ import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class PermissionCommand implements Command {
@@ -28,7 +29,7 @@ public class PermissionCommand implements Command {
         Faction targetFaction = Faction.getByName(StringArgumentType.getString(context, "faction"));
 
         if (sourceFaction == null || targetFaction == null) {
-            new Message("You must be in a faction and you must provide a valid function").fail()
+            new Message(Text.translatable("factions.command.permissions.change.fail.no_faction")).fail()
                     .send(player, false);
             return 0;
         }
@@ -40,15 +41,15 @@ public class PermissionCommand implements Command {
         try {
             permission = Permissions.valueOf(permissionName);
         } catch (IllegalArgumentException e) {
-            new Message("Not a valid permission").fail().send(player, false);
+            new Message(Text.translatable("factions.command.permissions.change.fail.invalid_permission")).fail()
+                    .send(player, false);
             return 0;
         }
 
-        if ((!rel.permissions.contains(permission) && !add)
-                || (rel.permissions.contains(permission) && add)) {
-            new Message(String.format("Could not change because the permission %s",
-                    rel.permissions.contains(permission) ? "already exists" : "doesn't exist"))
-                            .fail().send(player, false);
+        if ((!rel.permissions.contains(permission) && !add) || (rel.permissions.contains(permission) && add)) {
+            new Message(Text.translatable("factions.command.permissions.change.fail."
+                    + (rel.permissions.contains(permission) ? "already_exists" : "doesnt_exist")))
+                    .fail().send(player, false);
             return 0;
         }
 
@@ -60,7 +61,7 @@ public class PermissionCommand implements Command {
 
         sourceFaction.setRelationship(rel);
 
-        new Message("Successfully changed permissions").send(player, false);
+        new Message(Text.translatable("factions.command.permissions.change.success")).send(player, false);
         return 1;
     }
 
@@ -83,7 +84,8 @@ public class PermissionCommand implements Command {
         Faction faction = User.get(player.getUuid()).getFaction();
 
         if (faction == null) {
-            new Message("You must be in a faction").fail().send(player, false);
+            new Message(Text.translatable("factions.command.permissions.guest.fail.no_faction")).fail().send(player,
+                    false);
             return 0;
         }
 
@@ -92,15 +94,16 @@ public class PermissionCommand implements Command {
         try {
             permission = Permissions.valueOf(permissionName);
         } catch (IllegalArgumentException e) {
-            new Message("Not a valid permission").fail().send(player, false);
+            new Message(Text.translatable("factions.command.permissions.change.fail.invalid_permission")).fail()
+                    .send(player, false);
             return 0;
         }
 
         if ((!faction.guest_permissions.contains(permission) && !add)
                 || (faction.guest_permissions.contains(permission) && add)) {
-            new Message(String.format("Could not change because the permission %s",
-                    faction.guest_permissions.contains(permission) ? "already exists"
-                            : "doesn't exist")).fail().send(player, false);
+            new Message(Text.translatable("factions.command.permissions.change.fail."
+                    + (faction.guest_permissions.contains(permission) ? "already_exists" : "doesnt_exist")))
+                    .fail().send(player, false);
             return 0;
         }
 
@@ -110,7 +113,7 @@ public class PermissionCommand implements Command {
             faction.guest_permissions.remove(permission);
         }
 
-        new Message("Successfully changed permissions").send(player, false);
+        new Message(Text.translatable("factions.command.permissions.change.success")).send(player, false);
         return 1;
     }
 
@@ -133,18 +136,19 @@ public class PermissionCommand implements Command {
         Faction targetFaction = Faction.getByName(StringArgumentType.getString(context, "faction"));
 
         if (sourceFaction == null || targetFaction == null) {
-            new Message("You must be in a faction and you must provide a valid function").fail()
-                    .send(player, false);
+            new Message(Text.translatable("factions.command.permissions.change.fail.no_faction"))
+                    .fail().send(player, false);
             return 0;
         }
 
         String permissionsList = sourceFaction.getRelationship(targetFaction.getID()).permissions
                 .stream().map(Enum::toString).collect(Collectors.joining(","));
 
-        new Message("")
-                .add(new Message(targetFaction.getName()).format(targetFaction.getColor())
-                        .format(Formatting.BOLD))
-                .add(String.format(" has the permissions: %s", permissionsList))
+        new Message(
+                Text.translatable("factions.command.permissions.list.title",
+                        Text.literal(targetFaction.getName())
+                                .formatted(targetFaction.getColor()).formatted(Formatting.BOLD),
+                        permissionsList))
                 .send(player, false);
 
         return 1;
@@ -160,15 +164,16 @@ public class PermissionCommand implements Command {
         Faction faction = User.get(player.getUuid()).getFaction();
 
         if (faction == null) {
-            new Message("You must be in a faction").fail().send(player, false);
+            new Message(Text.translatable("factions.command.permissions.guest.fail.no_faction"))
+                    .fail().send(player, false);
             return 0;
         }
 
         String permissionsList = faction.guest_permissions.stream().map(Enum::toString)
                 .collect(Collectors.joining(","));
 
-        new Message(String.format("Guests have the permissions: %s", permissionsList)).send(player,
-                false);
+        new Message(Text.translatable("factions.command.permissions.list_guest.title", permissionsList))
+                .send(player, false);
         return 1;
     }
 

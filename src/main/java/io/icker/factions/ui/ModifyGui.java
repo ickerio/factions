@@ -250,10 +250,7 @@ class ColorGui extends SimpleGui {
                 Text.translatable(
                         "factions.gui.modify.change_color.result",
                         Text.literal(color.name())
-                                .setStyle(
-                                        Style.EMPTY
-                                                .withColor(color)
-                                                .withBold(true))))
+                                .setStyle(Style.EMPTY.withColor(color).withBold(true))))
                 .prependFaction(faction).send(player, false);
         return;
     }

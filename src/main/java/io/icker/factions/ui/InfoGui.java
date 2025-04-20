@@ -70,7 +70,7 @@ public class InfoGui extends SimpleGui {
         List<Text> membersLore = new java.util.ArrayList<>(members.stream()
                 .map(u -> Text.literal(cache.getByUuid(u.getID())
                         .orElse(new GameProfile(Util.NIL_UUID,
-                                Localization.raw("factions.gui.info.members.uncached", player)))
+                                Localization.raw("factions.gui.generic.unknown_player", player)))
                         .getName())
                         .setStyle(
                                 Style.EMPTY

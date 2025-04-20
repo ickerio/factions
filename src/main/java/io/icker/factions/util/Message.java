@@ -15,6 +15,10 @@ public class Message {
     public static PlayerManager manager;
     private MutableText text;
 
+    public Message() {
+        text = Text.literal("");
+    }
+
     public Message(String message) {
         text = (MutableText) Text.of(message);
     }
@@ -100,7 +104,7 @@ public class Message {
     }
 
     public Message prependFaction(Faction faction) {
-        text = new Message("").add(
+        text = new Message().add(
                 new Message(faction.getColor().toString() + Formatting.BOLD + faction.getName())
                         .hover(faction.getDescription()))
                 .filler("»").raw().append(text);

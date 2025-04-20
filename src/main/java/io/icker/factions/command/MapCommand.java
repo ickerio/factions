@@ -11,6 +11,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 
@@ -25,21 +26,24 @@ public class MapCommand implements Command {
         String dimension = world.getRegistryKey().getValue().toString();
 
         // Print the header of the faction map.
-        new Message(Formatting.DARK_GRAY + "──┤" + Formatting.GREEN + " Faction Map"
-                + Formatting.DARK_GRAY + "├──").send(player, false);
+        new Message(
+                Text.literal("──┤ ").formatted(Formatting.DARK_GRAY)
+                        .append(Text.translatable("factions.command.map.title"))
+                        .append(Text.literal("├──").formatted(Formatting.DARK_GRAY)))
+                .send(player, false);
 
         for (int z = -4; z <= 5; z++) { // Rows (10)
-            Message row = new Message("");
+            Message row = new Message();
             for (int x = -5; x <= 5; x++) { // Columns (11)
                 Claim claim = Claim.get(chunkPos.x + x, chunkPos.z + z, dimension);
                 if (x == 0 && z == 0) { // Check if middle (your chunk)
                     if (claim == null) {
                         row.add(new Message("⏺").format(Formatting.DARK_GRAY)
-                                .hover("<You> <Wilderness>"));
+                                .hover(Text.translatable("factions.command.map.you_wilderness")));
                     } else {
                         Faction owner = claim.getFaction();
                         row.add(new Message("⏺").format(owner.getColor())
-                                .hover("<You> " + owner.getName()));
+                                .hover(Text.translatable("factions.command.map.you_owner", owner.getName())));
                     }
                 } else {
                     if (claim == null) {

@@ -11,6 +11,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class KickCommand implements Command {
@@ -21,31 +22,33 @@ public class KickCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (target.getUuid().equals(player.getUuid())) {
-            new Message("Cannot kick yourself").format(Formatting.RED).send(player, false);
+            new Message(Text.translatable("factions.command.kick.fail.self"))
+                    .fail().send(player, false);
             return 0;
         }
 
         User selfUser = Command.getUser(player);
         User targetUser = User.get(target.getUuid());
-        Faction faction = selfUser.getFaction();
 
-        if (targetUser.getFaction().getID() != faction.getID()) {
-            new Message("Cannot kick someone that is not in your faction");
+        if (selfUser.getFaction() != null || targetUser.getFaction().getID() != selfUser.getFaction().getID()) {
+            new Message(Text.translatable("factions.command.kick.fail.other_faction"))
+                    .fail().send(player, false);
             return 0;
         }
 
         if (selfUser.rank == User.Rank.LEADER
                 && (targetUser.rank == User.Rank.LEADER || targetUser.rank == User.Rank.OWNER)) {
-            new Message("Cannot kick members with a higher of equivalent rank")
-                    .format(Formatting.RED).send(player, false);
+            new Message(Text.translatable("factions.command.kick.fail.high_rank"))
+                    .fail().send(player, false);
             return 0;
         }
 
         targetUser.leaveFaction();
         context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-        new Message("Kicked " + player.getName().getString()).send(player, false);
-        new Message("You have been kicked from the faction by " + player.getName().getString())
+        new Message(Text.translatable("factions.command.kick.success.actor", target.getName().getString())).send(player,
+                false);
+        new Message(Text.translatable("factions.command.kick.success.subject", player.getName().getString()))
                 .send(target, false);
 
         return 1;

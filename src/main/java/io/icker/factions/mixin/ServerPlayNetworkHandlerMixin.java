@@ -11,6 +11,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -35,12 +36,11 @@ public class ServerPlayNetworkHandlerMixin {
     public void handleDecoratedMessage(SignedMessage signedMessage, CallbackInfo ci) {
         User member = User.get(signedMessage.link().sender());
 
-        boolean factionChat =
-                member.chat == User.ChatMode.FACTION || member.chat == User.ChatMode.FOCUS;
+        boolean factionChat = member.chat == User.ChatMode.FACTION || member.chat == User.ChatMode.FOCUS;
 
         if (factionChat && !member.isInFaction()) {
-            new Message("You can't send a message to faction chat if you aren't in a faction.")
-                    .fail().hover("Click to switch to global chat")
+            new Message(Text.translatable("factions.chat.faction_chat_when_not_in_faction"))
+                    .fail().hover(Text.translatable("factions.chat.faction_chat_when_not_in_faction.hover"))
                     .click("/factions settings chat global")
                     .send(WorldUtils.server.getPlayerManager().getPlayer(signedMessage.link().sender()),
                             false);
@@ -74,7 +74,8 @@ public class ServerPlayNetworkHandlerMixin {
             }
 
             @Override
-            public void attack() {}
+            public void attack() {
+            }
         });
     }
 }

@@ -15,6 +15,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
@@ -38,7 +39,7 @@ public class HomeCommand implements Command {
         Home home = faction.getHome();
 
         if (home == null) {
-            new Message("No faction home set").fail().send(player, false);
+            new Message(Text.translatable("factions.command.home.warp.fail.no_home")).fail().send(player, false);
             return 0;
         }
 
@@ -48,22 +49,22 @@ public class HomeCommand implements Command {
         ServerWorld world = WorldUtils.getWorld(home.level);
 
         if (world == null) {
-            new Message("Cannot find dimension").fail().send(player, false);
+            new Message(Text.translatable("factions.command.home.warp.fail.no_world")).fail().send(player, false);
             return 0;
         }
 
         if (checkLimitToClaim(faction, world, BlockPos.ofFloored(home.x, home.y, home.z))) {
-            new Message("Cannot warp home to an unclaimed chunk").fail().send(player, false);
+            new Message(Text.translatable("factions.command.home.warp.fail.no_claim")).fail().send(player, false);
             return 0;
         }
 
         if (((DamageTrackerAccessor) player.getDamageTracker()).getAgeOnLastDamage() == 0
                 || player.age - ((DamageTrackerAccessor) player.getDamageTracker())
-                    .getAgeOnLastDamage() > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
+                        .getAgeOnLastDamage() > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
             player.teleport(world, home.x, home.y, home.z, home.yaw, home.pitch);
-            new Message("Warped to faction home").send(player, false);
+            new Message(Text.translatable("factions.command.home.warp.success")).send(player, false);
         } else {
-            new Message("Cannot warp while in combat").fail().send(player, false);
+            new Message(Text.translatable("factions.command.home.warp.fail.combat")).fail().send(player, false);
         }
         return 1;
     }
@@ -75,7 +76,7 @@ public class HomeCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         if (checkLimitToClaim(faction, (ServerWorld) player.getWorld(), player.getBlockPos())) {
-            new Message("Cannot set home to an unclaimed chunk").fail().send(player, false);
+            new Message(Text.translatable("factions.command.home.fail.no_claim")).fail().send(player, false);
             return 0;
         }
 
@@ -84,8 +85,12 @@ public class HomeCommand implements Command {
                 player.getWorld().getRegistryKey().getValue().toString());
 
         faction.setHome(home);
-        new Message("Home set to %.2f, %.2f, %.2f by %s", home.x, home.y, home.z,
-                player.getName().getString()).send(faction);
+        new Message(Text.translatable("factions.command.home.set.success",
+                home.x,
+                home.y,
+                home.z,
+                player.getName().getString()))
+                .send(faction);
         return 1;
     }
 

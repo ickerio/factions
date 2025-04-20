@@ -14,6 +14,8 @@ import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.Locale;
@@ -34,28 +36,29 @@ public class ModifyCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
-            new Message("Cannot rename a faction to that name as it is on the blacklist").fail()
-                    .send(player, false);
+            new Message(Text.translatable("factions.command.modify.name.fail.blacklisted_name"))
+                    .fail().send(player, false);
             return 0;
         }
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0
                 & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > name.length()) {
-            new Message("Cannot rename a faction to this that as it is too long").fail()
-                    .send(player, false);
+            new Message(Text.translatable("factions.command.modify.name.fail.name_too_long"))
+                    .fail().send(player, false);
             return 0;
         }
 
         if (Faction.getByName(name) != null) {
-            new Message("A faction with that name already exists").fail().send(player, false);
+            new Message(Text.translatable("factions.command.modify.name.fail.name_taken"))
+                    .fail().send(player, false);
             return 0;
         }
 
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setName(name);
-        new Message("Successfully renamed faction to '" + name + "'").prependFaction(faction)
-                .send(player, false);
+        new Message(Text.translatable("factions.gui.modify.change_name.result", name))
+                .prependFaction(faction).send(player, false);
 
         return 1;
     }
@@ -70,7 +73,7 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setDescription(description);
-        new Message("Successfully updated faction description to '" + description + "'")
+        new Message(Text.translatable("factions.gui.modify.change_description.result", description))
                 .prependFaction(faction).send(player, false);
 
         return 1;
@@ -85,8 +88,8 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setMOTD(motd);
-        new Message("Successfully updated faction MOTD to '" + motd + "'").prependFaction(faction)
-                .send(player, false);
+        new Message(Text.translatable("factions.gui.modify.change_motd.result", motd))
+                .prependFaction(faction).send(player, false);
 
         return 1;
     }
@@ -101,7 +104,10 @@ public class ModifyCommand implements Command {
 
         faction.setColor(color);
         new Message(
-                "Successfully updated faction color to " + Formatting.BOLD + color + color.name())
+                Text.translatable(
+                        "factions.gui.modify.change_color.result",
+                        Text.literal(color.name())
+                                .setStyle(Style.EMPTY.withColor(color).withBold(true))))
                 .prependFaction(faction).send(player, false);
 
         return 1;
@@ -116,8 +122,8 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setOpen(open);
-        new Message("Successfully updated faction to ")
-                .add(new Message(open ? "Open" : "Closed")
+        new Message(Text.translatable("factions.command.modify.open.success"))
+                .add(new Message(Text.translatable("factions.gui.modify.faction_type." + (open ? "public" : "invite")))
                         .format(open ? Formatting.GREEN : Formatting.RED))
                 .prependFaction(faction).send(player, false);
 

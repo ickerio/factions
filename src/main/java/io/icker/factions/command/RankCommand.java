@@ -11,7 +11,8 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Formatting;
+import net.minecraft.text.Text;
+import xyz.nucleoid.server.translations.api.Localization;
 
 import java.util.UUID;
 
@@ -23,7 +24,8 @@ public class RankCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (target.getUuid().equals(player.getUuid())) {
-            new Message("You cannot promote yourself").format(Formatting.RED).send(player, false);
+            new Message(Text.translatable("factions.command.rank.promote.fail.self"))
+                    .fail().send(player, false);
 
             return 0;
         }
@@ -36,22 +38,23 @@ public class RankCommand implements Command {
                 try {
                     execPromote(user, player);
                 } catch (Exception e) {
-                    new Message(e.getMessage()).format(Formatting.RED)
+                    new Message(e.getMessage()).fail()
                             .send(player, false);
                     return 0;
                 }
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message("Promoted " + target.getName().getString() + " to "
-                        + User.get(target.getUuid()).getRankName()).prependFaction(faction)
-                        .send(player, false);
+                new Message(Text.translatable("factions.command.rank.promote.success", target.getName().getString(),
+                        User.get(target.getUuid()).getRankName()))
+                        .prependFaction(faction).send(player, false);
 
                 return 1;
             }
 
-        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED)
-                .send(player, false);
+        new Message(
+                Text.translatable("factions.command.rank.promote.fail.not_in_faction", target.getName().getString()))
+                .fail().send(player, false);
         return 0;
     }
 
@@ -61,11 +64,10 @@ public class RankCommand implements Command {
             case MEMBER -> target.rank = User.Rank.COMMANDER;
             case COMMANDER -> target.rank = User.Rank.LEADER;
             case LEADER -> {
-                throw new Exception("You cannot promote a Leader to Owner");
-                // When adding translations you can replace this with translation key and use `Text.translatable` in exception handler
+                throw new Exception(Localization.raw("factions.command.rank.promote.fail.leader", initiator));
             }
             case OWNER -> {
-                throw new Exception("You cannot promote the Owner");
+                throw new Exception(Localization.raw("factions.command.rank.promote.fail.owner", initiator));
             }
         }
     }
@@ -77,7 +79,8 @@ public class RankCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (target.getUuid().equals(player.getUuid())) {
-            new Message("You cannot demote yourself").format(Formatting.RED).send(player, false);
+            new Message(Text.translatable("factions.command.rank.demote.fail.self"))
+                    .fail().send(player, false);
             return 0;
         }
 
@@ -89,37 +92,37 @@ public class RankCommand implements Command {
                 try {
                     execDemote(user, player);
                 } catch (Exception e) {
-                    new Message(e.getMessage()).format(Formatting.RED)
+                    new Message(e.getMessage()).fail()
                             .send(player, false);
                     return 0;
                 }
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message("Demoted " + target.getName().getString() + " to "
-                        + User.get(target.getUuid()).getRankName()).prependFaction(faction)
-                        .send(player, false);
+                new Message(Text.translatable("factions.command.rank.demote.success", target.getName().getString(),
+                        User.get(target.getUuid()).getRankName()))
+                        .prependFaction(faction).send(player, false);
 
                 return 1;
             }
 
-        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED)
-                .send(player, false);
+        new Message(Text.translatable("factions.command.rank.demote.fail.not_in_faction", target.getName().getString()))
+                .fail().send(player, false);
         return 0;
     }
 
     public static void execDemote(User target, ServerPlayerEntity initiator) throws Exception {
         switch (target.rank) {
-            case GUEST -> throw new Exception("You cannot demote a Guest");
+            case GUEST -> throw new Exception(Localization.raw("factions.command.rank.demote.fail.guest", initiator));
             case MEMBER -> target.rank = User.Rank.GUEST;
             case COMMANDER -> target.rank = User.Rank.MEMBER;
             case LEADER -> {
                 if (Command.getUser(initiator).rank == User.Rank.LEADER) {
-                    throw new Exception("You cannot demote a Leader");
+                    throw new Exception(Localization.raw("factions.command.rank.demote.fail.leader", initiator));
                 }
                 target.rank = User.Rank.COMMANDER;
             }
-            case OWNER -> throw new Exception("You cannot demote the Owner");
+            case OWNER -> throw new Exception(Localization.raw("factions.command.rank.demote.fail.owner", initiator));
         }
     }
 
@@ -131,8 +134,8 @@ public class RankCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (target.getUuid().equals(player.getUuid())) {
-            new Message("You cannot transfer ownership to yourself").format(Formatting.RED)
-                    .send(player, false);
+            new Message(Text.translatable("factions.command.rank.transfer.fail.self"))
+                    .fail().send(player, false);
 
             return 0;
         }
@@ -146,14 +149,15 @@ public class RankCommand implements Command {
             context.getSource().getServer().getPlayerManager().sendCommandTree(player);
             context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-            new Message("Transferred ownership to " + target.getName().getString())
+            new Message(Text.translatable("factions.command.rank.transfer.success", target.getName().getString()))
                     .prependFaction(Faction.get(targetFaction)).send(player, false);
 
             return 1;
         }
 
-        new Message(target.getName().getString() + " is not in your faction").format(Formatting.RED)
-                .send(player, false);
+        new Message(
+                Text.translatable("factions.command.rank.transfer.fail.not_in_faction", target.getName().getString()))
+                .fail().send(player, false);
         return 0;
     }
 

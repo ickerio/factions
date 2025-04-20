@@ -55,7 +55,8 @@ public class User {
         this.id = id;
     }
 
-    public User() {}
+    public User() {
+    }
 
     @SuppressWarnings("unused")
     public String getKey() {
@@ -88,10 +89,7 @@ public class User {
     }
 
     private String getEnumName(Enum<?> value) {
-        return Arrays.stream(value.name().split("_"))
-                .map(word -> word.isEmpty() ? word
-                        : Character.toTitleCase(word.charAt(0)) + word.substring(1).toLowerCase())
-                .collect(Collectors.joining(" "));
+        return value.name().toLowerCase();
     }
 
     public String getRankName() {

@@ -48,13 +48,11 @@ public class ClaimCommand implements Command {
             claimsMap.get(claim.level).add(claim);
         });
 
-        Message claimText = new Message("");
+        Message claimText = new Message();
         claimsMap.forEach((level, array) -> {
-            level = Pattern.compile("_([a-z])").matcher(level.split(":", 2)[1])
-                    .replaceAll(m -> " " + m.group(1).toUpperCase());
-            level = level.substring(0, 1).toUpperCase() + level.substring(1);
             claimText.add("\n");
-            claimText.add(new Message(level).format(Formatting.GRAY));
+            claimText.add(new Message(Text.translatable("factions.command.claim.list.level." + level))
+                    .format(Formatting.GRAY));
             claimText.filler("»");
             claimText.add(array.stream().map(claim -> String.format("(%d,%d)", claim.x, claim.z))
                     .collect(Collectors.joining(", ")));
