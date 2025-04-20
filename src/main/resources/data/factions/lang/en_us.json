@@ -279,5 +279,7 @@
     "factions.events.autoclaim.success": "Chunk (%d, %d) claimed by %s",
     "factions.radar.wilderness": "Wilderness",
 
-    "factions.factionless": "[FACTIONLESS]"
+    "factions.factionless": "[FACTIONLESS]",
+    "factions.default_description": "No description set",
+    "factions.default_motd": "No faction MOTD set"
 }
