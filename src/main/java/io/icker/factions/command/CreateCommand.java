@@ -15,6 +15,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import xyz.nucleoid.server.translations.api.Localization;
 
 public class CreateCommand implements Command {
     private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -42,8 +43,9 @@ public class CreateCommand implements Command {
             return 0;
         }
 
-        Faction faction = new Faction(name, "No description set", "No faction MOTD set", Formatting.WHITE,
-                false, FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
+        Faction faction = new Faction(name, Localization.raw("factions.default_description", player),
+                Localization.raw("factions.default_motd", player), Formatting.WHITE, false,
+                FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
         Faction.add(faction);
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.OWNER);
 
