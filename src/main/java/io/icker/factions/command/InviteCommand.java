@@ -81,8 +81,7 @@ public class InviteCommand implements Command {
         return 1;
     }
 
-    // Shouldn't this fail (at least send feedback accordingly) if there's no such
-    // invite?
+    // Shouldn't this fail (at least send feedback accordingly) if there's no such invite?
     private int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
