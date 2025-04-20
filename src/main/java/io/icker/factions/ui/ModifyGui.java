@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.PropertyMap;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.command.ModifyCommand;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
@@ -111,10 +112,16 @@ public class ModifyGui extends SimpleGui {
         inputGui.confirmBtn.setCallback(
                 (index, clickType, actionType) -> {
                     String name = inputGui.getInput();
-                    faction.setName(name);
-                    new Message(Text.translatable("factions.gui.modify.change_name.result", name))
-                            .prependFaction(faction)
-                            .send(player, false);
+
+                    try {
+                        ModifyCommand.execName(player, faction, name);
+                        new Message(Text.translatable("factions.gui.modify.change_name.result", name))
+                                .prependFaction(faction).send(player, false);
+                    } catch (Exception e) {
+                        inputGui.showErrorMessage(e.getMessage(), index);
+                        return;
+                    }
+
                     this.open();
                 });
 

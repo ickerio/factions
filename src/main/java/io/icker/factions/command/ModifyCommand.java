@@ -17,6 +17,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import xyz.nucleoid.server.translations.api.Localization;
 
 import java.util.Locale;
 
@@ -35,32 +36,37 @@ public class ModifyCommand implements Command {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayer();
 
-        if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
-            new Message(Text.translatable("factions.command.modify.name.fail.blacklisted_name"))
-                    .fail().send(player, false);
-            return 0;
-        }
-
-        if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0
-                & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > name.length()) {
-            new Message(Text.translatable("factions.command.modify.name.fail.name_too_long"))
-                    .fail().send(player, false);
-            return 0;
-        }
-
-        if (Faction.getByName(name) != null) {
-            new Message(Text.translatable("factions.command.modify.name.fail.name_taken"))
-                    .fail().send(player, false);
-            return 0;
-        }
-
         Faction faction = Command.getUser(player).getFaction();
 
-        faction.setName(name);
+        try {
+            execName(player, faction, name);
+        } catch (Exception e) {
+            new Message(e.getMessage()).fail()
+                    .send(player, false);
+            return 0;
+        }
+
         new Message(Text.translatable("factions.gui.modify.change_name.result", name))
                 .prependFaction(faction).send(player, false);
 
         return 1;
+    }
+
+    public static void execName(ServerPlayerEntity player, Faction faction, String name) throws Exception {
+        if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
+            throw new Exception(Localization.raw("factions.command.modify.name.fail.blacklisted_name", player));
+        }
+
+        if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0
+                & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > name.length()) {
+            throw new Exception(Localization.raw("factions.command.modify.name.fail.name_too_long", player));
+        }
+
+        if (Faction.getByName(name) != null) {
+            throw new Exception(Localization.raw("factions.command.modify.name.fail.name_taken", player));
+        }
+
+        faction.setName(name);
     }
 
     private int description(CommandContext<ServerCommandSource> context)
