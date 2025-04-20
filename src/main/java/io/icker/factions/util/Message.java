@@ -62,9 +62,9 @@ public class Message {
         return this;
     }
 
-    public Message hover(MutableText text) {
+    public Message hover(MutableText message) {
         text.styled(s -> s
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text)));
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, message)));
         return this;
     }
 
