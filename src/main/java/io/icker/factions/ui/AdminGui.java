@@ -160,7 +160,7 @@ public class AdminGui extends SimpleGui {
         InputGui inputGui = new InputGui(player);
 
         inputGui.setTitle(Text.translatable("factions.gui.spoof.title"));
-        inputGui.setDefaultInputValue(Text.translatable("factions.gui.spoof.default").toString());
+        inputGui.setDefaultInputValue(Localization.raw("factions.gui.spoof.default", player));
 
         inputGui.returnBtn.setCallback(defaultReturn);
         inputGui.confirmBtn.setCallback(

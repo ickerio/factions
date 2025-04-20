@@ -246,12 +246,17 @@ class ColorGui extends SimpleGui {
     private void colorCallback(Formatting color) {
         faction.setColor(color);
         returnCallback.run();
-        new Message(
-                Text.translatable(
-                        "factions.gui.modify.change_color.result",
-                        Text.literal(color.name())
-                                .setStyle(Style.EMPTY.withColor(color).withBold(true))))
-                .prependFaction(faction).send(player, false);
+        if (color.equals(Formatting.RESET)) {
+            new Message(Text.translatable("factions.gui.modify.change_color.result.reset"))
+                    .prependFaction(faction).send(player, false);
+        } else {
+            new Message(
+                    Text.translatable(
+                            "factions.gui.modify.change_color.result.color",
+                            Text.translatable("factions.gui.modify.change_color.color." + color.name().toLowerCase())
+                                    .setStyle(Style.EMPTY.withColor(color).withBold(true))))
+                    .prependFaction(faction).send(player, false);
+        }
         return;
     }
 }

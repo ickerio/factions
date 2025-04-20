@@ -114,7 +114,7 @@ public class FactionsManager {
 
         if (!user.isInFaction()) {
             if (FactionsMod.CONFIG.SAFE != null && FactionsMod.CONFIG.SAFE.ENDER_CHEST) {
-                new Message(Text.translatable("factions.events.no_enderchests_in_faction"))
+                new Message(Text.translatable("factions.events.no_enderchests_without_faction"))
                         .fail().send(player, false);
                 return ActionResult.FAIL;
             }

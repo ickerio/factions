@@ -99,7 +99,7 @@ public class Config {
         public boolean TAB_MENU = true;
 
         @SerializedName("nameBlackList")
-        public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless");
+        public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless", "без фракции");
 
         @SerializedName("powerMessage")
         public boolean POWER_MESSAGE = true;
@@ -110,8 +110,8 @@ public class Config {
         public boolean ALLY_OVERRIDES_PERMISSIONS = true;
 
         @SerializedName("defaultGuestPermissions")
-        public List<Relationship.Permissions> DEFAULT_GUEST_PERMISSIONS =
-                List.of(Relationship.Permissions.USE_BLOCKS, Relationship.Permissions.USE_ENTITIES);
+        public List<Relationship.Permissions> DEFAULT_GUEST_PERMISSIONS = List.of(Relationship.Permissions.USE_BLOCKS,
+                Relationship.Permissions.USE_ENTITIES);
     }
 
     public static class Deserializer<T> implements JsonDeserializer<T> {

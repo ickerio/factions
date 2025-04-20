@@ -45,8 +45,9 @@ public class RankCommand implements Command {
 
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
-                new Message(Text.translatable("factions.command.rank.promote.success", target.getName().getString(),
-                        User.get(target.getUuid()).getRankName()))
+                new Message(Text.translatable("factions.command.rank.promote.success",
+                        target.getName().getString(),
+                        Text.translatable("factions.command.rank." + User.get(target.getUuid()).getRankName())))
                         .prependFaction(faction).send(player, false);
 
                 return 1;
@@ -100,7 +101,7 @@ public class RankCommand implements Command {
                 context.getSource().getServer().getPlayerManager().sendCommandTree(target);
 
                 new Message(Text.translatable("factions.command.rank.demote.success", target.getName().getString(),
-                        User.get(target.getUuid()).getRankName()))
+                        Text.translatable("factions.command.rank." + User.get(target.getUuid()).getRankName())))
                         .prependFaction(faction).send(player, false);
 
                 return 1;
