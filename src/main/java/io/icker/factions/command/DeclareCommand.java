@@ -97,7 +97,7 @@ public class DeclareCommand implements Command {
         if (rel.status != Relationship.Status.NEUTRAL)
             new Message(
                     Text.translatable("factions.command.declare.success.subject", sourceFaction.getName(), msgStatus))
-                    .hover(Text.translatable("Click to add them back"))
+                    .hover(Text.translatable("factions.command.declare.success.subject.hover"))
                     .click(String.format("/factions declare %s %s",
                             rel.status.toString().toLowerCase(Locale.ROOT),
                             sourceFaction.getName()))

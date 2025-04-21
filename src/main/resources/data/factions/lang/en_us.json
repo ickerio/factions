@@ -162,6 +162,7 @@
     "factions.command.declare.success.mutual": "You are now mutually %s with %s",
     "factions.command.declare.success.actor": "You have declared %s as %s",
     "factions.command.declare.success.subject": "%s have declared you as %s",
+    "factions.command.declare.success.subject.hover": "Click to add them back",
     "factions.command.declare.success.status.ally": "allies",
     "factions.command.declare.success.status.enemy": "enemies",
     "factions.command.declare.success.status.neutral": "neutral",
