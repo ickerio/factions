@@ -70,13 +70,11 @@ public class DeclareCommand implements Command {
 
         RelationshipEvents.NEW_DECLARATION.invoker().onNewDecleration(rel);
 
-        Message msgStatus = rel.status == Relationship.Status.ALLY
-                ? new Message(Text.translatable("factions.command.declare.success.status.ally"))
-                        .format(Formatting.GREEN)
+        MutableText msgStatus = rel.status == Relationship.Status.ALLY
+                ? Text.translatable("factions.command.declare.success.status.ally").formatted(Formatting.GREEN)
                 : rel.status == Relationship.Status.ENEMY
-                        ? new Message(Text.translatable("factions.command.declare.success.status.enemy"))
-                                .format(Formatting.RED)
-                        : new Message(Text.translatable("factions.command.declare.success.status.neutral"));
+                        ? Text.translatable("factions.command.declare.success.status.enemy").formatted(Formatting.RED)
+                        : Text.translatable("factions.command.declare.success.status.neutral");
 
         if (rel.status == rev.status) {
             RelationshipEvents.NEW_MUTUAL.invoker().onNewMutual(rel);
