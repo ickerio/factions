@@ -84,7 +84,7 @@ public class MemberGui extends PagedGui {
 
             List<Text> lore = new ArrayList<>(List.of(Text
                     .translatable("factions.gui.members.entry.info.rank",
-                            Text.literal(targetUser.getRankName())
+                            Text.translatable("factions.gui.members.entry.info.rank." + targetUser.getRankName())
                                     .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GREEN)))
                     .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY))));
             if (!profile.getId().equals(player.getUuid()) && Command.Requires.isLeader().test(player.getCommandSource())
@@ -104,7 +104,7 @@ public class MemberGui extends PagedGui {
                             new Message(
                                     Text.translatable("factions.gui.members.entry.manage.promote.result",
                                             profile.getName(),
-                                            User.get(profile.getId()).getRankName()))
+                                            Text.translatable("factions.gui.members.entry.info.rank." + targetUser.getRankName())))
                                     .prependFaction(faction)
                                     .send(player, false);
                         } catch (Exception e) {
@@ -120,7 +120,7 @@ public class MemberGui extends PagedGui {
                             new Message(
                                     Text.translatable("factions.gui.members.entry.manage.demote.result",
                                             profile.getName(),
-                                            User.get(profile.getId()).getRankName()))
+                                            Text.translatable("factions.gui.members.entry.info.rank." + targetUser.getRankName())))
                                     .prependFaction(faction)
                                     .send(player, false);
                         } catch (Exception e) {
@@ -167,7 +167,7 @@ public class MemberGui extends PagedGui {
                     lore.removeFirst();
                     lore.addFirst(Text
                             .translatable("factions.gui.members.entry.info.rank",
-                                    Text.literal(targetUser.getRankName())
+                                    Text.translatable("factions.gui.members.entry.info.rank." + targetUser.getRankName())
                                             .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GREEN)))
                             .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
                     icon.setLore(lore);
