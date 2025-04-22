@@ -250,20 +250,20 @@ public class AdminGui extends SimpleGui {
                         if (selectedPow[0] > 0) {
                             new Message(
                                     Text.translatable(
-                                            "factions.gui.power.success.added.admin",
+                                            "factions.gui.power.success.added.faction",
                                             player.getName().getString(),
                                             selectedPow[0]))
                                     .send(selectedFac[0]);
-                            new Message(Text.translatable("factions.gui.power.success.added.faction", selectedPow[0]))
+                            new Message(Text.translatable("factions.gui.power.success.added.admin", selectedPow[0]))
                                     .send(player, false);
                         } else {
                             new Message(
                                     Text.translatable(
-                                            "factions.gui.power.success.removed.admin",
+                                            "factions.gui.power.success.removed.faction",
                                             player.getName().getString(),
                                             selectedPow[0]))
                                     .send(selectedFac[0]);
-                            new Message(Text.translatable("factions.gui.power.success.removed.faction", selectedPow[0]))
+                            new Message(Text.translatable("factions.gui.power.success.removed.admin", selectedPow[0]))
                                     .send(player, false);
                         }
                     } else {
