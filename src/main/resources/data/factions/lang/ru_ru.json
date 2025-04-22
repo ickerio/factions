@@ -23,12 +23,12 @@
     "factions.gui.spoof.error.no_player": "Нет игрока %s!",
     "factions.gui.spoof.success": "Теперь вы подменены игроком %s",
 
-    "factions.gui.power.title.1": "Укажите фракцию...",
-    "factions.gui.power.default.1": "Название фракции",
-    "factions.gui.power.error.no_faction": "Нет такой фракции!",
-    "factions.gui.power.title.2": "Укажите мощь...",
-    "factions.gui.power.default.2": "Уровень мощи",
-    "factions.gui.power.error.nan": "Не число!",
+    "factions.gui.power.setfaction.title": "Укажите фракцию...",
+    "factions.gui.power.setfaction.default": "Название фракции",
+    "factions.gui.power.setfaction.fail.no_faction": "Нет такой фракции!",
+    "factions.gui.power.setpower.title": "Укажите мощь...",
+    "factions.gui.power.setpower.default": "Уровень мощи",
+    "factions.gui.power.setpower.fail.nan": "Не число!",
     "factions.gui.power.success.nochange": "Мощь не изменилась",
     "factions.gui.power.success.added.admin": "Добавлено %d мощи",
     "factions.gui.power.success.removed.admin": "Убрано %d мощи",
@@ -167,6 +167,7 @@
     "factions.command.declare.success.mutual": "%2$s и вы взаимно объявляете друг друга %1$s",
     "factions.command.declare.success.actor": "Вы объявили %s %s",
     "factions.command.declare.success.subject": "%s объявляет вас %s",
+    "factions.command.declare.success.subject.hover": "Нажмите, чтобы объявить в ответ",
     "factions.command.declare.success.status.ally": "союзниками",
     "factions.command.declare.success.status.enemy": "врагами",
     "factions.command.declare.success.status.neutral": "нейтральными",
@@ -284,5 +285,7 @@
     "factions.events.autoclaim.success": "Чанк (%d, %d) захвачен %s",
     "factions.radar.wilderness": "Незахвачено",
 
-    "factions.factionless": "[БЕЗ ФРАКЦИИ]"
+    "factions.factionless": "[БЕЗ ФРАКЦИИ]",
+    "factions.default_description": "Нет описания",
+    "factions.default_motd": "Нет MOTD"
 }
