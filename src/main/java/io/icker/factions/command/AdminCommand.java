@@ -66,19 +66,19 @@ public class AdminCommand implements Command {
         if (power != 0) {
             if (power > 0) {
                 new Message(
-                        Text.translatable("factions.gui.power.success.added.admin",
+                        Text.translatable("factions.gui.power.success.added.faction",
                                 player.getName().getString(),
                                 power))
                         .send(target);
-                new Message(Text.translatable("factions.gui.power.success.added.faction", power))
+                new Message(Text.translatable("factions.gui.power.success.added.admin", power))
                         .send(player, false);
             } else {
                 new Message(
-                        Text.translatable("factions.gui.power.success.removed.admin",
+                        Text.translatable("factions.gui.power.success.removed.faction",
                                 player.getName().getString(),
                                 power))
                         .send(target);
-                new Message(Text.translatable("factions.gui.power.success.removed.faction", power))
+                new Message(Text.translatable("factions.gui.power.success.removed.admin", power))
                         .send(player, false);
             }
         } else {
