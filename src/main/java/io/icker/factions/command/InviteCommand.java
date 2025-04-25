@@ -93,9 +93,9 @@ public class InviteCommand implements Command {
                     .send(player, false);
             return 1;
         } else {
-            new Message(Text.translatable("factions.command.invite.remove.fail", target.getName().getString()))
+            new Message(Text.translatable("factions.command.invite.remove.fail", target.getName().getString())).fail()
                     .send(player, false);
-            return 1;
+            return 0;
         }
     }
 
