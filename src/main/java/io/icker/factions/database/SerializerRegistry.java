@@ -139,17 +139,15 @@ public class SerializerRegistry {
                 val -> {
                     NbtList nbtList = new NbtList();
 
-                    for (int i = 0; i < val.size(); ++i) {
-                        ItemStack itemStack = val.getStack(i);
-                        if (!itemStack.isEmpty()) {
-                            NbtCompound nbtCompound = new NbtCompound();
-                            nbtCompound.putByte("Slot", (byte) i);
-                            nbtCompound.put(
-                                    "Data",
-                                    itemStack.toNbt(WorldUtils.server.getRegistryManager()));
-                            nbtList.add(nbtCompound);
-                        }
-                    }
+            for (int i = 0; i < val.size(); ++i) {
+                ItemStack itemStack = val.getStack(i);
+                if (!itemStack.isEmpty()) {
+                    NbtCompound nbtCompound = new NbtCompound();
+                    nbtCompound.putByte("Slot", (byte) i);
+                    nbtCompound.put("Data", itemStack.encode(WorldUtils.server.getRegistryManager()));
+                    nbtList.add(nbtCompound);
+                }
+            }
 
                     return nbtList;
                 },

@@ -26,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -97,7 +98,8 @@ public class InteractionManager {
         return ActionResult.PASS;
     }
 
-    private static ActionResult onUseBucket(PlayerEntity player, World world, Hand hand) {
+    private static TypedActionResult<ItemStack> onUseBucket(PlayerEntity player, World world,
+            Hand hand) {
         Item item = player.getStackInHand(hand).getItem();
 
         if (item instanceof BucketItem) {
@@ -106,7 +108,7 @@ public class InteractionManager {
             if (playerResult == ActionResult.FAIL) {
                 InteractionsUtil.warn(player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
                 InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
-                return ActionResult.FAIL;
+                return TypedActionResult.fail(player.getStackInHand(hand));
             }
 
             Fluid fluid = ((BucketItemAccessor) item).getFluid();
@@ -123,7 +125,7 @@ public class InteractionManager {
                         == ActionResult.FAIL) {
                     InteractionsUtil.warn(player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
-                    return ActionResult.FAIL;
+                    return TypedActionResult.fail(player.getStackInHand(hand));
                 }
 
                 BlockPos placePos = raycastPos.add(raycastResult.getSide().getVector());
@@ -131,12 +133,12 @@ public class InteractionManager {
                         == ActionResult.FAIL) {
                     InteractionsUtil.warn(player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
-                    return ActionResult.FAIL;
+                    return TypedActionResult.fail(player.getStackInHand(hand));
                 }
             }
         }
 
-        return ActionResult.PASS;
+        return TypedActionResult.pass(player.getStackInHand(hand));
     }
 
     private static ActionResult onAttackEntity(

@@ -88,8 +88,7 @@ public class HomeCommand implements Command {
                                 - ((DamageTrackerAccessor) player.getDamageTracker())
                                         .getAgeOnLastDamage()
                         > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
-            player.teleport(
-                    world, home.x, home.y, home.z, new HashSet<>(), home.yaw, home.pitch, false);
+            player.teleport(world, home.x, home.y, home.z, home.yaw, home.pitch);
             user.homeCooldown = Date.from(Instant.now()).getTime();
 
             new Message(Text.translatable("factions.command.home.warp.success"))
