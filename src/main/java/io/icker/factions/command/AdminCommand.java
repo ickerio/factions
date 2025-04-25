@@ -18,6 +18,7 @@ import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class AdminCommand implements Command {
@@ -37,8 +38,9 @@ public class AdminCommand implements Command {
         boolean bypass = !user.bypass;
         user.bypass = bypass;
 
-        new Message("Successfully toggled claim bypass").filler("·")
-                .add(new Message(user.bypass ? "ON" : "OFF")
+        new Message(Text.translatable("factions.gui.admin.options.bypass.success")).filler("·")
+                .add(new Message(
+                        user.bypass ? Text.translatable("options.on") : Text.translatable("options.off"))
                         .format(user.bypass ? Formatting.GREEN : Formatting.RED))
                 .send(player, false);
 
@@ -47,7 +49,9 @@ public class AdminCommand implements Command {
 
     private int reload(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         FactionsMod.dynmap.reloadAll();
-        new Message("Reloaded dynmap marker").send(context.getSource().getPlayer(), false);
+        new Message(Text.translatable("factions.gui.admin.options.reload_dynmap.success")).send(
+                context.getSource().getPlayer(),
+                false);
         return 1;
     }
 
@@ -61,16 +65,24 @@ public class AdminCommand implements Command {
 
         if (power != 0) {
             if (power > 0) {
-                new Message("Admin %s added %d power", player.getName().getString(), power)
+                new Message(
+                        Text.translatable("factions.gui.power.success.added.faction",
+                                player.getName().getString(),
+                                power))
                         .send(target);
-                new Message("Added %d power", power).send(player, false);
+                new Message(Text.translatable("factions.gui.power.success.added.admin", power))
+                        .send(player, false);
             } else {
-                new Message("Admin %s removed %d power", player.getName().getString(), power)
+                new Message(
+                        Text.translatable("factions.gui.power.success.removed.faction",
+                                player.getName().getString(),
+                                power))
                         .send(target);
-                new Message("Removed %d power", power).send(player, false);
+                new Message(Text.translatable("factions.gui.power.success.removed.admin", power))
+                        .send(player, false);
             }
         } else {
-            new Message("No change to power").fail().send(player, false);
+            new Message(Text.translatable("factions.gui.power.fail.nochange")).fail().send(player, false);
         }
 
         return 1;
@@ -93,14 +105,15 @@ public class AdminCommand implements Command {
             try {
                 target = User.get(UUID.fromString(name));
             } catch (Exception e) {
-                new Message("No such player %s", name).format(Formatting.RED).send(player, false);
+                new Message(Text.translatable("factions.gui.spoof.fail.no_player", name)).format(Formatting.RED)
+                        .send(player, false);
                 return 0;
             }
         }
 
         user.setSpoof(target);
 
-        new Message("Set spoof to player %s", name).send(player, false);
+        new Message(Text.translatable("factions.gui.spoof.success", name)).send(player, false);
 
         return 1;
     }
@@ -114,7 +127,7 @@ public class AdminCommand implements Command {
 
         user.setSpoof(null);
 
-        new Message("Cleared spoof").send(player, false);
+        new Message(Text.translatable("factions.gui.admin.options.spoof.clear.success")).send(player, false);
 
         return 1;
     }
@@ -130,7 +143,7 @@ public class AdminCommand implements Command {
         }
 
         if (player != null) {
-            new Message("Successful audit").send(player, false);
+            new Message(Text.translatable("factions.gui.admin.options.audit.success")).send(player, false);
         }
 
         return 1;
@@ -139,7 +152,7 @@ public class AdminCommand implements Command {
     public LiteralCommandNode<ServerCommandSource> getNode() {
         return CommandManager.literal("admin")
                 .requires(Requires.hasPerms("factions.admin.gui",
-                    FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
+                        FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
                 .executes(this::gui)
                 .then(CommandManager.literal("bypass")
                         .requires(Requires.hasPerms("factions.admin.bypass",

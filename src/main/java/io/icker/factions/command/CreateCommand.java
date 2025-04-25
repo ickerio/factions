@@ -13,7 +13,9 @@ import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import xyz.nucleoid.server.translations.api.Localization;
 
 public class CreateCommand implements Command {
     private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -23,32 +25,32 @@ public class CreateCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
-            new Message("Cannot create a faction with this name as it is on the blacklist").fail()
+            new Message(Text.translatable("factions.command.create.fail.blacklisted_name")).fail()
                     .send(player, false);
             return 0;
         }
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0
                 & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH < name.length()) {
-            new Message("Cannot create a faction with this name as it is too long").fail()
+            new Message(Text.translatable("factions.command.create.fail.name_too_long")).fail()
                     .send(player, false);
             return 0;
         }
 
         if (Faction.getByName(name) != null) {
-            new Message("Cannot create a faction as a one with that name already exists").fail()
+            new Message(Text.translatable("factions.command.create.fail.name_taken")).fail()
                     .send(player, false);
             return 0;
         }
 
-        Faction faction =
-                new Faction(name, "No description set", "No faction MOTD set", Formatting.WHITE,
-                        false, FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
+        Faction faction = new Faction(name, Localization.raw("factions.default_description", player),
+                Localization.raw("factions.default_motd", player), Formatting.WHITE, false,
+                FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
         Faction.add(faction);
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.OWNER);
 
         source.getServer().getPlayerManager().sendCommandTree(player);
-        new Message("Successfully created faction").send(player, false);
+        new Message(Text.translatable("factions.command.create.success")).send(player, false);
         return 1;
     }
 

@@ -9,6 +9,7 @@ import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class SettingsCommand implements Command {
@@ -18,8 +19,10 @@ public class SettingsCommand implements Command {
         User user = User.get(player.getUuid());
         user.chat = option;
 
-        new Message("Successfully set your chat preference").filler("·")
-                .add(new Message(user.getChatName()).format(Formatting.BLUE)).send(player, false);
+        new Message(Text.translatable("factions.command.settings.chat")).filler("·")
+                .add(new Message(Text.translatable("factions.command.settings.chat." + user.getChatName()))
+                        .format(Formatting.BLUE))
+                .send(player, false);
 
         return 1;
     }
@@ -29,8 +32,10 @@ public class SettingsCommand implements Command {
         User user = User.get(player.getUuid());
         user.sounds = option;
 
-        new Message("Successfully set your sound preference").filler("·")
-                .add(new Message(user.getSoundName()).format(Formatting.BLUE)).send(player, false);
+        new Message(Text.translatable("factions.command.settings.sound")).filler("·")
+                .add(new Message(Text.translatable("factions.command.settings.sound." + user.getSoundName()))
+                        .format(Formatting.BLUE))
+                .send(player, false);
 
         return 1;
     }
@@ -43,8 +48,10 @@ public class SettingsCommand implements Command {
         boolean radar = !config.radar;
         config.radar = radar;
 
-        new Message("Successfully toggled claim radar").filler("·").add(
-                new Message(radar ? "ON" : "OFF").format(radar ? Formatting.GREEN : Formatting.RED))
+        new Message(Text.translatable("factions.command.settings.radar"))
+                .filler("·")
+                .add(new Message(Text.translatable("options." + (radar ? "on" : "off")))
+                        .format(radar ? Formatting.GREEN : Formatting.RED))
                 .send(player, false);
 
         return 1;
