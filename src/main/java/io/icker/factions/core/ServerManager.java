@@ -5,6 +5,7 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
@@ -24,14 +25,16 @@ public class ServerManager {
         User.save();
     }
 
-    private static void playerJoin(ServerPlayNetworkHandler handler, PacketSender sender,
-            MinecraftServer server) {
+    private static void playerJoin(
+            ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
         ServerPlayerEntity player = handler.getPlayer();
         User user = User.get(player.getUuid());
 
         if (user.isInFaction()) {
             Faction faction = user.getFaction();
-            new Message(Text.translatable("factions.events.member_returns", player.getName().getString()))
+            new Message(
+                            Text.translatable(
+                                    "factions.events.member_returns", player.getName().getString()))
                     .send(player, false);
             new Message(faction.getMOTD()).prependFaction(faction).send(player, false);
         }

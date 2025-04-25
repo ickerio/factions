@@ -1,9 +1,8 @@
 package io.icker.factions;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
 import io.icker.factions.command.AdminCommand;
 import io.icker.factions.command.ClaimCommand;
 import io.icker.factions.command.CreateCommand;
@@ -36,12 +35,16 @@ import io.icker.factions.util.DynmapWrapper;
 import io.icker.factions.util.PlaceholdersWrapper;
 import io.icker.factions.util.SquareMapWrapper;
 import io.icker.factions.util.WorldUtils;
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FactionsMod implements ModInitializer {
     public static Logger LOGGER = LogManager.getLogger("Factions");
@@ -60,10 +63,10 @@ public class FactionsMod implements ModInitializer {
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         bluemap = FabricLoader.getInstance().isModLoaded("bluemap") ? new BlueMapWrapper() : null;
-        squaremap = FabricLoader.getInstance().isModLoaded("squaremap") ? new SquareMapWrapper() : null;
+        squaremap =
+                FabricLoader.getInstance().isModLoaded("squaremap") ? new SquareMapWrapper() : null;
 
-        if (FabricLoader.getInstance().isModLoaded("placeholder-api"))
-            PlaceholdersWrapper.init();
+        if (FabricLoader.getInstance().isModLoaded("placeholder-api")) PlaceholdersWrapper.init();
 
         ChatManager.register();
         FactionsManager.register();
@@ -75,7 +78,8 @@ public class FactionsMod implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
     }
 
-    private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher,
+    private static void registerCommands(
+            CommandDispatcher<ServerCommandSource> dispatcher,
             CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
         LiteralCommandNode<ServerCommandSource> factions =
@@ -86,12 +90,28 @@ public class FactionsMod implements ModInitializer {
         dispatcher.getRoot().addChild(factions);
         dispatcher.getRoot().addChild(alias);
 
-        Command[] commands = new Command[] {new AdminCommand(), new SettingsCommand(),
-                new ClaimCommand(), new CreateCommand(), new DeclareCommand(), new DisbandCommand(),
-                new HomeCommand(), new InfoCommand(), new InviteCommand(), new JoinCommand(),
-                new KickCommand(), new LeaveCommand(), new ListCommand(), new MapCommand(),
-                new MemberCommand(), new ModifyCommand(), new RankCommand(), new SafeCommand(),
-                new PermissionCommand()};
+        Command[] commands =
+                new Command[] {
+                    new AdminCommand(),
+                    new SettingsCommand(),
+                    new ClaimCommand(),
+                    new CreateCommand(),
+                    new DeclareCommand(),
+                    new DisbandCommand(),
+                    new HomeCommand(),
+                    new InfoCommand(),
+                    new InviteCommand(),
+                    new JoinCommand(),
+                    new KickCommand(),
+                    new LeaveCommand(),
+                    new ListCommand(),
+                    new MapCommand(),
+                    new MemberCommand(),
+                    new ModifyCommand(),
+                    new RankCommand(),
+                    new SafeCommand(),
+                    new PermissionCommand()
+                };
 
         for (Command command : commands) {
             factions.addChild(command.getNode());

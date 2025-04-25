@@ -1,7 +1,8 @@
 package io.icker.factions.api.persistents;
 
-import java.util.UUID;
 import io.icker.factions.database.Field;
+
+import java.util.UUID;
 
 public class Home {
     @Field("X")
@@ -24,8 +25,8 @@ public class Home {
 
     private UUID factionID;
 
-    public Home(UUID factionID, double x, double y, double z, float yaw, float pitch,
-            String level) {
+    public Home(
+            UUID factionID, double x, double y, double z, float yaw, float pitch, String level) {
         this.factionID = factionID;
         this.x = x;
         this.y = y;

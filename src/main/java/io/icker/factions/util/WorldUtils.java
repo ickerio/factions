@@ -1,8 +1,5 @@
 package io.icker.factions.util;
 
-import java.util.Objects;
-import java.util.Optional;
-import org.jetbrains.annotations.Nullable;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -12,21 +9,30 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.Optional;
+
 public class WorldUtils {
     public static MinecraftServer server;
 
     public static final Event<Ready> ON_READY =
-            EventFactory.createArrayBacked(Ready.class, callbacks -> () -> {
-                for (Ready callback : callbacks) {
-                    callback.onReady();
-                }
-            });
+            EventFactory.createArrayBacked(
+                    Ready.class,
+                    callbacks ->
+                            () -> {
+                                for (Ready callback : callbacks) {
+                                    callback.onReady();
+                                }
+                            });
 
     public static void register() {
-        ServerLifecycleEvents.SERVER_STARTING.register((server1) -> {
-            WorldUtils.server = server1;
-            ON_READY.invoker().onReady();
-        });
+        ServerLifecycleEvents.SERVER_STARTING.register(
+                (server1) -> {
+                    WorldUtils.server = server1;
+                    ON_READY.invoker().onReady();
+                });
     }
 
     public static boolean isReady() {
@@ -40,9 +46,10 @@ public class WorldUtils {
 
     @Nullable
     public static ServerWorld getWorld(String level) {
-        Optional<RegistryKey<World>> key = WorldUtils.server.getWorldRegistryKeys().stream()
-                .filter(testKey -> Objects.equals(testKey.getValue(), Identifier.of(level)))
-                .findAny();
+        Optional<RegistryKey<World>> key =
+                WorldUtils.server.getWorldRegistryKeys().stream()
+                        .filter(testKey -> Objects.equals(testKey.getValue(), Identifier.of(level)))
+                        .findAny();
 
         if (key.isEmpty()) {
             return null;

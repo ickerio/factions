@@ -2,6 +2,7 @@ package io.icker.factions.ui;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
+
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -26,12 +27,16 @@ public class InputGui extends AnvilInputGui {
     public InputGui(ServerPlayerEntity player) {
         super(player, false);
 
-        this.returnBtn = new GuiElementBuilder(Items.BARRIER)
-                .setName(Text.translatable("factions.gui.generic.back")
-                        .formatted(Formatting.RED));
-        this.confirmBtn = new GuiElementBuilder(Items.SLIME_BALL)
-                .setName(Text.translatable("factions.gui.generic.confirm")
-                        .formatted(Formatting.GREEN));
+        this.returnBtn =
+                new GuiElementBuilder(Items.BARRIER)
+                        .setName(
+                                Text.translatable("factions.gui.generic.back")
+                                        .formatted(Formatting.RED));
+        this.confirmBtn =
+                new GuiElementBuilder(Items.SLIME_BALL)
+                        .setName(
+                                Text.translatable("factions.gui.generic.confirm")
+                                        .formatted(Formatting.GREEN));
     }
 
     public void showErrorMessage(String text, int slotIndex) {
@@ -40,16 +45,22 @@ public class InputGui extends AnvilInputGui {
 
     public void showErrorMessage(MutableText text, int slotIndex) {
         ItemStack item = Objects.requireNonNull(this.getSlot(slotIndex)).getItemStack();
-        item.set(DataComponentTypes.CUSTOM_NAME,
+        item.set(
+                DataComponentTypes.CUSTOM_NAME,
                 text.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.RED)));
-        player.playSoundToPlayer(SoundEvent.of(Identifier.of("minecraft:item.shield.break")), SoundCategory.BLOCKS, 1,
+        player.playSoundToPlayer(
+                SoundEvent.of(Identifier.of("minecraft:item.shield.break")),
+                SoundCategory.BLOCKS,
+                1,
                 1);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                item.remove(DataComponentTypes.CUSTOM_NAME);
-            }
-        }, 1500);
+        timer.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        item.remove(DataComponentTypes.CUSTOM_NAME);
+                    }
+                },
+                1500);
     }
 
     @Override

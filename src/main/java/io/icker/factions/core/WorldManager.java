@@ -7,6 +7,7 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -33,19 +34,26 @@ public class WorldManager {
         Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
         if (user.autoclaim && claim == null) {
             Faction faction = user.getFaction();
-            int requiredPower = (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-            int maxPower = faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
-                    + FactionsMod.CONFIG.POWER.BASE;
+            int requiredPower =
+                    (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+            int maxPower =
+                    faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
+                            + FactionsMod.CONFIG.POWER.BASE;
 
             if (maxPower < requiredPower) {
                 new Message(Text.translatable("factions.events.autoclaim.fail"))
-                        .fail().send(player, false);
+                        .fail()
+                        .send(player, false);
                 user.autoclaim = false;
             } else {
                 faction.addClaim(chunkPos.x, chunkPos.z, dimension);
                 claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
-                new Message(Text.translatable("factions.events.autoclaim.success",
-                        chunkPos.x, chunkPos.z, player.getName().getString()))
+                new Message(
+                                Text.translatable(
+                                        "factions.events.autoclaim.success",
+                                        chunkPos.x,
+                                        chunkPos.z,
+                                        player.getName().getString()))
                         .send(faction);
             }
         }
@@ -55,7 +63,9 @@ public class WorldManager {
                         .format(claim.getFaction().getColor())
                         .send(player, true);
             } else {
-                new Message(Text.translatable("factions.radar.wilderness")).format(Formatting.GREEN).send(player, true);
+                new Message(Text.translatable("factions.radar.wilderness"))
+                        .format(Formatting.GREEN)
+                        .send(player, true);
             }
         }
     }

@@ -1,21 +1,24 @@
 package io.icker.factions.api.persistents;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import org.jetbrains.annotations.Nullable;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.util.WorldUtils;
+
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.collection.DefaultedList;
+
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 @Name("Faction")
 public class Faction {
@@ -37,9 +40,7 @@ public class Faction {
     @Field("Color")
     private String color;
 
-    /**
-     * Whether a player can join without an invitation
-     */
+    /** Whether a player can join without an invitation */
     @Field("Open")
     private boolean open;
 
@@ -65,7 +66,12 @@ public class Faction {
     public ArrayList<Relationship.Permissions> guest_permissions =
             new ArrayList<>(FactionsMod.CONFIG.RELATIONSHIPS.DEFAULT_GUEST_PERMISSIONS);
 
-    public Faction(String name, String description, String motd, Formatting color, boolean open,
+    public Faction(
+            String name,
+            String description,
+            String motd,
+            Formatting color,
+            boolean open,
             int power) {
         this.id = UUID.randomUUID();
         this.name = name;
@@ -175,8 +181,7 @@ public class Faction {
         int newPower = Math.min(Math.max(0, power + adjustment), maxPower);
         int oldPower = this.power;
 
-        if (newPower == oldPower)
-            return 0;
+        if (newPower == oldPower) return 0;
 
         power = newPower;
         FactionEvents.POWER_CHANGE.invoker().onPowerChange(this, oldPower);
@@ -222,7 +227,9 @@ public class Faction {
     }
 
     public Relationship getRelationship(UUID target) {
-        return relationships.stream().filter(rel -> rel.target.equals(target)).findFirst()
+        return relationships.stream()
+                .filter(rel -> rel.target.equals(target))
+                .findFirst()
                 .orElse(new Relationship(target, Relationship.Status.NEUTRAL));
     }
 
@@ -241,18 +248,21 @@ public class Faction {
     }
 
     public List<Relationship> getEnemiesWith() {
-        return relationships.stream().filter(rel -> rel.status == Relationship.Status.ENEMY)
+        return relationships.stream()
+                .filter(rel -> rel.status == Relationship.Status.ENEMY)
                 .toList();
     }
 
     public List<Relationship> getEnemiesOf() {
         return relationships.stream()
-                .filter(rel -> getReverse(rel).status == Relationship.Status.ENEMY).toList();
+                .filter(rel -> getReverse(rel).status == Relationship.Status.ENEMY)
+                .toList();
     }
 
     public void removeRelationship(UUID target) {
-        relationships = new ArrayList<>(
-                relationships.stream().filter(rel -> !rel.target.equals(target)).toList());
+        relationships =
+                new ArrayList<>(
+                        relationships.stream().filter(rel -> !rel.target.equals(target)).toList());
     }
 
     public void setRelationship(Relationship relationship) {
@@ -260,8 +270,7 @@ public class Faction {
             removeRelationship(relationship.target);
         }
         if (relationship.status != Relationship.Status.NEUTRAL
-                || !relationship.permissions.isEmpty())
-            relationships.add(relationship);
+                || !relationship.permissions.isEmpty()) relationships.add(relationship);
     }
 
     public void remove() {
@@ -281,24 +290,26 @@ public class Faction {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Faction faction = (Faction) o;
         return id.equals(faction.id);
     }
 
     public static void audit() {
-        STORE.values().removeIf((faction) -> {
-            if (faction.home != null && !WorldUtils.isValid(faction.home.level)) {
-                faction.setHome(null);
-            }
+        STORE.values()
+                .removeIf(
+                        (faction) -> {
+                            if (faction.home != null && !WorldUtils.isValid(faction.home.level)) {
+                                faction.setHome(null);
+                            }
 
-            faction.relationships.removeIf((rel) -> Faction.get(rel.target) == null);
+                            faction.relationships.removeIf(
+                                    (rel) -> Faction.get(rel.target) == null);
 
-            return faction.getUsers().stream().noneMatch((user) -> user.rank == User.Rank.OWNER);
-        });
+                            return faction.getUsers().stream()
+                                    .noneMatch((user) -> user.rank == User.Rank.OWNER);
+                        });
     }
 
     public static void save() {

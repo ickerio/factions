@@ -5,27 +5,37 @@ import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.util.WorldUtils;
+
 import net.minecraft.server.network.ServerPlayerEntity;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Name("User")
 public class User {
     private static final HashMap<UUID, User> STORE = Database.load(User.class, User::getID);
 
     public enum ChatMode {
-        FOCUS, FACTION, GLOBAL
+        FOCUS,
+        FACTION,
+        GLOBAL
     }
 
     public enum Rank {
-        OWNER, LEADER, COMMANDER, MEMBER, GUEST
+        OWNER,
+        LEADER,
+        COMMANDER,
+        MEMBER,
+        GUEST
     }
 
     public enum SoundMode {
-        NONE, WARNINGS, FACTION, ALL
+        NONE,
+        WARNINGS,
+        FACTION,
+        ALL
     }
 
     @Field("ID")
@@ -55,8 +65,7 @@ public class User {
         this.id = id;
     }
 
-    public User() {
-    }
+    public User() {}
 
     @SuppressWarnings("unused")
     public String getKey() {
@@ -72,7 +81,8 @@ public class User {
     }
 
     public static List<User> getByFaction(UUID factionID) {
-        return STORE.values().stream().filter(m -> m.isInFaction() && m.factionID.equals(factionID))
+        return STORE.values().stream()
+                .filter(m -> m.isInFaction() && m.factionID.equals(factionID))
                 .toList();
     }
 
@@ -135,15 +145,17 @@ public class User {
     }
 
     public static void audit() {
-        STORE.values().forEach((user) -> {
-            if (Faction.get(user.factionID) == null) {
-                user.factionID = null;
-            }
+        STORE.values()
+                .forEach(
+                        (user) -> {
+                            if (Faction.get(user.factionID) == null) {
+                                user.factionID = null;
+                            }
 
-            if (!user.isInFaction()) {
-                user.rank = null;
-            }
-        });
+                            if (!user.isInFaction()) {
+                                user.rank = null;
+                            }
+                        });
     }
 
     @Nullable
@@ -160,5 +172,4 @@ public class User {
     public static void save() {
         Database.save(User.class, STORE.values().stream().toList());
     }
-
 }

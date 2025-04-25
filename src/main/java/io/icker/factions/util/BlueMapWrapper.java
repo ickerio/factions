@@ -1,24 +1,26 @@
 package io.icker.factions.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import de.bluecolored.bluemap.api.BlueMapMap;
+import de.bluecolored.bluemap.api.markers.ExtrudeMarker;
 import de.bluecolored.bluemap.api.markers.Marker;
 import de.bluecolored.bluemap.api.markers.MarkerSet;
 import de.bluecolored.bluemap.api.markers.POIMarker;
-import de.bluecolored.bluemap.api.markers.ExtrudeMarker;
 import de.bluecolored.bluemap.api.math.Color;
 import de.bluecolored.bluemap.api.math.Shape;
+
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
+
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BlueMapWrapper {
     private HashMap<String, MarkerSet> markerSets = new HashMap<>();
@@ -26,21 +28,23 @@ public class BlueMapWrapper {
     private boolean loadWhenReady = false;
 
     public BlueMapWrapper() {
-        BlueMapAPI.onEnable((api) -> {
-            this.api = api;
-            generateMarkers();
-        });
+        BlueMapAPI.onEnable(
+                (api) -> {
+                    this.api = api;
+                    generateMarkers();
+                });
 
         ClaimEvents.ADD.register(this::addClaim);
         ClaimEvents.REMOVE.register(this::removeClaim);
 
-        WorldUtils.ON_READY.register(() -> {
-            if (loadWhenReady) {
-                loadWhenReady = false;
+        WorldUtils.ON_READY.register(
+                () -> {
+                    if (loadWhenReady) {
+                        loadWhenReady = false;
 
-                generateMarkers();
-            }
-        });
+                        generateMarkers();
+                    }
+                });
 
         FactionEvents.SET_HOME.register(this::setHome);
         FactionEvents.MODIFY.register(faction -> updateFaction(faction));
@@ -76,23 +80,31 @@ public class BlueMapWrapper {
 
         if (markerSet == null) {
             ServerWorld world = WorldUtils.getWorld(claim.level);
-            markerSet = new MarkerSet("factions-"+claim.level);
+            markerSet = new MarkerSet("factions-" + claim.level);
 
             for (BlueMapMap map : api.getWorld(world).get().getMaps()) {
-                map.getMarkerSets().put("factions-"+claim.level, markerSet);
+                map.getMarkerSets().put("factions-" + claim.level, markerSet);
             }
 
             markerSets.put(claim.level, markerSet);
         }
 
-        ExtrudeMarker marker = ExtrudeMarker.builder()
-            .position((double) pos.getCenterX(), 320, (double) pos.getCenterZ())
-            .shape(Shape.createRect(pos.getStartX(), pos.getStartZ(), pos.getEndX(), pos.getEndZ()), -64, 320)
-            .fillColor(new Color(faction.getColor().getColorValue() | 0x40000000))
-            .lineColor(new Color(faction.getColor().getColorValue() | 0xFF000000))
-            .label(faction.getName())
-            .detail(factionInfo)
-            .build();
+        ExtrudeMarker marker =
+                ExtrudeMarker.builder()
+                        .position((double) pos.getCenterX(), 320, (double) pos.getCenterZ())
+                        .shape(
+                                Shape.createRect(
+                                        pos.getStartX(),
+                                        pos.getStartZ(),
+                                        pos.getEndX(),
+                                        pos.getEndZ()),
+                                -64,
+                                320)
+                        .fillColor(new Color(faction.getColor().getColorValue() | 0x40000000))
+                        .lineColor(new Color(faction.getColor().getColorValue() | 0xFF000000))
+                        .label(faction.getName())
+                        .detail(factionInfo)
+                        .build();
 
         String areaMarkerId = String.format("%s-%d-%d", claim.level, claim.x, claim.z);
         markerSet.put(areaMarkerId, marker);
@@ -125,8 +137,8 @@ public class BlueMapWrapper {
 
             marker.setFillColor(new Color(faction.getColor().getColorValue() | 0x40000000));
             marker.setLineColor(new Color(faction.getColor().getColorValue() | 0xFF000000));
-            marker.setLabel(faction.getName()); 
-            marker.setDetail(info); 
+            marker.setLabel(faction.getName());
+            marker.setDetail(info);
         }
     }
 
@@ -142,10 +154,10 @@ public class BlueMapWrapper {
 
         if (markerSet == null) {
             ServerWorld world = WorldUtils.getWorld(home.level);
-            markerSet = new MarkerSet("factions-"+home.level);
+            markerSet = new MarkerSet("factions-" + home.level);
 
             for (BlueMapMap map : api.getWorld(world).get().getMaps()) {
-                map.getMarkerSets().put("factions-"+home.level, markerSet);
+                map.getMarkerSets().put("factions-" + home.level, markerSet);
             }
 
             markerSets.put(home.level, markerSet);
@@ -162,7 +174,12 @@ public class BlueMapWrapper {
         Marker marker = markerSet.get(faction.getID().toString() + "-home");
 
         if (marker == null) {
-            POIMarker homeMarker = POIMarker.builder().position(home.x, home.y, home.z).detail(getInfo(faction)).label(faction.getName() + "'s Home").build();
+            POIMarker homeMarker =
+                    POIMarker.builder()
+                            .position(home.x, home.y, home.z)
+                            .detail(getInfo(faction))
+                            .label(faction.getName() + "'s Home")
+                            .build();
             markerSet.put(faction.getID().toString() + "-home", homeMarker);
         } else {
             ((POIMarker) marker).setPosition(home.x, home.y, home.z);
@@ -170,9 +187,17 @@ public class BlueMapWrapper {
     }
 
     private String getInfo(Faction faction) {
-        return "Name: " + faction.getName() + "<br>" + "Description: " + faction.getDescription()
-                + "<br>" + "Power: " + faction.getPower() + "<br>" + "Number of members: "
-                + faction.getUsers().size();// + "<br>"
+        return "Name: "
+                + faction.getName()
+                + "<br>"
+                + "Description: "
+                + faction.getDescription()
+                + "<br>"
+                + "Power: "
+                + faction.getPower()
+                + "<br>"
+                + "Number of members: "
+                + faction.getUsers().size(); // + "<br>"
         // + "Allies: " + Ally.getAllies(faction.getName).stream().map(ally ->
         // ally.target).collect(Collectors.joining(", "));
     }

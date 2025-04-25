@@ -7,6 +7,10 @@ import net.minecraft.util.Identifier;
 
 public class GuiInteract {
     public static void playClickSound(ServerPlayerEntity player) {
-        player.playSoundToPlayer(SoundEvent.of(Identifier.of("minecraft:ui.button.click")), SoundCategory.MASTER, 1, 1);
+        player.playSoundToPlayer(
+                SoundEvent.of(Identifier.of("minecraft:ui.button.click")),
+                SoundCategory.MASTER,
+                1,
+                1);
     }
 }

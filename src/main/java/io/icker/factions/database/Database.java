@@ -1,5 +1,14 @@
 package io.icker.factions.database;
 
+import io.icker.factions.FactionsMod;
+
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtSizeTracker;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -10,13 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import io.icker.factions.FactionsMod;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtSizeTracker;
 
 public class Database {
     private static final File BASE_PATH =
@@ -29,14 +31,12 @@ public class Database {
         String name = clazz.getAnnotation(Name.class).value();
         File file = new File(BASE_PATH, name.toLowerCase() + ".dat");
 
-        if (!cache.containsKey(clazz))
-            setup(clazz);
+        if (!cache.containsKey(clazz)) setup(clazz);
 
         HashMap<E, T> store = new HashMap<E, T>();
 
         if (!file.exists()) {
-            if (!BASE_PATH.exists())
-                BASE_PATH.mkdir();
+            if (!BASE_PATH.exists()) BASE_PATH.mkdir();
             try {
                 file.createNewFile();
             } catch (IOException e) {
@@ -46,7 +46,12 @@ public class Database {
         }
 
         try {
-            NbtList list = (NbtList) NbtIo.readCompressed(Path.of(file.getPath()), NbtSizeTracker.ofUnlimitedBytes()).get(KEY);
+            NbtList list =
+                    (NbtList)
+                            NbtIo.readCompressed(
+                                            Path.of(file.getPath()),
+                                            NbtSizeTracker.ofUnlimitedBytes())
+                                    .get(KEY);
             for (T item : deserializeList(clazz, list)) {
                 store.put(getStoreKey.apply(item), item);
             }
@@ -71,14 +76,15 @@ public class Database {
             String key = entry.getKey();
             Field field = entry.getValue();
 
-            if (!compound.contains(key))
-                continue;
+            if (!compound.contains(key)) continue;
 
             Class<?> type = field.getType();
 
             if (ArrayList.class.isAssignableFrom(type)) {
-                Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType())
-                        .getActualTypeArguments()[0];
+                Class<?> genericType =
+                        (Class<?>)
+                                ((ParameterizedType) field.getGenericType())
+                                        .getActualTypeArguments()[0];
                 field.set(item, deserializeList(genericType, (NbtList) compound.get(key)));
             } else {
                 field.set(item, deserialize(type, compound.get(key)));
@@ -103,8 +109,7 @@ public class Database {
         String name = clazz.getAnnotation(Name.class).value();
         File file = new File(BASE_PATH, name.toLowerCase() + ".dat");
 
-        if (!cache.containsKey(clazz))
-            setup(clazz);
+        if (!cache.containsKey(clazz)) setup(clazz);
 
         try {
             NbtCompound fileData = new NbtCompound();
@@ -130,12 +135,13 @@ public class Database {
             Class<?> type = field.getType();
             Object data = field.get(item);
 
-            if (data == null)
-                continue;
+            if (data == null) continue;
 
             if (ArrayList.class.isAssignableFrom(type)) {
-                Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType())
-                        .getActualTypeArguments()[0];
+                Class<?> genericType =
+                        (Class<?>)
+                                ((ParameterizedType) field.getGenericType())
+                                        .getActualTypeArguments()[0];
                 compound.put(key, serializeList(genericType, cast(data)));
             } else {
                 compound.put(key, serialize(type, cast(data)));
@@ -162,8 +168,8 @@ public class Database {
         for (Field field : clazz.getDeclaredFields()) {
             if (field.isAnnotationPresent(io.icker.factions.database.Field.class)) {
                 field.setAccessible(true);
-                fields.put(field.getAnnotation(io.icker.factions.database.Field.class).value(),
-                        field);
+                fields.put(
+                        field.getAnnotation(io.icker.factions.database.Field.class).value(), field);
 
                 Class<?> type = field.getType();
                 if (!SerializerRegistry.contains(type)) {
