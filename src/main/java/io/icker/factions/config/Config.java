@@ -99,7 +99,7 @@ public class Config {
         public boolean TAB_MENU = true;
 
         @SerializedName("nameBlackList")
-        public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless", "без фракции");
+        public List<String> NAME_BLACKLIST = List.of("wilderness", "factionless", "без фракции"); // means no faction in english
 
         @SerializedName("powerMessage")
         public boolean POWER_MESSAGE = true;
