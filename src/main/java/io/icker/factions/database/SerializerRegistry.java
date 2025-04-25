@@ -15,6 +15,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
@@ -22,12 +23,10 @@ import net.minecraft.nbt.NbtLong;
 import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.nbt.NbtShort;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.util.Uuids;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -98,13 +97,11 @@ public class SerializerRegistry {
 
         registry.put(
                 String.class,
-                new Serializer<String, NbtString>(
-                        val -> NbtString.of(val), el -> el.asString().orElse("")));
+                new Serializer<String, NbtString>(val -> NbtString.of(val), el -> el.asString()));
         registry.put(
                 UUID.class,
                 new Serializer<UUID, NbtIntArray>(
-                        val -> new NbtIntArray(Uuids.toIntArray(val)),
-                        el -> Uuids.toUuid(el.getIntArray())));
+                        val -> NbtHelper.fromUuid(val), el -> NbtHelper.toUuid(el)));
         registry.put(SimpleInventory.class, createInventorySerializer(54));
 
         registry.put(ChatMode.class, createEnumSerializer(ChatMode.class));
@@ -130,8 +127,7 @@ public class SerializerRegistry {
     private static <T extends Enum<T>> Serializer<T, NbtString> createEnumSerializer(
             Class<T> clazz) {
         return new Serializer<T, NbtString>(
-                val -> NbtString.of(val.toString()),
-                el -> Enum.valueOf(clazz, el.asString().orElse("")));
+                val -> NbtString.of(val.toString()), el -> Enum.valueOf(clazz, el.asString()));
     }
 
     private static Serializer<SimpleInventory, NbtList> createInventorySerializer(int size) {
@@ -159,12 +155,8 @@ public class SerializerRegistry {
                     }
 
                     for (int i = 0; i < el.size(); ++i) {
-                        Optional<NbtCompound> optionalNbtCompound = el.getCompound(i);
-                        if (optionalNbtCompound.isEmpty()) {
-                            continue;
-                        }
-                        NbtCompound nbtCompound = optionalNbtCompound.get();
-                        int slot = nbtCompound.getByte("Slot").orElse((byte) size) & 255;
+                        NbtCompound nbtCompound = el.getCompound(i);
+                        int slot = nbtCompound.getByte("Slot") & 255;
                         if (slot >= 0 && slot < size) {
                             inventory.setStack(
                                     slot,
