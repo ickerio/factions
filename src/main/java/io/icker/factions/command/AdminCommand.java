@@ -82,7 +82,7 @@ public class AdminCommand implements Command {
                         .send(player, false);
             }
         } else {
-            new Message(Text.translatable("factions.gui.power.error.nochange")).fail().send(player, false);
+            new Message(Text.translatable("factions.gui.power.fail.nochange")).fail().send(player, false);
         }
 
         return 1;
@@ -105,7 +105,7 @@ public class AdminCommand implements Command {
             try {
                 target = User.get(UUID.fromString(name));
             } catch (Exception e) {
-                new Message(Text.translatable("factions.gui.spoof.error.no_player", name)).format(Formatting.RED)
+                new Message(Text.translatable("factions.gui.spoof.fail.no_player", name)).format(Formatting.RED)
                         .send(player, false);
                 return 0;
             }

@@ -19,8 +19,8 @@
 
     "factions.gui.spoof.title": "Specify a player...",
     "factions.gui.spoof.default": "Player Name",
-    "factions.gui.spoof.error.invalid_name": "Invalid name %s!",
-    "factions.gui.spoof.error.no_player": "No such player %s!",
+    "factions.gui.spoof.fail.invalid_name": "Invalid name %s!",
+    "factions.gui.spoof.fail.no_player": "No such player %s!",
     "factions.gui.spoof.success": "Set spoof to player %s",
 
     "factions.gui.power.setfaction.title": "Specify a faction...",
@@ -29,7 +29,7 @@
     "factions.gui.power.setpower.title": "Specify power...",
     "factions.gui.power.setpower.default": "Power Level",
     "factions.gui.power.setpower.fail.nan": "Not a number!",
-    "factions.gui.power.error.nochange": "No change to power",
+    "factions.gui.power.fail.nochange": "No change to power",
     "factions.gui.power.success.added.admin": "Added %d power",
     "factions.gui.power.success.removed.admin": "Removed %d power",
     "factions.gui.power.success.added.faction": "Admin %s added %d power",

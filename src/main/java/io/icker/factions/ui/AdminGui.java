@@ -182,7 +182,7 @@ public class AdminGui extends SimpleGui {
 
                     if (!input.matches("^[a-zA-Z0-9_]{2,16}$")) {
                         inputGui.showErrorMessage(
-                                Text.translatable("factions.gui.spoof.error.invalid_name", input)
+                                Text.translatable("factions.gui.spoof.fail.invalid_name", input)
                                         .formatted(Formatting.RED),
                                 index);
                         return;
@@ -190,7 +190,7 @@ public class AdminGui extends SimpleGui {
                     Optional<GameProfile> profile;
                     if (!(profile = player.getServer().getUserCache().findByName(input)).isPresent()) {
                         inputGui.showErrorMessage(
-                                Text.translatable("factions.gui.spoof.error.no_player", input)
+                                Text.translatable("factions.gui.spoof.fail.no_player", input)
                                         .formatted(Formatting.RED),
                                 index);
                         return;
@@ -267,7 +267,7 @@ public class AdminGui extends SimpleGui {
                                     .send(player, false);
                         }
                     } else {
-                        new Message(Text.translatable("factions.gui.power.error.nochange")).fail().send(
+                        new Message(Text.translatable("factions.gui.power.fail.nochange")).fail().send(
                                 player,
                                 false);
                     }
