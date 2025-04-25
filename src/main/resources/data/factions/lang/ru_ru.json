@@ -192,6 +192,7 @@
     "factions.command.invite.add.success.subject": "Вас приглашают в эту фракцию",
     "factions.command.invite.add.success.subject.hover": "Нажмите, чтобы присоединиться",
     "factions.command.invite.remove.success": "Приглашение игроку %s отозвано",
+    "factions.command.invite.remove.fail": "Не удалось найти приглашение игроку %s",
 
     "factions.command.join.fail.nonexistent_faction": "Нельзя присоединиться к несуществующей фракции",
     "factions.command.join.fail.private_no_invite": "К этой фракции нельзя присоединиться без приглашения",
