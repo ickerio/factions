@@ -195,6 +195,7 @@
     "factions.command.invite.add.success.subject": "You have been invited to join this faction",
     "factions.command.invite.add.success.subject.hover": "Click to join",
     "factions.command.invite.remove.success": "%s is no longer invited to your faction",
+    "factions.command.invite.remove.fail": "Could not find invite for %s",
 
     "factions.command.join.fail.nonexistent_faction": "Cannot join faction as none exist with that name",
     "factions.command.join.fail.private_no_invite": "Cannot join faction as it is not open and you are not invited",

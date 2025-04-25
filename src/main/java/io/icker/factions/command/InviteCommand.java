@@ -81,7 +81,6 @@ public class InviteCommand implements Command {
         return 1;
     }
 
-    // Shouldn't this fail (at least send feedback accordingly) if there's no such invite?
     private int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
@@ -89,11 +88,15 @@ public class InviteCommand implements Command {
         ServerPlayerEntity player = source.getPlayer();
 
         Faction faction = Command.getUser(player).getFaction();
-        faction.invites.remove(target.getUuid());
-
-        new Message(Text.translatable("factions.command.invite.remove.success", target.getName().getString()))
-                .send(player, false);
-        return 1;
+        if (faction.invites.remove(target.getUuid())) {
+            new Message(Text.translatable("factions.command.invite.remove.success", target.getName().getString()))
+                    .send(player, false);
+            return 1;
+        } else {
+            new Message(Text.translatable("factions.command.invite.remove.fail", target.getName().getString()))
+                    .send(player, false);
+            return 1;
+        }
     }
 
     public LiteralCommandNode<ServerCommandSource> getNode() {
