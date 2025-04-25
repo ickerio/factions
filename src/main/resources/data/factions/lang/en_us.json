@@ -29,7 +29,7 @@
     "factions.gui.power.setpower.title": "Specify power...",
     "factions.gui.power.setpower.default": "Power Level",
     "factions.gui.power.setpower.fail.nan": "Not a number!",
-    "factions.gui.power.success.nochange": "No change to power",
+    "factions.gui.power.error.nochange": "No change to power",
     "factions.gui.power.success.added.admin": "Added %d power",
     "factions.gui.power.success.removed.admin": "Removed %d power",
     "factions.gui.power.success.added.faction": "Admin %s added %d power",

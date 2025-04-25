@@ -29,7 +29,7 @@
     "factions.gui.power.setpower.title": "Укажите мощь...",
     "factions.gui.power.setpower.default": "Уровень мощи",
     "factions.gui.power.setpower.fail.nan": "Не число!",
-    "factions.gui.power.success.nochange": "Мощь не изменилась",
+    "factions.gui.power.error.nochange": "Мощь не изменилась",
     "factions.gui.power.success.added.admin": "Добавлено %d мощи",
     "factions.gui.power.success.removed.admin": "Убрано %d мощи",
     "factions.gui.power.success.added.faction": "Админ %s добаввляет %d мощи",

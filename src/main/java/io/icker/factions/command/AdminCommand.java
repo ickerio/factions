@@ -82,7 +82,7 @@ public class AdminCommand implements Command {
                         .send(player, false);
             }
         } else {
-            new Message(Text.translatable("factions.gui.power.success.nochange")).fail().send(player, false);
+            new Message(Text.translatable("factions.gui.power.error.nochange")).fail().send(player, false);
         }
 
         return 1;

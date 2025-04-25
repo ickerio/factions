@@ -267,7 +267,7 @@ public class AdminGui extends SimpleGui {
                                     .send(player, false);
                         }
                     } else {
-                        new Message(Text.translatable("factions.gui.power.success.nochange")).fail().send(
+                        new Message(Text.translatable("factions.gui.power.error.nochange")).fail().send(
                                 player,
                                 false);
                     }
