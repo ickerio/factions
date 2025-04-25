@@ -107,7 +107,7 @@ public abstract class PagedGui extends SimpleGui {
             case 3 -> DisplayElement.nextPage(this);
             case 7 -> DisplayElement.of(
                     new GuiElementBuilder(Items.STRUCTURE_VOID)
-                            .setName(Text.literal(this.closeCallback != null ? "Go back" : "Close")
+                            .setName(Text.translatable(this.closeCallback != null ? "factions.gui.generic.back" : "factions.gui.generic.close")
                                     .formatted(Formatting.RED))
                             .hideDefaultTooltip()
                             .setCallback((x, y, z) -> {
