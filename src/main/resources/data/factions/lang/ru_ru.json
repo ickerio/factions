@@ -284,7 +284,7 @@
     "factions.interactions.name.place_or_pickup_liquids": "ставить или подбирать жидкости",
     "factions.interactions.name.attack_entities": "атаковать сущности",
     "factions.interactions.name.use_entities": "использовать сущности",
-    "factions.interactions.name.use_inventory": "открыватьинвентарь",
+    "factions.interactions.name.use_inventory": "открывать инвентарь",
 
     "factions.level.minecraft:overworld": "Верхний мир",
     "factions.level.minecraft:the_nether": "Незер",
