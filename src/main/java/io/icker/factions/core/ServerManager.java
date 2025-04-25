@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
 public class ServerManager {
     public static void register() {
@@ -31,7 +32,10 @@ public class ServerManager {
 
         if (user.isInFaction()) {
             Faction faction = user.getFaction();
-            new Message("Welcome back " + player.getName().getString() + "!").send(player, false);
+            new Message(
+                            Text.translatable(
+                                    "factions.events.member_returns", player.getName().getString()))
+                    .send(player, false);
             new Message(faction.getMOTD()).prependFaction(faction).send(player, false);
         }
     }

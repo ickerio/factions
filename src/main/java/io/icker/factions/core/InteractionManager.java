@@ -6,6 +6,7 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Relationship.Permissions;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.core.InteractionsUtil.InteractionsUtilActions;
 import io.icker.factions.mixin.BucketItemAccessor;
 import io.icker.factions.mixin.ItemInvoker;
 
@@ -54,7 +55,7 @@ public class InteractionManager {
         boolean result =
                 checkPermissions(player, pos, world, Permissions.BREAK_BLOCKS) == ActionResult.FAIL;
         if (result) {
-            InteractionsUtil.warn(player, "break blocks");
+            InteractionsUtil.warn(player, InteractionsUtilActions.BREAK_BLOCKS);
         }
         return !result;
     }
@@ -65,7 +66,7 @@ public class InteractionManager {
 
         BlockPos hitPos = hitResult.getBlockPos();
         if (checkPermissions(player, hitPos, world, Permissions.USE_BLOCKS) == ActionResult.FAIL) {
-            InteractionsUtil.warn(player, "use blocks");
+            InteractionsUtil.warn(player, InteractionsUtilActions.USE_BLOCKS);
             InteractionsUtil.sync(player, stack, hand);
             return ActionResult.FAIL;
         }
@@ -73,7 +74,7 @@ public class InteractionManager {
         BlockPos placePos = hitPos.add(hitResult.getSide().getVector());
         if (checkPermissions(player, placePos, world, Permissions.USE_BLOCKS)
                 == ActionResult.FAIL) {
-            InteractionsUtil.warn(player, "use blocks");
+            InteractionsUtil.warn(player, InteractionsUtilActions.USE_BLOCKS);
             InteractionsUtil.sync(player, stack, hand);
             return ActionResult.FAIL;
         }
@@ -88,7 +89,7 @@ public class InteractionManager {
                         context.getWorld(),
                         Permissions.PLACE_BLOCKS)
                 == ActionResult.FAIL) {
-            InteractionsUtil.warn(context.getPlayer(), "place blocks");
+            InteractionsUtil.warn(context.getPlayer(), InteractionsUtilActions.PLACE_BLOCKS);
             InteractionsUtil.sync(context.getPlayer(), context.getStack(), context.getHand());
             return ActionResult.FAIL;
         }
@@ -103,7 +104,7 @@ public class InteractionManager {
             ActionResult playerResult =
                     checkPermissions(player, player.getBlockPos(), world, Permissions.PLACE_BLOCKS);
             if (playerResult == ActionResult.FAIL) {
-                InteractionsUtil.warn(player, "pick up/place liquids");
+                InteractionsUtil.warn(player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
                 InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                 return ActionResult.FAIL;
             }
@@ -120,7 +121,7 @@ public class InteractionManager {
                 BlockPos raycastPos = raycastResult.getBlockPos();
                 if (checkPermissions(player, raycastPos, world, Permissions.PLACE_BLOCKS)
                         == ActionResult.FAIL) {
-                    InteractionsUtil.warn(player, "pick up/place liquids");
+                    InteractionsUtil.warn(player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return ActionResult.FAIL;
                 }
@@ -128,7 +129,7 @@ public class InteractionManager {
                 BlockPos placePos = raycastPos.add(raycastResult.getSide().getVector());
                 if (checkPermissions(player, placePos, world, Permissions.PLACE_BLOCKS)
                         == ActionResult.FAIL) {
-                    InteractionsUtil.warn(player, "pick up/place liquids");
+                    InteractionsUtil.warn(player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
                     InteractionsUtil.sync(player, player.getStackInHand(hand), hand);
                     return ActionResult.FAIL;
                 }
@@ -144,7 +145,7 @@ public class InteractionManager {
                 && checkPermissions(
                                 player, entity.getBlockPos(), world, Permissions.ATTACK_ENTITIES)
                         == ActionResult.FAIL) {
-            InteractionsUtil.warn(player, "attack entities");
+            InteractionsUtil.warn(player, InteractionsUtilActions.ATTACK_ENTITIES);
             return ActionResult.FAIL;
         }
 
@@ -160,7 +161,7 @@ public class InteractionManager {
         }
 
         if (checkPermissions(player, pos, world, Permissions.USE_ENTITIES) == ActionResult.FAIL) {
-            InteractionsUtil.warn(player, "use entities");
+            InteractionsUtil.warn(player, InteractionsUtilActions.USE_ENTITIES);
             return ActionResult.FAIL;
         }
 
@@ -170,7 +171,7 @@ public class InteractionManager {
     private static ActionResult onUseInventory(PlayerEntity player, BlockPos pos, World world) {
         if (checkPermissions(player, pos, world, Permissions.USE_INVENTORIES)
                 == ActionResult.FAIL) {
-            InteractionsUtil.warn(player, "use inventories");
+            InteractionsUtil.warn(player, InteractionsUtilActions.USE_INVENTORY);
             return ActionResult.FAIL;
         }
 

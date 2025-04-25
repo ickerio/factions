@@ -49,7 +49,7 @@ public class ChatManager {
 
     private static Text inFactionGlobal(
             ServerPlayerEntity sender, Faction faction, String message) {
-        return new Message("")
+        return new Message()
                 .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))
@@ -57,8 +57,10 @@ public class ChatManager {
     }
 
     private static Text faction(ServerPlayerEntity sender, Faction faction, String message) {
-        return new Message("")
-                .add(new Message("F").format(Formatting.BOLD, faction.getColor()))
+        return new Message()
+                .add(
+                        new Message(Text.translatable("factions.chat.in_faction_symbol"))
+                                .format(Formatting.BOLD, faction.getColor()))
                 .filler("»")
                 .add(new Message(message).format(Formatting.GRAY))
                 .raw();

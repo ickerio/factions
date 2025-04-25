@@ -38,7 +38,7 @@ public class ListGui extends PagedGui {
         }
         this.size = factions.size();
 
-        this.setTitle(Text.literal("Factions list"));
+        this.setTitle(Text.translatable("factions.gui.list.title"));
         this.updateDisplay();
         this.open();
     }
@@ -70,11 +70,11 @@ public class ListGui extends PagedGui {
                                                             .withColor(Formatting.GRAY))));
             if (isInFaction && home != null) {
                 lore.add(
-                        Text.literal("Click to view faction info.")
+                        Text.translatable("factions.gui.list.entry.view_info")
                                 .setStyle(
                                         Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
                 lore.add(
-                        Text.literal("Right-click to teleport to faction home.")
+                        Text.translatable("factions.gui.list.entry.teleport")
                                 .setStyle(
                                         Style.EMPTY
                                                 .withItalic(false)
@@ -91,7 +91,7 @@ public class ListGui extends PagedGui {
                         });
             } else {
                 lore.add(
-                        Text.literal("Click to view faction info.")
+                        Text.translatable("factions.gui.list.entry.view_info")
                                 .setStyle(
                                         Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
                 icon.setCallback(

@@ -24,6 +24,8 @@ import net.minecraft.util.Util;
 
 import org.jetbrains.annotations.Nullable;
 
+import xyz.nucleoid.server.translations.api.Localization;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,11 +51,14 @@ public class InfoGui extends SimpleGui {
                                         cache.getByUuid(u.getID())
                                                 .orElse(
                                                         new GameProfile(
-                                                                Util.NIL_UUID, "{Unknown Player}"))
+                                                                Util.NIL_UUID,
+                                                                Localization.raw(
+                                                                        "factions.gui.generic.unknown_player",
+                                                                        player)))
                                                 .getName())
                         .collect(Collectors.joining(", "));
 
-        this.setTitle(Text.literal("Faction info"));
+        this.setTitle(Text.translatable("factions.gui.info.title"));
 
         for (int i = 0; i < 9; i++)
             this.setSlot(i, new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip());
@@ -71,19 +76,19 @@ public class InfoGui extends SimpleGui {
                                                         Style.EMPTY
                                                                 .withItalic(false)
                                                                 .withColor(Formatting.WHITE)),
-                                        Text.literal("Owner: ")
-                                                .setStyle(
-                                                        Style.EMPTY
-                                                                .withItalic(false)
-                                                                .withColor(Formatting.GRAY))
-                                                .append(
+                                        Text.translatable(
+                                                        "factions.gui.info.owner",
                                                         Text.literal(owner)
                                                                 .setStyle(
                                                                         Style.EMPTY
                                                                                 .withItalic(false)
                                                                                 .withColor(
                                                                                         Formatting
-                                                                                                .YELLOW))))));
+                                                                                                .YELLOW)))
+                                                .setStyle(
+                                                        Style.EMPTY
+                                                                .withItalic(false)
+                                                                .withColor(Formatting.GRAY)))));
 
         // Members info
         int maxSize = FactionsMod.CONFIG.MAX_FACTION_SIZE;
@@ -100,8 +105,10 @@ public class InfoGui extends SimpleGui {
                                                                                 new GameProfile(
                                                                                         Util
                                                                                                 .NIL_UUID,
-                                                                                        "{Uncached"
-                                                                                            + " Player}"))
+                                                                                        Localization
+                                                                                                .raw(
+                                                                                                        "factions.gui.generic.unknown_player",
+                                                                                                        player)))
                                                                         .getName())
                                                         .setStyle(
                                                                 Style.EMPTY
@@ -112,7 +119,7 @@ public class InfoGui extends SimpleGui {
         if (membersLore.size() > 4) membersLore = membersLore.subList(0, 3);
         membersLore.add(Text.empty());
         membersLore.add(
-                Text.literal("Click to view all members")
+                Text.translatable("factions.gui.info.members.viewall")
                         .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
 
         this.setSlot(
@@ -120,16 +127,14 @@ public class InfoGui extends SimpleGui {
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setSkullOwner(Icons.GUI_PLAYER)
                         .setName(
-                                Text.literal("Members ")
-                                        .append(
-                                                Text.literal(
-                                                                "("
-                                                                        + members.size()
-                                                                        + (isMaxSize
-                                                                                ? "/" + maxSize
-                                                                                : "")
-                                                                        + ")")
-                                                        .formatted(Formatting.GREEN)))
+                                Text.translatable(
+                                        "factions.gui.info.members",
+                                        Text.literal(
+                                                        members.size()
+                                                                + (isMaxSize
+                                                                        ? ("/" + maxSize)
+                                                                        : ""))
+                                                .formatted(Formatting.GREEN)))
                         .setLore(membersLore)
                         .setCallback(
                                 () -> {
@@ -144,54 +149,56 @@ public class InfoGui extends SimpleGui {
                 2,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setSkullOwner(Icons.GUI_FIST)
-                        .setName(Text.literal("Faction Powers"))
+                        .setName(Text.translatable("factions.gui.info.power"))
                         .setLore(
                                 List.of(
-                                        Text.literal(String.valueOf(faction.getPower()))
-                                                .setStyle(
-                                                        Style.EMPTY
-                                                                .withItalic(false)
-                                                                .withColor(Formatting.GREEN))
-                                                .append(
-                                                        Text.literal(" faction power")
+                                        Text.translatable(
+                                                        "factions.gui.info.power.total",
+                                                        Text.literal(
+                                                                        String.valueOf(
+                                                                                faction.getPower()))
                                                                 .setStyle(
                                                                         Style.EMPTY
                                                                                 .withItalic(false)
                                                                                 .withColor(
                                                                                         Formatting
-                                                                                                .GRAY))),
-                                        Text.literal(String.valueOf(requiredPower))
+                                                                                                .GREEN)))
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.GREEN))
-                                                .append(
-                                                        Text.literal(" claims required power")
+                                                                .withColor(Formatting.GRAY)),
+                                        Text.translatable(
+                                                        "factions.gui.info.power.claims",
+                                                        Text.literal(String.valueOf(requiredPower))
                                                                 .setStyle(
                                                                         Style.EMPTY
                                                                                 .withItalic(false)
                                                                                 .withColor(
                                                                                         Formatting
-                                                                                                .GRAY))),
-                                        Text.literal(String.valueOf(maxPower))
+                                                                                                .GREEN)))
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.GREEN))
-                                                .append(
-                                                        Text.literal(" max faction power")
+                                                                .withColor(Formatting.GRAY)),
+                                        Text.translatable(
+                                                        "factions.gui.info.power.max",
+                                                        Text.literal(String.valueOf(maxPower))
                                                                 .setStyle(
                                                                         Style.EMPTY
                                                                                 .withItalic(false)
                                                                                 .withColor(
                                                                                         Formatting
-                                                                                                .GRAY))))));
+                                                                                                .GREEN)))
+                                                .setStyle(
+                                                        Style.EMPTY
+                                                                .withItalic(false)
+                                                                .withColor(Formatting.GRAY)))));
 
         // Allies info
         List<Text> allies =
                 faction.getMutualAllies().isEmpty()
                         ? List.of(
-                                Text.literal("No allies.")
+                                Text.translatable("factions.gui.info.allies.none")
                                         .setStyle(
                                                 Style.EMPTY
                                                         .withItalic(false)
@@ -205,20 +212,16 @@ public class InfoGui extends SimpleGui {
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setSkullOwner(Icons.GUI_CASTLE_ALLY)
                         .setName(
-                                Text.literal("Ally factions ")
-                                        .append(
-                                                Text.literal(
-                                                                String.format(
-                                                                        "(%s)",
-                                                                        faction.getMutualAllies()
-                                                                                .size()))
-                                                        .formatted(Formatting.GREEN)))
+                                Text.translatable(
+                                                "factions.gui.info.allies.some",
+                                                faction.getMutualAllies().size())
+                                        .formatted(Formatting.GREEN))
                         .setLore(allies));
         // Enemies info
         List<Text> enemies =
                 faction.getEnemiesWith().isEmpty()
                         ? List.of(
-                                Text.literal("No enemies.")
+                                Text.translatable("factions.gui.info.enemies.none")
                                         .setStyle(
                                                 Style.EMPTY
                                                         .withItalic(false)
@@ -232,14 +235,10 @@ public class InfoGui extends SimpleGui {
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setSkullOwner(Icons.GUI_CASTLE_ENEMY)
                         .setName(
-                                Text.literal("Enemy factions ")
-                                        .append(
-                                                Text.literal(
-                                                                String.format(
-                                                                        "(%s)",
-                                                                        faction.getEnemiesWith()
-                                                                                .size()))
-                                                        .formatted(Formatting.GREEN)))
+                                Text.translatable(
+                                                "factions.gui.info.enemies.some",
+                                                faction.getEnemiesWith().size())
+                                        .formatted(Formatting.RED))
                         .setLore(enemies));
 
         if (Command.Requires.isOwner().test(player.getCommandSource()) && isMember) {
@@ -247,10 +246,10 @@ public class InfoGui extends SimpleGui {
                     6,
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                             .setSkullOwner(Icons.GUI_LECTERN)
-                            .setName(Text.literal("Faction settings"))
+                            .setName(Text.translatable("factions.gui.info.settings"))
                             .setLore(
                                     List.of(
-                                            Text.literal("Click to change settings")
+                                            Text.translatable("factions.gui.info.settings.lore")
                                                     .formatted(Formatting.GRAY)))
                             .setCallback(
                                     () -> {
@@ -263,7 +262,10 @@ public class InfoGui extends SimpleGui {
                 8,
                 new GuiElementBuilder(Items.STRUCTURE_VOID)
                         .setName(
-                                Text.literal(closeCallback == null ? "Close" : "Go back")
+                                Text.translatable(
+                                                closeCallback == null
+                                                        ? "factions.gui.generic.close"
+                                                        : "factions.gui.generic.back")
                                         .formatted(Formatting.RED))
                         .setCallback(
                                 () -> {

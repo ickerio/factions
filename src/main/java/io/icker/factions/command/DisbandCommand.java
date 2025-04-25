@@ -13,6 +13,7 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
@@ -31,10 +32,14 @@ public class DisbandCommand implements Command {
         if (faction == null) return 0;
 
         if (!faction.getSafe().isEmpty() && !confirm) {
-            new Message("Your faction safe isn't empty.")
+            new Message(Text.translatable("factions.command.disband.fail.safe_not_empty"))
                     .add(
-                            new Message("\nContinue and move the items to your inventory")
-                                    .hover("Click to confirm")
+                            new Message(
+                                            Text.translatable(
+                                                    "factions.command.disband.fail.safe_not_empty.prompt"))
+                                    .hover(
+                                            Text.translatable(
+                                                    "factions.command.disband.fail.safe_not_empty.prompt.hover"))
                                     .click("/f disband confirm")
                                     .format(Formatting.GREEN))
                     .send(player, false);
@@ -45,7 +50,10 @@ public class DisbandCommand implements Command {
 
         ItemScatterer.spawn(player.getWorld(), player.getBlockPos(), safe);
 
-        new Message(player.getName().getString() + " disbanded the faction").send(faction);
+        new Message(
+                        Text.translatable(
+                                "factions.command.disband.success", player.getName().getString()))
+                .send(faction);
         faction.remove();
 
         PlayerManager manager = source.getServer().getPlayerManager();

@@ -78,7 +78,7 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
                                 .raw());
             } else {
                 cir.setReturnValue(
-                        new Message("[FACTIONLESS] ")
+                        new Message(Text.translatable("factions.factionless"))
                                 .format(Formatting.GRAY)
                                 .add(
                                         new Message(

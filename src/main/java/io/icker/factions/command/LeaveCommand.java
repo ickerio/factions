@@ -13,6 +13,7 @@ import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
 public class LeaveCommand implements Command {
     private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -23,8 +24,14 @@ public class LeaveCommand implements Command {
         Faction faction = user.getFaction();
 
         user.leaveFaction();
-        new Message(player.getName().getString() + " left").send(faction);
-        new Message("You have left this faction.").prependFaction(faction).send(player, false);
+        new Message(Text.translatable("factions.command.leave.success.actor"))
+                .prependFaction(faction)
+                .send(player, false);
+        new Message(
+                        Text.translatable(
+                                "factions.command.leave.success.subject",
+                                player.getName().getString()))
+                .send(faction);
 
         context.getSource().getServer().getPlayerManager().sendCommandTree(player);
 

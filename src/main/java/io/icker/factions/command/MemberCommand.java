@@ -16,9 +16,12 @@ import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
+
+import xyz.nucleoid.server.translations.api.Localization;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +33,9 @@ public class MemberCommand implements Command {
 
         User user = Command.getUser(player);
         if (!user.isInFaction()) {
-            new Message("Command can only be used whilst in a faction").fail().send(player, false);
+            new Message(Text.translatable("factions.command.members.fail.no_faction"))
+                    .fail()
+                    .send(player, false);
             return 0;
         }
 
@@ -45,7 +50,9 @@ public class MemberCommand implements Command {
 
         Faction faction = Faction.getByName(factionName);
         if (faction == null) {
-            new Message("Faction does not exist").fail().send(player, false);
+            new Message(Text.translatable("factions.command.members.faction.nonexistent_faction"))
+                    .fail()
+                    .send(player, false);
             return 0;
         }
 
@@ -71,7 +78,9 @@ public class MemberCommand implements Command {
                                                         .orElse(
                                                                 new GameProfile(
                                                                         Util.NIL_UUID,
-                                                                        "{Uncached Player}"))
+                                                                        Localization.raw(
+                                                                                "factions.gui.generic.unknown_player",
+                                                                                player)))
                                                         .getName())
                                 .collect(Collectors.joining(", "));
 
@@ -86,7 +95,9 @@ public class MemberCommand implements Command {
                                                         .orElse(
                                                                 new GameProfile(
                                                                         Util.NIL_UUID,
-                                                                        "{Uncached Player}"))
+                                                                        Localization.raw(
+                                                                                "factions.gui.generic.unknown_player",
+                                                                                player)))
                                                         .getName())
                                 .collect(Collectors.joining(", "));
 
@@ -101,7 +112,9 @@ public class MemberCommand implements Command {
                                                         .orElse(
                                                                 new GameProfile(
                                                                         Util.NIL_UUID,
-                                                                        "{Uncached Player}"))
+                                                                        Localization.raw(
+                                                                                "factions.gui.generic.unknown_player",
+                                                                                player)))
                                                         .getName())
                                 .collect(Collectors.joining(", "));
 
@@ -115,7 +128,9 @@ public class MemberCommand implements Command {
                                                         .orElse(
                                                                 new GameProfile(
                                                                         Util.NIL_UUID,
-                                                                        "{Uncached Player}"))
+                                                                        Localization.raw(
+                                                                                "factions.gui.generic.unknown_player",
+                                                                                player)))
                                                         .getName())
                                 .collect(Collectors.joining(", "));
 
@@ -134,36 +149,30 @@ public class MemberCommand implements Command {
                                 + " ]"
                                 + dashes)
                 .send(player, false);
-        new Message(Formatting.GOLD + "Total Members: ")
-                .add(Formatting.WHITE.toString() + users.size())
-                .send(player, false);
-        new Message(Formatting.GOLD + "Owner: ").add(owner).send(player, false);
+
         new Message(
-                        Formatting.GOLD
-                                + "Leaders ("
-                                + Formatting.WHITE.toString()
-                                + leaderCount
-                                + Formatting.GOLD.toString()
-                                + "): ")
-                .add(leaders)
+                        Text.translatable(
+                                        "factions.command.members.faction.title",
+                                        Formatting.WHITE.toString() + users.size())
+                                .formatted(Formatting.GOLD))
                 .send(player, false);
         new Message(
-                        Formatting.GOLD
-                                + "Commanders ("
-                                + Formatting.WHITE.toString()
-                                + commanderCount
-                                + Formatting.GOLD.toString()
-                                + "): ")
-                .add(commanders)
+                        Text.translatable("factions.command.members.faction.owner", owner)
+                                .formatted(Formatting.GOLD))
                 .send(player, false);
         new Message(
-                        Formatting.GOLD
-                                + "Members ("
-                                + Formatting.WHITE.toString()
-                                + memberCount
-                                + Formatting.GOLD.toString()
-                                + "): ")
-                .add(members)
+                        Text.translatable(
+                                "factions.command.members.faction.leaders", leaderCount, leaders))
+                .send(player, false);
+        new Message(
+                        Text.translatable(
+                                "factions.command.members.faction.commanders",
+                                commanderCount,
+                                commanders))
+                .send(player, false);
+        new Message(
+                        Text.translatable(
+                                "factions.command.members.faction.members", memberCount, members))
                 .send(player, false);
 
         return 1;

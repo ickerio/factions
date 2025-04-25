@@ -91,7 +91,11 @@ public class FactionsManager {
         Faction faction = member.getFaction();
 
         int adjusted = faction.adjustPower(-FactionsMod.CONFIG.POWER.DEATH_PENALTY);
-        new Message("%s lost %d power from dying", player.getName().getString(), adjusted)
+        new Message(
+                        Text.translatable(
+                                "factions.events.lose_power_by_death",
+                                player.getName().getString(),
+                                adjusted))
                 .send(faction);
     }
 
@@ -103,7 +107,11 @@ public class FactionsManager {
 
         int adjusted = faction.adjustPower(FactionsMod.CONFIG.POWER.POWER_TICKS.REWARD);
         if (adjusted != 0 && FactionsMod.CONFIG.DISPLAY.POWER_MESSAGE)
-            new Message("%s gained %d power from surviving", player.getName().getString(), adjusted)
+            new Message(
+                            Text.translatable(
+                                    "factions.events.get_power_by_tick",
+                                    player.getName().getString(),
+                                    adjusted))
                     .send(faction);
     }
 
@@ -119,7 +127,7 @@ public class FactionsManager {
 
         if (!user.isInFaction()) {
             if (FactionsMod.CONFIG.SAFE != null && FactionsMod.CONFIG.SAFE.ENDER_CHEST) {
-                new Message("Cannot use enderchests when not in a faction")
+                new Message(Text.translatable("factions.events.no_enderchests_without_faction"))
                         .fail()
                         .send(player, false);
                 return ActionResult.FAIL;
@@ -138,7 +146,7 @@ public class FactionsManager {
                                         syncId, inventory, faction.getSafe());
                             }
                         },
-                        Text.of(String.format("%s's Safe", faction.getName()))));
+                        Text.translatable("factions.gui.safe.title", faction.getName())));
 
         return ActionResult.SUCCESS;
     }

@@ -33,7 +33,7 @@ public class ListCommand implements Command {
         Collection<Faction> factions = Faction.all();
         int size = factions.size();
 
-        new Message("There %s ", size == 1 ? "is" : "are")
+        new Message("There %s ", size == 1 ? "is" : "are") // TODO: Translations
                 .add(new Message(String.valueOf(size)).format(Formatting.YELLOW))
                 .add(" faction%s", size == 1 ? "" : "s")
                 .send(player, false);

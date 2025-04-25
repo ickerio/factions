@@ -22,6 +22,7 @@ import net.minecraft.util.Util;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import net.minecraft.text.Text;
 
 public class InfoCommand implements Command {
     private int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -30,7 +31,9 @@ public class InfoCommand implements Command {
 
         User user = Command.getUser(player);
         if (!user.isInFaction()) {
-            new Message("Command can only be used whilst in a faction").fail().send(player, false);
+            new Message(Text.translatable("factions.command.info.fail.no_faction"))
+                    .fail()
+                    .send(player, false);
             return 0;
         }
 
@@ -45,7 +48,9 @@ public class InfoCommand implements Command {
 
         Faction faction = Faction.getByName(factionName);
         if (faction == null) {
-            new Message("Faction does not exist").fail().send(player, false);
+            new Message(Text.translatable("factions.command.info.fail.nonexistent_faction"))
+                    .fail()
+                    .send(player, false);
             return 0;
         }
 

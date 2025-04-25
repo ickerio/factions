@@ -112,10 +112,10 @@ public abstract class PagedGui extends SimpleGui {
                     DisplayElement.of(
                             new GuiElementBuilder(Items.STRUCTURE_VOID)
                                     .setName(
-                                            Text.literal(
+                                            Text.translatable(
                                                             this.closeCallback != null
-                                                                    ? "Go back"
-                                                                    : "Close")
+                                                                    ? "factions.gui.generic.back"
+                                                                    : "factions.gui.generic.close")
                                                     .formatted(Formatting.RED))
                                     .hideDefaultTooltip()
                                     .setCallback(
@@ -153,7 +153,9 @@ public abstract class PagedGui extends SimpleGui {
             if (gui.canNextPage()) {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
-                                .setName(Text.literal("Next page").formatted(Formatting.WHITE))
+                                .setName(
+                                        Text.translatable("factions.gui.generic.next_page")
+                                                .formatted(Formatting.WHITE))
                                 .hideDefaultTooltip()
                                 .setSkullOwner(Icons.GUI_NEXT_PAGE)
                                 .setCallback(
@@ -164,7 +166,9 @@ public abstract class PagedGui extends SimpleGui {
             } else {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
-                                .setName(Text.literal("Next page").formatted(Formatting.DARK_GRAY))
+                                .setName(
+                                        Text.translatable("factions.gui.generic.next_page")
+                                                .formatted(Formatting.DARK_GRAY))
                                 .hideDefaultTooltip()
                                 .setSkullOwner(Icons.GUI_NEXT_PAGE_BLOCKED));
             }
@@ -174,7 +178,9 @@ public abstract class PagedGui extends SimpleGui {
             if (gui.canPreviousPage()) {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
-                                .setName(Text.literal("Previous page").formatted(Formatting.WHITE))
+                                .setName(
+                                        Text.translatable("factions.gui.generic.previous_page")
+                                                .formatted(Formatting.WHITE))
                                 .hideDefaultTooltip()
                                 .setSkullOwner(Icons.GUI_PREVIOUS_PAGE)
                                 .setCallback(
@@ -186,7 +192,7 @@ public abstract class PagedGui extends SimpleGui {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
                                 .setName(
-                                        Text.literal("Previous page")
+                                        Text.translatable("factions.gui.generic.previous_page")
                                                 .formatted(Formatting.DARK_GRAY))
                                 .hideDefaultTooltip()
                                 .setSkullOwner(Icons.GUI_PREVIOUS_PAGE_BLOCKED));

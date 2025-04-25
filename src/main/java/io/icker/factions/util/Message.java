@@ -16,12 +16,20 @@ public class Message {
     public static PlayerManager manager;
     private MutableText text;
 
+    public Message() {
+        text = Text.literal("");
+    }
+
     public Message(String message) {
         text = (MutableText) Text.of(message);
     }
 
     public Message(String message, Object... args) {
         text = (MutableText) Text.of(String.format(message, args));
+    }
+
+    public Message(MutableText text) {
+        this.text = text;
     }
 
     public Message add(String message) {
@@ -50,7 +58,11 @@ public class Message {
     }
 
     public Message hover(String message) {
-        text.styled(s -> s.withHoverEvent(new ShowText(Text.of(message))));
+        return this.hover(Text.of(message));
+    }
+
+    public Message hover(Text message) {
+        text.styled(s -> s.withHoverEvent(new ShowText(message)));
         return this;
     }
 
@@ -89,7 +101,7 @@ public class Message {
 
     public Message prependFaction(Faction faction) {
         text =
-                new Message("")
+                new Message()
                         .add(
                                 new Message(
                                                 faction.getColor().toString()

@@ -10,6 +10,7 @@ import io.icker.factions.util.Message;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.ChunkPos;
 
@@ -40,7 +41,7 @@ public class WorldManager {
                             + FactionsMod.CONFIG.POWER.BASE;
 
             if (maxPower < requiredPower) {
-                new Message("Not enough faction power to claim chunk, autoclaim toggled off")
+                new Message(Text.translatable("factions.events.autoclaim.fail"))
                         .fail()
                         .send(player, false);
                 user.autoclaim = false;
@@ -48,8 +49,11 @@ public class WorldManager {
                 faction.addClaim(chunkPos.x, chunkPos.z, dimension);
                 claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
                 new Message(
-                                "Chunk (%d, %d) claimed by %s",
-                                chunkPos.x, chunkPos.z, player.getName().getString())
+                                Text.translatable(
+                                        "factions.events.autoclaim.success",
+                                        chunkPos.x,
+                                        chunkPos.z,
+                                        player.getName().getString()))
                         .send(faction);
             }
         }
@@ -59,7 +63,9 @@ public class WorldManager {
                         .format(claim.getFaction().getColor())
                         .send(player, true);
             } else {
-                new Message("Wilderness").format(Formatting.GREEN).send(player, true);
+                new Message(Text.translatable("factions.radar.wilderness"))
+                        .format(Formatting.GREEN)
+                        .send(player, true);
             }
         }
     }
