@@ -133,9 +133,6 @@
     "factions.gui.generic.previous_page": "Пред. страница",
 
     "factions.command.claim.list": "У вас %s захват(ов)",
-    "factions.command.claim.list.level.minecraft:overworld": "Верхний мир",
-    "factions.command.claim.list.level.minecraft:the_nether": "Незер",
-    "factions.command.claim.list.level.minecraft:the_end": "Энд",
     "factions.command.claim.add.fail.already_owned.single": "%s фракция уже владеет этим чанком",
     "factions.command.claim.add.fail.already_owned.single.your": "Ваша",
     "factions.command.claim.add.fail.already_owned.single.another": "Другая",
@@ -288,6 +285,10 @@
     "factions.interactions.name.attack_entities": "атаковать сущности",
     "factions.interactions.name.use_entities": "использовать сущности",
     "factions.interactions.name.use_inventory": "открыватьинвентарь",
+
+    "factions.level.minecraft:overworld": "Верхний мир",
+    "factions.level.minecraft:the_nether": "Незер",
+    "factions.level.minecraft:the_end": "Энд",
 
     "factions.events.autoclaim.fail": "Недостаточно мощи фракции, чтобы захватить чанк. Автозахват выключен",
     "factions.events.autoclaim.success": "Чанк (%d, %d) захвачен %s",

@@ -133,9 +133,6 @@
     "factions.gui.generic.previous_page": "Previous page",
 
     "factions.command.claim.list": "You have %s claim(s)",
-    "factions.command.claim.list.level.minecraft:overworld": "Overworld",
-    "factions.command.claim.list.level.minecraft:the_nether": "The Nether",
-    "factions.command.claim.list.level.minecraft:the_end": "The End",
     "factions.command.claim.add.fail.already_owned.single": "%s faction already owns this chunk",
     "factions.command.claim.add.fail.already_owned.single.your": "Your",
     "factions.command.claim.add.fail.already_owned.single.another": "Another",
@@ -289,6 +286,10 @@
     "factions.interactions.name.attack_entities": "attack entities",
     "factions.interactions.name.use_entities": "use entities",
     "factions.interactions.name.use_inventory": "use inventory",
+    
+    "factions.level.minecraft:overworld": "Overworld",
+    "factions.level.minecraft:the_nether": "The Nether",
+    "factions.level.minecraft:the_end": "The End",
     
     "factions.events.autoclaim.fail": "Not enough faction power to claim chunk, autoclaim toggled off",
     "factions.events.autoclaim.success": "Chunk (%d, %d) claimed by %s",

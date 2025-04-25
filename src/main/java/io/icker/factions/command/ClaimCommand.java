@@ -51,7 +51,7 @@ public class ClaimCommand implements Command {
         Message claimText = new Message();
         claimsMap.forEach((level, array) -> {
             claimText.add("\n");
-            claimText.add(new Message(Text.translatable("factions.command.claim.list.level." + level))
+            claimText.add(new Message(Text.translatable("factions.level." + level))
                     .format(Formatting.GRAY));
             claimText.filler("»");
             claimText.add(array.stream().map(claim -> String.format("(%d,%d)", claim.x, claim.z))
