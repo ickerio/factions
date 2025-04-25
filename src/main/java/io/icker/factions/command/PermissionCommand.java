@@ -157,11 +157,7 @@ public class PermissionCommand implements Command {
         Faction targetFaction = Faction.getByName(StringArgumentType.getString(context, "faction"));
 
         if (sourceFaction == null || targetFaction == null) {
-<<<<<<< HEAD
-            new Message("You must be in a faction and you must provide a valid function")
-=======
             new Message(Text.translatable("factions.command.permissions.change.fail.no_faction"))
->>>>>>> 1.21.1
                     .fail()
                     .send(player, false);
             return 0;
@@ -172,14 +168,6 @@ public class PermissionCommand implements Command {
                         .map(Enum::toString)
                         .collect(Collectors.joining(","));
 
-<<<<<<< HEAD
-        new Message("")
-                .add(
-                        new Message(targetFaction.getName())
-                                .format(targetFaction.getColor())
-                                .format(Formatting.BOLD))
-                .add(String.format(" has the permissions: %s", permissionsList))
-=======
         new Message(
                         Text.translatable(
                                 "factions.command.permissions.list.title",
@@ -187,7 +175,6 @@ public class PermissionCommand implements Command {
                                         .formatted(targetFaction.getColor())
                                         .formatted(Formatting.BOLD),
                                 permissionsList))
->>>>>>> 1.21.1
                 .send(player, false);
 
         return 1;
@@ -213,13 +200,9 @@ public class PermissionCommand implements Command {
                         .map(Enum::toString)
                         .collect(Collectors.joining(","));
 
-<<<<<<< HEAD
-        new Message(String.format("Guests have the permissions: %s", permissionsList))
-=======
         new Message(
                         Text.translatable(
                                 "factions.command.permissions.list_guest.title", permissionsList))
->>>>>>> 1.21.1
                 .send(player, false);
         return 1;
     }
