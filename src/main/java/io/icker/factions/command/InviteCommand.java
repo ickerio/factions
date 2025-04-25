@@ -73,7 +73,7 @@ public class InviteCommand implements Command {
 
         faction.invites.add(target.getUuid());
 
-        new Message(target.getName().getString() + " ").send(faction);
+        new Message(Text.translatable("factions.command.invite.add.success.actor", target.getName().getString())).send(faction);
         new Message(Text.translatable("factions.command.invite.add.success.subject")).format(Formatting.YELLOW)
                 .hover(Text.translatable("factions.command.invite.add.success.subject.hover"))
                 .click("/factions join " + faction.getName())
