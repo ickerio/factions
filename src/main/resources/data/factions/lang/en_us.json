@@ -276,16 +276,24 @@
     "factions.chat.faction_chat_when_not_in_faction.hover": "Click to switch to global chat",
 
     "factions.gui.safe.title": "%s's Safe",
-    "factions.events.cannot_do": "Cannot %s here",
     "factions.events.lose_power_by_death": "%s lost %d power from dying",
     "factions.events.get_power_by_tick": "%s gained %d power from surviving",
     "factions.events.no_enderchests_without_faction": "Cannot use enderchests when not in a faction",
     "factions.events.member_returns": "Welcome back %s!",
 
+    "factions.interactions.cannot_do": "Cannot %s here",
+    "factions.interactions.name.break_blocks": "break blocks",
+    "factions.interactions.name.use_blocks": "use blocks",
+    "factions.interactions.name.place_blocks": "place blocks",
+    "factions.interactions.name.place_or_pickup_liquids": "place or pickup liquids",
+    "factions.interactions.name.attack_entities": "attack entities",
+    "factions.interactions.name.use_entities": "use entities",
+    "factions.interactions.name.use_inventory": "use inventory",
+    
     "factions.events.autoclaim.fail": "Not enough faction power to claim chunk, autoclaim toggled off",
     "factions.events.autoclaim.success": "Chunk (%d, %d) claimed by %s",
     "factions.radar.wilderness": "Wilderness",
-
+    
     "factions.factionless": "[FACTIONLESS]",
     "factions.default_description": "No description set",
     "factions.default_motd": "No faction MOTD set"
