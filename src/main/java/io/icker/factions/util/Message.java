@@ -6,8 +6,8 @@ import io.icker.factions.api.persistents.User;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent.RunCommand;
-import net.minecraft.text.HoverEvent.ShowText;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -62,12 +62,15 @@ public class Message {
     }
 
     public Message hover(Text message) {
-        text.styled(s -> s.withHoverEvent(new ShowText(message)));
+        text.styled(
+                s ->
+                        s.withHoverEvent(
+                                new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(message))));
         return this;
     }
 
     public Message click(String message) {
-        text.styled(s -> s.withClickEvent(new RunCommand(message)));
+        text.styled(s -> s.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, message)));
         return this;
     }
 
