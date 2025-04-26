@@ -31,12 +31,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.function.Function;
-
 public class SerializerRegistry {
     private static final HashMap<Class<?>, Serializer<?, ? extends NbtElement>> registry =
             new HashMap<Class<?>, Serializer<?, ? extends NbtElement>>();

@@ -218,16 +218,12 @@ public class MemberGui extends PagedGui {
                                                                                     == User.Rank
                                                                                             .OWNER)) {
                                                                 new Message(
-                                                                                "Cannot kick"
-                                                                                    + " members"
-                                                                                    + " with a"
-                                                                                    + " higher of"
-                                                                                    + " equivalent"
-                                                                                    + " rank")
+                                                                                Text.translatable(
+                                                                                        "factions.command.kick.fail.high_rank"))
                                                                         .format(Formatting.RED)
                                                                         .send(player, false);
                                                                 return;
-                                                            } // TODO: Translations
+                                                            }
 
                                                             GuiInteract.playClickSound(player);
                                                             targetUser.leaveFaction();

@@ -86,8 +86,7 @@ public class ClaimCommand implements Command {
 
                 if (existingClaim != null) {
                     if (size == 1) {
-                        boolean isActorOwner =
-                                existingClaim.getFaction().equals(faction);
+                        boolean isActorOwner = existingClaim.getFaction().equals(faction);
                         new Message(
                                         Text.translatable(
                                                 "factions.command.claim.add.fail.already_owned.single",

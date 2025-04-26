@@ -7,7 +7,6 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 
 import io.icker.factions.api.persistents.Faction;
-
 import io.icker.factions.command.ModifyCommand;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;

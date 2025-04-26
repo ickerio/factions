@@ -31,7 +31,9 @@ public class MapCommand implements Command {
         new Message(
                         Text.literal("──┤ ")
                                 .formatted(Formatting.DARK_GRAY)
-                                .append(Text.translatable("factions.command.map.title").formatted(Formatting.GREEN))
+                                .append(
+                                        Text.translatable("factions.command.map.title")
+                                                .formatted(Formatting.GREEN))
                                 .append(Text.literal("├──").formatted(Formatting.DARK_GRAY)))
                 .send(player, false);
 

@@ -16,13 +16,13 @@ import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import net.minecraft.text.Text;
 
 public class InfoCommand implements Command {
     private int self(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

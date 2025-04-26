@@ -14,7 +14,7 @@ import io.icker.factions.util.Message;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Formatting;
+import net.minecraft.text.Text;
 
 import java.util.Collection;
 
@@ -33,10 +33,7 @@ public class ListCommand implements Command {
         Collection<Faction> factions = Faction.all();
         int size = factions.size();
 
-        new Message("There %s ", size == 1 ? "is" : "are") // TODO: Translations
-                .add(new Message(String.valueOf(size)).format(Formatting.YELLOW))
-                .add(" faction%s", size == 1 ? "" : "s")
-                .send(player, false);
+        new Message(Text.translatable("factions.gui.list.title")).send(player, false);
 
         if (size == 0) return 1;
 
