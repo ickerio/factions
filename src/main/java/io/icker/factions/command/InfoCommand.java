@@ -125,8 +125,15 @@ public class InfoCommand implements Command {
         new Message(Text.translatable("factions.gui.info.description").formatted(Formatting.GOLD))
                 .add(Formatting.WHITE + faction.getDescription())
                 .send(player, false);
-        new Message(Text.translatable("factions.gui.info.owner").formatted(Formatting.GOLD)).add(Formatting.WHITE + owner).send(player, false);
-        new Message(Text.translatable("factions.gui.info.members", Text.literal(Integer.toString(users.size())).formatted(Formatting.WHITE)).formatted(Formatting.GOLD))
+        new Message(Text.translatable("factions.gui.info.owner").formatted(Formatting.GOLD))
+                .add(Formatting.WHITE + owner)
+                .send(player, false);
+        new Message(
+                        Text.translatable(
+                                        "factions.gui.info.members",
+                                        Text.literal(Integer.toString(users.size()))
+                                                .formatted(Formatting.WHITE))
+                                .formatted(Formatting.GOLD))
                 .add(usersList)
                 .send(player, false);
         new Message(Text.translatable("factions.gui.info.power").formatted(Formatting.GOLD))
@@ -139,10 +146,24 @@ public class InfoCommand implements Command {
                                 + maxPower)
                 .hover(Text.translatable("factions.gui.info.power.description"))
                 .send(player, false);
-        new Message(Text.translatable("factions.gui.info.allies.some", Text.literal(Integer.toString(faction.getMutualAllies().size())).formatted(Formatting.WHITE)).formatted(Formatting.GREEN))
+        new Message(
+                        Text.translatable(
+                                        "factions.gui.info.allies.some",
+                                        Text.literal(
+                                                        Integer.toString(
+                                                                faction.getMutualAllies().size()))
+                                                .formatted(Formatting.WHITE))
+                                .formatted(Formatting.GREEN))
                 .add(mutualAllies)
                 .send(player, false);
-        new Message(Text.translatable("factions.gui.info.enemies.some", Text.literal(Integer.toString(faction.getEnemiesWith().size())).formatted(Formatting.WHITE)).formatted(Formatting.RED))
+        new Message(
+                        Text.translatable(
+                                        "factions.gui.info.enemies.some",
+                                        Text.literal(
+                                                        Integer.toString(
+                                                                faction.getEnemiesWith().size()))
+                                                .formatted(Formatting.WHITE))
+                                .formatted(Formatting.RED))
                 .add(enemiesWith)
                 .send(player, false);
 
