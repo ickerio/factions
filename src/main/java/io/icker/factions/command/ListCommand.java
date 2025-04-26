@@ -37,7 +37,7 @@ public class ListCommand implements Command {
 
         if (size == 0) return 1;
 
-        Message list = new Message("");
+        Message list = new Message();
         for (Faction faction : factions) {
             String name = faction.getName();
             list.add(new Message(name).click("/factions info " + name).format(faction.getColor()))

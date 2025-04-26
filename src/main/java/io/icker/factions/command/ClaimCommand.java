@@ -325,7 +325,7 @@ public class ClaimCommand implements Command {
 
         if (increase) {
             if (claim.accessLevel.ordinal() <= user.rank.ordinal()) {
-                new Message("Cannot increase access level to higher then your rank")
+                new Message(Text.translatable("factions.command.claim.set_access_level.fail.max_level_for_rank"))
                         .fail()
                         .send(player, false);
                 return 0;
@@ -349,7 +349,7 @@ public class ClaimCommand implements Command {
             }
         } else {
             if (claim.accessLevel.ordinal() <= user.rank.ordinal()) {
-                new Message("Cannot decrease access level from higher then your rank")
+                new Message(Text.translatable("factions.command.claim.set_access_level.fail.rank_too_low"))
                         .fail()
                         .send(player, false);
                 return 0;

@@ -122,20 +122,14 @@ public class InfoCommand implements Command {
                                 + " ]"
                                 + dashes)
                 .send(player, false);
-        new Message(Formatting.GOLD + "Description: ")
+        new Message(Text.translatable("factions.gui.info.description").formatted(Formatting.GOLD))
                 .add(Formatting.WHITE + faction.getDescription())
                 .send(player, false);
-        new Message(Formatting.GOLD + "Owner: ").add(Formatting.WHITE + owner).send(player, false);
-        new Message(
-                        Formatting.GOLD
-                                + "Members ("
-                                + Formatting.WHITE.toString()
-                                + users.size()
-                                + Formatting.GOLD.toString()
-                                + "): ")
+        new Message(Text.translatable("factions.gui.info.owner").formatted(Formatting.GOLD)).add(Formatting.WHITE + owner).send(player, false);
+        new Message(Text.translatable("factions.gui.info.members", Text.literal(Integer.toString(users.size())).formatted(Formatting.WHITE)).formatted(Formatting.GOLD))
                 .add(usersList)
                 .send(player, false);
-        new Message(Formatting.GOLD + "Power: ")
+        new Message(Text.translatable("factions.gui.info.power").formatted(Formatting.GOLD))
                 .add(
                         Formatting.GREEN.toString()
                                 + faction.getPower()
@@ -143,24 +137,12 @@ public class InfoCommand implements Command {
                                 + requiredPower
                                 + slash()
                                 + maxPower)
-                .hover("Current / Required / Max")
+                .hover(Text.translatable("factions.gui.info.power.description"))
                 .send(player, false);
-        new Message(
-                        Formatting.GREEN
-                                + "Allies ("
-                                + Formatting.WHITE
-                                + faction.getMutualAllies().size()
-                                + Formatting.GREEN
-                                + "): ")
+        new Message(Text.translatable("factions.gui.info.allies.some", Text.literal(Integer.toString(faction.getMutualAllies().size())).formatted(Formatting.WHITE)).formatted(Formatting.GREEN))
                 .add(mutualAllies)
                 .send(player, false);
-        new Message(
-                        Formatting.RED
-                                + "Enemies ("
-                                + Formatting.WHITE
-                                + faction.getEnemiesWith().size()
-                                + Formatting.RED
-                                + "): ")
+        new Message(Text.translatable("factions.gui.info.enemies.some", Text.literal(Integer.toString(faction.getEnemiesWith().size())).formatted(Formatting.WHITE)).formatted(Formatting.RED))
                 .add(enemiesWith)
                 .send(player, false);
 
