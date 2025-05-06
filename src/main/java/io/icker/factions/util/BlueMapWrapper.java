@@ -1,5 +1,8 @@
 package io.icker.factions.util;
 
+import com.flowpowered.math.vector.Vector2d;
+import com.flowpowered.math.vector.Vector2i;
+
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import de.bluecolored.bluemap.api.BlueMapMap;
 import de.bluecolored.bluemap.api.markers.ExtrudeMarker;
@@ -17,10 +20,13 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
 
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.ChunkPos;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class BlueMapWrapper {
     private HashMap<String, MarkerSet> markerSets = new HashMap<>();
@@ -34,8 +40,14 @@ public class BlueMapWrapper {
                     generateMarkers();
                 });
 
-        ClaimEvents.ADD.register(this::addClaim);
-        ClaimEvents.REMOVE.register(this::removeClaim);
+        ClaimEvents.ADD.register(
+                (Claim claim) -> {
+                    generateMarkers();
+                });
+        ClaimEvents.REMOVE.register(
+                (x, z, level, faction) -> {
+                    generateMarkers();
+                });
 
         WorldUtils.ON_READY.register(
                 () -> {
@@ -47,10 +59,10 @@ public class BlueMapWrapper {
                 });
 
         FactionEvents.SET_HOME.register(this::setHome);
-        FactionEvents.MODIFY.register(faction -> updateFaction(faction));
-        FactionEvents.MEMBER_JOIN.register((faction, user) -> updateFaction(faction));
-        FactionEvents.MEMBER_LEAVE.register((faction, user) -> updateFaction(faction));
-        FactionEvents.POWER_CHANGE.register((faction, oldPower) -> updateFaction(faction));
+        FactionEvents.MODIFY.register(faction -> generateMarkers());
+        FactionEvents.MEMBER_JOIN.register((faction, user) -> generateMarkers());
+        FactionEvents.MEMBER_LEAVE.register((faction, user) -> generateMarkers());
+        FactionEvents.POWER_CHANGE.register((faction, oldPower) -> generateMarkers());
     }
 
     private void generateMarkers() {
@@ -60,6 +72,12 @@ public class BlueMapWrapper {
             return;
         }
 
+        for (MarkerSet set : markerSets.values()) {
+            for (String id : set.getMarkers().keySet()) {
+                set.remove(id);
+            }
+        }
+
         for (Faction faction : Faction.all()) {
             Home home = faction.getHome();
             if (home != null) {
@@ -67,78 +85,66 @@ public class BlueMapWrapper {
             }
 
             String info = getInfo(faction);
-            for (Claim claim : faction.getClaims()) {
-                addClaim(claim, info);
+
+            for (Map.Entry<String, Set<Vector2i>> entry :
+                    ClaimGrouper.separateClaimsByLevel(faction).entrySet()) {
+                String level = entry.getKey();
+                for (Map<Vector2i, Vector2i[]> group :
+                        ClaimGrouper.convertClaimsToLineSegmentGroups(entry.getValue())) {
+                    List<List<Vector2i>> outlines =
+                            ClaimGrouper.convertLineSegmentsToOutlines(group);
+                    List<Shape> shapes =
+                            outlines.stream()
+                                    .map(
+                                            (hole) ->
+                                                    new Shape(
+                                                            hole.stream()
+                                                                    .map(
+                                                                            (point) ->
+                                                                                    new Vector2d(
+                                                                                            point
+                                                                                                    .getX(),
+                                                                                            point
+                                                                                                    .getY()))
+                                                                    .collect(Collectors.toList())))
+                                    .collect(Collectors.toList());
+
+                    MarkerSet markerSet = markerSets.get(level);
+
+                    if (markerSet == null) {
+                        ServerWorld world = WorldUtils.getWorld(level);
+                        markerSet = new MarkerSet("factions-" + level);
+
+                        for (BlueMapMap map : api.getWorld(world).get().getMaps()) {
+                            map.getMarkerSets().put("factions-" + level, markerSet);
+                        }
+
+                        markerSets.put(level, markerSet);
+                    }
+
+                    ExtrudeMarker marker =
+                            ExtrudeMarker.builder()
+                                    .position(
+                                            (double) outlines.get(0).get(0).getX(),
+                                            320,
+                                            (double) outlines.get(0).get(0).getY())
+                                    .shape(shapes.removeFirst(), -64, 320)
+                                    .holes(shapes.toArray(new Shape[0]))
+                                    .fillColor(
+                                            new Color(
+                                                    faction.getColor().getColorValue()
+                                                            | 0x40000000))
+                                    .lineColor(
+                                            new Color(
+                                                    faction.getColor().getColorValue()
+                                                            | 0xFF000000))
+                                    .label(faction.getName())
+                                    .detail(info)
+                                    .build();
+
+                    markerSet.put(UUID.randomUUID().toString(), marker);
+                }
             }
-        }
-    }
-
-    private void addClaim(Claim claim, String factionInfo) {
-        Faction faction = claim.getFaction();
-        ChunkPos pos = new ChunkPos(claim.x, claim.z);
-        MarkerSet markerSet = markerSets.get(claim.level);
-
-        if (markerSet == null) {
-            ServerWorld world = WorldUtils.getWorld(claim.level);
-            markerSet = new MarkerSet("factions-" + claim.level);
-
-            for (BlueMapMap map : api.getWorld(world).get().getMaps()) {
-                map.getMarkerSets().put("factions-" + claim.level, markerSet);
-            }
-
-            markerSets.put(claim.level, markerSet);
-        }
-
-        ExtrudeMarker marker =
-                ExtrudeMarker.builder()
-                        .position((double) pos.getCenterX(), 320, (double) pos.getCenterZ())
-                        .shape(
-                                Shape.createRect(
-                                        pos.getStartX(),
-                                        pos.getStartZ(),
-                                        pos.getEndX(),
-                                        pos.getEndZ()),
-                                -64,
-                                320)
-                        .fillColor(new Color(faction.getColor().getColorValue() | 0x40000000))
-                        .lineColor(new Color(faction.getColor().getColorValue() | 0xFF000000))
-                        .label(faction.getName())
-                        .detail(factionInfo)
-                        .build();
-
-        String areaMarkerId = String.format("%s-%d-%d", claim.level, claim.x, claim.z);
-        markerSet.put(areaMarkerId, marker);
-    }
-
-    private void addClaim(Claim claim) {
-        addClaim(claim, getInfo(claim.getFaction()));
-    }
-
-    private void removeClaim(int x, int z, String level, Faction faction) {
-        MarkerSet markerSet = markerSets.get(level);
-        if (markerSet != null) {
-            String areaMarkerId = String.format("%s-%d-%d", level, x, z);
-            markerSet.remove(areaMarkerId);
-        }
-    }
-
-    private void updateFaction(Faction faction) {
-        String info = getInfo(faction);
-
-        for (Claim claim : faction.getClaims()) {
-            MarkerSet markerSet = markerSets.get(claim.level);
-
-            if (markerSet == null) {
-                continue;
-            }
-
-            String areaMarkerId = String.format("%s-%d-%d", claim.level, claim.x, claim.z);
-            ExtrudeMarker marker = (ExtrudeMarker) markerSet.get(areaMarkerId);
-
-            marker.setFillColor(new Color(faction.getColor().getColorValue() | 0x40000000));
-            marker.setLineColor(new Color(faction.getColor().getColorValue() | 0xFF000000));
-            marker.setLabel(faction.getName());
-            marker.setDetail(info);
         }
     }
 
