@@ -38,7 +38,8 @@ public class WorldManager {
                     (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
             int maxPower =
                     faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
-                            + FactionsMod.CONFIG.POWER.BASE;
+                            + FactionsMod.CONFIG.POWER.BASE
+                            + faction.getAdminPower();
 
             if (maxPower < requiredPower) {
                 new Message(Text.translatable("factions.events.autoclaim.fail"))
