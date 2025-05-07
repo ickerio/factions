@@ -148,7 +148,7 @@
     "factions.command.claim.remove.success.single": "Claim (%d, %d) removed by %s",
     "factions.command.claim.remove.success.multiple": "Claims (%d, %d) to (%d, %d) removed by %s",
     "factions.command.claim.remove.success.all": "All claims removed by %s",
-    "factions.command.claim.auto.toggled": "Successfully toggled autoclaim %s",
+    "factions.command.claim.auto.toggled": "Successfully toggled autoclaim",
     "factions.command.claim.set_access_level.fail.unclaimed": "Cannot change access level on unclaimed chunk",
     "factions.command.claim.set_access_level.fail.another_owner": "Cannot change access level on another factions claim",
     "factions.command.claim.set_access_level.fail.max_level": "Cannot increase access level as it is already at its maximum.",

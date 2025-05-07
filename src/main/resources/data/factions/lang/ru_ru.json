@@ -146,7 +146,7 @@
     "factions.command.claim.remove.success.single": "Захват (%d, %d) удалён %s",
     "factions.command.claim.remove.success.multiple": "Захваты от (%d, %d) до (%d, %d) удалены %s",
     "factions.command.claim.remove.success.all": "Все захваты удалены %s",
-    "factions.command.claim.auto.toggled": "Состояние автозахвата изменено: %s",
+    "factions.command.claim.auto.toggled": "Состояние автозахвата изменено",
     "factions.command.claim.set_access_level.fail.unclaimed": "Нельзя изменить уровень доступа на незахваченном чанке",
     "factions.command.claim.set_access_level.fail.another_owner": "Нельзя изменить уровень доступа на захвате чужой фракции",
     "factions.command.claim.set_access_level.fail.max_level": "Нельзя повысить уровень доступа, так как он уже достиг максимума.",
