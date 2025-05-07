@@ -122,6 +122,10 @@ public class ClaimGrouper {
         return groups;
     }
 
+    /**
+     * 0 is up, 1 is right, 2 is down, 3 in left These directions are in a standard plane where +x
+     * is right and +y is up, I don't think minecraft follows this, but it doesn't matter
+     */
     private static int getDir(Vector2i end, Vector2i start) {
         if (end.getY() > start.getY()) {
             return 0;
@@ -152,9 +156,6 @@ public class ClaimGrouper {
 
             // The total rotations are counted so the
             int rotations = 0;
-            // 0 is up, 1 is right, 2 is down, 3 in left
-            // These directions are in a standard plane where +x is right and +y is up, I don't
-            // think minecraft follows this, but it doesn't matter
             int last_dir = -1;
 
             Vector2i point = lines.values().iterator().next()[0];
@@ -180,6 +181,9 @@ public class ClaimGrouper {
                 Vector2i[] dests = lines.remove(point);
                 Vector2i new_point;
                 if (dests.length > 1) {
+                    // Choose the line segments that results in a turn and choose the line segments
+                    // that doesn't result in turning 180 degrees. This isn't needed when there are
+                    // holes, but is needed when creating an outline without holes for dynmap
                     int dir0 = getDir(dests[0], point);
                     int dir1 = getDir(dests[1], point);
 
@@ -211,6 +215,8 @@ public class ClaimGrouper {
                     rotations += dir - last_dir;
                 }
 
+                // only add this point if there was an actual turn. This also filters 180 degree
+                // turns which are created when creating an outline without holes
                 if (last_dir % 2 != dir % 2) {
                     line.add(point);
                 }
@@ -231,8 +237,22 @@ public class ClaimGrouper {
         return holes;
     }
 
-    public record ClaimWithScore(Vector2i claim, int score) {}
-
+    /**
+     * Takes a list of all claims in a level and groups them using BFS. While doing that it measures
+     * all the sides of all the claims that are on a border from claimed territory and wilderness.
+     *
+     * <p>The returned segments are directional.
+     *
+     * <p>As opposed to @see ClaimGrouper#convertClaimsToLineSegmentGroups(), this function also
+     * creates line segments to bridge the gap between the outside outline and any inner holes. This
+     * is need by dymap because dynmap doesn't support holes in markers.
+     *
+     * @param claims A set of vectors that represents the coordinates of a claim (@see
+     *     ClaimGrouper#separateClaimsByLevel())
+     * @return A list of edges. The edges are returned as a map where the entries represent one
+     *     corner of a claim and the values are other corners in connects too. The list has either
+     *     one or two elements.
+     */
     public static List<Map<Vector2i, Vector2i[]>> convertClaimsToLineSegmentGroupsWithoutHoles(
             Set<Vector2i> claims) {
         Set<Vector2i> remaining_claims = new HashSet<>(claims);
