@@ -12,10 +12,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
+import xyz.nucleoid.server.translations.api.Localization;
+import xyz.nucleoid.server.translations.api.language.ServerLanguage;
+
 import java.util.function.Function;
 
 public class PlaceholdersWrapper {
-    private static final Text UNFORMATTED_NULL = Text.of("N/A");
+    private static final Text UNFORMATTED_NULL = Text.translatable("factions.papi.factionless");
     private static final Text FORMATTED_NULL =
             UNFORMATTED_NULL.copy().formatted(Formatting.DARK_GRAY);
 
@@ -23,7 +26,11 @@ public class PlaceholdersWrapper {
         Placeholders.register(
                 Identifier.of(FactionsMod.MODID, identifier),
                 (ctx, argument) -> {
-                    if (!ctx.hasPlayer()) return PlaceholderResult.invalid("No player found");
+                    if (!ctx.hasPlayer())
+                        return PlaceholderResult.invalid(
+                                Localization.raw(
+                                        "argument.entity.notfound.player",
+                                        ServerLanguage.getLanguage(FactionsMod.CONFIG.LANGUAGE)));
 
                     User member = User.get(ctx.player().getUuid());
                     return PlaceholderResult.value(handler.apply(member));
@@ -54,9 +61,9 @@ public class PlaceholdersWrapper {
                 "chat",
                 (member) -> {
                     if (member.chat == User.ChatMode.GLOBAL || !member.isInFaction())
-                        return Text.of("Global Chat");
+                        return Text.translatable("factions.papi.chat.global");
 
-                    return Text.of("Faction Chat");
+                    return Text.translatable("factions.papi.chat.faction");
                 });
 
         register(
@@ -70,7 +77,7 @@ public class PlaceholdersWrapper {
         register(
                 "color",
                 (member) -> {
-                    if (!member.isInFaction()) return FORMATTED_NULL;
+                    if (!member.isInFaction()) return Text.of("reset");
 
                     return Text.of(member.getFaction().getColor().getName());
                 });

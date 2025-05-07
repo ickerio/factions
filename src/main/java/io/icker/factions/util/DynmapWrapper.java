@@ -131,7 +131,7 @@ public class DynmapWrapper {
                     if (outlines.size() > 1) {
                         FactionsMod.LOGGER.error(
                                 "The claim chunking algorithm used for dynmap has failed, please"
-                                    + " report this asap.");
+                                        + " report this asap.");
                     }
                     double[] x_coords =
                             outlines.getFirst().stream()

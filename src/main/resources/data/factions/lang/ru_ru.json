@@ -297,5 +297,9 @@
 
     "factions.factionless": "[БЕЗ ФРАКЦИИ]",
     "factions.default_description": "Нет описания",
-    "factions.default_motd": "Нет MOTD"
+    "factions.default_motd": "Нет MOTD",
+
+    "factions.papi.chat.global": "Глобальный чат",
+    "factions.papi.chat.faction": "Чат фракции",
+    "factions.papi.factionless": "БЕЗ ФРАКЦИИ"
 }
