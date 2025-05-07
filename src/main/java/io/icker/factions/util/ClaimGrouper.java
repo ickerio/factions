@@ -122,6 +122,18 @@ public class ClaimGrouper {
         return groups;
     }
 
+    private static int getDir(Vector2i end, Vector2i start) {
+        if (end.getY() > start.getY()) {
+            return 0;
+        } else if (end.getY() < start.getY()) {
+            return 2;
+        } else if (end.getX() > start.getX()) {
+            return 1;
+        } else {
+            return 3;
+        }
+    }
+
     /**
      * Takes a group of line segments from one claimed territory and returns a list of outlines
      * where the first one is the outside and the rest of the outlines are cutouts in the shape.
@@ -154,17 +166,7 @@ public class ClaimGrouper {
                 Vector2i[] dests = lines.get(point);
                 Vector2i new_point = dests[0];
 
-                int dir;
-
-                if (new_point.getY() > point.getY()) {
-                    dir = 0;
-                } else if (new_point.getY() < point.getY()) {
-                    dir = 2;
-                } else if (new_point.getX() > point.getX()) {
-                    dir = 1;
-                } else {
-                    dir = 3;
-                }
+                int dir = ClaimGrouper.getDir(new_point, point);
 
                 if (last_dir != -1 && last_dir != dir) {
                     break;
@@ -175,26 +177,31 @@ public class ClaimGrouper {
             }
 
             while (lines.containsKey(point)) {
-                Vector2i[] dests =
-                        lines.remove(
-                                point); // it doesn't matter which of the two possible routes we
-                // pick
+                Vector2i[] dests = lines.remove(point);
+                Vector2i new_point;
                 if (dests.length > 1) {
-                    lines.put(point, new Vector2i[] {dests[1]});
-                }
-                Vector2i new_point = dests[0];
+                    int dir0 = getDir(dests[0], point);
+                    int dir1 = getDir(dests[1], point);
 
-                int dir;
+                    int chosen_idx;
 
-                if (new_point.getY() > point.getY()) {
-                    dir = 0;
-                } else if (new_point.getY() < point.getY()) {
-                    dir = 2;
-                } else if (new_point.getX() > point.getX()) {
-                    dir = 1;
+                    if ((dir0 + 2) % 4 == last_dir) {
+                        chosen_idx = 1;
+                    } else if ((dir1 + 2) % 4 == last_dir) {
+                        chosen_idx = 0;
+                    } else if (dir0 != last_dir) {
+                        chosen_idx = 0;
+                    } else {
+                        chosen_idx = 1;
+                    }
+
+                    new_point = dests[chosen_idx];
+                    lines.put(point, new Vector2i[] {dests[(chosen_idx + 1) % 2]});
                 } else {
-                    dir = 3;
+                    new_point = dests[0];
                 }
+
+                int dir = getDir(new_point, point);
 
                 if (dir == 0 && last_dir == 3) {
                     rotations += 1;
@@ -204,7 +211,7 @@ public class ClaimGrouper {
                     rotations += dir - last_dir;
                 }
 
-                if (last_dir != dir) {
+                if (last_dir % 2 != dir % 2) {
                     line.add(point);
                 }
 
@@ -222,5 +229,90 @@ public class ClaimGrouper {
         holes.add(0, outline);
 
         return holes;
+    }
+
+    public record ClaimWithScore(Vector2i claim, int score) {}
+
+    public static List<Map<Vector2i, Vector2i[]>> convertClaimsToLineSegmentGroupsWithoutHoles(
+            Set<Vector2i> claims) {
+        Set<Vector2i> remaining_claims = new HashSet<>(claims);
+        Queue<Vector2i> queue = new LinkedList<>();
+        List<Map<Vector2i, Vector2i[]>> groups = new ArrayList<>();
+
+        while (!remaining_claims.isEmpty()) {
+            Iterator<Vector2i> iter = remaining_claims.iterator();
+            Vector2i item = iter.next();
+            queue.add(item);
+            remaining_claims.remove(item);
+
+            Map<Vector2i, Vector2i[]> lines = new HashMap<>();
+
+            while (!queue.isEmpty()) {
+                Vector2i claim = queue.remove();
+
+                for (Vector2i dir :
+                        new Vector2i[] {
+                            new Vector2i(1, 0),
+                            new Vector2i(-1, 0),
+                            new Vector2i(0, 1),
+                            new Vector2i(0, -1)
+                        }) {
+                    Vector2i new_claim = claim.add(dir);
+                    // The BFS part
+                    if (remaining_claims.contains(new_claim)) {
+                        queue.add(new_claim);
+                        remaining_claims.remove(new_claim);
+                    } else {
+                        Vector2i start; // both of these are in block coordinates
+                        Vector2i end;
+
+                        if (dir.getX() == 0) {
+                            // the y component is being used as the x component so that the
+                            // direction is correct
+                            start = claim.mul(16).add(new Vector2i(dir.getY(), dir.getY()).mul(8));
+                            end = claim.mul(16).add(new Vector2i(-dir.getY(), dir.getY()).mul(8));
+                        } else {
+                            start = claim.mul(16).add(new Vector2i(dir.getX(), -dir.getX()).mul(8));
+                            end = claim.mul(16).add(new Vector2i(dir.getX(), dir.getX()).mul(8));
+                        }
+
+                        start =
+                                start.add(
+                                        new Vector2i(
+                                                8,
+                                                8)); // offset to match how minecraft converts chunk
+                        // coords to block coords
+                        end = end.add(new Vector2i(8, 8));
+
+                        boolean has_opposite_line = false;
+
+                        if (lines.containsKey(end)) {
+                            for (Vector2i possible_start : lines.get(end)) {
+                                if (possible_start.equals(start)) {
+                                    has_opposite_line = true;
+                                }
+                            }
+                        }
+
+                        if (!has_opposite_line
+                                && claims.contains(new_claim)
+                                && !(queue.contains(new_claim)
+                                        || remaining_claims.contains(new_claim))) {
+                            continue;
+                        }
+
+                        if (lines.containsKey(start)) {
+                            lines.put(start, new Vector2i[] {lines.get(start)[0], end});
+                        } else {
+                            lines.put(start, new Vector2i[] {end});
+                        }
+                    }
+                }
+            }
+
+            groups.add(lines);
+        }
+
+        return groups;
     }
 }

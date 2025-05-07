@@ -1,5 +1,7 @@
 package io.icker.factions.util;
 
+import com.flowpowered.math.vector.Vector2i;
+
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.events.FactionEvents;
@@ -19,6 +21,12 @@ import org.dynmap.markers.GenericMarker;
 import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
+import org.dynmap.markers.PolyLineMarker;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class DynmapWrapper {
     private DynmapCommonAPI api;
@@ -47,8 +55,14 @@ public class DynmapWrapper {
                     }
                 });
 
-        ClaimEvents.ADD.register(this::addClaim);
-        ClaimEvents.REMOVE.register(this::removeClaim);
+        ClaimEvents.ADD.register(
+                (claim) -> {
+                    generateMarkers();
+                });
+        ClaimEvents.REMOVE.register(
+                (x, z, level, faction) -> {
+                    generateMarkers();
+                });
 
         WorldUtils.ON_READY.register(
                 () -> {
@@ -73,6 +87,14 @@ public class DynmapWrapper {
             return;
         }
 
+        for (PolyLineMarker marker : markerSet.getPolyLineMarkers()) {
+            marker.deleteMarker();
+        }
+
+        for (AreaMarker marker : markerSet.getAreaMarkers()) {
+            marker.deleteMarker();
+        }
+
         for (Faction faction : Faction.all()) {
             Home home = faction.getHome();
             if (home != null) {
@@ -81,40 +103,66 @@ public class DynmapWrapper {
 
             String info = getInfo(faction);
             for (Claim claim : faction.getClaims()) {
-                addClaim(claim, info);
+                ChunkPos pos = new ChunkPos(claim.x, claim.z);
+
+                AreaMarker marker =
+                        markerSet.createAreaMarker(
+                                claim.getKey(),
+                                info,
+                                true,
+                                dimensionTagToID(claim.level),
+                                new double[] {pos.getStartX(), pos.getEndX() + 1},
+                                new double[] {pos.getStartZ(), pos.getEndZ() + 1},
+                                true);
+                if (marker != null) {
+                    marker.setFillStyle(
+                            marker.getFillOpacity(), faction.getColor().getColorValue());
+                    marker.setLineStyle(0, 0, 0);
+                }
+            }
+            for (Map.Entry<String, Set<Vector2i>> entry :
+                    ClaimGrouper.separateClaimsByLevel(faction).entrySet()) {
+                String level = entry.getKey();
+                for (Map<Vector2i, Vector2i[]> group :
+                        ClaimGrouper.convertClaimsToLineSegmentGroupsWithoutHoles(
+                                entry.getValue())) {
+                    List<List<Vector2i>> outlines =
+                            ClaimGrouper.convertLineSegmentsToOutlines(group);
+                    if (outlines.size() > 1) {
+                        FactionsMod.LOGGER.error(
+                                "The claim chunking algorithm used for dynmap has failed, please"
+                                    + " report this asap.");
+                    }
+                    double[] x_coords =
+                            outlines.getFirst().stream()
+                                    .mapToDouble((point) -> (double) point.getX())
+                                    .toArray();
+                    double[] z_coords =
+                            outlines.getFirst().stream()
+                                    .mapToDouble((point) -> (double) point.getY())
+                                    .toArray();
+                    double[] y_coords =
+                            outlines.getFirst().stream().mapToDouble((point) -> 320.0).toArray();
+
+                    PolyLineMarker marker =
+                            markerSet.createPolyLineMarker(
+                                    UUID.randomUUID().toString(),
+                                    "",
+                                    false,
+                                    dimensionTagToID(level),
+                                    x_coords,
+                                    y_coords,
+                                    z_coords,
+                                    true);
+                    if (marker != null) {
+                        marker.setLineStyle(
+                                marker.getLineWeight(),
+                                marker.getLineOpacity(),
+                                faction.getColor().getColorValue());
+                    }
+                }
             }
         }
-    }
-
-    private void addClaim(Claim claim, String factionInfo) {
-        Faction faction = claim.getFaction();
-        ChunkPos pos = new ChunkPos(claim.x, claim.z);
-
-        AreaMarker marker =
-                markerSet.createAreaMarker(
-                        claim.getKey(),
-                        factionInfo,
-                        true,
-                        dimensionTagToID(claim.level),
-                        new double[] {pos.getStartX(), pos.getEndX() + 1},
-                        new double[] {pos.getStartZ(), pos.getEndZ() + 1},
-                        true);
-        if (marker != null) {
-            marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColorValue());
-            marker.setLineStyle(
-                    marker.getLineWeight(),
-                    marker.getLineOpacity(),
-                    faction.getColor().getColorValue());
-        }
-    }
-
-    private void addClaim(Claim claim) {
-        addClaim(claim, getInfo(claim.getFaction()));
-    }
-
-    private void removeClaim(int x, int z, String level, Faction faction) {
-        String areaMarkerId = String.format("%s-%d-%d", level, x, z);
-        markerSet.findAreaMarker(areaMarkerId).deleteMarker();
     }
 
     private void updateFaction(Faction faction) {
