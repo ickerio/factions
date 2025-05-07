@@ -62,8 +62,8 @@ public class ModifyCommand implements Command {
                     Localization.raw("factions.command.modify.name.fail.blacklisted_name", player));
         }
 
-        if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0
-                & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > name.length()) {
+        if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > 0
+                && FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH < name.length()) {
             throw new Exception(
                     Localization.raw("factions.command.modify.name.fail.name_too_long", player));
         }

@@ -35,8 +35,8 @@ public class CreateCommand implements Command {
             return 0;
         }
 
-        if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH >= 0
-                & FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH < name.length()) {
+        if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > 0
+                && FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH < name.length()) {
             new Message(Text.translatable("factions.command.create.fail.name_too_long"))
                     .fail()
                     .send(player, false);
