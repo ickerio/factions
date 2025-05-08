@@ -21,7 +21,7 @@ public class MapCommand implements Command {
     private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
         ServerWorld world = (ServerWorld) player.getWorld();
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();

@@ -26,7 +26,7 @@ import java.util.Locale;
 
 public class ModifyCommand implements Command {
     private int gui(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
         Faction faction = Command.getUser(player).getFaction();
 
         new ModifyGui(player, faction, null);
@@ -37,7 +37,7 @@ public class ModifyCommand implements Command {
         String name = StringArgumentType.getString(context, "name");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         Faction faction = Command.getUser(player).getFaction();
 
@@ -81,7 +81,7 @@ public class ModifyCommand implements Command {
         String description = StringArgumentType.getString(context, "description");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         Faction faction = Command.getUser(player).getFaction();
 
@@ -97,7 +97,7 @@ public class ModifyCommand implements Command {
         String motd = StringArgumentType.getString(context, "motd");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         Faction faction = Command.getUser(player).getFaction();
 
@@ -113,7 +113,7 @@ public class ModifyCommand implements Command {
         Formatting color = ColorArgumentType.getColor(context, "color");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         Faction faction = Command.getUser(player).getFaction();
 
@@ -142,7 +142,7 @@ public class ModifyCommand implements Command {
         boolean open = BoolArgumentType.getBool(context, "open");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         Faction faction = Command.getUser(player).getFaction();
 

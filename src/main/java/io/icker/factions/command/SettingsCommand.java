@@ -17,7 +17,7 @@ import net.minecraft.util.Formatting;
 public class SettingsCommand implements Command {
     private int setChat(CommandContext<ServerCommandSource> context, User.ChatMode option)
             throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
         User user = User.get(player.getUuid());
         user.chat = option;
 
@@ -34,8 +34,8 @@ public class SettingsCommand implements Command {
         return 1;
     }
 
-    private int setSounds(CommandContext<ServerCommandSource> context, User.SoundMode option) {
-        ServerPlayerEntity player = context.getSource().getPlayer();
+    private int setSounds(CommandContext<ServerCommandSource> context, User.SoundMode option) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
         User user = User.get(player.getUuid());
         user.sounds = option;
 
@@ -54,7 +54,7 @@ public class SettingsCommand implements Command {
 
     private int radar(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         User config = User.get(player.getUuid());
         boolean radar = !config.radar;

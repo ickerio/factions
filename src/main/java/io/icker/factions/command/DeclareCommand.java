@@ -38,7 +38,7 @@ public class DeclareCommand implements Command {
             throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, "faction");
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         Faction targetFaction = Faction.getByName(name);
 

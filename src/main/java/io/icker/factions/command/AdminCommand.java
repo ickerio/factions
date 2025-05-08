@@ -35,7 +35,7 @@ public class AdminCommand implements Command {
     }
 
     private int bypass(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
 
         User user = User.get(player.getUuid());
         boolean bypass = !user.bypass;
@@ -57,12 +57,12 @@ public class AdminCommand implements Command {
     private int reload(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         FactionsMod.dynmap.reloadAll();
         new Message(Text.translatable("factions.gui.admin.options.reload_dynmap.success"))
-                .send(context.getSource().getPlayer(), false);
+                .send(context.getSource().getPlayerOrThrow(), false);
         return 1;
     }
 
     private int power(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
 
         Faction target = Faction.getByName(StringArgumentType.getString(context, "faction"));
         int power = IntegerArgumentType.getInteger(context, "power");
@@ -100,7 +100,7 @@ public class AdminCommand implements Command {
 
     private int spoof(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         User user = User.get(player.getUuid());
 
@@ -132,7 +132,7 @@ public class AdminCommand implements Command {
     private int clearSpoof(CommandContext<ServerCommandSource> context)
             throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         User user = User.get(player.getUuid());
 
@@ -144,15 +144,15 @@ public class AdminCommand implements Command {
         return 1;
     }
 
-    private int audit(CommandContext<ServerCommandSource> context) {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
-
+    private int audit(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         for (int i = 0; i < 4; i++) {
             Claim.audit();
             Faction.audit();
             User.audit();
         }
+
+        ServerCommandSource source = context.getSource();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         if (player != null) {
             new Message(Text.translatable("factions.gui.admin.options.audit.success"))

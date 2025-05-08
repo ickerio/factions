@@ -24,7 +24,7 @@ public class RankCommand implements Command {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         if (target.getUuid().equals(player.getUuid())) {
             new Message(Text.translatable("factions.command.rank.promote.fail.self"))
@@ -91,7 +91,7 @@ public class RankCommand implements Command {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         if (target.getUuid().equals(player.getUuid())) {
             new Message(Text.translatable("factions.command.rank.demote.fail.self"))
@@ -163,7 +163,7 @@ public class RankCommand implements Command {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         if (target.getUuid().equals(player.getUuid())) {
             new Message(Text.translatable("factions.command.rank.transfer.fail.self"))

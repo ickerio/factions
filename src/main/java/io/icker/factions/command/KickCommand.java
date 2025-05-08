@@ -19,7 +19,7 @@ public class KickCommand implements Command {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         if (target.getUuid().equals(player.getUuid())) {
             new Message(Text.translatable("factions.command.kick.fail.self"))

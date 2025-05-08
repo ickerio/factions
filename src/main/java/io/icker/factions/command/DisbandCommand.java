@@ -1,6 +1,7 @@
 package io.icker.factions.command;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.icker.factions.api.persistents.Faction;
@@ -19,9 +20,9 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 
 public class DisbandCommand implements Command {
-    private int run(CommandContext<ServerCommandSource> context, boolean confirm) {
+    private int run(CommandContext<ServerCommandSource> context, boolean confirm) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         if (player == null) {
             return 0;

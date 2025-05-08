@@ -29,7 +29,7 @@ public class InviteCommand implements Command {
     private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
         List<UUID> invites = Command.getUser(player).getFaction().invites;
         int count = invites.size();
 
@@ -64,9 +64,9 @@ public class InviteCommand implements Command {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
-        Faction faction = Command.getUser(source.getPlayer()).getFaction();
+        Faction faction = Command.getUser(source.getPlayerOrThrow()).getFaction();
         if (faction.isInvited(player.getUuid())) {
             new Message(
                             Text.translatable(
@@ -109,7 +109,7 @@ public class InviteCommand implements Command {
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         Faction faction = Command.getUser(player).getFaction();
         if (faction.invites.remove(target.getUuid())) {

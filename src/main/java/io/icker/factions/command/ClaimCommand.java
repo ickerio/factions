@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class ClaimCommand implements Command {
     private int list(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         List<Claim> claims = Command.getUser(player).getFaction().getClaims();
         int count = claims.size();
@@ -37,7 +37,7 @@ public class ClaimCommand implements Command {
                         Text.translatable(
                                 "factions.command.claim.list",
                                 Text.literal(String.valueOf(count)).formatted(Formatting.YELLOW)))
-                .send(source.getPlayer(), false);
+                .send(source.getPlayerOrThrow(), false);
 
         if (count == 0) return 1;
 
@@ -63,7 +63,7 @@ public class ClaimCommand implements Command {
                                     .collect(Collectors.joining(", ")));
                 });
 
-        claimText.format(Formatting.ITALIC).send(source.getPlayer(), false);
+        claimText.format(Formatting.ITALIC).send(source.getPlayerOrThrow(), false);
         return 1;
     }
 
@@ -71,7 +71,7 @@ public class ClaimCommand implements Command {
             throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
         ServerWorld world = (ServerWorld) player.getWorld();
 
         Faction faction = Command.getUser(player).getFaction();
@@ -137,7 +137,7 @@ public class ClaimCommand implements Command {
     }
 
     private int add(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = context.getSource().getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
         Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower =
@@ -159,7 +159,7 @@ public class ClaimCommand implements Command {
 
     private int addSize(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         int size = IntegerArgumentType.getInteger(context, "size");
-        ServerPlayerEntity player = context.getSource().getPlayer();
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
         Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower =
@@ -182,7 +182,7 @@ public class ClaimCommand implements Command {
     private int remove(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
         ServerWorld world = (ServerWorld) player.getWorld();
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
@@ -223,7 +223,7 @@ public class ClaimCommand implements Command {
         int size = IntegerArgumentType.getInteger(context, "size");
         ServerCommandSource source = context.getSource();
 
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
         ServerWorld world = (ServerWorld) player.getWorld();
         String dimension = world.getRegistryKey().getValue().toString();
 
@@ -261,7 +261,7 @@ public class ClaimCommand implements Command {
     private int removeAll(CommandContext<ServerCommandSource> context)
             throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         Faction faction = Command.getUser(player).getFaction();
 
@@ -276,7 +276,7 @@ public class ClaimCommand implements Command {
 
     private int auto(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         User user = Command.getUser(player);
         user.autoclaim = !user.autoclaim;
@@ -296,7 +296,7 @@ public class ClaimCommand implements Command {
             throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
         ServerWorld world = (ServerWorld) player.getWorld();
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();

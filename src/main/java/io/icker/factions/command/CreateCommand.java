@@ -26,7 +26,7 @@ public class CreateCommand implements Command {
         String name = StringArgumentType.getString(context, "name");
 
         ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayer();
+        ServerPlayerEntity player = source.getPlayerOrThrow();
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
             new Message(Text.translatable("factions.command.create.fail.blacklisted_name"))

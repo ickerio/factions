@@ -81,6 +81,9 @@ public interface Command {
         public static Predicate<ServerCommandSource> require(Requires req) {
             return source -> {
                 ServerPlayerEntity entity = source.getPlayer();
+                if (entity == null) {
+                    return false;
+                }
                 User user = Command.getUser(entity);
                 return req.run(user);
             };
@@ -154,7 +157,7 @@ public interface Command {
 
         public static SuggestionProvider<ServerCommandSource> suggest(Suggests sug) {
             return (context, builder) -> {
-                ServerPlayerEntity entity = context.getSource().getPlayer();
+                ServerPlayerEntity entity = context.getSource().getPlayerOrThrow();
                 User user = User.get(entity.getUuid());
                 for (String suggestion : sug.run(user)) {
                     builder.suggest(suggestion);
