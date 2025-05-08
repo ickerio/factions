@@ -31,8 +31,8 @@ public class KickCommand implements Command {
         User selfUser = Command.getUser(player);
         User targetUser = User.get(target.getUuid());
 
-        if (selfUser.getFaction() != null
-                || targetUser.getFaction().getID() != selfUser.getFaction().getID()) {
+        if (targetUser.getFaction() == null
+                || !targetUser.getFaction().equals(selfUser.getFaction())) {
             new Message(Text.translatable("factions.command.kick.fail.other_faction"))
                     .fail()
                     .send(player, false);
