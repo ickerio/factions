@@ -24,7 +24,6 @@ import net.minecraft.util.math.ChunkPos;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashSet;
 
 public class HomeCommand implements Command {
     private int go(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

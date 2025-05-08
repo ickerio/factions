@@ -98,8 +98,8 @@ public class InteractionManager {
         return ActionResult.PASS;
     }
 
-    private static TypedActionResult<ItemStack> onUseBucket(PlayerEntity player, World world,
-            Hand hand) {
+    private static TypedActionResult<ItemStack> onUseBucket(
+            PlayerEntity player, World world, Hand hand) {
         Item item = player.getStackInHand(hand).getItem();
 
         if (item instanceof BucketItem) {
