@@ -30,13 +30,17 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.RaycastContext.FluidHandling;
+import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.World;
 
 public class InteractionManager {
     public static void register() {
         PlayerBlockBreakEvents.BEFORE.register(InteractionManager::onBreakBlock);
+        PlayerEvents.EXPLODE_BLOCK.register(InteractionManager::onExplodeBlock);
+        PlayerEvents.EXPLODE_DAMAGE.register(InteractionManager::onExplodeDamage);
         UseBlockCallback.EVENT.register(InteractionManager::onUseBlock);
         UseItemCallback.EVENT.register(InteractionManager::onUseBucket);
         AttackEntityCallback.EVENT.register(InteractionManager::onAttackEntity);
@@ -58,6 +62,70 @@ public class InteractionManager {
             InteractionsUtil.warn(player, InteractionsUtilActions.BREAK_BLOCKS);
         }
         return !result;
+    }
+
+    private static ActionResult onExplodeBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state) {
+        if (explosion.getCausingEntity() != null && explosion.getCausingEntity() instanceof PlayerEntity) {
+            ActionResult result =
+                    checkPermissions((PlayerEntity) explosion.getCausingEntity(), pos, explosion.getWorld(), Permissions.BREAK_BLOCKS);
+            if (result == ActionResult.FAIL) {
+                InteractionsUtil.warn((PlayerEntity) explosion.getCausingEntity(), InteractionsUtilActions.BREAK_BLOCKS);
+            }
+            return result;
+        } else {
+            if (!FactionsMod.CONFIG.BLOCK_TNT) return ActionResult.PASS;
+
+            String dimension = explosion.getWorld().getRegistryKey().getValue().toString();
+            ChunkPos chunkPosition = explosion.getWorld().getChunk(pos).getPos();
+
+            Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
+            if (claim == null) return ActionResult.PASS;
+
+            Faction claimFaction = claim.getFaction();
+
+            if (claimFaction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT
+                    > claimFaction.getPower()) {
+                return ActionResult.PASS;
+            }
+
+            if (claimFaction.guest_permissions.contains(Permissions.BREAK_BLOCKS)) {
+                return ActionResult.PASS;
+            }
+
+            return ActionResult.FAIL;
+        }
+    }
+
+    private static ActionResult onExplodeDamage(Explosion explosion, Entity entity) {
+        if (explosion.getCausingEntity() != null && explosion.getCausingEntity() instanceof PlayerEntity) {
+            ActionResult result =
+                    checkPermissions((PlayerEntity) explosion.getCausingEntity(), entity.getBlockPos(), explosion.getWorld(), Permissions.ATTACK_ENTITIES);
+            if (result == ActionResult.FAIL) {
+                InteractionsUtil.warn((PlayerEntity) explosion.getCausingEntity(), InteractionsUtilActions.BREAK_BLOCKS);
+            }
+            return result;
+        } else {
+            if (!FactionsMod.CONFIG.BLOCK_TNT) return ActionResult.PASS;
+
+            String dimension = explosion.getWorld().getRegistryKey().getValue().toString();
+            ChunkPos chunkPosition = explosion.getWorld().getChunk(entity.getBlockPos()).getPos();
+
+            Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
+            if (claim == null) return ActionResult.PASS;
+
+            Faction claimFaction = claim.getFaction();
+
+            if (claimFaction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT
+                    > claimFaction.getPower()) {
+                return ActionResult.PASS;
+            }
+
+            if (claimFaction.guest_permissions.contains(Permissions.ATTACK_ENTITIES)) {
+                return ActionResult.PASS;
+            }
+
+            return ActionResult.FAIL;
+        }
     }
 
     private static ActionResult onUseBlock(

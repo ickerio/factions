@@ -77,6 +77,9 @@ public class Config {
     @SerializedName("gui")
     public boolean GUI = true;
 
+    @SerializedName("blockTNT")
+    public boolean BLOCK_TNT = false;
+
     @SerializedName("power")
     public PowerConfig POWER = new PowerConfig();
 

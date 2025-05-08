@@ -4,6 +4,7 @@ import io.icker.factions.api.persistents.Faction;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,7 +12,9 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 
 /** Events related to player actions */
 public class PlayerEvents {
@@ -38,6 +41,34 @@ public class PlayerEvents {
                             (context) -> {
                                 for (PlaceBlock callback : callbacks) {
                                     ActionResult result = callback.onPlaceBlock(context);
+                                    if (result != ActionResult.PASS) {
+                                        return result;
+                                    }
+                                }
+                                return ActionResult.PASS;
+                            });
+
+    public static final Event<ExplodeBlock> EXPLODE_BLOCK =
+            EventFactory.createArrayBacked(
+                    ExplodeBlock.class,
+                    callbacks ->
+                            (explosion, world, pos, state) -> {
+                                for (ExplodeBlock callback : callbacks) {
+                                    ActionResult result = callback.onExplodeBlock(explosion, world, pos, state);
+                                    if (result != ActionResult.PASS) {
+                                        return result;
+                                    }
+                                }
+                                return ActionResult.PASS;
+                            });
+
+    public static final Event<ExplodeDamage> EXPLODE_DAMAGE =
+            EventFactory.createArrayBacked(
+                    ExplodeDamage.class,
+                    callbacks ->
+                            (explosion, entity) -> {
+                                for (ExplodeDamage callback : callbacks) {
+                                    ActionResult result = callback.onExplodeDamage(explosion, entity);
                                     if (result != ActionResult.PASS) {
                                         return result;
                                     }
@@ -134,6 +165,16 @@ public class PlayerEvents {
     @FunctionalInterface
     public interface PlaceBlock {
         ActionResult onPlaceBlock(ItemUsageContext context);
+    }
+
+    @FunctionalInterface
+    public interface ExplodeBlock {
+        ActionResult onExplodeBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state);
+    }
+
+    @FunctionalInterface
+    public interface ExplodeDamage {
+        ActionResult onExplodeDamage(Explosion explosion, Entity entity);
     }
 
     @FunctionalInterface
