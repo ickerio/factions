@@ -81,7 +81,7 @@ public class DynmapWrapper {
     }
 
     private void generateMarkers() {
-        if (!WorldUtils.isReady()) {
+        if (!WorldUtils.isReady() || !WorldUtils.hasWorlds()) {
             loadWhenReady = true;
             FactionsMod.LOGGER.info("Server hasn't loaded, postponing dynmap marker loading");
             return;
@@ -133,6 +133,7 @@ public class DynmapWrapper {
                                 "The claim chunking algorithm used for dynmap has failed, please"
                                         + " report this asap.");
                     }
+                    outlines.getFirst().add(outlines.getFirst().getFirst());
                     double[] x_coords =
                             outlines.getFirst().stream()
                                     .mapToDouble((point) -> (double) point.getX())

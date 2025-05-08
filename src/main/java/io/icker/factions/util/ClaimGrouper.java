@@ -138,6 +138,16 @@ public class ClaimGrouper {
         }
     }
 
+    private static boolean isCounterClockwiseTurn(int next, int last) {
+        if (next == 0 && last == 3) {
+            return false;
+        } else if (next == 3 && last == 0) {
+            return true;
+        } else {
+            return next < last;
+        }
+    }
+
     /**
      * Takes a group of line segments from one claimed territory and returns a list of outlines
      * where the first one is the outside and the rest of the outlines are cutouts in the shape.
@@ -181,9 +191,8 @@ public class ClaimGrouper {
                 Vector2i[] dests = lines.remove(point);
                 Vector2i new_point;
                 if (dests.length > 1) {
-                    // Choose the line segments that results in a turn and choose the line segments
-                    // that doesn't result in turning 180 degrees. This isn't needed when there are
-                    // holes, but is needed when creating an outline without holes for dynmap
+                    // chose the direction that goes counter clockwise because that's the way the
+                    // outer outline goes.
                     int dir0 = getDir(dests[0], point);
                     int dir1 = getDir(dests[1], point);
 
@@ -193,7 +202,11 @@ public class ClaimGrouper {
                         chosen_idx = 1;
                     } else if ((dir1 + 2) % 4 == last_dir) {
                         chosen_idx = 0;
-                    } else if (dir0 != last_dir) {
+                    } else if (isCounterClockwiseTurn(dir0, last_dir)) {
+                        chosen_idx = 0;
+                    } else if (isCounterClockwiseTurn(dir1, last_dir)) {
+                        chosen_idx = 1;
+                    } else if (dir0 == last_dir) {
                         chosen_idx = 0;
                     } else {
                         chosen_idx = 1;
