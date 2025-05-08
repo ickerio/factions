@@ -39,6 +39,10 @@ public class WorldUtils {
         return server != null;
     }
 
+    public static boolean hasWorlds() {
+        return !WorldUtils.server.getWorldRegistryKeys().isEmpty();
+    }
+
     public static boolean isValid(String level) {
         return WorldUtils.server.getWorldRegistryKeys().stream()
                 .anyMatch(key -> Objects.equals(key.getValue(), Identifier.of(level)));
