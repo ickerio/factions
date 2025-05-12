@@ -68,7 +68,7 @@
     "factions.gui.members.entry.manage.promote.result": "Promoted %s to %s",
     "factions.gui.members.entry.manage.demote": "Right-click to demote.",
     "factions.gui.members.entry.manage.demote.result": "Demoted %s to %s",
-    "factions.gui.members.entry.manage.kick": "Drop (Q) to kick.",
+    "factions.gui.members.entry.manage.kick": "Drop (Q or your drop keybind) to kick.",
     "factions.gui.members.entry.manage.kick.confirm.title": "Are you sure?",
     "factions.gui.members.entry.manage.kick.confirm.yes": "Kick %s",
     "factions.gui.members.entry.manage.kick.confirm.no": "Go back",
@@ -227,7 +227,7 @@
     "factions.command.modify.name.fail.blacklisted_name": "Cannot rename a faction to that name as it is on the blacklist",
     "factions.command.modify.name.fail.name_too_long": "Cannot rename a faction to this that as it is too long",
     "factions.command.modify.name.fail.name_taken": "A faction with that name already exists",
-    "factions.command.modify.open.success": "Successfully updated faction to",
+    "factions.command.modify.open.success": "Successfully updated faction to ",
 
     "factions.command.permissions.change.fail.no_faction": "You must be in a faction and you must provide a valid faction",
     "factions.command.permissions.change.fail.invalid_permission": "Not a valid permission",

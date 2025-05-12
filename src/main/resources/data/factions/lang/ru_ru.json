@@ -223,7 +223,7 @@
     "factions.command.modify.name.fail.blacklisted_name": "Нельзя переименовать фракцию в название, которое состоит в чёрном списке",
     "factions.command.modify.name.fail.name_too_long": "Нельзя переименовать фракцию в такое длинное название",
     "factions.command.modify.name.fail.name_taken": "Фракция с таким названием уже существует",
-    "factions.command.modify.open.success": "Тип фракции успешно изменён на",
+    "factions.command.modify.open.success": "Тип фракции успешно изменён на ",
 
     "factions.command.permissions.change.fail.no_faction": "Вы должны быть во фракции и должны указать существующую фракцию",
     "factions.command.permissions.change.fail.invalid_permission": "Некорректное разрешение",
