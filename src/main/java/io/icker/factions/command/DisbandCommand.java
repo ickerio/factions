@@ -20,7 +20,8 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 
 public class DisbandCommand implements Command {
-    private int run(CommandContext<ServerCommandSource> context, boolean confirm) throws CommandSyntaxException {
+    private int run(CommandContext<ServerCommandSource> context, boolean confirm)
+            throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayerOrThrow();
 

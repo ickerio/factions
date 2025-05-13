@@ -34,7 +34,8 @@ public class SettingsCommand implements Command {
         return 1;
     }
 
-    private int setSounds(CommandContext<ServerCommandSource> context, User.SoundMode option) throws CommandSyntaxException {
+    private int setSounds(CommandContext<ServerCommandSource> context, User.SoundMode option)
+            throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
         User user = User.get(player.getUuid());
         user.sounds = option;

@@ -54,7 +54,8 @@ public class PlayerEvents {
                     callbacks ->
                             (explosion, world, pos, state) -> {
                                 for (ExplodeBlock callback : callbacks) {
-                                    ActionResult result = callback.onExplodeBlock(explosion, world, pos, state);
+                                    ActionResult result =
+                                            callback.onExplodeBlock(explosion, world, pos, state);
                                     if (result != ActionResult.PASS) {
                                         return result;
                                     }
@@ -68,7 +69,8 @@ public class PlayerEvents {
                     callbacks ->
                             (explosion, entity) -> {
                                 for (ExplodeDamage callback : callbacks) {
-                                    ActionResult result = callback.onExplodeDamage(explosion, entity);
+                                    ActionResult result =
+                                            callback.onExplodeDamage(explosion, entity);
                                     if (result != ActionResult.PASS) {
                                         return result;
                                     }
@@ -169,7 +171,8 @@ public class PlayerEvents {
 
     @FunctionalInterface
     public interface ExplodeBlock {
-        ActionResult onExplodeBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state);
+        ActionResult onExplodeBlock(
+                Explosion explosion, BlockView world, BlockPos pos, BlockState state);
     }
 
     @FunctionalInterface

@@ -33,8 +33,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.RaycastContext.FluidHandling;
-import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 
 public class InteractionManager {
     public static void register() {
@@ -64,12 +64,20 @@ public class InteractionManager {
         return !result;
     }
 
-    private static ActionResult onExplodeBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state) {
-        if (explosion.getCausingEntity() != null && explosion.getCausingEntity() instanceof PlayerEntity) {
+    private static ActionResult onExplodeBlock(
+            Explosion explosion, BlockView world, BlockPos pos, BlockState state) {
+        if (explosion.getCausingEntity() != null
+                && explosion.getCausingEntity() instanceof PlayerEntity) {
             ActionResult result =
-                    checkPermissions((PlayerEntity) explosion.getCausingEntity(), pos, explosion.getWorld(), Permissions.BREAK_BLOCKS);
+                    checkPermissions(
+                            (PlayerEntity) explosion.getCausingEntity(),
+                            pos,
+                            explosion.getWorld(),
+                            Permissions.BREAK_BLOCKS);
             if (result == ActionResult.FAIL) {
-                InteractionsUtil.warn((PlayerEntity) explosion.getCausingEntity(), InteractionsUtilActions.BREAK_BLOCKS);
+                InteractionsUtil.warn(
+                        (PlayerEntity) explosion.getCausingEntity(),
+                        InteractionsUtilActions.BREAK_BLOCKS);
             }
             return result;
         } else {
@@ -97,11 +105,18 @@ public class InteractionManager {
     }
 
     private static ActionResult onExplodeDamage(Explosion explosion, Entity entity) {
-        if (explosion.getCausingEntity() != null && explosion.getCausingEntity() instanceof PlayerEntity) {
+        if (explosion.getCausingEntity() != null
+                && explosion.getCausingEntity() instanceof PlayerEntity) {
             ActionResult result =
-                    checkPermissions((PlayerEntity) explosion.getCausingEntity(), entity.getBlockPos(), explosion.getWorld(), Permissions.ATTACK_ENTITIES);
+                    checkPermissions(
+                            (PlayerEntity) explosion.getCausingEntity(),
+                            entity.getBlockPos(),
+                            explosion.getWorld(),
+                            Permissions.ATTACK_ENTITIES);
             if (result == ActionResult.FAIL) {
-                InteractionsUtil.warn((PlayerEntity) explosion.getCausingEntity(), InteractionsUtilActions.BREAK_BLOCKS);
+                InteractionsUtil.warn(
+                        (PlayerEntity) explosion.getCausingEntity(),
+                        InteractionsUtilActions.BREAK_BLOCKS);
             }
             return result;
         } else {

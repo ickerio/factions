@@ -21,7 +21,8 @@ import net.minecraft.util.Formatting;
 import java.util.stream.Collectors;
 
 public class PermissionCommand implements Command {
-    private int change(CommandContext<ServerCommandSource> context, boolean add) throws CommandSyntaxException {
+    private int change(CommandContext<ServerCommandSource> context, boolean add)
+            throws CommandSyntaxException {
         String permissionName = StringArgumentType.getString(context, "permission");
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayerOrThrow();
@@ -87,7 +88,8 @@ public class PermissionCommand implements Command {
         return change(context, false);
     }
 
-    private int changeGuest(CommandContext<ServerCommandSource> context, boolean add) throws CommandSyntaxException {
+    private int changeGuest(CommandContext<ServerCommandSource> context, boolean add)
+            throws CommandSyntaxException {
         String permissionName = StringArgumentType.getString(context, "permission");
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayerOrThrow();
@@ -140,11 +142,13 @@ public class PermissionCommand implements Command {
         return 1;
     }
 
-    private int addGuest(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int addGuest(CommandContext<ServerCommandSource> context)
+            throws CommandSyntaxException {
         return changeGuest(context, true);
     }
 
-    private int removeGuest(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int removeGuest(CommandContext<ServerCommandSource> context)
+            throws CommandSyntaxException {
         return changeGuest(context, false);
     }
 
@@ -181,7 +185,8 @@ public class PermissionCommand implements Command {
         return 1;
     }
 
-    private int listGuest(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int listGuest(CommandContext<ServerCommandSource> context)
+            throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         ServerPlayerEntity player = source.getPlayerOrThrow();
 
