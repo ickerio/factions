@@ -204,9 +204,7 @@ public class MemberGui extends PagedGui {
                                                 .setName(
                                                         Text.translatable(
                                                                         "factions.gui.members.entry.manage.kick.confirm.yes",
-                                                                        targetPlayer
-                                                                                .getName()
-                                                                                .getString())
+                                                                        profile.getName())
                                                                 .formatted(Formatting.GREEN))
                                                 .setCallback(
                                                         ((index2, clickType2, actionType2) -> {
@@ -230,9 +228,8 @@ public class MemberGui extends PagedGui {
                                                             new Message(
                                                                             Text.translatable(
                                                                                     "factions.gui.members.entry.manage.kick.result.actor",
-                                                                                    targetPlayer
-                                                                                            .getName()
-                                                                                            .getString()))
+                                                                                    profile
+                                                                                            .getName()))
                                                                     .send(player, false);
 
                                                             if (targetPlayer != null) {

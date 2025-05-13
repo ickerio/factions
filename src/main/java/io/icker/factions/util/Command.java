@@ -128,6 +128,33 @@ public interface Command {
             };
         }
 
+        static SuggestionProvider<ServerCommandSource> allPlayersInYourFactionButYou() {
+            return (context, builder) -> {
+                UserCache cache = context.getSource().getServer().getUserCache();
+                ServerPlayerEntity entity = context.getSource().getPlayerOrThrow();
+                User currentUser = User.get(entity.getUuid());
+
+                if (!currentUser.isInFaction()) {
+                    return builder.buildFuture();
+                }
+
+                for (User user : User.all()) {
+                    if (user.getID().equals(currentUser.getID())
+                            || !user.isInFaction()
+                            || !user.getFaction().equals(currentUser.getFaction())) {
+                        continue;
+                    }
+                    Optional<GameProfile> player;
+                    if ((player = cache.getByUuid(user.getID())).isPresent()) {
+                        builder.suggest(player.get().getName());
+                    } else {
+                        builder.suggest(user.getID().toString());
+                    }
+                }
+                return builder.buildFuture();
+            };
+        }
+
         public static SuggestionProvider<ServerCommandSource> openFactions() {
             return suggest(
                     user ->
