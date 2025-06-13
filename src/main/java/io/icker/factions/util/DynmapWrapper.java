@@ -78,6 +78,7 @@ public class DynmapWrapper {
         FactionEvents.MEMBER_JOIN.register((faction, user) -> updateFaction(faction));
         FactionEvents.MEMBER_LEAVE.register((faction, user) -> updateFaction(faction));
         FactionEvents.POWER_CHANGE.register((faction, oldPower) -> updateFaction(faction));
+        FactionEvents.DISBAND.register((faction) -> generateMarkers());
     }
 
     private void generateMarkers() {

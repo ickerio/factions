@@ -55,6 +55,7 @@ public class SquareMapWrapper {
         FactionEvents.MEMBER_JOIN.register((faction, user) -> generateMarkers());
         FactionEvents.MEMBER_LEAVE.register((faction, user) -> generateMarkers());
         FactionEvents.POWER_CHANGE.register((faction, oldPower) -> generateMarkers());
+        FactionEvents.DISBAND.register((faction) -> generateMarkers());
     }
 
     private void generateMarkers() {
