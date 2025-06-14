@@ -36,6 +36,7 @@ public class BlueMapWrapper {
     public BlueMapWrapper() {
         BlueMapAPI.onEnable(
                 (api) -> {
+                    markerSets.clear();
                     this.api = api;
                     generateMarkers();
                 });
