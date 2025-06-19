@@ -1,5 +1,9 @@
 package io.icker.factions.database;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Relationship.Permissions;
 import io.icker.factions.api.persistents.Relationship.Status;
 import io.icker.factions.api.persistents.User.ChatMode;
@@ -22,12 +26,18 @@ import net.minecraft.nbt.NbtLong;
 import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.nbt.NbtShort;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.storage.NbtReadView;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.ReadView.TypedListReadView;
+import net.minecraft.storage.WriteView.ListAppender;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Uuids;
+import net.minecraft.util.dynamic.Codecs;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -134,48 +144,71 @@ public class SerializerRegistry {
                 el -> Enum.valueOf(clazz, el.asString().orElse("")));
     }
 
+    public record InventoryItem(int slot, ItemStack stack) {
+        public static final Codec<InventoryItem> CODEC =
+                RecordCodecBuilder.create(
+                        (instance) -> {
+                            return instance.group(
+                                            Codecs.UNSIGNED_BYTE
+                                                    .fieldOf("Slot")
+                                                    .orElse(0)
+                                                    .forGetter(InventoryItem::slot),
+                                            ItemStack.MAP_CODEC
+                                                    .fieldOf("Data")
+                                                    .forGetter(InventoryItem::stack))
+                                    .apply(instance, InventoryItem::new);
+                        });
+    }
+
     private static Serializer<SimpleInventory, NbtList> createInventorySerializer(int size) {
         return new Serializer<SimpleInventory, NbtList>(
                 val -> {
-                    NbtList nbtList = new NbtList();
+                    ErrorReporter.Logging reporter = new ErrorReporter.Logging(FactionsMod.LOGGER);
+                    NbtWriteView view =
+                            NbtWriteView.create(
+                                    reporter,
+                                    WorldUtils.getWorld("minecraft:overworld")
+                                            .getRegistryManager());
+                    ListAppender<InventoryItem> appender =
+                            view.getListAppender("Data", InventoryItem.CODEC);
 
                     for (int i = 0; i < val.size(); ++i) {
                         ItemStack itemStack = val.getStack(i);
                         if (!itemStack.isEmpty()) {
-                            NbtCompound nbtCompound = new NbtCompound();
-                            nbtCompound.putByte("Slot", (byte) i);
-                            nbtCompound.put(
-                                    "Data",
-                                    itemStack.toNbt(WorldUtils.server.getRegistryManager()));
-                            nbtList.add(nbtCompound);
+                            appender.add(new InventoryItem(i, itemStack));
                         }
                     }
 
-                    return nbtList;
+                    reporter.close();
+
+                    return view.getNbt().getList("Data").get();
                 },
                 el -> {
+                    NbtCompound compound = new NbtCompound();
+                    compound.put("Data", el);
+
+                    ErrorReporter.Logging reporter = new ErrorReporter.Logging(FactionsMod.LOGGER);
+
+                    ReadView view =
+                            NbtReadView.create(
+                                    reporter,
+                                    WorldUtils.getWorld("minecraft:overworld").getRegistryManager(),
+                                    compound);
+
                     SimpleInventory inventory = new SimpleInventory(size);
 
                     for (int i = 0; i < size; ++i) {
                         inventory.setStack(i, ItemStack.EMPTY);
                     }
 
-                    for (int i = 0; i < el.size(); ++i) {
-                        Optional<NbtCompound> optionalNbtCompound = el.getCompound(i);
-                        if (optionalNbtCompound.isEmpty()) {
-                            continue;
-                        }
-                        NbtCompound nbtCompound = optionalNbtCompound.get();
-                        int slot = nbtCompound.getByte("Slot").orElse((byte) size) & 255;
-                        if (slot >= 0 && slot < size) {
-                            inventory.setStack(
-                                    slot,
-                                    ItemStack.fromNbt(
-                                                    WorldUtils.server.getRegistryManager(),
-                                                    nbtCompound.get("Data"))
-                                            .get());
-                        }
+                    TypedListReadView<InventoryItem> list_view =
+                            view.getTypedListView("Data", InventoryItem.CODEC);
+
+                    for (InventoryItem item : list_view) {
+                        inventory.setStack(item.slot(), item.stack());
                     }
+
+                    reporter.close();
 
                     return inventory;
                 });
