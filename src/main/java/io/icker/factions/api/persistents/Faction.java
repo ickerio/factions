@@ -84,6 +84,11 @@ public class Faction {
 
     public Faction() {}
 
+    public ArrayList<Relationship> getRelationships() {
+        relationships = new ArrayList<>(relationships.stream().filter(rel -> Faction.get(rel.target) != null).toList());
+        return relationships;
+    }
+
     public String getKey() {
         return id.toString();
     }
@@ -224,7 +229,7 @@ public class Faction {
     }
 
     public Relationship getRelationship(UUID target) {
-        return relationships.stream()
+        return this.getRelationships().stream()
                 .filter(rel -> rel.target.equals(target))
                 .findFirst()
                 .orElse(new Relationship(target, Relationship.Status.NEUTRAL));
@@ -241,25 +246,25 @@ public class Faction {
     }
 
     public List<Relationship> getMutualAllies() {
-        return relationships.stream().filter(rel -> isMutualAllies(rel.target)).toList();
+        return this.getRelationships().stream().filter(rel -> isMutualAllies(rel.target)).toList();
     }
 
     public List<Relationship> getEnemiesWith() {
-        return relationships.stream()
+        return this.getRelationships().stream()
                 .filter(rel -> rel.status == Relationship.Status.ENEMY)
                 .toList();
     }
 
     public List<Relationship> getEnemiesOf() {
-        return relationships.stream()
+        return this.getRelationships().stream()
                 .filter(rel -> getReverse(rel).status == Relationship.Status.ENEMY)
                 .toList();
     }
 
     public void removeRelationship(UUID target) {
-        relationships =
+        relationships = 
                 new ArrayList<>(
-                        relationships.stream().filter(rel -> !rel.target.equals(target)).toList());
+                        this.getRelationships().stream().filter(rel -> !rel.target.equals(target)).toList());
     }
 
     public void setRelationship(Relationship relationship) {
