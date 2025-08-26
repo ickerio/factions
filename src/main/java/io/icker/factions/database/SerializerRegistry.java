@@ -2,6 +2,7 @@ package io.icker.factions.database;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.nbt.NbtOps;
 
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Relationship.Permissions;
@@ -204,13 +205,54 @@ public class SerializerRegistry {
                     TypedListReadView<InventoryItem> list_view =
                             view.getTypedListView("Data", InventoryItem.CODEC);
 
-                    for (InventoryItem item : list_view) {
-                        inventory.setStack(item.slot(), item.stack());
+                    int skippedItems = 0;
+                    try {
+                        for (InventoryItem item : list_view) {
+                            try {
+                                inventory.setStack(item.slot(), item.stack());
+                            } catch (Exception e) {
+                                skippedItems++;
+                                FactionsMod.LOGGER.warn("Skipping invalid item in faction safe at slot {}: {}", item.slot(), e.getMessage());
+                            }
+                        }
+                    } catch (Exception e) {
+                        // If the entire iteration fails, fallback to manual processing
+                        FactionsMod.LOGGER.warn("Failed to read some items from faction safe, attempting individual processing: {}", e.getMessage());
+                        skippedItems += processInventoryItemsManually(compound, inventory);
+                    }
+                    
+                    if (skippedItems > 0) {
+                        FactionsMod.LOGGER.info("Skipped {} invalid items in faction safe during deserialization", skippedItems);
                     }
 
                     reporter.close();
 
                     return inventory;
                 });
+    }
+    
+    private static int processInventoryItemsManually(NbtCompound compound, SimpleInventory inventory) {
+        int skippedItems = 0;
+        try {
+            NbtList rawList = compound.getList("Data", 10); // 10 = NbtElement.COMPOUND_TYPE
+            
+            for (int i = 0; i < rawList.size(); i++) {
+                try {
+                    NbtCompound itemElement = rawList.getCompound(i);
+                    InventoryItem item = InventoryItem.CODEC.decode(
+                        WorldUtils.getWorld("minecraft:overworld").getRegistryManager().createOps(NbtOps.INSTANCE),
+                        itemElement
+                    ).getOrThrow().getFirst();
+                    
+                    inventory.setStack(item.slot(), item.stack());
+                } catch (Exception e) {
+                    skippedItems++;
+                    FactionsMod.LOGGER.warn("Skipping invalid item in faction safe at index {}: {}", i, e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            FactionsMod.LOGGER.error("Failed to process inventory items manually: {}", e.getMessage());
+        }
+        return skippedItems;
     }
 }
