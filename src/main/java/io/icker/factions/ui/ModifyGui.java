@@ -1,8 +1,5 @@
 package io.icker.factions.ui;
 
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
-
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 
@@ -12,9 +9,6 @@ import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
 
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,8 +19,6 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.nucleoid.server.translations.api.Localization;
-
-import java.util.Optional;
 
 public class ModifyGui extends SimpleGui {
     Runnable closeCallback;
@@ -47,7 +39,7 @@ public class ModifyGui extends SimpleGui {
         this.setSlot(
                 0,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_TV_TEXT)
+                        .setProfileSkinTexture(Icons.GUI_TV_TEXT)
                         .setName(Text.translatable("factions.gui.modify.change_name"))
                         .setCallback(
                                 (index, clickType, actionType) -> {
@@ -56,7 +48,7 @@ public class ModifyGui extends SimpleGui {
         this.setSlot(
                 1,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_BOOK)
+                        .setProfileSkinTexture(Icons.GUI_BOOK)
                         .setName(Text.translatable("factions.gui.modify.change_description"))
                         .setCallback(
                                 (index, clickType, actionType) -> {
@@ -65,7 +57,7 @@ public class ModifyGui extends SimpleGui {
         this.setSlot(
                 2,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_RADIO)
+                        .setProfileSkinTexture(Icons.GUI_RADIO)
                         .setName(Text.translatable("factions.gui.modify.change_motd"))
                         .setCallback(
                                 (index, clickType, actionType) -> {
@@ -74,60 +66,13 @@ public class ModifyGui extends SimpleGui {
         this.setSlot(
                 4,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_PAINT_BUCKET)
+                        .setProfileSkinTexture(Icons.GUI_PAINT_BUCKET)
                         .setName(Text.translatable("factions.gui.modify.change_color"))
                         .setCallback(
                                 (index, clickType, actionType) -> {
                                     new ColorGui(player, faction, this::open);
                                 }));
-        this.setSlot(
-                5,
-                new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(
-                                faction.isOpen()
-                                        ? Icons.GUI_TESSERACT_BLUE
-                                        : Icons.GUI_TESSERACT_RED)
-                        .setName(
-                                Text.translatable(
-                                        "factions.gui.modify.faction_type",
-                                        faction.isOpen()
-                                                ? Text.translatable(
-                                                                "factions.gui.modify.faction_type.public")
-                                                        .formatted(Formatting.AQUA)
-                                                : Text.translatable(
-                                                                "factions.gui.modify.faction_type.invite")
-                                                        .formatted(Formatting.RED)))
-                        .setCallback(
-                                (index, clickType, actionType) -> {
-                                    faction.setOpen(!faction.isOpen());
-                                    ItemStack item = this.getSlot(index).getItemStack();
-
-                                    PropertyMap map = new PropertyMap();
-                                    map.put(
-                                            "textures",
-                                            new Property(
-                                                    "textures",
-                                                    faction.isOpen()
-                                                            ? Icons.GUI_TESSERACT_BLUE
-                                                            : Icons.GUI_TESSERACT_OFF,
-                                                    null));
-                                    item.set(
-                                            DataComponentTypes.PROFILE,
-                                            new ProfileComponent(
-                                                    Optional.empty(), Optional.empty(), map));
-
-                                    item.set(
-                                            DataComponentTypes.ITEM_NAME,
-                                            Text.translatable(
-                                                    "factions.gui.modify.faction_type",
-                                                    faction.isOpen()
-                                                            ? Text.translatable(
-                                                                            "factions.gui.modify.faction_type.public")
-                                                                    .formatted(Formatting.AQUA)
-                                                            : Text.translatable(
-                                                                            "factions.gui.modify.faction_type.invite")
-                                                                    .formatted(Formatting.RED)));
-                                }));
+        this.setSlot(5, buildOpenFactionButton(faction));
 
         this.setSlot(
                 8,
@@ -144,6 +89,27 @@ public class ModifyGui extends SimpleGui {
                                         : (Runnable) closeCallback));
 
         this.open();
+    }
+
+    private GuiElementBuilder buildOpenFactionButton(Faction faction) {
+        return new GuiElementBuilder(Items.PLAYER_HEAD)
+                .setProfileSkinTexture(
+                        faction.isOpen() ? Icons.GUI_TESSERACT_BLUE : Icons.GUI_TESSERACT_RED)
+                .setName(
+                        Text.translatable(
+                                "factions.gui.modify.faction_type",
+                                faction.isOpen()
+                                        ? Text.translatable(
+                                                        "factions.gui.modify.faction_type.public")
+                                                .formatted(Formatting.AQUA)
+                                        : Text.translatable(
+                                                        "factions.gui.modify.faction_type.invite")
+                                                .formatted(Formatting.RED)))
+                .setCallback(
+                        (index, clickType, actionType) -> {
+                            faction.setOpen(!faction.isOpen());
+                            this.setSlot(index, buildOpenFactionButton(faction));
+                        });
     }
 
     private void execName(Faction faction) {

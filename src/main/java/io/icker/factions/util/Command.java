@@ -11,9 +11,9 @@ import io.icker.factions.api.persistents.User;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.GameProfileResolver;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.UserCache;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -114,12 +114,13 @@ public interface Command {
 
         static SuggestionProvider<ServerCommandSource> allPlayers() {
             return (context, builder) -> {
-                UserCache cache = context.getSource().getServer().getUserCache();
+                GameProfileResolver resolver =
+                        context.getSource().getServer().getApiServices().profileResolver();
 
                 for (User user : User.all()) {
                     Optional<GameProfile> player;
-                    if ((player = cache.getByUuid(user.getID())).isPresent()) {
-                        builder.suggest(player.get().getName());
+                    if ((player = resolver.getProfileById(user.getID())).isPresent()) {
+                        builder.suggest(player.get().name());
                     } else {
                         builder.suggest(user.getID().toString());
                     }
@@ -130,7 +131,8 @@ public interface Command {
 
         static SuggestionProvider<ServerCommandSource> allPlayersInYourFactionButYou() {
             return (context, builder) -> {
-                UserCache cache = context.getSource().getServer().getUserCache();
+                GameProfileResolver resolver =
+                        context.getSource().getServer().getApiServices().profileResolver();
                 ServerPlayerEntity entity = context.getSource().getPlayerOrThrow();
                 User currentUser = User.get(entity.getUuid());
 
@@ -145,8 +147,8 @@ public interface Command {
                         continue;
                     }
                     Optional<GameProfile> player;
-                    if ((player = cache.getByUuid(user.getID())).isPresent()) {
-                        builder.suggest(player.get().getName());
+                    if ((player = resolver.getProfileById(user.getID())).isPresent()) {
+                        builder.suggest(player.get().name());
                     } else {
                         builder.suggest(user.getID().toString());
                     }

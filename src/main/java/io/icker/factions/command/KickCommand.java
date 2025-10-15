@@ -16,6 +16,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import xyz.nucleoid.server.translations.api.Localization;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,8 +31,9 @@ public class KickCommand implements Command {
         User target;
 
         Optional<GameProfile> profile;
-        if ((profile = source.getServer().getUserCache().findByName(name)).isPresent()) {
-            target = User.get(profile.get().getId());
+        if ((profile = source.getServer().getApiServices().profileResolver().getProfileByName(name))
+                .isPresent()) {
+            target = User.get(profile.get().id());
         } else {
             try {
                 target = User.get(UUID.fromString(name));
@@ -67,7 +70,7 @@ public class KickCommand implements Command {
         }
 
         ServerPlayerEntity targetPlayer =
-                player.getServer().getPlayerManager().getPlayer(target.getID());
+                player.getEntityWorld().getServer().getPlayerManager().getPlayer(target.getID());
 
         target.leaveFaction();
 
@@ -84,8 +87,11 @@ public class KickCommand implements Command {
         new Message(
                         Text.translatable(
                                 "factions.command.kick.success.actor",
-                                profile.map((found_profile) -> found_profile.getName())
-                                        .orElse("unknown")))
+                                profile.map((found_profile) -> found_profile.name())
+                                        .orElse(
+                                                Localization.raw(
+                                                        "factions.gui.members.entry.unknown_player",
+                                                        player))))
                 .send(player, false);
 
         return 1;

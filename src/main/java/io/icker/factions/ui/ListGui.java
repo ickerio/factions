@@ -57,7 +57,8 @@ public class ListGui extends PagedGui {
             Home home = faction.getHome();
 
             var icon = new GuiElementBuilder(Items.PLAYER_HEAD);
-            icon.setSkullOwner(isInFaction ? Icons.GUI_CASTLE_NORMAL : Icons.GUI_CASTLE_OPEN);
+            icon.setProfileSkinTexture(
+                    isInFaction ? Icons.GUI_CASTLE_NORMAL : Icons.GUI_CASTLE_OPEN);
             icon.setName(Text.literal(faction.getColor() + faction.getName()));
 
             List<Text> lore =

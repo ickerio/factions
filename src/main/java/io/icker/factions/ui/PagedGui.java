@@ -157,7 +157,7 @@ public abstract class PagedGui extends SimpleGui {
                                         Text.translatable("factions.gui.generic.next_page")
                                                 .formatted(Formatting.WHITE))
                                 .hideDefaultTooltip()
-                                .setSkullOwner(Icons.GUI_NEXT_PAGE)
+                                .setProfileSkinTexture(Icons.GUI_NEXT_PAGE)
                                 .setCallback(
                                         (x, y, z) -> {
                                             playClickSound(gui.player);
@@ -170,7 +170,7 @@ public abstract class PagedGui extends SimpleGui {
                                         Text.translatable("factions.gui.generic.next_page")
                                                 .formatted(Formatting.DARK_GRAY))
                                 .hideDefaultTooltip()
-                                .setSkullOwner(Icons.GUI_NEXT_PAGE_BLOCKED));
+                                .setProfileSkinTexture(Icons.GUI_NEXT_PAGE_BLOCKED));
             }
         }
 
@@ -182,7 +182,7 @@ public abstract class PagedGui extends SimpleGui {
                                         Text.translatable("factions.gui.generic.previous_page")
                                                 .formatted(Formatting.WHITE))
                                 .hideDefaultTooltip()
-                                .setSkullOwner(Icons.GUI_PREVIOUS_PAGE)
+                                .setProfileSkinTexture(Icons.GUI_PREVIOUS_PAGE)
                                 .setCallback(
                                         (x, y, z) -> {
                                             playClickSound(gui.player);
@@ -195,7 +195,7 @@ public abstract class PagedGui extends SimpleGui {
                                         Text.translatable("factions.gui.generic.previous_page")
                                                 .formatted(Formatting.DARK_GRAY))
                                 .hideDefaultTooltip()
-                                .setSkullOwner(Icons.GUI_PREVIOUS_PAGE_BLOCKED));
+                                .setProfileSkinTexture(Icons.GUI_PREVIOUS_PAGE_BLOCKED));
             }
         }
 

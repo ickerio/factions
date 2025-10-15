@@ -59,7 +59,7 @@ public class ServerPlayNetworkHandlerMixin {
 
     @Inject(method = "onPlayerInteractEntity", at = @At("HEAD"), cancellable = true)
     public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet, CallbackInfo ci) {
-        World world = player.getWorld();
+        World world = player.getEntityWorld();
         Entity entity = packet.getEntity((ServerWorld) world);
         if (entity == null) return;
 

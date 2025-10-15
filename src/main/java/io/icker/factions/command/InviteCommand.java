@@ -11,12 +11,12 @@ import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.server.GameProfileResolver;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
 import xyz.nucleoid.server.translations.api.Localization;
@@ -41,19 +41,19 @@ public class InviteCommand implements Command {
 
         if (count == 0) return 1;
 
-        UserCache cache = source.getServer().getUserCache();
+        GameProfileResolver resolver = source.getServer().getApiServices().profileResolver();
         String players =
                 invites.stream()
                         .map(
                                 invite ->
-                                        cache.getByUuid(invite)
+                                        resolver.getProfileById(invite)
                                                 .orElse(
                                                         new GameProfile(
                                                                 Util.NIL_UUID,
                                                                 Localization.raw(
                                                                         "factions.gui.generic.unknown_player",
                                                                         player)))
-                                                .getName())
+                                                .name())
                         .collect(Collectors.joining(", "));
 
         new Message(players).format(Formatting.ITALIC).send(player, false);

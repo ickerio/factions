@@ -22,7 +22,7 @@ public class MapCommand implements Command {
         ServerCommandSource source = context.getSource();
 
         ServerPlayerEntity player = source.getPlayerOrThrow();
-        ServerWorld world = (ServerWorld) player.getWorld();
+        ServerWorld world = (ServerWorld) player.getEntityWorld();
 
         ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
         String dimension = world.getRegistryKey().getValue().toString();

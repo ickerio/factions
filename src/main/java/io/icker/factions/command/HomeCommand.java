@@ -51,7 +51,7 @@ public class HomeCommand implements Command {
             return 0;
         }
 
-        if (player.getServer() == null) return 0;
+        if (player.getEntityWorld().getServer() == null) return 0;
 
         ServerWorld world = WorldUtils.getWorld(home.level);
 
@@ -108,7 +108,8 @@ public class HomeCommand implements Command {
 
         Faction faction = Command.getUser(player).getFaction();
 
-        if (checkLimitToClaim(faction, (ServerWorld) player.getWorld(), player.getBlockPos())) {
+        if (checkLimitToClaim(
+                faction, (ServerWorld) player.getEntityWorld(), player.getBlockPos())) {
             new Message(Text.translatable("factions.command.home.fail.no_claim"))
                     .fail()
                     .send(player, false);
@@ -123,7 +124,7 @@ public class HomeCommand implements Command {
                         player.getZ(),
                         player.getHeadYaw(),
                         player.getPitch(),
-                        player.getWorld().getRegistryKey().getValue().toString());
+                        player.getEntityWorld().getRegistryKey().getValue().toString());
 
         faction.setHome(home);
         new Message(

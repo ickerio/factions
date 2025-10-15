@@ -13,12 +13,12 @@ import io.icker.factions.ui.InfoGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 
+import net.minecraft.server.GameProfileResolver;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
 import java.util.List;
@@ -64,30 +64,31 @@ public class InfoCommand implements Command {
         }
         List<User> users = faction.getUsers();
 
-        UserCache cache = player.getServer().getUserCache();
+        GameProfileResolver resolver =
+                player.getEntityWorld().getServer().getApiServices().profileResolver();
         String owner =
                 Formatting.WHITE
                         + users.stream()
                                 .filter(u -> u.rank == User.Rank.OWNER)
                                 .map(
                                         user ->
-                                                cache.getByUuid(user.getID())
+                                                resolver.getProfileById(user.getID())
                                                         .orElse(
                                                                 new GameProfile(
                                                                         Util.NIL_UUID,
                                                                         "{Uncached Player}"))
-                                                        .getName())
+                                                        .name())
                                 .collect(Collectors.joining(", "));
 
         String usersList =
                 users.stream()
                         .map(
                                 user ->
-                                        cache.getByUuid(user.getID())
+                                        resolver.getProfileById(user.getID())
                                                 .orElse(
                                                         new GameProfile(
                                                                 Util.NIL_UUID, "{Uncached Player}"))
-                                                .getName())
+                                                .name())
                         .collect(Collectors.joining(", "));
 
         String mutualAllies =

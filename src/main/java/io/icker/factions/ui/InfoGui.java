@@ -14,12 +14,12 @@ import io.icker.factions.util.Icons;
 
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.GameProfileResolver;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
 import org.jetbrains.annotations.Nullable;
@@ -36,8 +36,8 @@ public class InfoGui extends SimpleGui {
         super(ScreenHandlerType.GENERIC_9X1, player, false);
         this.closeCallback = closeCallback;
 
-        MinecraftServer server = player.getServer();
-        UserCache cache = server.getUserCache();
+        MinecraftServer server = player.getEntityWorld().getServer();
+        GameProfileResolver resolver = server.getApiServices().profileResolver();
 
         User user = User.get(player.getUuid());
         boolean isMember = faction.equals(user.getFaction());
@@ -48,14 +48,14 @@ public class InfoGui extends SimpleGui {
                         .filter(u -> u.rank == User.Rank.OWNER)
                         .map(
                                 u ->
-                                        cache.getByUuid(u.getID())
+                                        resolver.getProfileById(u.getID())
                                                 .orElse(
                                                         new GameProfile(
                                                                 Util.NIL_UUID,
                                                                 Localization.raw(
                                                                         "factions.gui.generic.unknown_player",
                                                                         player)))
-                                                .getName())
+                                                .name())
                         .collect(Collectors.joining(", "));
 
         this.setTitle(Text.translatable("factions.gui.info.title"));
@@ -67,7 +67,8 @@ public class InfoGui extends SimpleGui {
         this.setSlot(
                 0,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(isMember ? Icons.GUI_CASTLE_NORMAL : Icons.GUI_CASTLE_OPEN)
+                        .setProfileSkinTexture(
+                                isMember ? Icons.GUI_CASTLE_NORMAL : Icons.GUI_CASTLE_OPEN)
                         .setName(Text.literal(faction.getColor() + faction.getName()))
                         .setLore(
                                 List.of(
@@ -100,7 +101,7 @@ public class InfoGui extends SimpleGui {
                                 .map(
                                         u ->
                                                 Text.literal(
-                                                                cache.getByUuid(u.getID())
+                                                                resolver.getProfileById(u.getID())
                                                                         .orElse(
                                                                                 new GameProfile(
                                                                                         Util
@@ -109,7 +110,7 @@ public class InfoGui extends SimpleGui {
                                                                                                 .raw(
                                                                                                         "factions.gui.generic.unknown_player",
                                                                                                         player)))
-                                                                        .getName())
+                                                                        .name())
                                                         .setStyle(
                                                                 Style.EMPTY
                                                                         .withItalic(false)
@@ -125,7 +126,7 @@ public class InfoGui extends SimpleGui {
         this.setSlot(
                 1,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_PLAYER)
+                        .setProfileSkinTexture(Icons.GUI_PLAYER)
                         .setName(
                                 Text.translatable(
                                         "factions.gui.info.members",
@@ -148,7 +149,7 @@ public class InfoGui extends SimpleGui {
         this.setSlot(
                 2,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_FIST)
+                        .setProfileSkinTexture(Icons.GUI_FIST)
                         .setName(Text.translatable("factions.gui.info.power"))
                         .setLore(
                                 List.of(
@@ -210,7 +211,7 @@ public class InfoGui extends SimpleGui {
         this.setSlot(
                 3,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_CASTLE_ALLY)
+                        .setProfileSkinTexture(Icons.GUI_CASTLE_ALLY)
                         .setName(
                                 Text.translatable(
                                                 "factions.gui.info.allies.some",
@@ -233,7 +234,7 @@ public class InfoGui extends SimpleGui {
         this.setSlot(
                 4,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_CASTLE_ENEMY)
+                        .setProfileSkinTexture(Icons.GUI_CASTLE_ENEMY)
                         .setName(
                                 Text.translatable(
                                                 "factions.gui.info.enemies.some",
@@ -245,7 +246,7 @@ public class InfoGui extends SimpleGui {
             this.setSlot(
                     6,
                     new GuiElementBuilder(Items.PLAYER_HEAD)
-                            .setSkullOwner(Icons.GUI_LECTERN)
+                            .setProfileSkinTexture(Icons.GUI_LECTERN)
                             .setName(Text.translatable("factions.gui.info.settings"))
                             .setLore(
                                     List.of(

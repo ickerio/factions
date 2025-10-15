@@ -109,8 +109,9 @@ public class AdminCommand implements Command {
         User target;
 
         Optional<GameProfile> profile;
-        if ((profile = source.getServer().getUserCache().findByName(name)).isPresent()) {
-            target = User.get(profile.get().getId());
+        if ((profile = source.getServer().getApiServices().profileResolver().getProfileByName(name))
+                .isPresent()) {
+            target = User.get(profile.get().id());
         } else {
             try {
                 target = User.get(UUID.fromString(name));

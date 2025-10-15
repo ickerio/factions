@@ -50,7 +50,7 @@ public class DisbandCommand implements Command {
 
         DefaultedList<ItemStack> safe = faction.clearSafe();
 
-        ItemScatterer.spawn(player.getWorld(), player.getBlockPos(), safe);
+        ItemScatterer.spawn(player.getEntityWorld(), player.getBlockPos(), safe);
 
         new Message(
                         Text.translatable(

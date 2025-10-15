@@ -1,7 +1,6 @@
 package io.icker.factions.ui;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
@@ -15,15 +14,13 @@ import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
 
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.GameProfileResolver;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.UserCache;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +33,7 @@ import java.util.UUID;
 public class MemberGui extends PagedGui {
     Faction faction;
     int size;
-    UserCache cache;
+    GameProfileResolver resolver;
     User user;
 
     List<User> members;
@@ -44,7 +41,7 @@ public class MemberGui extends PagedGui {
     public MemberGui(ServerPlayerEntity player, Faction faction, @Nullable Runnable closeCallback) {
         super(player, closeCallback);
         this.faction = faction;
-        this.cache = player.getServer().getUserCache();
+        this.resolver = player.getEntityWorld().getServer().getApiServices().profileResolver();
         this.user = User.get(player.getUuid());
 
         this.members = new ArrayList<>(faction.getUsers());
@@ -76,15 +73,12 @@ public class MemberGui extends PagedGui {
                     new GameProfile(
                             UUID.randomUUID(),
                             Localization.raw("factions.gui.generic.unknown_player", player));
-            unknownPlayer
-                    .getProperties()
-                    .put("textures", new Property("textures", Icons.GUI_UNKNOWN_PLAYER, null));
 
-            GameProfile profile = cache.getByUuid(targetUser.getID()).orElse(unknownPlayer);
+            GameProfile profile = resolver.getProfileById(targetUser.getID()).orElse(unknownPlayer);
 
             var icon = new GuiElementBuilder(Items.PLAYER_HEAD);
-            icon.setComponent(DataComponentTypes.PROFILE, new ProfileComponent(profile));
-            icon.setName(Text.literal(profile.getName()));
+            icon.setProfile(profile);
+            icon.setName(Text.literal(profile.name()));
 
             if (profile.equals(unknownPlayer)) {
                 List<Text> lore =
@@ -95,6 +89,7 @@ public class MemberGui extends PagedGui {
                                                         .withItalic(false)
                                                         .withColor(Formatting.GRAY)));
                 icon.setLore(lore);
+                icon.setProfileSkinTexture(Icons.GUI_UNKNOWN_PLAYER);
                 return DisplayElement.of(icon);
             }
 
@@ -118,7 +113,7 @@ public class MemberGui extends PagedGui {
                                                             .withItalic(false)
                                                             .withColor(Formatting.GRAY))));
 
-            if (!profile.getId().equals(player.getUuid())
+            if (!profile.id().equals(player.getUuid())
                     && Command.Requires.isLeader().test(player.getCommandSource())
                     && Command.Requires.hasPerms("factions.rank.promote", 0)
                             .test(player.getCommandSource())
@@ -142,7 +137,10 @@ public class MemberGui extends PagedGui {
                                                 .withItalic(false)
                                                 .withColor(Formatting.DARK_RED)));
                 ServerPlayerEntity targetPlayer =
-                        player.getServer().getPlayerManager().getPlayer(targetUser.getID());
+                        player.getEntityWorld()
+                                .getServer()
+                                .getPlayerManager()
+                                .getPlayer(targetUser.getID());
                 icon.setCallback(
                         (index, clickType, actionType) -> {
                             GuiInteract.playClickSound(player);
@@ -152,7 +150,7 @@ public class MemberGui extends PagedGui {
                                     new Message(
                                                     Text.translatable(
                                                             "factions.gui.members.entry.manage.promote.result",
-                                                            profile.getName(),
+                                                            profile.name(),
                                                             Text.translatable(
                                                                     "factions.gui.members.entry.info.rank."
                                                                             + targetUser
@@ -173,7 +171,7 @@ public class MemberGui extends PagedGui {
                                     new Message(
                                                     Text.translatable(
                                                             "factions.gui.members.entry.manage.demote.result",
-                                                            profile.getName(),
+                                                            profile.name(),
                                                             Text.translatable(
                                                                     "factions.gui.members.entry.info.rank."
                                                                             + targetUser
@@ -204,7 +202,7 @@ public class MemberGui extends PagedGui {
                                                 .setName(
                                                         Text.translatable(
                                                                         "factions.gui.members.entry.manage.kick.confirm.yes",
-                                                                        profile.getName())
+                                                                        profile.name())
                                                                 .formatted(Formatting.GREEN))
                                                 .setCallback(
                                                         ((index2, clickType2, actionType2) -> {
@@ -228,8 +226,7 @@ public class MemberGui extends PagedGui {
                                                             new Message(
                                                                             Text.translatable(
                                                                                     "factions.gui.members.entry.manage.kick.result.actor",
-                                                                                    profile
-                                                                                            .getName()))
+                                                                                    profile.name()))
                                                                     .send(player, false);
 
                                                             if (targetPlayer != null) {

@@ -13,12 +13,12 @@ import io.icker.factions.ui.MemberGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 
+import net.minecraft.server.GameProfileResolver;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 
 import xyz.nucleoid.server.translations.api.Localization;
@@ -65,7 +65,8 @@ public class MemberCommand implements Command {
             return 1;
         }
         List<User> users = faction.getUsers();
-        UserCache cache = player.getServer().getUserCache();
+        GameProfileResolver resolver =
+                player.getEntityWorld().getServer().getApiServices().profileResolver();
 
         long memberCount = users.stream().filter(u -> u.rank == User.Rank.MEMBER).count();
         String members =
@@ -74,14 +75,14 @@ public class MemberCommand implements Command {
                                 .filter(u -> u.rank == User.Rank.MEMBER)
                                 .map(
                                         user ->
-                                                cache.getByUuid(user.getID())
+                                                resolver.getProfileById(user.getID())
                                                         .orElse(
                                                                 new GameProfile(
                                                                         Util.NIL_UUID,
                                                                         Localization.raw(
                                                                                 "factions.gui.generic.unknown_player",
                                                                                 player)))
-                                                        .getName())
+                                                        .name())
                                 .collect(Collectors.joining(", "));
 
         long commanderCount = users.stream().filter(u -> u.rank == User.Rank.COMMANDER).count();
@@ -91,14 +92,14 @@ public class MemberCommand implements Command {
                                 .filter(u -> u.rank == User.Rank.COMMANDER)
                                 .map(
                                         user ->
-                                                cache.getByUuid(user.getID())
+                                                resolver.getProfileById(user.getID())
                                                         .orElse(
                                                                 new GameProfile(
                                                                         Util.NIL_UUID,
                                                                         Localization.raw(
                                                                                 "factions.gui.generic.unknown_player",
                                                                                 player)))
-                                                        .getName())
+                                                        .name())
                                 .collect(Collectors.joining(", "));
 
         long leaderCount = users.stream().filter(u -> u.rank == User.Rank.LEADER).count();
@@ -108,14 +109,14 @@ public class MemberCommand implements Command {
                                 .filter(u -> u.rank == User.Rank.LEADER)
                                 .map(
                                         user ->
-                                                cache.getByUuid(user.getID())
+                                                resolver.getProfileById(user.getID())
                                                         .orElse(
                                                                 new GameProfile(
                                                                         Util.NIL_UUID,
                                                                         Localization.raw(
                                                                                 "factions.gui.generic.unknown_player",
                                                                                 player)))
-                                                        .getName())
+                                                        .name())
                                 .collect(Collectors.joining(", "));
 
         String owner =
@@ -124,14 +125,14 @@ public class MemberCommand implements Command {
                                 .filter(u -> u.rank == User.Rank.OWNER)
                                 .map(
                                         user ->
-                                                cache.getByUuid(user.getID())
+                                                resolver.getProfileById(user.getID())
                                                         .orElse(
                                                                 new GameProfile(
                                                                         Util.NIL_UUID,
                                                                         Localization.raw(
                                                                                 "factions.gui.generic.unknown_player",
                                                                                 player)))
-                                                        .getName())
+                                                        .name())
                                 .collect(Collectors.joining(", "));
 
         // generate the ---

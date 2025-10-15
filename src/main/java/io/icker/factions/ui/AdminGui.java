@@ -1,8 +1,6 @@
 package io.icker.factions.ui;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
@@ -16,10 +14,6 @@ import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
 
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -52,102 +46,13 @@ public class AdminGui extends SimpleGui {
             this.setSlot(i, new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip());
 
         // Bypass icon
-        this.setSlot(
-                indexes.get(0),
-                new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(
-                                user.bypass ? Icons.GUI_TESSERACT_BLUE : Icons.GUI_TESSERACT_OFF)
-                        .setName(
-                                Text.translatable("factions.gui.admin.options.bypass")
-                                        .append(
-                                                user.bypass
-                                                        ? Text.translatable("options.on")
-                                                                .formatted(Formatting.GREEN)
-                                                        : Text.translatable("options.off")
-                                                                .formatted(Formatting.RED)))
-                        .setLore(
-                                List.of(
-                                        Text.translatable(
-                                                        user.bypass
-                                                                ? "factions.gui.admin.options.bypass.lore.disable"
-                                                                : "factions.gui.admin.options.bypass.lore.enable")
-                                                .setStyle(
-                                                        Style.EMPTY
-                                                                .withItalic(false)
-                                                                .withColor(Formatting.GRAY))))
-                        .setCallback(
-                                (index, clickType, actionType) -> {
-                                    GuiInteract.playClickSound(player);
-                                    user.bypass = !user.bypass;
-                                    ItemStack item = this.getSlot(index).getItemStack();
-                                    item.set(
-                                            DataComponentTypes.ITEM_NAME,
-                                            Text.translatable("factions.gui.admin.options.bypass")
-                                                    .append(
-                                                            user.bypass
-                                                                    ? Text.translatable(
-                                                                                    "options.on")
-                                                                            .formatted(
-                                                                                    Formatting
-                                                                                            .GREEN)
-                                                                    : Text.translatable(
-                                                                                    "options.off")
-                                                                            .formatted(
-                                                                                    Formatting
-                                                                                            .RED)));
-                                    item.set(
-                                            DataComponentTypes.LORE,
-                                            new LoreComponent(
-                                                    List.of(
-                                                            Text.translatable(
-                                                                            user.bypass
-                                                                                    ? "factions.gui.admin.options.bypass.lore.disable"
-                                                                                    : "factions.gui.admin.options.bypass.lore.enable")
-                                                                    .setStyle(
-                                                                            Style.EMPTY
-                                                                                    .withItalic(
-                                                                                            false)
-                                                                                    .withColor(
-                                                                                            Formatting
-                                                                                                    .GRAY)))));
-
-                                    PropertyMap map = new PropertyMap();
-                                    map.put(
-                                            "textures",
-                                            new Property(
-                                                    "textures",
-                                                    user.bypass
-                                                            ? Icons.GUI_TESSERACT_BLUE
-                                                            : Icons.GUI_TESSERACT_OFF,
-                                                    null));
-                                    item.set(
-                                            DataComponentTypes.PROFILE,
-                                            new ProfileComponent(
-                                                    Optional.empty(), Optional.empty(), map));
-
-                                    new Message(
-                                                    Text.translatable(
-                                                            "factions.gui.admin.options.bypass.success"))
-                                            .filler("·")
-                                            .add(
-                                                    new Message(
-                                                                    user.bypass
-                                                                            ? Text.translatable(
-                                                                                    "options.on")
-                                                                            : Text.translatable(
-                                                                                    "options.off"))
-                                                            .format(
-                                                                    user.bypass
-                                                                            ? Formatting.GREEN
-                                                                            : Formatting.RED))
-                                            .send(player, false);
-                                }));
+        this.setSlot(indexes.get(0), buildBypassElement(user));
 
         // Power icon
         this.setSlot(
                 indexes.get(1),
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_FIST)
+                        .setProfileSkinTexture(Icons.GUI_FIST)
                         .setName(Text.translatable("factions.gui.admin.options.power"))
                         .setLore(
                                 List.of(
@@ -166,7 +71,7 @@ public class AdminGui extends SimpleGui {
         this.setSlot(
                 indexes.get(2),
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_XENOMORPH)
+                        .setProfileSkinTexture(Icons.GUI_XENOMORPH)
                         .setName(Text.translatable("factions.gui.admin.options.spoof"))
                         .setLore(
                                 List.of(
@@ -198,7 +103,7 @@ public class AdminGui extends SimpleGui {
         this.setSlot(
                 indexes.get(3),
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setSkullOwner(Icons.GUI_BOOK)
+                        .setProfileSkinTexture(Icons.GUI_BOOK)
                         .setName(Text.translatable("factions.gui.admin.options.audit"))
                         .setLore(
                                 List.of(
@@ -227,7 +132,7 @@ public class AdminGui extends SimpleGui {
             this.setSlot(
                     indexes.get(4),
                     new GuiElementBuilder(Items.PLAYER_HEAD)
-                            .setSkullOwner(Icons.GUI_EARTH_RELOAD)
+                            .setProfileSkinTexture(Icons.GUI_EARTH_RELOAD)
                             .setName(Text.translatable("factions.gui.admin.options.reload_dynmap"))
                             .setLore(
                                     List.of(
@@ -251,6 +156,54 @@ public class AdminGui extends SimpleGui {
         this.open();
     }
 
+    private GuiElementBuilder buildBypassElement(User user) {
+        return new GuiElementBuilder(Items.PLAYER_HEAD)
+                .setProfileSkinTexture(
+                        user.bypass ? Icons.GUI_TESSERACT_BLUE : Icons.GUI_TESSERACT_OFF)
+                .setName(
+                        Text.translatable("factions.gui.admin.options.bypass")
+                                .append(
+                                        user.bypass
+                                                ? Text.translatable("options.on")
+                                                        .formatted(Formatting.GREEN)
+                                                : Text.translatable("options.off")
+                                                        .formatted(Formatting.RED)))
+                .setLore(
+                        List.of(
+                                Text.translatable(
+                                                user.bypass
+                                                        ? "factions.gui.admin.options.bypass.lore.disable"
+                                                        : "factions.gui.admin.options.bypass.lore.enable")
+                                        .setStyle(
+                                                Style.EMPTY
+                                                        .withItalic(false)
+                                                        .withColor(Formatting.GRAY))))
+                .setCallback(
+                        (index, clickType, actionType) -> {
+                            GuiInteract.playClickSound(player);
+                            user.bypass = !user.bypass;
+
+                            this.setSlot(index, buildBypassElement(user));
+
+                            new Message(
+                                            Text.translatable(
+                                                    "factions.gui.admin.options.bypass.success"))
+                                    .filler("·")
+                                    .add(
+                                            new Message(
+                                                            user.bypass
+                                                                    ? Text.translatable(
+                                                                            "options.on")
+                                                                    : Text.translatable(
+                                                                            "options.off"))
+                                                    .format(
+                                                            user.bypass
+                                                                    ? Formatting.GREEN
+                                                                    : Formatting.RED))
+                                    .send(player, false);
+                        });
+    }
+
     private void execSpoof() {
         InputGui inputGui = new InputGui(player);
 
@@ -272,7 +225,12 @@ public class AdminGui extends SimpleGui {
                         return;
                     }
                     Optional<GameProfile> profile;
-                    if (!(profile = player.getServer().getUserCache().findByName(input))
+                    if (!(profile =
+                                    player.getEntityWorld()
+                                            .getServer()
+                                            .getApiServices()
+                                            .profileResolver()
+                                            .getProfileByName(input))
                             .isPresent()) {
                         inputGui.showErrorMessage(
                                 Text.translatable("factions.gui.spoof.fail.no_player", input)
@@ -280,7 +238,7 @@ public class AdminGui extends SimpleGui {
                                 index);
                         return;
                     }
-                    User target = User.get(profile.get().getId());
+                    User target = User.get(profile.get().id());
                     User.get(player.getUuid()).setSpoof(target);
                     new Message(Text.translatable("factions.gui.spoof.success", input))
                             .send(player, false);
