@@ -262,7 +262,7 @@ public class InteractionManager {
     }
 
     private static ActionResult isInvulnerableTo(Entity source, Entity target) {
-        if (!source.isPlayer() || FactionsMod.CONFIG.FRIENDLY_FIRE) return ActionResult.PASS;
+        if (!source.isPlayer()) return ActionResult.PASS;
 
         User sourceUser = User.get(source.getUuid());
         User targetUser = User.get(target.getUuid());
@@ -273,6 +273,10 @@ public class InteractionManager {
 
         Faction sourceFaction = sourceUser.getFaction();
         Faction targetFaction = targetUser.getFaction();
+
+        if (targetFaction.isFriendlyFireEnabled()) {
+            return ActionResult.PASS;
+        }
 
         if (sourceFaction.equals(targetFaction)) {
             return ActionResult.SUCCESS;
