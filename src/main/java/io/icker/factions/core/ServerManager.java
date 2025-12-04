@@ -19,7 +19,7 @@ public class ServerManager {
         MiscEvents.ON_SAVE.register(ServerManager::save);
     }
 
-    private static void save(MinecraftServer server) {
+    public static void save(MinecraftServer server) {
         Claim.save();
         Faction.save();
         User.save();
