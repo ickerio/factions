@@ -8,7 +8,6 @@ import io.icker.factions.api.persistents.User;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
@@ -37,7 +36,7 @@ public class SoundManager {
             if (player != null
                     && (user.sounds == User.SoundMode.ALL
                             || user.sounds == User.SoundMode.FACTION)) {
-                player.playSoundToPlayer(soundEvent.value(), SoundCategory.PLAYERS, 0.2F, pitch);
+                player.playSound(soundEvent.value(), 0.2F, pitch);
             }
         }
     }
@@ -45,8 +44,7 @@ public class SoundManager {
     public static void warningSound(PlayerEntity player) {
         User user = User.get(player.getUuid());
         if (user.sounds == User.SoundMode.ALL || user.sounds == User.SoundMode.WARNINGS) {
-            player.playSoundToPlayer(
-                    SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), SoundCategory.PLAYERS, 0.5F, 1.0F);
+            player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), 0.5F, 1.0F);
         }
     }
 }

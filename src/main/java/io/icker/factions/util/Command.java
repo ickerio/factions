@@ -11,6 +11,8 @@ import io.icker.factions.api.persistents.User;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.command.permission.Permission;
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.server.GameProfileResolver;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -65,7 +67,12 @@ public interface Command {
         }
 
         public static Predicate<ServerCommandSource> isAdmin() {
-            return source -> source.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL);
+            return source ->
+                    source.getPermissions()
+                            .hasPermission(
+                                    new Permission.Level(
+                                            PermissionLevel.fromLevel(
+                                                    FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL)));
         }
 
         public static Predicate<ServerCommandSource> hasPerms(String permission, int defaultValue) {
@@ -73,7 +80,9 @@ public interface Command {
                 if (permissions) {
                     return Permissions.check(source, permission, defaultValue);
                 } else {
-                    return source.hasPermissionLevel(defaultValue);
+                    return source.getPermissions()
+                            .hasPermission(
+                                    new Permission.Level(PermissionLevel.fromLevel(defaultValue)));
                 }
             };
         }

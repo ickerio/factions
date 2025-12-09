@@ -16,6 +16,8 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.command.permission.Permission;
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -292,7 +294,12 @@ public class InteractionManager {
         }
 
         User user = User.get(player.getUuid());
-        if (player.hasPermissionLevel(FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL) && user.bypass) {
+        if (player.getPermissions()
+                        .hasPermission(
+                                new Permission.Level(
+                                        PermissionLevel.fromLevel(
+                                                FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL)))
+                && user.bypass) {
             return ActionResult.PASS;
         }
 

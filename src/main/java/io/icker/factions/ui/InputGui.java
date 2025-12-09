@@ -7,7 +7,6 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -48,11 +47,7 @@ public class InputGui extends AnvilInputGui {
         item.set(
                 DataComponentTypes.CUSTOM_NAME,
                 text.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.RED)));
-        player.playSoundToPlayer(
-                SoundEvent.of(Identifier.of("minecraft:item.shield.break")),
-                SoundCategory.BLOCKS,
-                1,
-                1);
+        player.playSound(SoundEvent.of(Identifier.of("minecraft:item.shield.break")), 1, 1);
         timer.schedule(
                 new TimerTask() {
                     @Override

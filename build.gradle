@@ -1,14 +1,14 @@
 plugins {
-    id 'fabric-loom' version '1.11-SNAPSHOT'
+    id 'fabric-loom' version '1.14-SNAPSHOT'
     id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
-
-archivesBaseName = "${project.name}-mc${project.minecraft_version}"
 version = project.mod_version
 group = project.maven_group
+
+base {
+    archivesName = "${project.name}-mc${project.minecraft_version}"
+}
 
 repositories {
     mavenCentral()
@@ -67,11 +67,14 @@ tasks.withType(JavaCompile).configureEach {
 
 java {
     withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}"}
+        rename { "${it}_${inputs.properties.archivesName}"}
     }
 }
 

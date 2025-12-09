@@ -262,7 +262,7 @@ public class Faction {
     }
 
     public void removeRelationship(UUID target) {
-        relationships = 
+        relationships =
                 new ArrayList<>(
                         this.getRelationships().filter(rel -> !rel.target.equals(target)).toList());
     }
