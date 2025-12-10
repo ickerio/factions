@@ -73,6 +73,7 @@ public class ModifyGui extends SimpleGui {
                                     new ColorGui(player, faction, this::open);
                                 }));
         this.setSlot(5, buildOpenFactionButton(faction));
+        this.setSlot(6, buildFriendlyFireButton(faction));
 
         this.setSlot(
                 8,
@@ -109,6 +110,26 @@ public class ModifyGui extends SimpleGui {
                         (index, clickType, actionType) -> {
                             faction.setOpen(!faction.isOpen());
                             this.setSlot(index, buildOpenFactionButton(faction));
+                        });
+    }
+
+    private GuiElementBuilder buildFriendlyFireButton(Faction faction) {
+        boolean enabled = faction.isFriendlyFireEnabled();
+        return new GuiElementBuilder(Items.PLAYER_HEAD)
+                .setProfileSkinTexture(
+                        enabled ? Icons.GUI_TESSERACT_RED : Icons.GUI_TESSERACT_BLUE)
+                .setName(
+                        Text.translatable(
+                                enabled
+                                        ? "factions.gui.modify.friendly_fire.enabled"
+                                        : "factions.gui.modify.friendly_fire.disabled"))
+                .addLoreLine(
+                        Text.translatable("factions.gui.modify.friendly_fire.lore")
+                                .formatted(Formatting.GRAY))
+                .setCallback(
+                        (index, clickType, actionType) -> {
+                            faction.setFriendlyFire(!faction.isFriendlyFireEnabled());
+                            this.setSlot(index, buildFriendlyFireButton(faction));
                         });
     }
 

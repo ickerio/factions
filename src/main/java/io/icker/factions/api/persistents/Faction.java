@@ -45,6 +45,10 @@ public class Faction {
     @Field("Open")
     private boolean open;
 
+    /** Whether friendly fire is enabled for this faction (null = use global config) */
+    @Field("FriendlyFire")
+    private Boolean friendlyFire;
+
     @Field("Power")
     private int power;
 
@@ -153,6 +157,10 @@ public class Faction {
         return open;
     }
 
+    public boolean isFriendlyFireEnabled() {
+        return friendlyFire != null ? friendlyFire : FactionsMod.CONFIG.FRIENDLY_FIRE;
+    }
+
     public void setName(String name) {
         this.name = name;
         FactionEvents.MODIFY.invoker().onModify(this);
@@ -175,6 +183,11 @@ public class Faction {
 
     public void setOpen(boolean open) {
         this.open = open;
+        FactionEvents.MODIFY.invoker().onModify(this);
+    }
+
+    public void setFriendlyFire(boolean enabled) {
+        this.friendlyFire = enabled;
         FactionEvents.MODIFY.invoker().onModify(this);
     }
 
