@@ -3,6 +3,8 @@ package io.icker.factions.ui;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 
+import io.icker.factions.util.GuiInteract;
+
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -47,7 +49,8 @@ public class InputGui extends AnvilInputGui {
         item.set(
                 DataComponentTypes.CUSTOM_NAME,
                 text.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.RED)));
-        player.playSound(SoundEvent.of(Identifier.of("minecraft:item.shield.break")), 1, 1);
+        GuiInteract.playSound(
+                player, SoundEvent.of(Identifier.of("minecraft:item.shield.break")), 1f, 1f);
         timer.schedule(
                 new TimerTask() {
                     @Override

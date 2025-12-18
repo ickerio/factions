@@ -4,10 +4,11 @@ import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.util.GuiInteract;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
@@ -32,19 +33,19 @@ public class SoundManager {
     private static void playFaction(
             Faction faction, RegistryEntry.Reference<SoundEvent> soundEvent, float pitch) {
         for (User user : faction.getUsers()) {
-            PlayerEntity player = FactionsManager.playerManager.getPlayer(user.getID());
+            ServerPlayerEntity player = FactionsManager.playerManager.getPlayer(user.getID());
             if (player != null
                     && (user.sounds == User.SoundMode.ALL
                             || user.sounds == User.SoundMode.FACTION)) {
-                player.playSound(soundEvent.value(), 0.2F, pitch);
+                GuiInteract.playSound(player, soundEvent.value(), 0.2F, pitch);
             }
         }
     }
 
-    public static void warningSound(PlayerEntity player) {
+    public static void warningSound(ServerPlayerEntity player) {
         User user = User.get(player.getUuid());
         if (user.sounds == User.SoundMode.ALL || user.sounds == User.SoundMode.WARNINGS) {
-            player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), 0.5F, 1.0F);
+            GuiInteract.playSound(player, SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), 0.5F, 1.0F);
         }
     }
 }

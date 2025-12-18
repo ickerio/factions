@@ -3,13 +3,13 @@ package io.icker.factions.core;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 
 public class InteractionsUtil {
-    public static void sync(PlayerEntity player, ItemStack itemStack, Hand hand) {
+    public static void sync(ServerPlayerEntity player, ItemStack itemStack, Hand hand) {
         player.setStackInHand(hand, itemStack);
         itemStack.setCount(itemStack.getCount());
         if (itemStack.isDamageable()) {
@@ -21,7 +21,7 @@ public class InteractionsUtil {
         }
     }
 
-    public static void warn(PlayerEntity player, InteractionsUtilActions action) {
+    public static void warn(ServerPlayerEntity player, InteractionsUtilActions action) {
         SoundManager.warningSound(player);
         User user = User.get(player.getUuid());
         new Message(

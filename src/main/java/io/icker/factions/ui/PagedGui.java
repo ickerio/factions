@@ -6,6 +6,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilderInterface;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 
+import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 
 import net.minecraft.item.ItemStack;
@@ -208,6 +209,6 @@ public abstract class PagedGui extends SimpleGui {
     }
 
     public static final void playClickSound(ServerPlayerEntity player) {
-        player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 1, 1);
+        GuiInteract.playSound(player, SoundEvents.UI_BUTTON_CLICK.value(), 1f, 1f);
     }
 }
