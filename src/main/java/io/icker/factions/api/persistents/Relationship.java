@@ -29,12 +29,12 @@ public class Relationship {
     public Status status;
 
     @Field("Permissions")
-    public ArrayList<Permissions> permissions =
-            new ArrayList<>(FactionsMod.CONFIG.RELATIONSHIPS.DEFAULT_GUEST_PERMISSIONS);
+    public ArrayList<Permissions> permissions;
 
-    public Relationship(UUID target, Status status) {
+    public Relationship(Faction source, UUID target, Status status) {
         this.target = target;
         this.status = status;
+        this.permissions = new ArrayList<>(source.guest_permissions);
     }
 
     public Relationship() {}
