@@ -227,7 +227,7 @@ public class Faction {
         return relationships.stream()
                 .filter(rel -> rel.target.equals(target))
                 .findFirst()
-                .orElse(new Relationship(target, Relationship.Status.NEUTRAL));
+                .orElse(new Relationship(this, target, Relationship.Status.NEUTRAL));
     }
 
     public Relationship getReverse(Relationship rel) {
