@@ -72,7 +72,7 @@ public class DeclareCommand implements Command {
             mutual = sourceFaction.getRelationship(targetFaction.getID()).status;
         }
 
-        Relationship rel = new Relationship(targetFaction.getID(), status);
+        Relationship rel = new Relationship(sourceFaction, targetFaction.getID(), status);
         Relationship rev = targetFaction.getRelationship(sourceFaction.getID());
         sourceFaction.setRelationship(rel);
 
