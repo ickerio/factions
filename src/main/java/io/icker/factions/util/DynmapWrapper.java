@@ -125,42 +125,37 @@ public class DynmapWrapper {
                     ClaimGrouper.separateClaimsByLevel(faction).entrySet()) {
                 String level = entry.getKey();
                 for (Map<Vector2i, Vector2i[]> group :
-                        ClaimGrouper.convertClaimsToLineSegmentGroupsWithoutHoles(
+                        ClaimGrouper.convertClaimsToLineSegmentGroups(
                                 entry.getValue())) {
-                    List<List<Vector2i>> outlines =
-                            ClaimGrouper.convertLineSegmentsToOutlines(group);
-                    if (outlines.size() > 1) {
-                        FactionsMod.LOGGER.error(
-                                "The claim chunking algorithm used for dynmap has failed, please"
-                                        + " report this asap.");
-                    }
-                    outlines.getFirst().add(outlines.getFirst().getFirst());
-                    double[] x_coords =
-                            outlines.getFirst().stream()
-                                    .mapToDouble((point) -> (double) point.getX())
-                                    .toArray();
-                    double[] z_coords =
-                            outlines.getFirst().stream()
-                                    .mapToDouble((point) -> (double) point.getY())
-                                    .toArray();
-                    double[] y_coords =
-                            outlines.getFirst().stream().mapToDouble((point) -> 320.0).toArray();
+                    for (List<Vector2i> outline : ClaimGrouper.convertLineSegmentsToOutlines(group)) {
+                        outline.add(outline.get(0));
+                        double[] x_coords =
+                                outline.stream()
+                                        .mapToDouble((point) -> (double) point.getX())
+                                        .toArray();
+                        double[] z_coords =
+                                outline.stream()
+                                        .mapToDouble((point) -> (double) point.getY())
+                                        .toArray();
+                        double[] y_coords =
+                                outline.stream().mapToDouble((point) -> 320.0).toArray();
 
-                    PolyLineMarker marker =
-                            markerSet.createPolyLineMarker(
-                                    UUID.randomUUID().toString(),
-                                    "",
-                                    false,
-                                    dimensionTagToID(level),
-                                    x_coords,
-                                    y_coords,
-                                    z_coords,
-                                    true);
-                    if (marker != null) {
-                        marker.setLineStyle(
-                                marker.getLineWeight(),
-                                marker.getLineOpacity(),
-                                faction.getColor().getColorValue());
+                        PolyLineMarker marker =
+                                markerSet.createPolyLineMarker(
+                                        UUID.randomUUID().toString(),
+                                        "",
+                                        false,
+                                        dimensionTagToID(level),
+                                        x_coords,
+                                        y_coords,
+                                        z_coords,
+                                        true);
+                        if (marker != null) {
+                            marker.setLineStyle(
+                                    marker.getLineWeight(),
+                                    marker.getLineOpacity(),
+                                    faction.getColor().getColorValue());
+                        }
                     }
                 }
             }
