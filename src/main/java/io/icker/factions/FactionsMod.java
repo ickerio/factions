@@ -8,6 +8,7 @@ import io.icker.factions.command.ClaimCommand;
 import io.icker.factions.command.CreateCommand;
 import io.icker.factions.command.DeclareCommand;
 import io.icker.factions.command.DisbandCommand;
+import io.icker.factions.command.FriendlyFireCommand;
 import io.icker.factions.command.HomeCommand;
 import io.icker.factions.command.InfoCommand;
 import io.icker.factions.command.InviteCommand;
@@ -98,6 +99,7 @@ public class FactionsMod implements ModInitializer {
                     new CreateCommand(),
                     new DeclareCommand(),
                     new DisbandCommand(),
+                    new FriendlyFireCommand(),
                     new HomeCommand(),
                     new InfoCommand(),
                     new InviteCommand(),

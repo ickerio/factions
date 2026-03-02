@@ -34,6 +34,7 @@ public class FactionsManager {
 
     public static void register() {
         ServerLifecycleEvents.SERVER_STARTED.register(FactionsManager::serverStarted);
+        ServerLifecycleEvents.SERVER_STOPPING.register(FactionsManager::serverStopping);
         FactionEvents.MODIFY.register(FactionsManager::factionModified);
         FactionEvents.MEMBER_JOIN.register(FactionsManager::memberChange);
         FactionEvents.MEMBER_LEAVE.register(FactionsManager::memberChange);

@@ -16,13 +16,11 @@
     "factions.gui.admin.options.reload_dynmap": "Reload DynMap markers",
     "factions.gui.admin.options.reload_dynmap.lore": "Reloads DynMap markers.",
     "factions.gui.admin.options.reload_dynmap.success": "Reloaded DynMap markers",
-
     "factions.gui.spoof.title": "Specify a player...",
     "factions.gui.spoof.default": "Player Name",
     "factions.gui.spoof.fail.invalid_name": "Invalid name %s!",
     "factions.gui.spoof.fail.no_player": "No such player %s!",
     "factions.gui.spoof.success": "Set spoof to player %s",
-
     "factions.gui.power.setfaction.title": "Specify a faction...",
     "factions.gui.power.setfaction.default": "Faction Name",
     "factions.gui.power.setfaction.fail.no_faction": "No such faction!",
@@ -34,7 +32,6 @@
     "factions.gui.power.success.removed.admin": "Removed %d power",
     "factions.gui.power.success.added.faction": "Admin %s added %d power",
     "factions.gui.power.success.removed.faction": "Admin %s removed %d power",
-
     "factions.gui.info.title": "Faction info",
     "factions.gui.info.owner": "Owner: ",
     "factions.gui.info.description": "Description: ",
@@ -51,11 +48,9 @@
     "factions.gui.info.enemies.some": "Enemy factions (%s): ",
     "factions.gui.info.settings": "Faction settings",
     "factions.gui.info.settings.lore": "Click to change settings",
-
     "factions.gui.list.title": "Factions list",
     "factions.gui.list.entry.view_info": "Click to view faction info.",
     "factions.gui.list.entry.teleport": "Right-click to teleport to faction home.",
-
     "factions.gui.members.title": "%s members list (%s)",
     "factions.gui.members.entry.unknown_player": "No info available",
     "factions.gui.members.entry.info.rank": "Rank: %s",
@@ -74,7 +69,6 @@
     "factions.gui.members.entry.manage.kick.confirm.no": "Go back",
     "factions.gui.members.entry.manage.kick.result.actor": "Kicked %s",
     "factions.gui.members.entry.manage.kick.result.subject": "You have been kicked from the faction by %s",
-
     "factions.gui.modify.title": "Faction settings",
     "factions.gui.modify.change_name": "Change name",
     "factions.gui.modify.change_name.input.title": "Specify a name...",
@@ -126,14 +120,17 @@
     "factions.gui.modify.faction_type": "Faction type: %s",
     "factions.gui.modify.faction_type.public": "Public",
     "factions.gui.modify.faction_type.invite": "Invite only",
-
+    "factions.gui.modify.friendly_fire.enabled": "Friendly Fire: Enabled",
+    "factions.gui.modify.friendly_fire.disabled": "Friendly Fire: Disabled",
+    "factions.gui.modify.friendly_fire.lore": "Click to toggle friendly fire for your faction",
+    "factions.command.friendlyfire.success.enabled": "Friendly fire has been enabled for your faction",
+    "factions.command.friendlyfire.success.disabled": "Friendly fire has been disabled for your faction",
     "factions.gui.generic.unknown_player": "{Unknown Player}",
     "factions.gui.generic.close": "Close",
     "factions.gui.generic.confirm": "Confirm",
     "factions.gui.generic.back": "Go back",
     "factions.gui.generic.next_page": "Next page",
     "factions.gui.generic.previous_page": "Previous page",
-
     "factions.command.claim.list": "You have %s claim(s)",
     "factions.command.claim.add.fail.already_owned.single": "%s faction already owns this chunk",
     "factions.command.claim.add.fail.already_owned.single.your": "Your",
@@ -156,12 +153,10 @@
     "factions.command.claim.set_access_level.fail.min_level": "Cannot decrease access level as it is already at its minimum.",
     "factions.command.claim.set_access_level.fail.rank_too_low": "Cannot decrease access level from above your rank",
     "factions.command.claim.set_access_level.success": "Claim (%d, %d) changed to level %s by %s",
-
     "factions.command.create.fail.blacklisted_name": "Cannot create a faction with this name as it is on the blacklist",
     "factions.command.create.fail.name_too_long": "Cannot create a faction with this name as it is too long",
     "factions.command.create.fail.name_taken": "Cannot create a faction as a one with that name already exists",
     "factions.command.create.success": "Successfully created faction",
-
     "factions.command.declare.fail.nonexistent_faction": "Cannot change faction relationship with a faction that doesn't exist",
     "factions.command.declare.fail.own_faction": "Cannot use the declare command on your own faction",
     "factions.command.declare.fail.no_change": "That faction relationship has already been declared with this faction",
@@ -172,12 +167,10 @@
     "factions.command.declare.success.status.ally": "allies",
     "factions.command.declare.success.status.enemy": "enemies",
     "factions.command.declare.success.status.neutral": "neutral",
-
     "factions.command.disband.fail.safe_not_empty": "Your faction safe isn't empty.",
     "factions.command.disband.fail.safe_not_empty.prompt": "\nContinue and move the items to your inventory",
     "factions.command.disband.fail.safe_not_empty.prompt.hover": "Click to confirm",
     "factions.command.disband.success": "%s disbanded the faction",
-
     "factions.command.home.warp.fail.no_home": "No faction home set",
     "factions.command.home.warp.fail.no_world": "Cannot find dimension",
     "factions.command.home.warp.fail.no_claim": "Cannot warp home to an unclaimed chunk",
@@ -185,10 +178,8 @@
     "factions.command.home.warp.success": "Warped to faction home",
     "factions.command.home.fail.no_claim": "Cannot set home to an unclaimed chunk",
     "factions.command.home.set.success": "Home set to %.2f, %.2f, %.2f by %s",
-
     "factions.command.info.fail.no_faction": "Command can only be used whilst in a faction",
     "factions.command.info.fail.nonexistent_faction": "Faction does not exist",
-
     "factions.command.invite.list": "You have %s outgoing invite(s)",
     "factions.command.invite.add.fail.already_invited": "%s was already invited to your faction",
     "factions.command.invite.add.fail.already_member": "%s is already in your faction",
@@ -197,25 +188,20 @@
     "factions.command.invite.add.success.subject.hover": "Click to join",
     "factions.command.invite.remove.success": "%s is no longer invited to your faction",
     "factions.command.invite.remove.fail": "Could not find invite for %s",
-
     "factions.command.join.fail.nonexistent_faction": "Cannot join faction as none exist with that name",
     "factions.command.join.fail.private_no_invite": "Cannot join faction as it is not open and you are not invited",
     "factions.command.join.fail.faction_full": "Cannot join faction as it is currently full",
     "factions.command.join.success": "%s joined",
-
     "factions.command.kick.fail.self": "Cannot kick yourself",
     "factions.command.kick.fail.other_faction": "Cannot kick someone that is not in your faction",
     "factions.command.kick.fail.high_rank": "Cannot kick members with a higher of equivalent rank",
     "factions.command.kick.success.actor": "Kicked %s",
     "factions.command.kick.success.subject": "You have been kicked from the faction by %s",
-
     "factions.command.leave.success.actor": "You have left this faction.",
     "factions.command.leave.success.subject": "%s left",
-
     "factions.command.map.title": "Faction Map",
     "factions.command.map.you_wilderness": "<You> <Wilderness>",
     "factions.command.map.you_owner": "<You> %s",
-
     "factions.command.members.fail.no_faction": "Command can only be used whilst in a faction",
     "factions.command.members.faction.nonexistent_faction": "Faction does not exist",
     "factions.command.members.faction.title": "Total Members: %s",
@@ -223,44 +209,36 @@
     "factions.command.members.faction.leaders": "Leaders (%s): %s",
     "factions.command.members.faction.commanders": "Commanders (%s): %s",
     "factions.command.members.faction.members": "Members (%s): %s",
-
     "factions.command.modify.name.fail.blacklisted_name": "Cannot rename a faction to that name as it is on the blacklist",
     "factions.command.modify.name.fail.name_too_long": "Cannot rename a faction to this that as it is too long",
     "factions.command.modify.name.fail.name_taken": "A faction with that name already exists",
     "factions.command.modify.open.success": "Successfully updated faction to ",
-
     "factions.command.permissions.change.fail.no_faction": "You must be in a faction and you must provide a valid faction",
     "factions.command.permissions.change.fail.invalid_permission": "Not a valid permission",
     "factions.command.permissions.change.fail.already_exists": "Could not change because the permission already exists",
     "factions.command.permissions.change.fail.doesnt_exist": "Could not change because the permission doesn't exist",
     "factions.command.permissions.change.success": "Successfully changed permissions",
     "factions.command.permissions.guest.fail.no_faction": "You must be in a faction",
-
     "factions.command.permissions.list.title": "%s has the permissions: %s",
     "factions.command.permissions.list_guest.title": "Guests have the permissions: %s",
-
     "factions.command.rank.guest": "guest",
     "factions.command.rank.member": "member",
     "factions.command.rank.commander": "commander",
     "factions.command.rank.leader": "leader",
-
     "factions.command.rank.promote.fail.self": "You cannot promote yourself",
     "factions.command.rank.promote.fail.not_in_faction": "%s is not in your faction",
     "factions.command.rank.promote.fail.leader": "You cannot promote a Leader to Owner",
     "factions.command.rank.promote.fail.owner": "You cannot promote the Owner",
     "factions.command.rank.promote.success": "Promoted %s to %s",
-
     "factions.command.rank.demote.fail.self": "You cannot demote yourself",
     "factions.command.rank.demote.fail.not_in_faction": "%s is not in your faction",
     "factions.command.rank.demote.fail.guest": "You cannot demote a Guest",
     "factions.command.rank.demote.fail.leader": "You cannot demote a Leader",
     "factions.command.rank.demote.fail.owner": "You cannot demote the Owner",
     "factions.command.rank.demote.success": "Demoted %s to %s",
-
     "factions.command.rank.transfer.fail.self": "You cannot transfer ownership to yourself",
     "factions.command.rank.transfer.fail.not_in_faction": "%s is not in your faction",
     "factions.command.rank.transfer.success": "Transferred ownership to %s",
-
     "factions.command.settings.chat": "Successfully set your chat preference",
     "factions.command.settings.chat.faction": "Faction",
     "factions.command.settings.chat.focus": "Focus",
@@ -271,17 +249,14 @@
     "factions.command.settings.sound.none": "None",
     "factions.command.settings.sound.warnings": "Warnings",
     "factions.command.settings.radar": "Successfully toggled claim radar",
-
     "factions.chat.in_faction_symbol": "F",
     "factions.chat.faction_chat_when_not_in_faction": "You can't send a message to faction chat if you aren't in a faction.",
     "factions.chat.faction_chat_when_not_in_faction.hover": "Click to switch to global chat",
-
     "factions.gui.safe.title": "%s's Safe",
     "factions.events.lose_power_by_death": "%s lost %d power from dying",
     "factions.events.get_power_by_tick": "%s gained %d power from surviving",
     "factions.events.no_enderchests_without_faction": "Cannot use enderchests when not in a faction",
     "factions.events.member_returns": "Welcome back %s!",
-
     "factions.interactions.cannot_do": "Cannot %s here",
     "factions.interactions.name.break_blocks": "break blocks",
     "factions.interactions.name.use_blocks": "use blocks",
@@ -290,19 +265,15 @@
     "factions.interactions.name.attack_entities": "attack entities",
     "factions.interactions.name.use_entities": "use entities",
     "factions.interactions.name.use_inventory": "use inventory",
-    
     "factions.level.minecraft:overworld": "Overworld",
     "factions.level.minecraft:the_nether": "The Nether",
     "factions.level.minecraft:the_end": "The End",
-    
     "factions.events.autoclaim.fail": "Not enough faction power to claim chunk, autoclaim toggled off",
     "factions.events.autoclaim.success": "Chunk (%d, %d) claimed by %s",
     "factions.radar.wilderness": "Wilderness",
-    
     "factions.factionless": "[FACTIONLESS]",
     "factions.default_description": "No description set",
     "factions.default_motd": "No faction MOTD set",
-
     "factions.papi.chat.global": "Global Chat",
     "factions.papi.chat.faction": "Faction Chat",
     "factions.papi.factionless": "FACTIONLESS"
