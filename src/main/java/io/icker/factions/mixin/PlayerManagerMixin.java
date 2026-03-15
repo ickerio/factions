@@ -4,31 +4,30 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.StyledChatCompatibility;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SentMessage;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.ServerPlayerEntity;
-
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.OutgoingChatMessage;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(PlayerManager.class)
+@Mixin(PlayerList.class)
 public class PlayerManagerMixin {
     @Redirect(
             method =
-                    "broadcast(Lnet/minecraft/network/message/SignedMessage;Ljava/util/function/Predicate;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/network/message/MessageType$Parameters;)V",
+                    "broadcastChatMessage(Lnet/minecraft/network/chat/PlayerChatMessage;Ljava/util/function/Predicate;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V",
             at =
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/server/network/ServerPlayerEntity;sendChatMessage(Lnet/minecraft/network/message/SentMessage;ZLnet/minecraft/network/message/MessageType$Parameters;)V"))
+                                    "Lnet/minecraft/server/level/ServerPlayer;sendChatMessage(Lnet/minecraft/network/chat/OutgoingChatMessage;ZLnet/minecraft/network/chat/ChatType$Bound;)V"))
     public void sendChatMessage(
-            ServerPlayerEntity player,
-            SentMessage message,
+            ServerPlayer player,
+            OutgoingChatMessage message,
             boolean bl,
-            MessageType.Parameters parameters) {
-        if (message instanceof SentMessage.Profileless
+            ChatType.Bound parameters) {
+        if (message instanceof OutgoingChatMessage.Disguised
                 || (FabricLoader.getInstance().isModLoaded("styledchat")
                         && StyledChatCompatibility.isNotPlayer(message))) {
             player.sendChatMessage(message, bl, parameters);
@@ -40,10 +39,10 @@ public class PlayerManagerMixin {
         if (FabricLoader.getInstance().isModLoaded("styledchat")) {
             sender = User.get(StyledChatCompatibility.getSender(message));
         } else {
-            sender = User.get(((SentMessage.Chat) message).message().link().sender());
+            sender = User.get(((OutgoingChatMessage.Player) message).message().link().sender());
         }
 
-        User target = User.get(player.getUuid());
+        User target = User.get(player.getUUID());
 
         if (sender.chat == User.ChatMode.GLOBAL && target.chat != User.ChatMode.FOCUS) {
             player.sendChatMessage(message, bl, parameters);

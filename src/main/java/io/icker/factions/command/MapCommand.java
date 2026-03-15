@@ -8,33 +8,32 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 
 public class MapCommand implements Command {
-    private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerCommandSource source = context.getSource();
+    private int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSourceStack source = context.getSource();
 
-        ServerPlayerEntity player = source.getPlayerOrThrow();
-        ServerWorld world = (ServerWorld) player.getEntityWorld();
+        ServerPlayer player = source.getPlayerOrException();
+        ServerLevel world = (ServerLevel) player.level();
 
-        ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
-        String dimension = world.getRegistryKey().getValue().toString();
+        ChunkPos chunkPos = world.getChunk(player.blockPosition()).getPos();
+        String dimension = world.dimension().identifier().toString();
 
         // Print the header of the faction map.
         new Message(
-                        Text.literal("──┤ ")
-                                .formatted(Formatting.DARK_GRAY)
+                        Component.literal("──┤ ")
+                                .withStyle(ChatFormatting.DARK_GRAY)
                                 .append(
-                                        Text.translatable("factions.command.map.title")
-                                                .formatted(Formatting.GREEN))
-                                .append(Text.literal("├──").formatted(Formatting.DARK_GRAY)))
+                                        Component.translatable("factions.command.map.title")
+                                                .withStyle(ChatFormatting.GREEN))
+                                .append(Component.literal("├──").withStyle(ChatFormatting.DARK_GRAY)))
                 .send(player, false);
 
         for (int z = -4; z <= 4; z++) { // Rows (9)
@@ -45,9 +44,9 @@ public class MapCommand implements Command {
                     if (claim == null) {
                         row.add(
                                 new Message("⏺")
-                                        .format(Formatting.DARK_GRAY)
+                                        .format(ChatFormatting.DARK_GRAY)
                                         .hover(
-                                                Text.translatable(
+                                                Component.translatable(
                                                         "factions.command.map.you_wilderness")));
                     } else {
                         Faction owner = claim.getFaction();
@@ -55,13 +54,13 @@ public class MapCommand implements Command {
                                 new Message("⏺")
                                         .format(owner.getColor())
                                         .hover(
-                                                Text.translatable(
+                                                Component.translatable(
                                                         "factions.command.map.you_owner",
                                                         owner.getName())));
                     }
                 } else {
                     if (claim == null) {
-                        row.add("□").format(Formatting.DARK_GRAY);
+                        row.add("□").format(ChatFormatting.DARK_GRAY);
                     } else {
                         Faction owner = claim.getFaction();
                         row.add(new Message("■").format(owner.getColor()).hover(owner.getName()));
@@ -76,8 +75,8 @@ public class MapCommand implements Command {
     }
 
     @Override
-    public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager.literal("map")
+    public LiteralCommandNode<CommandSourceStack> getNode() {
+        return Commands.literal("map")
                 .requires(Requires.hasPerms("factions.map", 0))
                 .executes(this::run)
                 .build();

@@ -6,10 +6,9 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 
 import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import java.util.UUID;
 
 public class ChatManager {
@@ -24,8 +23,8 @@ public class ChatManager {
                 });
     }
 
-    public static Text handleMessage(ServerPlayerEntity sender, String message) {
-        UUID id = sender.getUuid();
+    public static Component handleMessage(ServerPlayer sender, String message) {
+        UUID id = sender.getUUID();
         User member = User.get(id);
 
         if (member.chat == User.ChatMode.GLOBAL) {
@@ -43,26 +42,26 @@ public class ChatManager {
         }
     }
 
-    private static Text global(ServerPlayerEntity sender, String message) {
-        return new Message(message).format(Formatting.GRAY).raw();
+    private static Component global(ServerPlayer sender, String message) {
+        return new Message(message).format(ChatFormatting.GRAY).raw();
     }
 
-    private static Text inFactionGlobal(
-            ServerPlayerEntity sender, Faction faction, String message) {
+    private static Component inFactionGlobal(
+            ServerPlayer sender, Faction faction, String message) {
         return new Message()
-                .add(new Message(faction.getName()).format(Formatting.BOLD, faction.getColor()))
+                .add(new Message(faction.getName()).format(ChatFormatting.BOLD, faction.getColor()))
                 .filler("»")
-                .add(new Message(message).format(Formatting.GRAY))
+                .add(new Message(message).format(ChatFormatting.GRAY))
                 .raw();
     }
 
-    private static Text faction(ServerPlayerEntity sender, Faction faction, String message) {
+    private static Component faction(ServerPlayer sender, Faction faction, String message) {
         return new Message()
                 .add(
-                        new Message(Text.translatable("factions.chat.in_faction_symbol"))
-                                .format(Formatting.BOLD, faction.getColor()))
+                        new Message(Component.translatable("factions.chat.in_faction_symbol"))
+                                .format(ChatFormatting.BOLD, faction.getColor()))
                 .filler("»")
-                .add(new Message(message).format(Formatting.GRAY))
+                .add(new Message(message).format(ChatFormatting.GRAY))
                 .raw();
     }
 }

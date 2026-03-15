@@ -1,33 +1,31 @@
 package io.icker.factions.mixin;
 
 import io.icker.factions.api.events.PlayerEvents;
-
-import net.minecraft.block.entity.LockableContainerBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LockableContainerBlockEntity.class)
+@Mixin(BaseContainerBlockEntity.class)
 public class LockableContainerBlockEntityMixin {
     @Inject(
-            method = "checkUnlocked(Lnet/minecraft/entity/player/PlayerEntity;)Z",
+            method = "canOpen(Lnet/minecraft/world/entity/player/Player;)Z",
             at = @At("RETURN"),
             cancellable = true)
-    private void checkUnlocked(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
+    private void checkUnlocked(Player player, CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(
                 cir.getReturnValue()
                         && PlayerEvents.USE_INVENTORY
                                         .invoker()
                                         .onUseInventory(
                                                 player,
-                                                ((LockableContainerBlockEntity) (Object) this)
-                                                        .getPos(),
-                                                ((LockableContainerBlockEntity) (Object) this)
-                                                        .getWorld())
-                                != ActionResult.FAIL);
+                                                ((BaseContainerBlockEntity) (Object) this)
+                                                        .getBlockPos(),
+                                                ((BaseContainerBlockEntity) (Object) this)
+                                                        .getLevel())
+                                != InteractionResult.FAIL);
     }
 }

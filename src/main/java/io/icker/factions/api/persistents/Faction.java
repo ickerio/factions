@@ -6,12 +6,6 @@ import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.util.WorldUtils;
-
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.collection.DefaultedList;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -20,6 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
 
 @Name("Faction")
 public class Faction {
@@ -55,7 +53,7 @@ public class Faction {
     private Home home;
 
     @Field("Safe")
-    private SimpleInventory safe = new SimpleInventory(54);
+    private SimpleContainer safe = new SimpleContainer(54);
 
     @Field("Invites")
     public ArrayList<UUID> invites = new ArrayList<>();
@@ -71,7 +69,7 @@ public class Faction {
             String name,
             String description,
             String motd,
-            Formatting color,
+            ChatFormatting color,
             boolean open,
             int power) {
         this.id = UUID.randomUUID();
@@ -123,8 +121,8 @@ public class Faction {
         return name;
     }
 
-    public Formatting getColor() {
-        return Formatting.byName(color);
+    public ChatFormatting getColor() {
+        return ChatFormatting.getByName(color);
     }
 
     public String getDescription() {
@@ -139,13 +137,13 @@ public class Faction {
         return power + adminPower;
     }
 
-    public SimpleInventory getSafe() {
+    public SimpleContainer getSafe() {
         return safe;
     }
 
-    public DefaultedList<ItemStack> clearSafe() {
-        DefaultedList<ItemStack> stacks = this.safe.heldStacks;
-        this.safe = new SimpleInventory(54);
+    public NonNullList<ItemStack> clearSafe() {
+        NonNullList<ItemStack> stacks = this.safe.items;
+        this.safe = new SimpleContainer(54);
         return stacks;
     }
 
@@ -168,7 +166,7 @@ public class Faction {
         FactionEvents.MODIFY.invoker().onModify(this);
     }
 
-    public void setColor(Formatting color) {
+    public void setColor(ChatFormatting color) {
         this.color = color.getName();
         FactionEvents.MODIFY.invoker().onModify(this);
     }

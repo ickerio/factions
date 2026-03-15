@@ -8,12 +8,6 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
-
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
-
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.markers.AreaMarker;
@@ -27,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 
 public class DynmapWrapper {
     private DynmapCommonAPI api;
@@ -112,12 +110,12 @@ public class DynmapWrapper {
                                 info,
                                 true,
                                 dimensionTagToID(claim.level),
-                                new double[] {pos.getStartX(), pos.getEndX() + 1},
-                                new double[] {pos.getStartZ(), pos.getEndZ() + 1},
+                                new double[] {pos.getMinBlockX(), pos.getMaxBlockX() + 1},
+                                new double[] {pos.getMinBlockZ(), pos.getMaxBlockZ() + 1},
                                 true);
                 if (marker != null) {
                     marker.setFillStyle(
-                            marker.getFillOpacity(), faction.getColor().getColorValue());
+                            marker.getFillOpacity(), faction.getColor().getColor());
                     marker.setLineStyle(0, 0, 0);
                 }
             }
@@ -154,7 +152,7 @@ public class DynmapWrapper {
                             marker.setLineStyle(
                                     marker.getLineWeight(),
                                     marker.getLineOpacity(),
-                                    faction.getColor().getColorValue());
+                                    faction.getColor().getColor());
                         }
                     }
                 }
@@ -168,11 +166,11 @@ public class DynmapWrapper {
         for (Claim claim : faction.getClaims()) {
             AreaMarker marker = markerSet.findAreaMarker(claim.getKey());
 
-            marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColorValue());
+            marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColor());
             marker.setLineStyle(
                     marker.getLineWeight(),
                     marker.getLineOpacity(),
-                    faction.getColor().getColorValue());
+                    faction.getColor().getColor());
             marker.setDescription(info);
         }
     }
@@ -199,16 +197,16 @@ public class DynmapWrapper {
         }
     }
 
-    public String getWorldName(World w) { // Taken from the Dynmap mod (Credit to them)
-        RegistryKey<World> rk = w.getRegistryKey();
-        if (rk == World.OVERWORLD) {
-            return w.getServer().getSaveProperties().getLevelName();
-        } else if (rk == World.END) {
+    public String getWorldName(Level w) { // Taken from the Dynmap mod (Credit to them)
+        ResourceKey<Level> rk = w.dimension();
+        if (rk == Level.OVERWORLD) {
+            return w.getServer().getWorldData().getLevelName();
+        } else if (rk == Level.END) {
             return "DIM1";
-        } else if (rk == World.NETHER) {
+        } else if (rk == Level.NETHER) {
             return "DIM-1";
         } else {
-            return rk.getValue().getNamespace() + "_" + rk.getValue().getPath();
+            return rk.identifier().getNamespace() + "_" + rk.identifier().getPath();
         }
     }
 
@@ -219,7 +217,7 @@ public class DynmapWrapper {
             return dimension_id;
         }
 
-        ServerWorld world = WorldUtils.getWorld(dimension_id);
+        ServerLevel world = WorldUtils.getWorld(dimension_id);
 
         if (world == null) {
             FactionsMod.LOGGER.error(

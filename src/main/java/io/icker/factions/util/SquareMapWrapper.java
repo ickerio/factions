@@ -116,11 +116,11 @@ public class SquareMapWrapper {
                                                     .fillColor(
                                                             new Color(
                                                                     faction.getColor()
-                                                                            .getColorValue()))
+                                                                            .getColor()))
                                                     .strokeColor(
                                                             new Color(
                                                                     faction.getColor()
-                                                                            .getColorValue()))
+                                                                            .getColor()))
                                                     .hoverTooltip(faction.getName())
                                                     .clickTooltip(info));
 

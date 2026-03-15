@@ -4,17 +4,17 @@ import io.icker.factions.api.persistents.Faction;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 /** Events related to player actions */
 public class PlayerEvents {
@@ -25,13 +25,13 @@ public class PlayerEvents {
                     callbacks ->
                             (source, target, world) -> {
                                 for (UseEntity callback : callbacks) {
-                                    ActionResult result =
+                                    InteractionResult result =
                                             callback.onUseEntity(source, target, world);
-                                    if (result != ActionResult.PASS) {
+                                    if (result != InteractionResult.PASS) {
                                         return result;
                                     }
                                 }
-                                return ActionResult.PASS;
+                                return InteractionResult.PASS;
                             });
 
     public static final Event<PlaceBlock> PLACE_BLOCK =
@@ -40,12 +40,12 @@ public class PlayerEvents {
                     callbacks ->
                             (context) -> {
                                 for (PlaceBlock callback : callbacks) {
-                                    ActionResult result = callback.onPlaceBlock(context);
-                                    if (result != ActionResult.PASS) {
+                                    InteractionResult result = callback.onPlaceBlock(context);
+                                    if (result != InteractionResult.PASS) {
                                         return result;
                                     }
                                 }
-                                return ActionResult.PASS;
+                                return InteractionResult.PASS;
                             });
 
     public static final Event<ExplodeBlock> EXPLODE_BLOCK =
@@ -54,13 +54,13 @@ public class PlayerEvents {
                     callbacks ->
                             (explosion, world, pos, state) -> {
                                 for (ExplodeBlock callback : callbacks) {
-                                    ActionResult result =
+                                    InteractionResult result =
                                             callback.onExplodeBlock(explosion, world, pos, state);
-                                    if (result != ActionResult.PASS) {
+                                    if (result != InteractionResult.PASS) {
                                         return result;
                                     }
                                 }
-                                return ActionResult.PASS;
+                                return InteractionResult.PASS;
                             });
 
     public static final Event<ExplodeDamage> EXPLODE_DAMAGE =
@@ -69,13 +69,13 @@ public class PlayerEvents {
                     callbacks ->
                             (explosion, entity) -> {
                                 for (ExplodeDamage callback : callbacks) {
-                                    ActionResult result =
+                                    InteractionResult result =
                                             callback.onExplodeDamage(explosion, entity);
-                                    if (result != ActionResult.PASS) {
+                                    if (result != InteractionResult.PASS) {
                                         return result;
                                     }
                                 }
-                                return ActionResult.PASS;
+                                return InteractionResult.PASS;
                             });
 
     /**
@@ -87,13 +87,13 @@ public class PlayerEvents {
                     callbacks ->
                             (source, pos, world) -> {
                                 for (UseInventory callback : callbacks) {
-                                    ActionResult result =
+                                    InteractionResult result =
                                             callback.onUseInventory(source, pos, world);
-                                    if (result != ActionResult.PASS) {
+                                    if (result != InteractionResult.PASS) {
                                         return result;
                                     }
                                 }
-                                return ActionResult.PASS;
+                                return InteractionResult.PASS;
                             });
 
     /** Called when a player is attacked and decides whether to allow the hit */
@@ -103,12 +103,12 @@ public class PlayerEvents {
                     callbacks ->
                             (source, target) -> {
                                 for (IsInvulnerable callback : callbacks) {
-                                    ActionResult result = callback.isInvulnerable(source, target);
-                                    if (result != ActionResult.PASS) {
+                                    InteractionResult result = callback.isInvulnerable(source, target);
+                                    if (result != InteractionResult.PASS) {
                                         return result;
                                     }
                                 }
-                                return ActionResult.PASS;
+                                return InteractionResult.PASS;
                             });
 
     /** Called when a player moves */
@@ -151,62 +151,62 @@ public class PlayerEvents {
                     callbacks ->
                             (player, faction) -> {
                                 for (OpenSafe callback : callbacks) {
-                                    ActionResult result = callback.onOpenSafe(player, faction);
-                                    if (result != ActionResult.PASS) {
+                                    InteractionResult result = callback.onOpenSafe(player, faction);
+                                    if (result != InteractionResult.PASS) {
                                         return result;
                                     }
                                 }
-                                return ActionResult.PASS;
+                                return InteractionResult.PASS;
                             });
 
     @FunctionalInterface
     public interface UseEntity {
-        ActionResult onUseEntity(ServerPlayerEntity player, Entity entity, World world);
+        InteractionResult onUseEntity(ServerPlayer player, Entity entity, Level world);
     }
 
     @FunctionalInterface
     public interface PlaceBlock {
-        ActionResult onPlaceBlock(ItemUsageContext context);
+        InteractionResult onPlaceBlock(UseOnContext context);
     }
 
     @FunctionalInterface
     public interface ExplodeBlock {
-        ActionResult onExplodeBlock(
-                Explosion explosion, BlockView world, BlockPos pos, BlockState state);
+        InteractionResult onExplodeBlock(
+                Explosion explosion, BlockGetter world, BlockPos pos, BlockState state);
     }
 
     @FunctionalInterface
     public interface ExplodeDamage {
-        ActionResult onExplodeDamage(Explosion explosion, Entity entity);
+        InteractionResult onExplodeDamage(Explosion explosion, Entity entity);
     }
 
     @FunctionalInterface
     public interface UseInventory {
-        ActionResult onUseInventory(PlayerEntity player, BlockPos pos, World world);
+        InteractionResult onUseInventory(Player player, BlockPos pos, Level world);
     }
 
     @FunctionalInterface
     public interface IsInvulnerable {
-        ActionResult isInvulnerable(Entity source, Entity target);
+        InteractionResult isInvulnerable(Entity source, Entity target);
     }
 
     @FunctionalInterface
     public interface Move {
-        void onMove(ServerPlayerEntity player);
+        void onMove(ServerPlayer player);
     }
 
     @FunctionalInterface
     public interface KilledByPlayer {
-        void onKilledByPlayer(ServerPlayerEntity player, DamageSource source);
+        void onKilledByPlayer(ServerPlayer player, DamageSource source);
     }
 
     @FunctionalInterface
     public interface PowerTick {
-        void onPowerTick(ServerPlayerEntity player);
+        void onPowerTick(ServerPlayer player);
     }
 
     @FunctionalInterface
     public interface OpenSafe {
-        ActionResult onOpenSafe(PlayerEntity player, Faction faction);
+        InteractionResult onOpenSafe(Player player, Faction faction);
     }
 }

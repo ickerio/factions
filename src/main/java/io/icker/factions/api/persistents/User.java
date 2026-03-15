@@ -5,9 +5,6 @@ import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.util.WorldUtils;
-
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.server.level.ServerPlayer;
 
 @Name("User")
 public class User {
@@ -165,13 +163,13 @@ public class User {
 
     @Nullable
     public String getLanguage() {
-        ServerPlayerEntity player = WorldUtils.server.getPlayerManager().getPlayer(this.id);
+        ServerPlayer player = WorldUtils.server.getPlayerList().getPlayer(this.id);
 
         if (player == null) {
             return null;
         }
 
-        return player.getClientOptions().language();
+        return player.clientInformation().language();
     }
 
     public static void save() {

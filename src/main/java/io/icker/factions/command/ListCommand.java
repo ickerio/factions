@@ -10,20 +10,18 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.ui.ListGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-
 import java.util.Collection;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 
 public class ListCommand implements Command {
-    private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayerOrThrow();
+    private int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSourceStack source = context.getSource();
+        ServerPlayer player = source.getPlayerOrException();
 
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getUUID());
 
         if (FactionsMod.CONFIG.GUI) {
             new ListGui(player, user, null);
@@ -33,7 +31,7 @@ public class ListCommand implements Command {
         Collection<Faction> factions = Faction.all();
         int size = factions.size();
 
-        new Message(Text.translatable("factions.gui.list.title")).send(player, false);
+        new Message(Component.translatable("factions.gui.list.title")).send(player, false);
 
         if (size == 0) return 1;
 
@@ -49,8 +47,8 @@ public class ListCommand implements Command {
         return 1;
     }
 
-    public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager.literal("list")
+    public LiteralCommandNode<CommandSourceStack> getNode() {
+        return Commands.literal("list")
                 .requires(Requires.hasPerms("factions.list", 0))
                 .executes(this::run)
                 .build();

@@ -10,42 +10,40 @@ import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.api.persistents.User.SoundMode;
 import io.icker.factions.util.WorldUtils;
-
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtByte;
-import net.minecraft.nbt.NbtByteArray;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtDouble;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtFloat;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtIntArray;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtLong;
-import net.minecraft.nbt.NbtLongArray;
-import net.minecraft.nbt.NbtShort;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.storage.NbtReadView;
-import net.minecraft.storage.NbtWriteView;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.ReadView.TypedListReadView;
-import net.minecraft.storage.WriteView.ListAppender;
-import net.minecraft.util.ErrorReporter;
-import net.minecraft.util.Uuids;
-import net.minecraft.util.dynamic.Codecs;
-
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Function;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.nbt.ByteArrayTag;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.LongArrayTag;
+import net.minecraft.nbt.LongTag;
+import net.minecraft.nbt.ShortTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueInput.TypedInputList;
+import net.minecraft.world.level.storage.ValueOutput.TypedOutputList;
 
 public class SerializerRegistry {
-    private static final HashMap<Class<?>, Serializer<?, ? extends NbtElement>> registry =
-            new HashMap<Class<?>, Serializer<?, ? extends NbtElement>>();
+    private static final HashMap<Class<?>, Serializer<?, ? extends Tag>> registry =
+            new HashMap<Class<?>, Serializer<?, ? extends Tag>>();
 
-    private static class Serializer<T, E extends NbtElement> {
+    private static class Serializer<T, E extends Tag> {
         private final Function<T, E> serializer;
         private final Function<E, T> deserializer;
 
@@ -55,12 +53,12 @@ public class SerializerRegistry {
         }
 
         @SuppressWarnings("unchecked")
-        public NbtElement serialize(Object value) {
+        public Tag serialize(Object value) {
             return serializer.apply((T) value);
         }
 
         @SuppressWarnings("unchecked")
-        public T deserialize(NbtElement value) {
+        public T deserialize(Tag value) {
             return deserializer.apply((E) value);
         }
     }
@@ -68,54 +66,54 @@ public class SerializerRegistry {
     static {
         registry.put(
                 byte.class,
-                new Serializer<Byte, NbtByte>(val -> NbtByte.of(val), el -> el.byteValue()));
+                new Serializer<Byte, ByteTag>(val -> ByteTag.valueOf(val), el -> el.byteValue()));
         registry.put(
                 short.class,
-                new Serializer<Short, NbtShort>(val -> NbtShort.of(val), el -> el.shortValue()));
+                new Serializer<Short, ShortTag>(val -> ShortTag.valueOf(val), el -> el.shortValue()));
         registry.put(
                 int.class,
-                new Serializer<Integer, NbtInt>(val -> NbtInt.of(val), el -> el.intValue()));
+                new Serializer<Integer, IntTag>(val -> IntTag.valueOf(val), el -> el.intValue()));
         registry.put(
                 long.class,
-                new Serializer<Long, NbtLong>(val -> NbtLong.of(val), el -> el.longValue()));
+                new Serializer<Long, LongTag>(val -> LongTag.valueOf(val), el -> el.longValue()));
         registry.put(
                 float.class,
-                new Serializer<Float, NbtFloat>(val -> NbtFloat.of(val), el -> el.floatValue()));
+                new Serializer<Float, FloatTag>(val -> FloatTag.valueOf(val), el -> el.floatValue()));
         registry.put(
                 double.class,
-                new Serializer<Double, NbtDouble>(
-                        val -> NbtDouble.of(val), el -> el.doubleValue()));
+                new Serializer<Double, DoubleTag>(
+                        val -> DoubleTag.valueOf(val), el -> el.doubleValue()));
         registry.put(
                 boolean.class,
-                new Serializer<Boolean, NbtByte>(
-                        val -> NbtByte.of(val), el -> el.byteValue() != 0));
+                new Serializer<Boolean, ByteTag>(
+                        val -> ByteTag.valueOf(val), el -> el.byteValue() != 0));
 
         registry.put(
                 byte[].class,
-                new Serializer<Byte[], NbtByteArray>(
-                        val -> new NbtByteArray(ArrayUtils.toPrimitive(val)),
-                        el -> ArrayUtils.toObject(el.getByteArray())));
+                new Serializer<Byte[], ByteArrayTag>(
+                        val -> new ByteArrayTag(ArrayUtils.toPrimitive(val)),
+                        el -> ArrayUtils.toObject(el.getAsByteArray())));
         registry.put(
                 int[].class,
-                new Serializer<Integer[], NbtIntArray>(
-                        val -> new NbtIntArray(ArrayUtils.toPrimitive(val)),
-                        el -> ArrayUtils.toObject(el.getIntArray())));
+                new Serializer<Integer[], IntArrayTag>(
+                        val -> new IntArrayTag(ArrayUtils.toPrimitive(val)),
+                        el -> ArrayUtils.toObject(el.getAsIntArray())));
         registry.put(
                 long[].class,
-                new Serializer<Long[], NbtLongArray>(
-                        val -> new NbtLongArray(ArrayUtils.toPrimitive(val)),
-                        el -> ArrayUtils.toObject(el.getLongArray())));
+                new Serializer<Long[], LongArrayTag>(
+                        val -> new LongArrayTag(ArrayUtils.toPrimitive(val)),
+                        el -> ArrayUtils.toObject(el.getAsLongArray())));
 
         registry.put(
                 String.class,
-                new Serializer<String, NbtString>(
-                        val -> NbtString.of(val), el -> el.asString().orElse("")));
+                new Serializer<String, StringTag>(
+                        val -> StringTag.valueOf(val), el -> el.asString().orElse("")));
         registry.put(
                 UUID.class,
-                new Serializer<UUID, NbtIntArray>(
-                        val -> new NbtIntArray(Uuids.toIntArray(val)),
-                        el -> Uuids.toUuid(el.getIntArray())));
-        registry.put(SimpleInventory.class, createInventorySerializer(54));
+                new Serializer<UUID, IntArrayTag>(
+                        val -> new IntArrayTag(UUIDUtil.uuidToIntArray(val)),
+                        el -> UUIDUtil.uuidFromIntArray(el.getAsIntArray())));
+        registry.put(SimpleContainer.class, createInventorySerializer(54));
 
         registry.put(ChatMode.class, createEnumSerializer(ChatMode.class));
         registry.put(SoundMode.class, createEnumSerializer(SoundMode.class));
@@ -128,19 +126,19 @@ public class SerializerRegistry {
         return registry.containsKey(clazz);
     }
 
-    public static <T> NbtElement toNbtElement(Class<T> clazz, T value) {
+    public static <T> Tag toNbtElement(Class<T> clazz, T value) {
         return registry.get(clazz).serialize(value);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T fromNbtElement(Class<T> clazz, NbtElement value) {
+    public static <T> T fromNbtElement(Class<T> clazz, Tag value) {
         return (T) registry.get(clazz).deserialize(value);
     }
 
-    private static <T extends Enum<T>> Serializer<T, NbtString> createEnumSerializer(
+    private static <T extends Enum<T>> Serializer<T, StringTag> createEnumSerializer(
             Class<T> clazz) {
-        return new Serializer<T, NbtString>(
-                val -> NbtString.of(val.toString()),
+        return new Serializer<T, StringTag>(
+                val -> StringTag.valueOf(val.toString()),
                 el -> Enum.valueOf(clazz, el.asString().orElse("")));
     }
 
@@ -149,7 +147,7 @@ public class SerializerRegistry {
                 RecordCodecBuilder.create(
                         (instance) -> {
                             return instance.group(
-                                            Codecs.UNSIGNED_BYTE
+                                            ExtraCodecs.UNSIGNED_BYTE
                                                     .fieldOf("Slot")
                                                     .orElse(0)
                                                     .forGetter(InventoryItem::slot),
@@ -160,20 +158,20 @@ public class SerializerRegistry {
                         });
     }
 
-    private static Serializer<SimpleInventory, NbtList> createInventorySerializer(int size) {
-        return new Serializer<SimpleInventory, NbtList>(
+    private static Serializer<SimpleContainer, ListTag> createInventorySerializer(int size) {
+        return new Serializer<SimpleContainer, ListTag>(
                 val -> {
-                    ErrorReporter.Logging reporter = new ErrorReporter.Logging(FactionsMod.LOGGER);
-                    NbtWriteView view =
-                            NbtWriteView.create(
+                    ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(FactionsMod.LOGGER);
+                    TagValueOutput view =
+                            TagValueOutput.createWithContext(
                                     reporter,
                                     WorldUtils.getWorld("minecraft:overworld")
-                                            .getRegistryManager());
-                    ListAppender<InventoryItem> appender =
-                            view.getListAppender("Data", InventoryItem.CODEC);
+                                            .registryAccess());
+                    TypedOutputList<InventoryItem> appender =
+                            view.list("Data", InventoryItem.CODEC);
 
-                    for (int i = 0; i < val.size(); ++i) {
-                        ItemStack itemStack = val.getStack(i);
+                    for (int i = 0; i < val.getContainerSize(); ++i) {
+                        ItemStack itemStack = val.getItem(i);
                         if (!itemStack.isEmpty()) {
                             appender.add(new InventoryItem(i, itemStack));
                         }
@@ -181,31 +179,31 @@ public class SerializerRegistry {
 
                     reporter.close();
 
-                    return view.getNbt().getList("Data").get();
+                    return view.buildResult().getList("Data").get();
                 },
                 el -> {
-                    NbtCompound compound = new NbtCompound();
+                    CompoundTag compound = new CompoundTag();
                     compound.put("Data", el);
 
-                    ErrorReporter.Logging reporter = new ErrorReporter.Logging(FactionsMod.LOGGER);
+                    ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(FactionsMod.LOGGER);
 
-                    ReadView view =
-                            NbtReadView.create(
+                    ValueInput view =
+                            TagValueInput.create(
                                     reporter,
-                                    WorldUtils.getWorld("minecraft:overworld").getRegistryManager(),
+                                    WorldUtils.getWorld("minecraft:overworld").registryAccess(),
                                     compound);
 
-                    SimpleInventory inventory = new SimpleInventory(size);
+                    SimpleContainer inventory = new SimpleContainer(size);
 
                     for (int i = 0; i < size; ++i) {
-                        inventory.setStack(i, ItemStack.EMPTY);
+                        inventory.setItem(i, ItemStack.EMPTY);
                     }
 
-                    TypedListReadView<InventoryItem> list_view =
-                            view.getTypedListView("Data", InventoryItem.CODEC);
+                    TypedInputList<InventoryItem> list_view =
+                            view.listOrEmpty("Data", InventoryItem.CODEC);
 
                     for (InventoryItem item : list_view) {
-                        inventory.setStack(item.slot(), item.stack());
+                        inventory.setItem(item.slot(), item.stack());
                     }
 
                     reporter.close();

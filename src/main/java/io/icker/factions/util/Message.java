@@ -2,33 +2,32 @@ package io.icker.factions.util;
 
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent.RunCommand;
-import net.minecraft.text.HoverEvent.ShowText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent.RunCommand;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent.ShowText;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.entity.player.Player;
 
 public class Message {
-    public static PlayerManager manager;
-    private MutableText text;
+    public static PlayerList manager;
+    private MutableComponent text;
 
     public Message() {
-        text = Text.literal("");
+        text = Component.literal("");
     }
 
     public Message(String message) {
-        text = (MutableText) Text.of(message);
+        text = (MutableComponent) Component.nullToEmpty(message);
     }
 
     public Message(String message, Object... args) {
-        text = (MutableText) Text.of(String.format(message, args));
+        text = (MutableComponent) Component.nullToEmpty(String.format(message, args));
     }
 
-    public Message(MutableText text) {
+    public Message(MutableComponent text) {
         this.text = text;
     }
 
@@ -47,55 +46,55 @@ public class Message {
         return this;
     }
 
-    public Message format(Formatting... format) {
-        text.formatted(format);
+    public Message format(ChatFormatting... format) {
+        text.withStyle(format);
         return this;
     }
 
     public Message fail() {
-        text.formatted(Formatting.RED);
+        text.withStyle(ChatFormatting.RED);
         return this;
     }
 
     public Message hover(String message) {
-        return this.hover(Text.of(message));
+        return this.hover(Component.nullToEmpty(message));
     }
 
-    public Message hover(Text message) {
-        text.styled(s -> s.withHoverEvent(new ShowText(message)));
+    public Message hover(Component message) {
+        text.withStyle(s -> s.withHoverEvent(new ShowText(message)));
         return this;
     }
 
     public Message click(String message) {
-        text.styled(s -> s.withClickEvent(new RunCommand(message)));
+        text.withStyle(s -> s.withClickEvent(new RunCommand(message)));
         return this;
     }
 
-    public Message send(PlayerEntity player, boolean actionBar) {
-        player.sendMessage(text, actionBar);
+    public Message send(Player player, boolean actionBar) {
+        player.displayClientMessage(text, actionBar);
         return this;
     }
 
     public Message send(Faction faction) {
         Message message = this.prependFaction(faction);
         for (User member : faction.getUsers()) {
-            ServerPlayerEntity player = manager.getPlayer(member.getID());
+            ServerPlayer player = manager.getPlayer(member.getID());
             if (player != null) message.send(player, false);
         }
         return this;
     }
 
     public void sendToGlobalChat() {
-        for (ServerPlayerEntity player : manager.getPlayerList()) {
-            User.ChatMode option = User.get(player.getUuid()).chat;
-            if (option != User.ChatMode.FOCUS) player.sendMessage(text, false);
+        for (ServerPlayer player : manager.getPlayers()) {
+            User.ChatMode option = User.get(player.getUUID()).chat;
+            if (option != User.ChatMode.FOCUS) player.displayClientMessage(text, false);
         }
     }
 
     public void sendToFactionChat(Faction faction) {
         for (User member : faction.getUsers()) {
-            ServerPlayerEntity player = manager.getPlayer(member.getID());
-            player.sendMessage(text, false);
+            ServerPlayer player = manager.getPlayer(member.getID());
+            player.displayClientMessage(text, false);
         }
     }
 
@@ -105,7 +104,7 @@ public class Message {
                         .add(
                                 new Message(
                                                 faction.getColor().toString()
-                                                        + Formatting.BOLD
+                                                        + ChatFormatting.BOLD
                                                         + faction.getName())
                                         .hover(faction.getDescription()))
                         .filler("»")
@@ -116,17 +115,17 @@ public class Message {
 
     public Message filler(String symbol) {
         text.append(
-                Text.of(
+                Component.nullToEmpty(
                         " "
-                                + Formatting.RESET
-                                + Formatting.DARK_GRAY
+                                + ChatFormatting.RESET
+                                + ChatFormatting.DARK_GRAY
                                 + symbol
-                                + Formatting.RESET
+                                + ChatFormatting.RESET
                                 + " "));
         return this;
     }
 
-    public MutableText raw() {
+    public MutableComponent raw() {
         return text;
     }
 }

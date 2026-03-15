@@ -8,16 +8,14 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,8 +27,8 @@ public abstract class PagedGui extends SimpleGui {
     protected int page = 0;
     public boolean ignoreCloseCallback;
 
-    public PagedGui(ServerPlayerEntity player, @Nullable Runnable closeCallback) {
-        super(ScreenHandlerType.GENERIC_9X5, player, false);
+    public PagedGui(ServerPlayer player, @Nullable Runnable closeCallback) {
+        super(MenuType.GENERIC_9x5, player, false);
         this.closeCallback = closeCallback;
     }
 
@@ -112,11 +110,11 @@ public abstract class PagedGui extends SimpleGui {
                     DisplayElement.of(
                             new GuiElementBuilder(Items.STRUCTURE_VOID)
                                     .setName(
-                                            Text.translatable(
+                                            Component.translatable(
                                                             this.closeCallback != null
                                                                     ? "factions.gui.generic.back"
                                                                     : "factions.gui.generic.close")
-                                                    .formatted(Formatting.RED))
+                                                    .withStyle(ChatFormatting.RED))
                                     .hideDefaultTooltip()
                                     .setCallback(
                                             (x, y, z) -> {
@@ -134,7 +132,7 @@ public abstract class PagedGui extends SimpleGui {
         private static final DisplayElement FILLER =
                 DisplayElement.of(
                         new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)
-                                .setName(Text.empty())
+                                .setName(Component.empty())
                                 .hideTooltip());
 
         public static DisplayElement of(GuiElementInterface element) {
@@ -154,8 +152,8 @@ public abstract class PagedGui extends SimpleGui {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
                                 .setName(
-                                        Text.translatable("factions.gui.generic.next_page")
-                                                .formatted(Formatting.WHITE))
+                                        Component.translatable("factions.gui.generic.next_page")
+                                                .withStyle(ChatFormatting.WHITE))
                                 .hideDefaultTooltip()
                                 .setProfileSkinTexture(Icons.GUI_NEXT_PAGE)
                                 .setCallback(
@@ -167,8 +165,8 @@ public abstract class PagedGui extends SimpleGui {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
                                 .setName(
-                                        Text.translatable("factions.gui.generic.next_page")
-                                                .formatted(Formatting.DARK_GRAY))
+                                        Component.translatable("factions.gui.generic.next_page")
+                                                .withStyle(ChatFormatting.DARK_GRAY))
                                 .hideDefaultTooltip()
                                 .setProfileSkinTexture(Icons.GUI_NEXT_PAGE_BLOCKED));
             }
@@ -179,8 +177,8 @@ public abstract class PagedGui extends SimpleGui {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
                                 .setName(
-                                        Text.translatable("factions.gui.generic.previous_page")
-                                                .formatted(Formatting.WHITE))
+                                        Component.translatable("factions.gui.generic.previous_page")
+                                                .withStyle(ChatFormatting.WHITE))
                                 .hideDefaultTooltip()
                                 .setProfileSkinTexture(Icons.GUI_PREVIOUS_PAGE)
                                 .setCallback(
@@ -192,8 +190,8 @@ public abstract class PagedGui extends SimpleGui {
                 return DisplayElement.of(
                         new GuiElementBuilder(Items.PLAYER_HEAD)
                                 .setName(
-                                        Text.translatable("factions.gui.generic.previous_page")
-                                                .formatted(Formatting.DARK_GRAY))
+                                        Component.translatable("factions.gui.generic.previous_page")
+                                                .withStyle(ChatFormatting.DARK_GRAY))
                                 .hideDefaultTooltip()
                                 .setProfileSkinTexture(Icons.GUI_PREVIOUS_PAGE_BLOCKED));
             }
@@ -208,7 +206,7 @@ public abstract class PagedGui extends SimpleGui {
         }
     }
 
-    public static final void playClickSound(ServerPlayerEntity player) {
+    public static final void playClickSound(ServerPlayer player) {
         GuiInteract.playSound(player, SoundEvents.UI_BUTTON_CLICK.value(), 1f, 1f);
     }
 }

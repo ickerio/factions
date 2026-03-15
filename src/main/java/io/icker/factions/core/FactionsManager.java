@@ -11,26 +11,25 @@ import io.icker.factions.util.Message;
 import io.icker.factions.util.WorldUtils;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.level.ChunkPos;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
 public class FactionsManager {
-    public static PlayerManager playerManager;
+    public static PlayerList playerManager;
 
     public static void register() {
         ServerLifecycleEvents.SERVER_STARTED.register(FactionsManager::serverStarted);
@@ -50,9 +49,9 @@ public class FactionsManager {
                             return;
                         }
 
-                        BlockPos homePos = BlockPos.ofFloored(home.x, home.y, home.z);
+                        BlockPos homePos = BlockPos.containing(home.x, home.y, home.z);
 
-                        ServerWorld world = WorldUtils.getWorld(home.level);
+                        ServerLevel world = WorldUtils.getWorld(home.level);
 
                         ChunkPos homeChunkPos = world.getChunk(homePos).getPos();
 
@@ -64,43 +63,43 @@ public class FactionsManager {
     }
 
     private static void serverStarted(MinecraftServer server) {
-        playerManager = server.getPlayerManager();
-        Message.manager = server.getPlayerManager();
+        playerManager = server.getPlayerList();
+        Message.manager = server.getPlayerList();
     }
 
     private static void factionModified(Faction faction) {
-        ServerPlayerEntity[] players =
+        ServerPlayer[] players =
                 faction.getUsers().stream()
                         .map(user -> playerManager.getPlayer(user.getID()))
                         .filter(player -> player != null)
-                        .toArray(ServerPlayerEntity[]::new);
+                        .toArray(ServerPlayer[]::new);
         updatePlayerList(players);
     }
 
     private static void memberChange(Faction faction, User user) {
-        ServerPlayerEntity player = playerManager.getPlayer(user.getID());
+        ServerPlayer player = playerManager.getPlayer(user.getID());
         if (player != null) {
             updatePlayerList(player);
         }
     }
 
-    private static void playerDeath(ServerPlayerEntity player, DamageSource source) {
-        User member = User.get(player.getUuid());
+    private static void playerDeath(ServerPlayer player, DamageSource source) {
+        User member = User.get(player.getUUID());
         if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();
 
         int adjusted = faction.adjustPower(-FactionsMod.CONFIG.POWER.DEATH_PENALTY);
         new Message(
-                        Text.translatable(
+                        Component.translatable(
                                 "factions.events.lose_power_by_death",
                                 player.getName().getString(),
                                 adjusted))
                 .send(faction);
     }
 
-    private static void powerTick(ServerPlayerEntity player) {
-        User member = User.get(player.getUuid());
+    private static void powerTick(ServerPlayer player) {
+        User member = User.get(player.getUUID());
         if (!member.isInFaction()) return;
 
         Faction faction = member.getFaction();
@@ -108,46 +107,46 @@ public class FactionsManager {
         int adjusted = faction.adjustPower(FactionsMod.CONFIG.POWER.POWER_TICKS.REWARD);
         if (adjusted != 0 && FactionsMod.CONFIG.DISPLAY.POWER_MESSAGE)
             new Message(
-                            Text.translatable(
+                            Component.translatable(
                                     "factions.events.get_power_by_tick",
                                     player.getName().getString(),
                                     adjusted))
                     .send(faction);
     }
 
-    private static void updatePlayerList(ServerPlayerEntity... players) {
-        playerManager.sendToAll(
-                new PlayerListS2CPacket(
-                        EnumSet.of(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME),
+    private static void updatePlayerList(ServerPlayer... players) {
+        playerManager.broadcastAll(
+                new ClientboundPlayerInfoUpdatePacket(
+                        EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME),
                         List.of(players)));
     }
 
-    private static ActionResult openSafe(PlayerEntity player, Faction faction) {
-        User user = User.get(player.getUuid());
+    private static InteractionResult openSafe(Player player, Faction faction) {
+        User user = User.get(player.getUUID());
 
         if (!user.isInFaction()) {
             if (FactionsMod.CONFIG.SAFE != null && FactionsMod.CONFIG.SAFE.ENDER_CHEST) {
-                new Message(Text.translatable("factions.events.no_enderchests_without_faction"))
+                new Message(Component.translatable("factions.events.no_enderchests_without_faction"))
                         .fail()
                         .send(player, false);
-                return ActionResult.FAIL;
+                return InteractionResult.FAIL;
             }
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }
 
-        player.openHandledScreen(
-                new SimpleNamedScreenHandlerFactory(
+        player.openMenu(
+                new SimpleMenuProvider(
                         (syncId, inventory, p) -> {
                             if (FactionsMod.CONFIG.SAFE.DOUBLE) {
-                                return GenericContainerScreenHandler.createGeneric9x6(
+                                return ChestMenu.sixRows(
                                         syncId, inventory, faction.getSafe());
                             } else {
-                                return GenericContainerScreenHandler.createGeneric9x3(
+                                return ChestMenu.threeRows(
                                         syncId, inventory, faction.getSafe());
                             }
                         },
-                        Text.translatable("factions.gui.safe.title", faction.getName())));
+                        Component.translatable("factions.gui.safe.title", faction.getName())));
 
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 }

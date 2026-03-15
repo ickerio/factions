@@ -9,31 +9,30 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 
 public class LeaveCommand implements Command {
-    private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayerOrThrow();
+    private int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSourceStack source = context.getSource();
+        ServerPlayer player = source.getPlayerOrException();
 
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
 
         user.leaveFaction();
-        new Message(Text.translatable("factions.command.leave.success.actor"))
+        new Message(Component.translatable("factions.command.leave.success.actor"))
                 .prependFaction(faction)
                 .send(player, false);
         new Message(
-                        Text.translatable(
+                        Component.translatable(
                                 "factions.command.leave.success.subject",
                                 player.getName().getString()))
                 .send(faction);
 
-        context.getSource().getServer().getPlayerManager().sendCommandTree(player);
+        context.getSource().getServer().getPlayerList().sendPlayerPermissionLevel(player);
 
         if (faction.getUsers().size() == 0) {
             faction.remove();
@@ -44,8 +43,8 @@ public class LeaveCommand implements Command {
         return 1;
     }
 
-    public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager.literal("leave")
+    public LiteralCommandNode<CommandSourceStack> getNode() {
+        return Commands.literal("leave")
                 .requires(
                         Requires.multiple(
                                 Requires.require(m -> m.isInFaction() && m.rank != User.Rank.OWNER),

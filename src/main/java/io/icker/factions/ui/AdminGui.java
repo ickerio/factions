@@ -13,17 +13,15 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
-
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import xyz.nucleoid.server.translations.api.Localization;
 
 import java.util.*;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Items;
 
 public class AdminGui extends SimpleGui {
     private final Runnable defaultReturn =
@@ -32,12 +30,12 @@ public class AdminGui extends SimpleGui {
                 this.open();
             };
 
-    public AdminGui(ServerPlayerEntity player) {
-        super(ScreenHandlerType.GENERIC_9X1, player, false);
-        User user = User.get(player.getUuid());
+    public AdminGui(ServerPlayer player) {
+        super(MenuType.GENERIC_9x1, player, false);
+        User user = User.get(player.getUUID());
 
         // GUI
-        this.setTitle(Text.translatable("factions.gui.admin.title"));
+        this.setTitle(Component.translatable("factions.gui.admin.title"));
 
         List<Integer> indexes =
                 FactionsMod.dynmap == null ? List.of(1, 3, 5, 7) : List.of(0, 2, 4, 6, 8);
@@ -53,14 +51,14 @@ public class AdminGui extends SimpleGui {
                 indexes.get(1),
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setProfileSkinTexture(Icons.GUI_FIST)
-                        .setName(Text.translatable("factions.gui.admin.options.power"))
+                        .setName(Component.translatable("factions.gui.admin.options.power"))
                         .setLore(
                                 List.of(
-                                        Text.translatable("factions.gui.admin.options.power.lore")
+                                        Component.translatable("factions.gui.admin.options.power.lore")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.GRAY))))
+                                                                .withColor(ChatFormatting.GRAY))))
                         .setCallback(
                                 (index, clickType, actionType) -> {
                                     GuiInteract.playClickSound(player);
@@ -72,26 +70,26 @@ public class AdminGui extends SimpleGui {
                 indexes.get(2),
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setProfileSkinTexture(Icons.GUI_XENOMORPH)
-                        .setName(Text.translatable("factions.gui.admin.options.spoof"))
+                        .setName(Component.translatable("factions.gui.admin.options.spoof"))
                         .setLore(
                                 List.of(
-                                        Text.translatable("factions.gui.admin.options.spoof.lore1")
+                                        Component.translatable("factions.gui.admin.options.spoof.lore1")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.GRAY)),
-                                        Text.translatable("factions.gui.admin.options.spoof.lore2")
+                                                                .withColor(ChatFormatting.GRAY)),
+                                        Component.translatable("factions.gui.admin.options.spoof.lore2")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.GRAY))))
+                                                                .withColor(ChatFormatting.GRAY))))
                         .setCallback(
                                 (index, clickType, actionType) -> {
                                     GuiInteract.playClickSound(player);
                                     if (clickType == ClickType.MOUSE_RIGHT) {
                                         user.setSpoof(null);
                                         new Message(
-                                                        Text.translatable(
+                                                        Component.translatable(
                                                                 "factions.gui.admin.options.spoof.clear.success"))
                                                 .send(player, false);
                                         return;
@@ -104,14 +102,14 @@ public class AdminGui extends SimpleGui {
                 indexes.get(3),
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setProfileSkinTexture(Icons.GUI_BOOK)
-                        .setName(Text.translatable("factions.gui.admin.options.audit"))
+                        .setName(Component.translatable("factions.gui.admin.options.audit"))
                         .setLore(
                                 List.of(
-                                        Text.translatable("factions.gui.admin.options.audit.lore")
+                                        Component.translatable("factions.gui.admin.options.audit.lore")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.GRAY))))
+                                                                .withColor(ChatFormatting.GRAY))))
                         .setCallback(
                                 (index, clickType, actionType) -> {
                                     GuiInteract.playClickSound(player);
@@ -122,7 +120,7 @@ public class AdminGui extends SimpleGui {
                                     }
 
                                     new Message(
-                                                    Text.translatable(
+                                                    Component.translatable(
                                                             "factions.gui.admin.options.audit.success"))
                                             .send(player, false);
                                 }));
@@ -133,21 +131,21 @@ public class AdminGui extends SimpleGui {
                     indexes.get(4),
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                             .setProfileSkinTexture(Icons.GUI_EARTH_RELOAD)
-                            .setName(Text.translatable("factions.gui.admin.options.reload_dynmap"))
+                            .setName(Component.translatable("factions.gui.admin.options.reload_dynmap"))
                             .setLore(
                                     List.of(
-                                            Text.translatable(
+                                            Component.translatable(
                                                             "factions.gui.admin.options.reload_dynmap.lore")
                                                     .setStyle(
                                                             Style.EMPTY
                                                                     .withItalic(false)
-                                                                    .withColor(Formatting.GRAY))))
+                                                                    .withColor(ChatFormatting.GRAY))))
                             .setCallback(
                                     (index, clickType, actionType) -> {
                                         GuiInteract.playClickSound(player);
                                         FactionsMod.dynmap.reloadAll();
                                         new Message(
-                                                        Text.translatable(
+                                                        Component.translatable(
                                                                 "factions.gui.admin.options.reload_dynmap.success"))
                                                 .send(player, false);
                                     }));
@@ -161,23 +159,23 @@ public class AdminGui extends SimpleGui {
                 .setProfileSkinTexture(
                         user.bypass ? Icons.GUI_TESSERACT_BLUE : Icons.GUI_TESSERACT_OFF)
                 .setName(
-                        Text.translatable("factions.gui.admin.options.bypass")
+                        Component.translatable("factions.gui.admin.options.bypass")
                                 .append(
                                         user.bypass
-                                                ? Text.translatable("options.on")
-                                                        .formatted(Formatting.GREEN)
-                                                : Text.translatable("options.off")
-                                                        .formatted(Formatting.RED)))
+                                                ? Component.translatable("options.on")
+                                                        .withStyle(ChatFormatting.GREEN)
+                                                : Component.translatable("options.off")
+                                                        .withStyle(ChatFormatting.RED)))
                 .setLore(
                         List.of(
-                                Text.translatable(
+                                Component.translatable(
                                                 user.bypass
                                                         ? "factions.gui.admin.options.bypass.lore.disable"
                                                         : "factions.gui.admin.options.bypass.lore.enable")
                                         .setStyle(
                                                 Style.EMPTY
                                                         .withItalic(false)
-                                                        .withColor(Formatting.GRAY))))
+                                                        .withColor(ChatFormatting.GRAY))))
                 .setCallback(
                         (index, clickType, actionType) -> {
                             GuiInteract.playClickSound(player);
@@ -186,20 +184,20 @@ public class AdminGui extends SimpleGui {
                             this.setSlot(index, buildBypassElement(user));
 
                             new Message(
-                                            Text.translatable(
+                                            Component.translatable(
                                                     "factions.gui.admin.options.bypass.success"))
                                     .filler("·")
                                     .add(
                                             new Message(
                                                             user.bypass
-                                                                    ? Text.translatable(
+                                                                    ? Component.translatable(
                                                                             "options.on")
-                                                                    : Text.translatable(
+                                                                    : Component.translatable(
                                                                             "options.off"))
                                                     .format(
                                                             user.bypass
-                                                                    ? Formatting.GREEN
-                                                                    : Formatting.RED))
+                                                                    ? ChatFormatting.GREEN
+                                                                    : ChatFormatting.RED))
                                     .send(player, false);
                         });
     }
@@ -207,7 +205,7 @@ public class AdminGui extends SimpleGui {
     private void execSpoof() {
         InputGui inputGui = new InputGui(player);
 
-        inputGui.setTitle(Text.translatable("factions.gui.spoof.title"));
+        inputGui.setTitle(Component.translatable("factions.gui.spoof.title"));
         inputGui.setDefaultInputValue(Localization.raw("factions.gui.spoof.default", player));
 
         inputGui.returnBtn.setCallback(defaultReturn);
@@ -219,28 +217,28 @@ public class AdminGui extends SimpleGui {
 
                     if (!input.matches("^[a-zA-Z0-9_]{2,16}$")) {
                         inputGui.showErrorMessage(
-                                Text.translatable("factions.gui.spoof.fail.invalid_name", input)
-                                        .formatted(Formatting.RED),
+                                Component.translatable("factions.gui.spoof.fail.invalid_name", input)
+                                        .withStyle(ChatFormatting.RED),
                                 index);
                         return;
                     }
                     Optional<GameProfile> profile;
                     if (!(profile =
-                                    player.getEntityWorld()
+                                    player.level()
                                             .getServer()
-                                            .getApiServices()
+                                            .services()
                                             .profileResolver()
-                                            .getProfileByName(input))
+                                            .fetchByName(input))
                             .isPresent()) {
                         inputGui.showErrorMessage(
-                                Text.translatable("factions.gui.spoof.fail.no_player", input)
-                                        .formatted(Formatting.RED),
+                                Component.translatable("factions.gui.spoof.fail.no_player", input)
+                                        .withStyle(ChatFormatting.RED),
                                 index);
                         return;
                     }
                     User target = User.get(profile.get().id());
-                    User.get(player.getUuid()).setSpoof(target);
-                    new Message(Text.translatable("factions.gui.spoof.success", input))
+                    User.get(player.getUUID()).setSpoof(target);
+                    new Message(Component.translatable("factions.gui.spoof.success", input))
                             .send(player, false);
                     this.open();
                 });
@@ -255,7 +253,7 @@ public class AdminGui extends SimpleGui {
         final Faction[] selectedFac = new Faction[1];
         final int[] selectedPow = new int[1];
 
-        inputFacGui.setTitle(Text.translatable("factions.gui.power.setfaction.title"));
+        inputFacGui.setTitle(Component.translatable("factions.gui.power.setfaction.title"));
         inputFacGui.setDefaultInputValue(
                 Localization.raw("factions.gui.power.setfaction.default", player));
 
@@ -266,15 +264,15 @@ public class AdminGui extends SimpleGui {
                     selectedFac[0] = Faction.getByName(inputFacGui.getInput());
                     if (selectedFac[0] == null) {
                         inputFacGui.showErrorMessage(
-                                Text.translatable("factions.gui.power.setfaction.fail.no_faction")
-                                        .formatted(Formatting.RED),
+                                Component.translatable("factions.gui.power.setfaction.fail.no_faction")
+                                        .withStyle(ChatFormatting.RED),
                                 index);
                         return;
                     }
                     inputPowGui.open();
                 });
 
-        inputPowGui.setTitle(Text.translatable("factions.gui.power.setpower.title"));
+        inputPowGui.setTitle(Component.translatable("factions.gui.power.setpower.title"));
         inputPowGui.setDefaultInputValue(
                 Localization.raw("factions.gui.power.setpower.default", player));
         inputPowGui.returnBtn.setCallback(defaultReturn);
@@ -285,8 +283,8 @@ public class AdminGui extends SimpleGui {
                         selectedPow[0] = Integer.parseInt(inputPowGui.getInput());
                     } catch (Exception e) {
                         inputPowGui.showErrorMessage(
-                                Text.translatable("factions.gui.power.setpower.fail.nan")
-                                        .formatted(Formatting.RED),
+                                Component.translatable("factions.gui.power.setpower.fail.nan")
+                                        .withStyle(ChatFormatting.RED),
                                 index);
                         return;
                     }
@@ -296,31 +294,31 @@ public class AdminGui extends SimpleGui {
                     if (selectedPow[0] != 0) {
                         if (selectedPow[0] > 0) {
                             new Message(
-                                            Text.translatable(
+                                            Component.translatable(
                                                     "factions.gui.power.success.added.faction",
                                                     player.getName().getString(),
                                                     selectedPow[0]))
                                     .send(selectedFac[0]);
                             new Message(
-                                            Text.translatable(
+                                            Component.translatable(
                                                     "factions.gui.power.success.added.admin",
                                                     selectedPow[0]))
                                     .send(player, false);
                         } else {
                             new Message(
-                                            Text.translatable(
+                                            Component.translatable(
                                                     "factions.gui.power.success.removed.faction",
                                                     player.getName().getString(),
                                                     selectedPow[0]))
                                     .send(selectedFac[0]);
                             new Message(
-                                            Text.translatable(
+                                            Component.translatable(
                                                     "factions.gui.power.success.removed.admin",
                                                     selectedPow[0]))
                                     .send(player, false);
                         }
                     } else {
-                        new Message(Text.translatable("factions.gui.power.fail.nochange"))
+                        new Message(Component.translatable("factions.gui.power.fail.nochange"))
                                 .fail()
                                 .send(player, false);
                     }

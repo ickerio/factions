@@ -4,58 +4,56 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 
 import io.icker.factions.util.GuiInteract;
-
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class InputGui extends AnvilInputGui {
     public GuiElementBuilder returnBtn;
     public GuiElementBuilder confirmBtn;
     private final Timer timer = new Timer();
 
-    public InputGui(ServerPlayerEntity player) {
+    public InputGui(ServerPlayer player) {
         super(player, false);
 
         this.returnBtn =
                 new GuiElementBuilder(Items.BARRIER)
                         .setName(
-                                Text.translatable("factions.gui.generic.back")
-                                        .formatted(Formatting.RED));
+                                Component.translatable("factions.gui.generic.back")
+                                        .withStyle(ChatFormatting.RED));
         this.confirmBtn =
                 new GuiElementBuilder(Items.SLIME_BALL)
                         .setName(
-                                Text.translatable("factions.gui.generic.confirm")
-                                        .formatted(Formatting.GREEN));
+                                Component.translatable("factions.gui.generic.confirm")
+                                        .withStyle(ChatFormatting.GREEN));
     }
 
     public void showErrorMessage(String text, int slotIndex) {
-        showErrorMessage(Text.literal(text), slotIndex);
+        showErrorMessage(Component.literal(text), slotIndex);
     }
 
-    public void showErrorMessage(MutableText text, int slotIndex) {
+    public void showErrorMessage(MutableComponent text, int slotIndex) {
         ItemStack item = Objects.requireNonNull(this.getSlot(slotIndex)).getItemStack();
         item.set(
-                DataComponentTypes.CUSTOM_NAME,
-                text.setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.RED)));
+                DataComponents.CUSTOM_NAME,
+                text.setStyle(Style.EMPTY.withItalic(false).withColor(ChatFormatting.RED)));
         GuiInteract.playSound(
-                player, SoundEvent.of(Identifier.of("minecraft:item.shield.break")), 1f, 1f);
+                player, SoundEvent.createVariableRangeEvent(Identifier.parse("minecraft:item.shield.break")), 1f, 1f);
         timer.schedule(
                 new TimerTask() {
                     @Override
                     public void run() {
-                        item.remove(DataComponentTypes.CUSTOM_NAME);
+                        item.remove(DataComponents.CUSTOM_NAME);
                     }
                 },
                 1500);

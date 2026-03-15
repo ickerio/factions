@@ -7,12 +7,11 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
-
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 
 public class WorldManager {
     public static void register() {
@@ -24,12 +23,12 @@ public class WorldManager {
         // TODO Implement this
     }
 
-    private static void onMove(ServerPlayerEntity player) {
-        User user = User.get(player.getUuid());
-        ServerWorld world = (ServerWorld) player.getEntityWorld();
-        String dimension = world.getRegistryKey().getValue().toString();
+    private static void onMove(ServerPlayer player) {
+        User user = User.get(player.getUUID());
+        ServerLevel world = (ServerLevel) player.level();
+        String dimension = world.dimension().identifier().toString();
 
-        ChunkPos chunkPos = world.getChunk(player.getBlockPos()).getPos();
+        ChunkPos chunkPos = world.getChunk(player.blockPosition()).getPos();
 
         Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
         if (user.autoclaim && claim == null) {
@@ -42,7 +41,7 @@ public class WorldManager {
                             + faction.getAdminPower();
 
             if (maxPower < requiredPower) {
-                new Message(Text.translatable("factions.events.autoclaim.fail"))
+                new Message(Component.translatable("factions.events.autoclaim.fail"))
                         .fail()
                         .send(player, false);
                 user.autoclaim = false;
@@ -50,7 +49,7 @@ public class WorldManager {
                 faction.addClaim(chunkPos.x, chunkPos.z, dimension);
                 claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
                 new Message(
-                                Text.translatable(
+                                Component.translatable(
                                         "factions.events.autoclaim.success",
                                         chunkPos.x,
                                         chunkPos.z,
@@ -64,8 +63,8 @@ public class WorldManager {
                         .format(claim.getFaction().getColor())
                         .send(player, true);
             } else {
-                new Message(Text.translatable("factions.radar.wilderness"))
-                        .format(Formatting.GREEN)
+                new Message(Component.translatable("factions.radar.wilderness"))
+                        .format(ChatFormatting.GREEN)
                         .send(player, true);
             }
         }

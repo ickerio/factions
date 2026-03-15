@@ -11,17 +11,15 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
-
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.GameProfileResolver;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.ProfileResolver;
 import net.minecraft.util.Util;
-
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 import xyz.nucleoid.server.translations.api.Localization;
@@ -32,14 +30,14 @@ import java.util.stream.Collectors;
 public class InfoGui extends SimpleGui {
     protected final Runnable closeCallback;
 
-    public InfoGui(ServerPlayerEntity player, Faction faction, @Nullable Runnable closeCallback) {
-        super(ScreenHandlerType.GENERIC_9X1, player, false);
+    public InfoGui(ServerPlayer player, Faction faction, @Nullable Runnable closeCallback) {
+        super(MenuType.GENERIC_9x1, player, false);
         this.closeCallback = closeCallback;
 
-        MinecraftServer server = player.getEntityWorld().getServer();
-        GameProfileResolver resolver = server.getApiServices().profileResolver();
+        MinecraftServer server = player.level().getServer();
+        ProfileResolver resolver = server.services().profileResolver();
 
-        User user = User.get(player.getUuid());
+        User user = User.get(player.getUUID());
         boolean isMember = faction.equals(user.getFaction());
         List<User> members = faction.getUsers();
 
@@ -48,7 +46,7 @@ public class InfoGui extends SimpleGui {
                         .filter(u -> u.rank == User.Rank.OWNER)
                         .map(
                                 u ->
-                                        resolver.getProfileById(u.getID())
+                                        resolver.fetchById(u.getID())
                                                 .orElse(
                                                         new GameProfile(
                                                                 Util.NIL_UUID,
@@ -58,7 +56,7 @@ public class InfoGui extends SimpleGui {
                                                 .name())
                         .collect(Collectors.joining(", "));
 
-        this.setTitle(Text.translatable("factions.gui.info.title"));
+        this.setTitle(Component.translatable("factions.gui.info.title"));
 
         for (int i = 0; i < 9; i++)
             this.setSlot(i, new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip());
@@ -69,39 +67,39 @@ public class InfoGui extends SimpleGui {
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setProfileSkinTexture(
                                 isMember ? Icons.GUI_CASTLE_NORMAL : Icons.GUI_CASTLE_OPEN)
-                        .setName(Text.literal(faction.getColor() + faction.getName()))
+                        .setName(Component.literal(faction.getColor() + faction.getName()))
                         .setLore(
                                 List.of(
-                                        Text.literal(faction.getDescription())
+                                        Component.literal(faction.getDescription())
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.WHITE)),
-                                        Text.translatable(
+                                                                .withColor(ChatFormatting.WHITE)),
+                                        Component.translatable(
                                                         "factions.gui.info.owner",
-                                                        Text.literal(owner)
+                                                        Component.literal(owner)
                                                                 .setStyle(
                                                                         Style.EMPTY
                                                                                 .withItalic(false)
                                                                                 .withColor(
-                                                                                        Formatting
+                                                                                        ChatFormatting
                                                                                                 .YELLOW)))
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.GRAY)))));
+                                                                .withColor(ChatFormatting.GRAY)))));
 
         // Members info
         int maxSize = FactionsMod.CONFIG.MAX_FACTION_SIZE;
         boolean isMaxSize = FactionsMod.CONFIG.MAX_FACTION_SIZE > -1;
 
-        List<Text> membersLore =
+        List<Component> membersLore =
                 new java.util.ArrayList<>(
                         members.stream()
                                 .map(
                                         u ->
-                                                Text.literal(
-                                                                resolver.getProfileById(u.getID())
+                                                Component.literal(
+                                                                resolver.fetchById(u.getID())
                                                                         .orElse(
                                                                                 new GameProfile(
                                                                                         Util
@@ -115,27 +113,27 @@ public class InfoGui extends SimpleGui {
                                                                 Style.EMPTY
                                                                         .withItalic(false)
                                                                         .withColor(
-                                                                                Formatting.GRAY)))
+                                                                                ChatFormatting.GRAY)))
                                 .toList());
         if (membersLore.size() > 4) membersLore = membersLore.subList(0, 3);
-        membersLore.add(Text.empty());
+        membersLore.add(Component.empty());
         membersLore.add(
-                Text.translatable("factions.gui.info.members.viewall")
-                        .setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
+                Component.translatable("factions.gui.info.members.viewall")
+                        .setStyle(Style.EMPTY.withItalic(false).withColor(ChatFormatting.GRAY)));
 
         this.setSlot(
                 1,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setProfileSkinTexture(Icons.GUI_PLAYER)
                         .setName(
-                                Text.translatable(
+                                Component.translatable(
                                         "factions.gui.info.members",
-                                        Text.literal(
+                                        Component.literal(
                                                         members.size()
                                                                 + (isMaxSize
                                                                         ? ("/" + maxSize)
                                                                         : ""))
-                                                .formatted(Formatting.GREEN)))
+                                                .withStyle(ChatFormatting.GREEN)))
                         .setLore(membersLore)
                         .setCallback(
                                 () -> {
@@ -150,108 +148,108 @@ public class InfoGui extends SimpleGui {
                 2,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setProfileSkinTexture(Icons.GUI_FIST)
-                        .setName(Text.translatable("factions.gui.info.power"))
+                        .setName(Component.translatable("factions.gui.info.power"))
                         .setLore(
                                 List.of(
-                                        Text.translatable(
+                                        Component.translatable(
                                                         "factions.gui.info.power.total",
-                                                        Text.literal(
+                                                        Component.literal(
                                                                         String.valueOf(
                                                                                 faction.getPower()))
                                                                 .setStyle(
                                                                         Style.EMPTY
                                                                                 .withItalic(false)
                                                                                 .withColor(
-                                                                                        Formatting
+                                                                                        ChatFormatting
                                                                                                 .GREEN)))
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.GRAY)),
-                                        Text.translatable(
+                                                                .withColor(ChatFormatting.GRAY)),
+                                        Component.translatable(
                                                         "factions.gui.info.power.claims",
-                                                        Text.literal(String.valueOf(requiredPower))
+                                                        Component.literal(String.valueOf(requiredPower))
                                                                 .setStyle(
                                                                         Style.EMPTY
                                                                                 .withItalic(false)
                                                                                 .withColor(
-                                                                                        Formatting
+                                                                                        ChatFormatting
                                                                                                 .GREEN)))
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.GRAY)),
-                                        Text.translatable(
+                                                                .withColor(ChatFormatting.GRAY)),
+                                        Component.translatable(
                                                         "factions.gui.info.power.max",
-                                                        Text.literal(String.valueOf(maxPower))
+                                                        Component.literal(String.valueOf(maxPower))
                                                                 .setStyle(
                                                                         Style.EMPTY
                                                                                 .withItalic(false)
                                                                                 .withColor(
-                                                                                        Formatting
+                                                                                        ChatFormatting
                                                                                                 .GREEN)))
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
-                                                                .withColor(Formatting.GRAY)))));
+                                                                .withColor(ChatFormatting.GRAY)))));
 
         // Allies info
-        List<Text> allies =
+        List<Component> allies =
                 faction.getMutualAllies().isEmpty()
                         ? List.of(
-                                Text.translatable("factions.gui.info.allies.none")
+                                Component.translatable("factions.gui.info.allies.none")
                                         .setStyle(
                                                 Style.EMPTY
                                                         .withItalic(false)
-                                                        .withColor(Formatting.GRAY)))
+                                                        .withColor(ChatFormatting.GRAY)))
                         : faction.getMutualAllies().stream()
                                 .map(rel -> Faction.get(rel.target))
-                                .map(fac -> Text.of(fac.getColor() + fac.getName()))
+                                .map(fac -> Component.nullToEmpty(fac.getColor() + fac.getName()))
                                 .toList();
         this.setSlot(
                 3,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setProfileSkinTexture(Icons.GUI_CASTLE_ALLY)
                         .setName(
-                                Text.translatable(
+                                Component.translatable(
                                                 "factions.gui.info.allies.some",
                                                 faction.getMutualAllies().size())
-                                        .formatted(Formatting.GREEN))
+                                        .withStyle(ChatFormatting.GREEN))
                         .setLore(allies));
         // Enemies info
-        List<Text> enemies =
+        List<Component> enemies =
                 faction.getEnemiesWith().isEmpty()
                         ? List.of(
-                                Text.translatable("factions.gui.info.enemies.none")
+                                Component.translatable("factions.gui.info.enemies.none")
                                         .setStyle(
                                                 Style.EMPTY
                                                         .withItalic(false)
-                                                        .withColor(Formatting.GRAY)))
+                                                        .withColor(ChatFormatting.GRAY)))
                         : faction.getEnemiesWith().stream()
                                 .map(rel -> Faction.get(rel.target))
-                                .map(fac -> Text.of(fac.getColor() + fac.getName()))
+                                .map(fac -> Component.nullToEmpty(fac.getColor() + fac.getName()))
                                 .toList();
         this.setSlot(
                 4,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setProfileSkinTexture(Icons.GUI_CASTLE_ENEMY)
                         .setName(
-                                Text.translatable(
+                                Component.translatable(
                                                 "factions.gui.info.enemies.some",
                                                 faction.getEnemiesWith().size())
-                                        .formatted(Formatting.RED))
+                                        .withStyle(ChatFormatting.RED))
                         .setLore(enemies));
 
-        if (Command.Requires.isOwner().test(player.getCommandSource()) && isMember) {
+        if (Command.Requires.isOwner().test(player.createCommandSourceStack()) && isMember) {
             this.setSlot(
                     6,
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                             .setProfileSkinTexture(Icons.GUI_LECTERN)
-                            .setName(Text.translatable("factions.gui.info.settings"))
+                            .setName(Component.translatable("factions.gui.info.settings"))
                             .setLore(
                                     List.of(
-                                            Text.translatable("factions.gui.info.settings.lore")
-                                                    .formatted(Formatting.GRAY)))
+                                            Component.translatable("factions.gui.info.settings.lore")
+                                                    .withStyle(ChatFormatting.GRAY)))
                             .setCallback(
                                     () -> {
                                         GuiInteract.playClickSound(player);
@@ -263,11 +261,11 @@ public class InfoGui extends SimpleGui {
                 8,
                 new GuiElementBuilder(Items.STRUCTURE_VOID)
                         .setName(
-                                Text.translatable(
+                                Component.translatable(
                                                 closeCallback == null
                                                         ? "factions.gui.generic.close"
                                                         : "factions.gui.generic.back")
-                                        .formatted(Formatting.RED))
+                                        .withStyle(ChatFormatting.RED))
                         .setCallback(
                                 () -> {
                                     GuiInteract.playClickSound(player);

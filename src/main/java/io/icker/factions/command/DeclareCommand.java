@@ -10,40 +10,38 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import java.util.Locale;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerPlayer;
 
 public class DeclareCommand implements Command {
-    private int ally(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int ally(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         return updateRelationship(context, Relationship.Status.ALLY);
     }
 
-    private int neutral(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int neutral(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         return updateRelationship(context, Relationship.Status.NEUTRAL);
     }
 
-    private int enemy(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int enemy(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         return updateRelationship(context, Relationship.Status.ENEMY);
     }
 
     private int updateRelationship(
-            CommandContext<ServerCommandSource> context, Relationship.Status status)
+            CommandContext<CommandSourceStack> context, Relationship.Status status)
             throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, "faction");
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayerOrThrow();
+        CommandSourceStack source = context.getSource();
+        ServerPlayer player = source.getPlayerOrException();
 
         Faction targetFaction = Faction.getByName(name);
 
         if (targetFaction == null) {
-            new Message(Text.translatable("factions.command.declare.fail.nonexistent_faction"))
+            new Message(Component.translatable("factions.command.declare.fail.nonexistent_faction"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -52,14 +50,14 @@ public class DeclareCommand implements Command {
         Faction sourceFaction = Command.getUser(player).getFaction();
 
         if (sourceFaction.equals(targetFaction)) {
-            new Message(Text.translatable("factions.command.declare.fail.own_faction"))
+            new Message(Component.translatable("factions.command.declare.fail.own_faction"))
                     .fail()
                     .send(player, false);
             return 0;
         }
 
         if (sourceFaction.getRelationship(targetFaction.getID()).status == status) {
-            new Message(Text.translatable("factions.command.declare.fail.no_change"))
+            new Message(Component.translatable("factions.command.declare.fail.no_change"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -78,26 +76,26 @@ public class DeclareCommand implements Command {
 
         RelationshipEvents.NEW_DECLARATION.invoker().onNewDecleration(rel);
 
-        MutableText msgStatus =
+        MutableComponent msgStatus =
                 rel.status == Relationship.Status.ALLY
-                        ? Text.translatable("factions.command.declare.success.status.ally")
-                                .formatted(Formatting.GREEN)
+                        ? Component.translatable("factions.command.declare.success.status.ally")
+                                .withStyle(ChatFormatting.GREEN)
                         : rel.status == Relationship.Status.ENEMY
-                                ? Text.translatable("factions.command.declare.success.status.enemy")
-                                        .formatted(Formatting.RED)
-                                : Text.translatable(
+                                ? Component.translatable("factions.command.declare.success.status.enemy")
+                                        .withStyle(ChatFormatting.RED)
+                                : Component.translatable(
                                         "factions.command.declare.success.status.neutral");
 
         if (rel.status == rev.status) {
             RelationshipEvents.NEW_MUTUAL.invoker().onNewMutual(rel);
             new Message(
-                            Text.translatable(
+                            Component.translatable(
                                     "factions.command.declare.success.mutual",
                                     msgStatus,
                                     targetFaction.getName()))
                     .send(sourceFaction);
             new Message(
-                            Text.translatable(
+                            Component.translatable(
                                     "factions.command.declare.success.mutual",
                                     msgStatus,
                                     sourceFaction.getName()))
@@ -108,7 +106,7 @@ public class DeclareCommand implements Command {
         }
 
         new Message(
-                        Text.translatable(
+                        Component.translatable(
                                 "factions.command.declare.success.actor",
                                 targetFaction.getName(),
                                 msgStatus))
@@ -116,11 +114,11 @@ public class DeclareCommand implements Command {
 
         if (rel.status != Relationship.Status.NEUTRAL)
             new Message(
-                            Text.translatable(
+                            Component.translatable(
                                     "factions.command.declare.success.subject",
                                     sourceFaction.getName(),
                                     msgStatus))
-                    .hover(Text.translatable("factions.command.declare.success.subject.hover"))
+                    .hover(Component.translatable("factions.command.declare.success.subject.hover"))
                     .click(
                             String.format(
                                     "/factions declare %s %s",
@@ -132,32 +130,32 @@ public class DeclareCommand implements Command {
     }
 
     @Override
-    public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager.literal("declare")
+    public LiteralCommandNode<CommandSourceStack> getNode() {
+        return Commands.literal("declare")
                 .requires(Requires.isLeader())
                 .then(
-                        CommandManager.literal("ally")
+                        Commands.literal("ally")
                                 .requires(Requires.hasPerms("factions.declare.ally", 0))
                                 .then(
-                                        CommandManager.argument(
+                                        Commands.argument(
                                                         "faction",
                                                         StringArgumentType.greedyString())
                                                 .suggests(Suggests.allFactions(false))
                                                 .executes(this::ally)))
                 .then(
-                        CommandManager.literal("neutral")
+                        Commands.literal("neutral")
                                 .requires(Requires.hasPerms("factions.declare.neutral", 0))
                                 .then(
-                                        CommandManager.argument(
+                                        Commands.argument(
                                                         "faction",
                                                         StringArgumentType.greedyString())
                                                 .suggests(Suggests.allFactions(false))
                                                 .executes(this::neutral)))
                 .then(
-                        CommandManager.literal("enemy")
+                        Commands.literal("enemy")
                                 .requires(Requires.hasPerms("factions.declare.enemy", 0))
                                 .then(
-                                        CommandManager.argument(
+                                        Commands.argument(
                                                         "faction",
                                                         StringArgumentType.greedyString())
                                                 .suggests(Suggests.allFactions(false))

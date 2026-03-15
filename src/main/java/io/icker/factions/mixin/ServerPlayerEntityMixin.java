@@ -5,65 +5,63 @@ import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
-
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ServerPlayerEntity.class)
+@Mixin(ServerPlayer.class)
 public abstract class ServerPlayerEntityMixin extends LivingEntity {
 
-    protected ServerPlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
+    protected ServerPlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level world) {
         super(entityType, world);
     }
 
-    @Inject(at = @At("HEAD"), method = "onDeath")
+    @Inject(at = @At("HEAD"), method = "die")
     public void onDeath(DamageSource source, CallbackInfo info) {
-        Entity entity = source.getSource();
-        if (entity == null || !entity.isPlayer()) return;
+        Entity entity = source.getDirectEntity();
+        if (entity == null || !entity.isAlwaysTicking()) return;
         PlayerEvents.ON_KILLED_BY_PLAYER
                 .invoker()
-                .onKilledByPlayer((ServerPlayerEntity) (Object) this, source);
+                .onKilledByPlayer((ServerPlayer) (Object) this, source);
     }
 
     @Inject(at = @At("HEAD"), method = "tick")
     public void tick(CallbackInfo info) {
-        if (age % FactionsMod.CONFIG.POWER.POWER_TICKS.TICKS != 0 || age == 0) return;
-        PlayerEvents.ON_POWER_TICK.invoker().onPowerTick((ServerPlayerEntity) (Object) this);
+        if (tickCount % FactionsMod.CONFIG.POWER.POWER_TICKS.TICKS != 0 || tickCount == 0) return;
+        PlayerEvents.ON_POWER_TICK.invoker().onPowerTick((ServerPlayer) (Object) this);
     }
 
     @Inject(method = "isInvulnerableTo", at = @At("RETURN"), cancellable = true)
     public void isInvulnerableTo(
-            ServerWorld world, DamageSource damageSource, CallbackInfoReturnable<Boolean> info) {
-        Entity source = damageSource.getAttacker();
+            ServerLevel world, DamageSource damageSource, CallbackInfoReturnable<Boolean> info) {
+        Entity source = damageSource.getEntity();
         if (source == null) return;
 
-        ActionResult result =
+        InteractionResult result =
                 PlayerEvents.IS_INVULNERABLE
                         .invoker()
                         .isInvulnerable(
-                                damageSource.getAttacker(), (ServerPlayerEntity) (Object) this);
+                                damageSource.getEntity(), (ServerPlayer) (Object) this);
 
-        if (result != ActionResult.PASS) info.setReturnValue(result == ActionResult.SUCCESS);
+        if (result != InteractionResult.PASS) info.setReturnValue(result == InteractionResult.SUCCESS);
     }
 
-    @Inject(method = "getPlayerListName", at = @At("HEAD"), cancellable = true)
-    public void getPlayerListName(CallbackInfoReturnable<Text> cir) {
+    @Inject(method = "getTabListDisplayName", at = @At("HEAD"), cancellable = true)
+    public void getPlayerListName(CallbackInfoReturnable<Component> cir) {
         if (FactionsMod.CONFIG.DISPLAY.TAB_MENU) {
-            User member = User.get(((ServerPlayerEntity) (Object) this).getUuid());
+            User member = User.get(((ServerPlayer) (Object) this).getUUID());
             if (member.isInFaction()) {
                 Faction faction = member.getFaction();
                 cir.setReturnValue(
@@ -71,21 +69,21 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
                                 .format(faction.getColor())
                                 .add(
                                         new Message(
-                                                        ((ServerPlayerEntity) (Object) this)
+                                                        ((ServerPlayer) (Object) this)
                                                                 .getName()
                                                                 .getString())
-                                                .format(Formatting.WHITE))
+                                                .format(ChatFormatting.WHITE))
                                 .raw());
             } else {
                 cir.setReturnValue(
-                        new Message(Text.translatable("factions.factionless"))
-                                .format(Formatting.GRAY)
+                        new Message(Component.translatable("factions.factionless"))
+                                .format(ChatFormatting.GRAY)
                                 .add(
                                         new Message(
-                                                        ((ServerPlayerEntity) (Object) this)
+                                                        ((ServerPlayer) (Object) this)
                                                                 .getName()
                                                                 .getString())
-                                                .format(Formatting.WHITE))
+                                                .format(ChatFormatting.WHITE))
                                 .raw());
             }
         }

@@ -8,26 +8,24 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-
 import xyz.nucleoid.server.translations.api.Localization;
 
 import java.util.UUID;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 
 public class RankCommand implements Command {
-    private int promote(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
+    private int promote(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer target = EntityArgument.getPlayer(context, "player");
 
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayerOrThrow();
+        CommandSourceStack source = context.getSource();
+        ServerPlayer player = source.getPlayerOrException();
 
-        if (target.getUuid().equals(player.getUuid())) {
-            new Message(Text.translatable("factions.command.rank.promote.fail.self"))
+        if (target.getUUID().equals(player.getUUID())) {
+            new Message(Component.translatable("factions.command.rank.promote.fail.self"))
                     .fail()
                     .send(player, false);
 
@@ -37,7 +35,7 @@ public class RankCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         for (User user : faction.getUsers())
-            if (user.getID().equals(target.getUuid())) {
+            if (user.getID().equals(target.getUUID())) {
 
                 try {
                     execPromote(user, player);
@@ -46,15 +44,15 @@ public class RankCommand implements Command {
                     return 0;
                 }
 
-                context.getSource().getServer().getPlayerManager().sendCommandTree(target);
+                context.getSource().getServer().getPlayerList().sendPlayerPermissionLevel(target);
 
                 new Message(
-                                Text.translatable(
+                                Component.translatable(
                                         "factions.command.rank.promote.success",
                                         target.getName().getString(),
-                                        Text.translatable(
+                                        Component.translatable(
                                                 "factions.command.rank."
-                                                        + User.get(target.getUuid())
+                                                        + User.get(target.getUUID())
                                                                 .getRankName())))
                         .prependFaction(faction)
                         .send(player, false);
@@ -63,7 +61,7 @@ public class RankCommand implements Command {
             }
 
         new Message(
-                        Text.translatable(
+                        Component.translatable(
                                 "factions.command.rank.promote.fail.not_in_faction",
                                 target.getName().getString()))
                 .fail()
@@ -71,7 +69,7 @@ public class RankCommand implements Command {
         return 0;
     }
 
-    public static void execPromote(User target, ServerPlayerEntity initiator) throws Exception {
+    public static void execPromote(User target, ServerPlayer initiator) throws Exception {
         switch (target.rank) {
             case GUEST -> target.rank = User.Rank.MEMBER;
             case MEMBER -> target.rank = User.Rank.COMMANDER;
@@ -87,14 +85,14 @@ public class RankCommand implements Command {
         }
     }
 
-    private int demote(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
+    private int demote(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer target = EntityArgument.getPlayer(context, "player");
 
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayerOrThrow();
+        CommandSourceStack source = context.getSource();
+        ServerPlayer player = source.getPlayerOrException();
 
-        if (target.getUuid().equals(player.getUuid())) {
-            new Message(Text.translatable("factions.command.rank.demote.fail.self"))
+        if (target.getUUID().equals(player.getUUID())) {
+            new Message(Component.translatable("factions.command.rank.demote.fail.self"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -103,7 +101,7 @@ public class RankCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         for (User user : faction.getUsers())
-            if (user.getID().equals(target.getUuid())) {
+            if (user.getID().equals(target.getUUID())) {
 
                 try {
                     execDemote(user, player);
@@ -112,15 +110,15 @@ public class RankCommand implements Command {
                     return 0;
                 }
 
-                context.getSource().getServer().getPlayerManager().sendCommandTree(target);
+                context.getSource().getServer().getPlayerList().sendPlayerPermissionLevel(target);
 
                 new Message(
-                                Text.translatable(
+                                Component.translatable(
                                         "factions.command.rank.demote.success",
                                         target.getName().getString(),
-                                        Text.translatable(
+                                        Component.translatable(
                                                 "factions.command.rank."
-                                                        + User.get(target.getUuid())
+                                                        + User.get(target.getUUID())
                                                                 .getRankName())))
                         .prependFaction(faction)
                         .send(player, false);
@@ -129,7 +127,7 @@ public class RankCommand implements Command {
             }
 
         new Message(
-                        Text.translatable(
+                        Component.translatable(
                                 "factions.command.rank.demote.fail.not_in_faction",
                                 target.getName().getString()))
                 .fail()
@@ -137,7 +135,7 @@ public class RankCommand implements Command {
         return 0;
     }
 
-    public static void execDemote(User target, ServerPlayerEntity initiator) throws Exception {
+    public static void execDemote(User target, ServerPlayer initiator) throws Exception {
         switch (target.rank) {
             case GUEST ->
                     throw new Exception(
@@ -158,32 +156,32 @@ public class RankCommand implements Command {
         }
     }
 
-    private int transfer(CommandContext<ServerCommandSource> context)
+    private int transfer(CommandContext<CommandSourceStack> context)
             throws CommandSyntaxException {
-        ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
+        ServerPlayer target = EntityArgument.getPlayer(context, "player");
 
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayerOrThrow();
+        CommandSourceStack source = context.getSource();
+        ServerPlayer player = source.getPlayerOrException();
 
-        if (target.getUuid().equals(player.getUuid())) {
-            new Message(Text.translatable("factions.command.rank.transfer.fail.self"))
+        if (target.getUUID().equals(player.getUUID())) {
+            new Message(Component.translatable("factions.command.rank.transfer.fail.self"))
                     .fail()
                     .send(player, false);
 
             return 0;
         }
 
-        User targetUser = User.get(target.getUuid());
+        User targetUser = User.get(target.getUUID());
         UUID targetFaction = targetUser.isInFaction() ? targetUser.getFaction().getID() : null;
         if (Command.getUser(player).getFaction().getID().equals(targetFaction)) {
             targetUser.rank = User.Rank.OWNER;
             Command.getUser(player).rank = User.Rank.LEADER;
 
-            context.getSource().getServer().getPlayerManager().sendCommandTree(player);
-            context.getSource().getServer().getPlayerManager().sendCommandTree(target);
+            context.getSource().getServer().getPlayerList().sendPlayerPermissionLevel(player);
+            context.getSource().getServer().getPlayerList().sendPlayerPermissionLevel(target);
 
             new Message(
-                            Text.translatable(
+                            Component.translatable(
                                     "factions.command.rank.transfer.success",
                                     target.getName().getString()))
                     .prependFaction(Faction.get(targetFaction))
@@ -193,7 +191,7 @@ public class RankCommand implements Command {
         }
 
         new Message(
-                        Text.translatable(
+                        Component.translatable(
                                 "factions.command.rank.transfer.fail.not_in_faction",
                                 target.getName().getString()))
                 .fail()
@@ -201,32 +199,32 @@ public class RankCommand implements Command {
         return 0;
     }
 
-    public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager.literal("rank")
+    public LiteralCommandNode<CommandSourceStack> getNode() {
+        return Commands.literal("rank")
                 .requires(Requires.isLeader())
                 .then(
-                        CommandManager.literal("promote")
+                        Commands.literal("promote")
                                 .requires(Requires.hasPerms("factions.rank.promote", 0))
                                 .then(
-                                        CommandManager.argument(
-                                                        "player", EntityArgumentType.player())
+                                        Commands.argument(
+                                                        "player", EntityArgument.player())
                                                 .executes(this::promote)))
                 .then(
-                        CommandManager.literal("demote")
+                        Commands.literal("demote")
                                 .requires(Requires.hasPerms("factions.rank.demote", 0))
                                 .then(
-                                        CommandManager.argument(
-                                                        "player", EntityArgumentType.player())
+                                        Commands.argument(
+                                                        "player", EntityArgument.player())
                                                 .executes(this::demote)))
                 .then(
-                        CommandManager.literal("transfer")
+                        Commands.literal("transfer")
                                 .requires(
                                         Requires.multiple(
                                                 Requires.hasPerms("factions.rank.transfer", 0),
                                                 Requires.isOwner()))
                                 .then(
-                                        CommandManager.argument(
-                                                        "player", EntityArgumentType.player())
+                                        Commands.argument(
+                                                        "player", EntityArgument.player())
                                                 .executes(this::transfer)))
                 .build();
     }

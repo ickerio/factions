@@ -10,26 +10,24 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import xyz.nucleoid.server.translations.api.Localization;
 
 import java.util.Locale;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 
 public class CreateCommand implements Command {
-    private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    private int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         String name = StringArgumentType.getString(context, "name");
 
-        ServerCommandSource source = context.getSource();
-        ServerPlayerEntity player = source.getPlayerOrThrow();
+        CommandSourceStack source = context.getSource();
+        ServerPlayer player = source.getPlayerOrException();
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_BLACKLIST.contains(name.toLowerCase(Locale.ROOT))) {
-            new Message(Text.translatable("factions.command.create.fail.blacklisted_name"))
+            new Message(Component.translatable("factions.command.create.fail.blacklisted_name"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -37,14 +35,14 @@ public class CreateCommand implements Command {
 
         if (FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH > 0
                 && FactionsMod.CONFIG.DISPLAY.NAME_MAX_LENGTH < name.length()) {
-            new Message(Text.translatable("factions.command.create.fail.name_too_long"))
+            new Message(Component.translatable("factions.command.create.fail.name_too_long"))
                     .fail()
                     .send(player, false);
             return 0;
         }
 
         if (Faction.getByName(name) != null) {
-            new Message(Text.translatable("factions.command.create.fail.name_taken"))
+            new Message(Component.translatable("factions.command.create.fail.name_taken"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -55,24 +53,24 @@ public class CreateCommand implements Command {
                         name,
                         Localization.raw("factions.default_description", player),
                         Localization.raw("factions.default_motd", player),
-                        Formatting.WHITE,
+                        ChatFormatting.WHITE,
                         false,
                         FactionsMod.CONFIG.POWER.BASE + FactionsMod.CONFIG.POWER.MEMBER);
         Faction.add(faction);
         Command.getUser(player).joinFaction(faction.getID(), User.Rank.OWNER);
 
-        source.getServer().getPlayerManager().sendCommandTree(player);
-        new Message(Text.translatable("factions.command.create.success")).send(player, false);
+        source.getServer().getPlayerList().sendPlayerPermissionLevel(player);
+        new Message(Component.translatable("factions.command.create.success")).send(player, false);
         return 1;
     }
 
-    public LiteralCommandNode<ServerCommandSource> getNode() {
-        return CommandManager.literal("create")
+    public LiteralCommandNode<CommandSourceStack> getNode() {
+        return Commands.literal("create")
                 .requires(
                         Requires.multiple(
                                 Requires.isFactionless(), Requires.hasPerms("factions.create", 0)))
                 .then(
-                        CommandManager.argument("name", StringArgumentType.greedyString())
+                        Commands.argument("name", StringArgumentType.greedyString())
                                 .executes(this::run))
                 .build();
     }

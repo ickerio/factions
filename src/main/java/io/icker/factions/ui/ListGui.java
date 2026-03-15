@@ -9,24 +9,22 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.command.HomeCommand;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
-
-import net.minecraft.item.Items;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Items;
 
 public class ListGui extends PagedGui {
     List<Faction> factions;
     int size;
     User user;
 
-    public ListGui(ServerPlayerEntity player, User user, @Nullable Runnable closeCallback) {
+    public ListGui(ServerPlayer player, User user, @Nullable Runnable closeCallback) {
         super(player, closeCallback);
         this.user = user;
 
@@ -38,7 +36,7 @@ public class ListGui extends PagedGui {
         }
         this.size = factions.size();
 
-        this.setTitle(Text.translatable("factions.gui.list.title"));
+        this.setTitle(Component.translatable("factions.gui.list.title"));
         this.updateDisplay();
         this.open();
     }
@@ -59,27 +57,27 @@ public class ListGui extends PagedGui {
             var icon = new GuiElementBuilder(Items.PLAYER_HEAD);
             icon.setProfileSkinTexture(
                     isInFaction ? Icons.GUI_CASTLE_NORMAL : Icons.GUI_CASTLE_OPEN);
-            icon.setName(Text.literal(faction.getColor() + faction.getName()));
+            icon.setName(Component.literal(faction.getColor() + faction.getName()));
 
-            List<Text> lore =
+            List<Component> lore =
                     new ArrayList<>(
                             List.of(
-                                    Text.literal(faction.getDescription())
+                                    Component.literal(faction.getDescription())
                                             .setStyle(
                                                     Style.EMPTY
                                                             .withItalic(false)
-                                                            .withColor(Formatting.GRAY))));
+                                                            .withColor(ChatFormatting.GRAY))));
             if (isInFaction && home != null) {
                 lore.add(
-                        Text.translatable("factions.gui.list.entry.view_info")
+                        Component.translatable("factions.gui.list.entry.view_info")
                                 .setStyle(
-                                        Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
+                                        Style.EMPTY.withItalic(false).withColor(ChatFormatting.GRAY)));
                 lore.add(
-                        Text.translatable("factions.gui.list.entry.teleport")
+                        Component.translatable("factions.gui.list.entry.teleport")
                                 .setStyle(
                                         Style.EMPTY
                                                 .withItalic(false)
-                                                .withColor(Formatting.DARK_AQUA)));
+                                                .withColor(ChatFormatting.DARK_AQUA)));
                 icon.setCallback(
                         (index, clickType, actionType) -> {
                             GuiInteract.playClickSound(player);
@@ -92,9 +90,9 @@ public class ListGui extends PagedGui {
                         });
             } else {
                 lore.add(
-                        Text.translatable("factions.gui.list.entry.view_info")
+                        Component.translatable("factions.gui.list.entry.view_info")
                                 .setStyle(
-                                        Style.EMPTY.withItalic(false).withColor(Formatting.GRAY)));
+                                        Style.EMPTY.withItalic(false).withColor(ChatFormatting.GRAY)));
                 icon.setCallback(
                         (index, clickType, actionType) -> {
                             GuiInteract.playClickSound(player);

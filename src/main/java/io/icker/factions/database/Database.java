@@ -3,12 +3,11 @@ package io.icker.factions.database;
 import io.icker.factions.FactionsMod;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtSizeTracker;
-
+import net.minecraft.nbt.Tag;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -46,11 +45,11 @@ public class Database {
         }
 
         try {
-            NbtList list =
-                    (NbtList)
+            ListTag list =
+                    (ListTag)
                             NbtIo.readCompressed(
                                             Path.of(file.getPath()),
-                                            NbtSizeTracker.ofUnlimitedBytes())
+                                            NbtAccounter.unlimitedHeap())
                                     .get(KEY);
             for (T item : deserializeList(clazz, list)) {
                 store.put(getStoreKey.apply(item), item);
@@ -62,13 +61,13 @@ public class Database {
         return store;
     }
 
-    private static <T> T deserialize(Class<T> clazz, NbtElement value)
+    private static <T> T deserialize(Class<T> clazz, Tag value)
             throws IOException, ReflectiveOperationException {
         if (SerializerRegistry.contains(clazz)) {
             return SerializerRegistry.fromNbtElement(clazz, value);
         }
 
-        NbtCompound compound = (NbtCompound) value;
+        CompoundTag compound = (CompoundTag) value;
         T item = (T) clazz.getDeclaredConstructor().newInstance();
 
         HashMap<String, Field> fields = cache.get(clazz);
@@ -85,7 +84,7 @@ public class Database {
                         (Class<?>)
                                 ((ParameterizedType) field.getGenericType())
                                         .getActualTypeArguments()[0];
-                field.set(item, deserializeList(genericType, (NbtList) compound.get(key)));
+                field.set(item, deserializeList(genericType, (ListTag) compound.get(key)));
             } else {
                 field.set(item, deserialize(type, compound.get(key)));
             }
@@ -94,7 +93,7 @@ public class Database {
         return item;
     }
 
-    private static <T> ArrayList<T> deserializeList(Class<T> clazz, NbtList list)
+    private static <T> ArrayList<T> deserializeList(Class<T> clazz, ListTag list)
             throws IOException, ReflectiveOperationException {
         ArrayList<T> store = new ArrayList<T>();
 
@@ -112,7 +111,7 @@ public class Database {
         if (!cache.containsKey(clazz)) setup(clazz);
 
         try {
-            NbtCompound fileData = new NbtCompound();
+            CompoundTag fileData = new CompoundTag();
             fileData.put(KEY, serializeList(clazz, items));
             NbtIo.writeCompressed(fileData, Path.of(file.getPath()));
         } catch (IOException | ReflectiveOperationException e) {
@@ -120,14 +119,14 @@ public class Database {
         }
     }
 
-    private static <T> NbtElement serialize(Class<T> clazz, T item)
+    private static <T> Tag serialize(Class<T> clazz, T item)
             throws IOException, ReflectiveOperationException {
         if (SerializerRegistry.contains(clazz)) {
             return SerializerRegistry.toNbtElement(clazz, item);
         }
 
         HashMap<String, Field> fields = cache.get(clazz);
-        NbtCompound compound = new NbtCompound();
+        CompoundTag compound = new CompoundTag();
         for (Map.Entry<String, Field> entry : fields.entrySet()) {
             String key = entry.getKey();
             Field field = entry.getValue();
@@ -151,9 +150,9 @@ public class Database {
         return compound;
     }
 
-    private static <T> NbtList serializeList(Class<T> clazz, List<T> items)
+    private static <T> ListTag serializeList(Class<T> clazz, List<T> items)
             throws IOException, ReflectiveOperationException {
-        NbtList list = new NbtList();
+        ListTag list = new ListTag();
 
         for (T item : items) {
             list.add(list.size(), serialize(clazz, item));

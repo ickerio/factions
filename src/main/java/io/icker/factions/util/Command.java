@@ -11,18 +11,17 @@ import io.icker.factions.api.persistents.User;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.command.permission.Permission;
-import net.minecraft.command.permission.PermissionLevel;
-import net.minecraft.server.GameProfileResolver;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
+import net.minecraft.server.players.ProfileResolver;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 public interface Command {
-    public LiteralCommandNode<ServerCommandSource> getNode();
+    public LiteralCommandNode<CommandSourceStack> getNode();
 
     public static final boolean permissions =
             FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
@@ -31,10 +30,10 @@ public interface Command {
         boolean run(User user);
 
         @SafeVarargs
-        public static Predicate<ServerCommandSource> multiple(
-                Predicate<ServerCommandSource>... args) {
+        public static Predicate<CommandSourceStack> multiple(
+                Predicate<CommandSourceStack>... args) {
             return source -> {
-                for (Predicate<ServerCommandSource> predicate : args) {
+                for (Predicate<CommandSourceStack> predicate : args) {
                     if (!predicate.test(source)) return false;
                 }
 
@@ -42,15 +41,15 @@ public interface Command {
             };
         }
 
-        public static Predicate<ServerCommandSource> isFactionless() {
+        public static Predicate<CommandSourceStack> isFactionless() {
             return require(user -> !user.isInFaction());
         }
 
-        public static Predicate<ServerCommandSource> isMember() {
+        public static Predicate<CommandSourceStack> isMember() {
             return require(user -> user.isInFaction());
         }
 
-        public static Predicate<ServerCommandSource> isCommander() {
+        public static Predicate<CommandSourceStack> isCommander() {
             return require(
                     user ->
                             user.rank == User.Rank.COMMANDER
@@ -58,38 +57,38 @@ public interface Command {
                                     || user.rank == User.Rank.OWNER);
         }
 
-        public static Predicate<ServerCommandSource> isLeader() {
+        public static Predicate<CommandSourceStack> isLeader() {
             return require(user -> user.rank == User.Rank.LEADER || user.rank == User.Rank.OWNER);
         }
 
-        public static Predicate<ServerCommandSource> isOwner() {
+        public static Predicate<CommandSourceStack> isOwner() {
             return require(user -> user.rank == User.Rank.OWNER);
         }
 
-        public static Predicate<ServerCommandSource> isAdmin() {
+        public static Predicate<CommandSourceStack> isAdmin() {
             return source ->
-                    source.getPermissions()
+                    source.permissions()
                             .hasPermission(
-                                    new Permission.Level(
-                                            PermissionLevel.fromLevel(
+                                    new Permission.HasCommandLevel(
+                                            PermissionLevel.byId(
                                                     FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL)));
         }
 
-        public static Predicate<ServerCommandSource> hasPerms(String permission, int defaultValue) {
+        public static Predicate<CommandSourceStack> hasPerms(String permission, int defaultValue) {
             return source -> {
                 if (permissions) {
                     return Permissions.check(source, permission, defaultValue);
                 } else {
-                    return source.getPermissions()
+                    return source.permissions()
                             .hasPermission(
-                                    new Permission.Level(PermissionLevel.fromLevel(defaultValue)));
+                                    new Permission.HasCommandLevel(PermissionLevel.byId(defaultValue)));
                 }
             };
         }
 
-        public static Predicate<ServerCommandSource> require(Requires req) {
+        public static Predicate<CommandSourceStack> require(Requires req) {
             return source -> {
-                ServerPlayerEntity entity = source.getPlayer();
+                ServerPlayer entity = source.getPlayer();
                 if (entity == null) {
                     return false;
                 }
@@ -102,11 +101,11 @@ public interface Command {
     public interface Suggests {
         String[] run(User user);
 
-        public static SuggestionProvider<ServerCommandSource> allFactions() {
+        public static SuggestionProvider<CommandSourceStack> allFactions() {
             return allFactions(true);
         }
 
-        public static SuggestionProvider<ServerCommandSource> allFactions(boolean includeYou) {
+        public static SuggestionProvider<CommandSourceStack> allFactions(boolean includeYou) {
             return suggest(
                     user ->
                             Faction.all().stream()
@@ -121,14 +120,14 @@ public interface Command {
                                     .toArray(String[]::new));
         }
 
-        static SuggestionProvider<ServerCommandSource> allPlayers() {
+        static SuggestionProvider<CommandSourceStack> allPlayers() {
             return (context, builder) -> {
-                GameProfileResolver resolver =
-                        context.getSource().getServer().getApiServices().profileResolver();
+                ProfileResolver resolver =
+                        context.getSource().getServer().services().profileResolver();
 
                 for (User user : User.all()) {
                     Optional<GameProfile> player;
-                    if ((player = resolver.getProfileById(user.getID())).isPresent()) {
+                    if ((player = resolver.fetchById(user.getID())).isPresent()) {
                         builder.suggest(player.get().name());
                     } else {
                         builder.suggest(user.getID().toString());
@@ -138,12 +137,12 @@ public interface Command {
             };
         }
 
-        static SuggestionProvider<ServerCommandSource> allPlayersInYourFactionButYou() {
+        static SuggestionProvider<CommandSourceStack> allPlayersInYourFactionButYou() {
             return (context, builder) -> {
-                GameProfileResolver resolver =
-                        context.getSource().getServer().getApiServices().profileResolver();
-                ServerPlayerEntity entity = context.getSource().getPlayerOrThrow();
-                User currentUser = User.get(entity.getUuid());
+                ProfileResolver resolver =
+                        context.getSource().getServer().services().profileResolver();
+                ServerPlayer entity = context.getSource().getPlayerOrException();
+                User currentUser = User.get(entity.getUUID());
 
                 if (!currentUser.isInFaction()) {
                     return builder.buildFuture();
@@ -156,7 +155,7 @@ public interface Command {
                         continue;
                     }
                     Optional<GameProfile> player;
-                    if ((player = resolver.getProfileById(user.getID())).isPresent()) {
+                    if ((player = resolver.fetchById(user.getID())).isPresent()) {
                         builder.suggest(player.get().name());
                     } else {
                         builder.suggest(user.getID().toString());
@@ -166,7 +165,7 @@ public interface Command {
             };
         }
 
-        public static SuggestionProvider<ServerCommandSource> openFactions() {
+        public static SuggestionProvider<CommandSourceStack> openFactions() {
             return suggest(
                     user ->
                             Faction.all().stream()
@@ -175,7 +174,7 @@ public interface Command {
                                     .toArray(String[]::new));
         }
 
-        public static SuggestionProvider<ServerCommandSource> openInvitedFactions() {
+        public static SuggestionProvider<CommandSourceStack> openInvitedFactions() {
             return suggest(
                     user ->
                             Faction.all().stream()
@@ -184,7 +183,7 @@ public interface Command {
                                     .toArray(String[]::new));
         }
 
-        public static <T extends Enum<T>> SuggestionProvider<ServerCommandSource> enumSuggestion(
+        public static <T extends Enum<T>> SuggestionProvider<CommandSourceStack> enumSuggestion(
                 Class<T> clazz) {
             return suggest(
                     user ->
@@ -193,10 +192,10 @@ public interface Command {
                                     .toArray(String[]::new));
         }
 
-        public static SuggestionProvider<ServerCommandSource> suggest(Suggests sug) {
+        public static SuggestionProvider<CommandSourceStack> suggest(Suggests sug) {
             return (context, builder) -> {
-                ServerPlayerEntity entity = context.getSource().getPlayerOrThrow();
-                User user = User.get(entity.getUuid());
+                ServerPlayer entity = context.getSource().getPlayerOrException();
+                User user = User.get(entity.getUUID());
                 for (String suggestion : sug.run(user)) {
                     builder.suggest(suggestion);
                 }
@@ -205,8 +204,8 @@ public interface Command {
         }
     }
 
-    public static User getUser(ServerPlayerEntity player) {
-        User user = User.get(player.getUuid());
+    public static User getUser(ServerPlayer player) {
+        User user = User.get(player.getUUID());
         if (user.getSpoof() == null) {
             return user;
         }

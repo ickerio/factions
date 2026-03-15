@@ -18,15 +18,13 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
-
-import net.minecraft.server.world.ServerWorld;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import net.minecraft.server.level.ServerLevel;
 
 public class BlueMapWrapper {
     private HashMap<String, MarkerSet> markerSets = new HashMap<>();
@@ -114,7 +112,7 @@ public class BlueMapWrapper {
                     MarkerSet markerSet = markerSets.get(level);
 
                     if (markerSet == null) {
-                        ServerWorld world = WorldUtils.getWorld(level);
+                        ServerLevel world = WorldUtils.getWorld(level);
                         markerSet = new MarkerSet("factions-" + level);
 
                         for (BlueMapMap map : api.getWorld(world).get().getMaps()) {
@@ -134,11 +132,11 @@ public class BlueMapWrapper {
                                     .holes(shapes.toArray(new Shape[0]))
                                     .fillColor(
                                             new Color(
-                                                    faction.getColor().getColorValue()
+                                                    faction.getColor().getColor()
                                                             | 0x40000000))
                                     .lineColor(
                                             new Color(
-                                                    faction.getColor().getColorValue()
+                                                    faction.getColor().getColor()
                                                             | 0xFF000000))
                                     .label(faction.getName())
                                     .detail(info)
@@ -161,7 +159,7 @@ public class BlueMapWrapper {
         MarkerSet markerSet = markerSets.get(home.level);
 
         if (markerSet == null) {
-            ServerWorld world = WorldUtils.getWorld(home.level);
+            ServerLevel world = WorldUtils.getWorld(home.level);
             markerSet = new MarkerSet("factions-" + home.level);
 
             for (BlueMapMap map : api.getWorld(world).get().getMaps()) {

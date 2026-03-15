@@ -4,7 +4,6 @@
     "package": "io.icker.factions.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "BucketItemAccessor",
         "DamageTrackerAccessor",
         "EnderChestBlockMixin",
         "ItemInvoker",

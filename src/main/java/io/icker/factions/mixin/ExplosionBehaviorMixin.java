@@ -1,63 +1,61 @@
 package io.icker.factions.mixin;
 
 import io.icker.factions.api.events.PlayerEvents;
-
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.explosion.ExplosionBehavior;
-import net.minecraft.world.explosion.ExplosionImpl;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.ExplosionDamageCalculator;
+import net.minecraft.world.level.ServerExplosion;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(ExplosionImpl.class)
+@Mixin(ServerExplosion.class)
 public class ExplosionBehaviorMixin {
     @Redirect(
-            method = "getBlocksToDestroy",
+            method = "calculateExplodedPositions",
             at =
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/world/explosion/ExplosionBehavior;canDestroyBlock(Lnet/minecraft/world/explosion/Explosion;Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;F)Z"))
+                                    "Lnet/minecraft/world/level/ExplosionDamageCalculator;shouldBlockExplode(Lnet/minecraft/world/level/Explosion;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;F)Z"))
     public boolean canDestroyBlock(
-            ExplosionBehavior behavior,
+            ExplosionDamageCalculator behavior,
             Explosion explosion,
-            BlockView world,
+            BlockGetter world,
             BlockPos pos,
             BlockState state,
             float power) {
-        ActionResult result =
+        InteractionResult result =
                 PlayerEvents.EXPLODE_BLOCK.invoker().onExplodeBlock(explosion, world, pos, state);
-        if (result.isAccepted()) {
+        if (result.consumesAction()) {
             return true;
-        } else if (result == ActionResult.FAIL) {
+        } else if (result == InteractionResult.FAIL) {
             return false;
         }
 
-        return behavior.canDestroyBlock(explosion, world, pos, state, power);
+        return behavior.shouldBlockExplode(explosion, world, pos, state, power);
     }
 
     @Redirect(
-            method = "damageEntities",
+            method = "hurtEntities",
             at =
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/entity/Entity;isImmuneToExplosion(Lnet/minecraft/world/explosion/Explosion;)Z"))
+                                    "Lnet/minecraft/world/entity/Entity;ignoreExplosion(Lnet/minecraft/world/level/Explosion;)Z"))
     public boolean shouldDamage(Entity entity, Explosion explosion) {
-        ActionResult result =
+        InteractionResult result =
                 PlayerEvents.EXPLODE_DAMAGE.invoker().onExplodeDamage(explosion, entity);
-        if (result.isAccepted()) {
+        if (result.consumesAction()) {
             return false;
-        } else if (result == ActionResult.FAIL) {
+        } else if (result == InteractionResult.FAIL) {
             return true;
         }
 
-        return entity.isImmuneToExplosion(explosion);
+        return entity.ignoreExplosion(explosion);
     }
 }

@@ -8,10 +8,10 @@ import io.icker.factions.util.Message;
 
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
 public class ServerManager {
     public static void register() {
@@ -26,14 +26,14 @@ public class ServerManager {
     }
 
     private static void playerJoin(
-            ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
-        ServerPlayerEntity player = handler.getPlayer();
-        User user = User.get(player.getUuid());
+            ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
+        ServerPlayer player = handler.getPlayer();
+        User user = User.get(player.getUUID());
 
         if (user.isInFaction()) {
             Faction faction = user.getFaction();
             new Message(
-                            Text.translatable(
+                            Component.translatable(
                                     "factions.events.member_returns", player.getName().getString()))
                     .send(player, false);
             new Message(faction.getMOTD()).prependFaction(faction).send(player, false);
