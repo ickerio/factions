@@ -12,6 +12,7 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.ui.MemberGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -49,7 +50,9 @@ public class MemberCommand implements Command {
 
         Faction faction = Faction.getByName(factionName);
         if (faction == null) {
-            new Message(Component.translatable("factions.command.members.faction.nonexistent_faction"))
+            new Message(
+                            Component.translatable(
+                                    "factions.command.members.faction.nonexistent_faction"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -64,8 +67,7 @@ public class MemberCommand implements Command {
             return 1;
         }
         List<User> users = faction.getUsers();
-        ProfileResolver resolver =
-                player.level().getServer().services().profileResolver();
+        ProfileResolver resolver = player.level().getServer().services().profileResolver();
 
         long memberCount = users.stream().filter(u -> u.rank == User.Rank.MEMBER).count();
         String members =

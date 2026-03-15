@@ -4,6 +4,7 @@ import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 import io.icker.factions.util.WorldUtils;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
@@ -16,6 +17,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerGamePacketListenerImpl.class)
-public class ServerPlayNetworkHandlerMixin {
+public class ServerGamePacketListenerImplMixin {
     @Shadow public ServerPlayer player;
 
     @Inject(method = "handleMovePlayer", at = @At("HEAD"))

@@ -18,13 +18,15 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
+
+import net.minecraft.server.level.ServerLevel;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import net.minecraft.server.level.ServerLevel;
 
 public class BlueMapWrapper {
     private HashMap<String, MarkerSet> markerSets = new HashMap<>();
@@ -131,13 +133,9 @@ public class BlueMapWrapper {
                                     .shape(shapes.removeFirst(), -64, 320)
                                     .holes(shapes.toArray(new Shape[0]))
                                     .fillColor(
-                                            new Color(
-                                                    faction.getColor().getColor()
-                                                            | 0x40000000))
+                                            new Color(faction.getColor().getColor() | 0x40000000))
                                     .lineColor(
-                                            new Color(
-                                                    faction.getColor().getColor()
-                                                            | 0xFF000000))
+                                            new Color(faction.getColor().getColor() | 0xFF000000))
                                     .label(faction.getName())
                                     .detail(info)
                                     .build();

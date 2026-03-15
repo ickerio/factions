@@ -10,11 +10,7 @@ import io.icker.factions.api.persistents.User.ChatMode;
 import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.api.persistents.User.SoundMode;
 import io.icker.factions.util.WorldUtils;
-import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.function.Function;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.ByteTag;
@@ -38,6 +34,12 @@ import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueInput.TypedInputList;
 import net.minecraft.world.level.storage.ValueOutput.TypedOutputList;
+
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.HashMap;
+import java.util.UUID;
+import java.util.function.Function;
 
 public class SerializerRegistry {
     private static final HashMap<Class<?>, Serializer<?, ? extends Tag>> registry =
@@ -69,7 +71,8 @@ public class SerializerRegistry {
                 new Serializer<Byte, ByteTag>(val -> ByteTag.valueOf(val), el -> el.byteValue()));
         registry.put(
                 short.class,
-                new Serializer<Short, ShortTag>(val -> ShortTag.valueOf(val), el -> el.shortValue()));
+                new Serializer<Short, ShortTag>(
+                        val -> ShortTag.valueOf(val), el -> el.shortValue()));
         registry.put(
                 int.class,
                 new Serializer<Integer, IntTag>(val -> IntTag.valueOf(val), el -> el.intValue()));
@@ -78,7 +81,8 @@ public class SerializerRegistry {
                 new Serializer<Long, LongTag>(val -> LongTag.valueOf(val), el -> el.longValue()));
         registry.put(
                 float.class,
-                new Serializer<Float, FloatTag>(val -> FloatTag.valueOf(val), el -> el.floatValue()));
+                new Serializer<Float, FloatTag>(
+                        val -> FloatTag.valueOf(val), el -> el.floatValue()));
         registry.put(
                 double.class,
                 new Serializer<Double, DoubleTag>(
@@ -161,12 +165,12 @@ public class SerializerRegistry {
     private static Serializer<SimpleContainer, ListTag> createInventorySerializer(int size) {
         return new Serializer<SimpleContainer, ListTag>(
                 val -> {
-                    ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(FactionsMod.LOGGER);
+                    ProblemReporter.ScopedCollector reporter =
+                            new ProblemReporter.ScopedCollector(FactionsMod.LOGGER);
                     TagValueOutput view =
                             TagValueOutput.createWithContext(
                                     reporter,
-                                    WorldUtils.getWorld("minecraft:overworld")
-                                            .registryAccess());
+                                    WorldUtils.getWorld("minecraft:overworld").registryAccess());
                     TypedOutputList<InventoryItem> appender =
                             view.list("Data", InventoryItem.CODEC);
 
@@ -185,7 +189,8 @@ public class SerializerRegistry {
                     CompoundTag compound = new CompoundTag();
                     compound.put("Data", el);
 
-                    ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(FactionsMod.LOGGER);
+                    ProblemReporter.ScopedCollector reporter =
+                            new ProblemReporter.ScopedCollector(FactionsMod.LOGGER);
 
                     ValueInput view =
                             TagValueInput.create(

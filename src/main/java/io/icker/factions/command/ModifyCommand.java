@@ -11,9 +11,7 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.ui.ModifyGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import xyz.nucleoid.server.translations.api.Localization;
 
-import java.util.Locale;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -21,6 +19,10 @@ import net.minecraft.commands.arguments.ColorArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
+
+import xyz.nucleoid.server.translations.api.Localization;
+
+import java.util.Locale;
 
 public class ModifyCommand implements Command {
     private int gui(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -84,7 +86,9 @@ public class ModifyCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         faction.setDescription(description);
-        new Message(Component.translatable("factions.gui.modify.change_description.result", description))
+        new Message(
+                        Component.translatable(
+                                "factions.gui.modify.change_description.result", description))
                 .prependFaction(faction)
                 .send(player, false);
 
@@ -172,8 +176,7 @@ public class ModifyCommand implements Command {
                                                 Requires.hasPerms("factions.modify.name", 0),
                                                 Requires.isOwner()))
                                 .then(
-                                        Commands.argument(
-                                                        "name", StringArgumentType.greedyString())
+                                        Commands.argument("name", StringArgumentType.greedyString())
                                                 .executes(this::name)))
                 .then(
                         Commands.literal("description")
@@ -187,8 +190,7 @@ public class ModifyCommand implements Command {
                         Commands.literal("motd")
                                 .requires(Requires.hasPerms("factions.modify.motd", 0))
                                 .then(
-                                        Commands.argument(
-                                                        "motd", StringArgumentType.greedyString())
+                                        Commands.argument("motd", StringArgumentType.greedyString())
                                                 .executes(this::motd)))
                 .then(
                         Commands.literal("color")

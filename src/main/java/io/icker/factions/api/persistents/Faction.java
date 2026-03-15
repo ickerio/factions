@@ -6,6 +6,12 @@ import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.util.WorldUtils;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -14,10 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.ItemStack;
 
 @Name("Faction")
 public class Faction {

@@ -52,16 +52,12 @@ public class InteractionManager {
     }
 
     private static boolean onBreakBlock(
-            Level world,
-            Player player,
-            BlockPos pos,
-            BlockState state,
-            BlockEntity blockEntity) {
+            Level world, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         boolean result =
-                checkPermissions(player, pos, world, Permissions.BREAK_BLOCKS) == InteractionResult.FAIL;
+                checkPermissions(player, pos, world, Permissions.BREAK_BLOCKS)
+                        == InteractionResult.FAIL;
         if (result) {
-            InteractionsUtil.warn(
-                    (ServerPlayer) player, InteractionsUtilActions.BREAK_BLOCKS);
+            InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.BREAK_BLOCKS);
         }
         return !result;
     }
@@ -150,7 +146,8 @@ public class InteractionManager {
         ItemStack stack = player.getItemInHand(hand);
 
         BlockPos hitPos = hitResult.getBlockPos();
-        if (checkPermissions(player, hitPos, world, Permissions.USE_BLOCKS) == InteractionResult.FAIL) {
+        if (checkPermissions(player, hitPos, world, Permissions.USE_BLOCKS)
+                == InteractionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.USE_BLOCKS);
             InteractionsUtil.sync((ServerPlayer) player, stack, hand);
             return InteractionResult.FAIL;
@@ -177,9 +174,7 @@ public class InteractionManager {
             InteractionsUtil.warn(
                     (ServerPlayer) context.getPlayer(), InteractionsUtilActions.PLACE_BLOCKS);
             InteractionsUtil.sync(
-                    (ServerPlayer) context.getPlayer(),
-                    context.getItemInHand(),
-                    context.getHand());
+                    (ServerPlayer) context.getPlayer(), context.getItemInHand(), context.getHand());
             return InteractionResult.FAIL;
         }
 
@@ -191,21 +186,18 @@ public class InteractionManager {
 
         if (item instanceof BucketItem) {
             InteractionResult playerResult =
-                    checkPermissions(player, player.blockPosition(), world, Permissions.PLACE_BLOCKS);
+                    checkPermissions(
+                            player, player.blockPosition(), world, Permissions.PLACE_BLOCKS);
             if (playerResult == InteractionResult.FAIL) {
                 InteractionsUtil.warn(
-                        (ServerPlayer) player,
-                        InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
-                InteractionsUtil.sync(
-                        (ServerPlayer) player, player.getItemInHand(hand), hand);
+                        (ServerPlayer) player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
+                InteractionsUtil.sync((ServerPlayer) player, player.getItemInHand(hand), hand);
                 return InteractionResult.FAIL;
             }
 
             Fluid fluid = ((BucketItem) item).getContent();
             net.minecraft.world.level.ClipContext.Fluid handling =
-                    fluid == Fluids.EMPTY
-                            ? ClipContext.Fluid.SOURCE_ONLY
-                            : ClipContext.Fluid.NONE;
+                    fluid == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE;
 
             BlockHitResult raycastResult = ItemInvoker.raycast(world, player, handling);
 
@@ -214,10 +206,8 @@ public class InteractionManager {
                 if (checkPermissions(player, raycastPos, world, Permissions.PLACE_BLOCKS)
                         == InteractionResult.FAIL) {
                     InteractionsUtil.warn(
-                            (ServerPlayer) player,
-                            InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
-                    InteractionsUtil.sync(
-                            (ServerPlayer) player, player.getItemInHand(hand), hand);
+                            (ServerPlayer) player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
+                    InteractionsUtil.sync((ServerPlayer) player, player.getItemInHand(hand), hand);
                     return InteractionResult.FAIL;
                 }
 
@@ -225,10 +215,8 @@ public class InteractionManager {
                 if (checkPermissions(player, placePos, world, Permissions.PLACE_BLOCKS)
                         == InteractionResult.FAIL) {
                     InteractionsUtil.warn(
-                            (ServerPlayer) player,
-                            InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
-                    InteractionsUtil.sync(
-                            (ServerPlayer) player, player.getItemInHand(hand), hand);
+                            (ServerPlayer) player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
+                    InteractionsUtil.sync((ServerPlayer) player, player.getItemInHand(hand), hand);
                     return InteractionResult.FAIL;
                 }
             }
@@ -238,13 +226,16 @@ public class InteractionManager {
     }
 
     private static InteractionResult onAttackEntity(
-            Player player, Level world, InteractionHand hand, Entity entity, EntityHitResult hitResult) {
+            Player player,
+            Level world,
+            InteractionHand hand,
+            Entity entity,
+            EntityHitResult hitResult) {
         if (entity != null
                 && checkPermissions(
                                 player, entity.blockPosition(), world, Permissions.ATTACK_ENTITIES)
                         == InteractionResult.FAIL) {
-            InteractionsUtil.warn(
-                    (ServerPlayer) player, InteractionsUtilActions.ATTACK_ENTITIES);
+            InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.ATTACK_ENTITIES);
             return InteractionResult.FAIL;
         }
 
@@ -259,9 +250,9 @@ public class InteractionManager {
             pos = entity.blockPosition();
         }
 
-        if (checkPermissions(player, pos, world, Permissions.USE_ENTITIES) == InteractionResult.FAIL) {
-            InteractionsUtil.warn(
-                    (ServerPlayer) player, InteractionsUtilActions.USE_ENTITIES);
+        if (checkPermissions(player, pos, world, Permissions.USE_ENTITIES)
+                == InteractionResult.FAIL) {
+            InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.USE_ENTITIES);
             return InteractionResult.FAIL;
         }
 
@@ -271,8 +262,7 @@ public class InteractionManager {
     private static InteractionResult onUseInventory(Player player, BlockPos pos, Level world) {
         if (checkPermissions(player, pos, world, Permissions.USE_INVENTORIES)
                 == InteractionResult.FAIL) {
-            InteractionsUtil.warn(
-                    (ServerPlayer) player, InteractionsUtilActions.USE_INVENTORY);
+            InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.USE_INVENTORY);
             return InteractionResult.FAIL;
         }
 
@@ -280,7 +270,8 @@ public class InteractionManager {
     }
 
     private static InteractionResult isInvulnerableTo(Entity source, Entity target) {
-        if (!source.isAlwaysTicking() || FactionsMod.CONFIG.FRIENDLY_FIRE) return InteractionResult.PASS;
+        if (!source.isAlwaysTicking() || FactionsMod.CONFIG.FRIENDLY_FIRE)
+            return InteractionResult.PASS;
 
         User sourceUser = User.get(source.getUUID());
         User targetUser = User.get(target.getUUID());

@@ -5,6 +5,7 @@ import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,9 +24,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayer.class)
-public abstract class ServerPlayerEntityMixin extends LivingEntity {
+public abstract class ServerPlayerMixin extends LivingEntity {
 
-    protected ServerPlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level world) {
+    protected ServerPlayerMixin(EntityType<? extends LivingEntity> entityType, Level world) {
         super(entityType, world);
     }
 
@@ -52,10 +54,10 @@ public abstract class ServerPlayerEntityMixin extends LivingEntity {
         InteractionResult result =
                 PlayerEvents.IS_INVULNERABLE
                         .invoker()
-                        .isInvulnerable(
-                                damageSource.getEntity(), (ServerPlayer) (Object) this);
+                        .isInvulnerable(damageSource.getEntity(), (ServerPlayer) (Object) this);
 
-        if (result != InteractionResult.PASS) info.setReturnValue(result == InteractionResult.SUCCESS);
+        if (result != InteractionResult.PASS)
+            info.setReturnValue(result == InteractionResult.SUCCESS);
     }
 
     @Inject(method = "getTabListDisplayName", at = @At("HEAD"), cancellable = true)

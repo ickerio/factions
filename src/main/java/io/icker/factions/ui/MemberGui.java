@@ -13,13 +13,7 @@ import io.icker.factions.util.Command;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
-import org.jetbrains.annotations.Nullable;
 
-import xyz.nucleoid.server.translations.api.Localization;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -27,6 +21,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.ProfileResolver;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
+
+import org.jetbrains.annotations.Nullable;
+
+import xyz.nucleoid.server.translations.api.Localization;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class MemberGui extends PagedGui {
     Faction faction;
@@ -135,10 +137,7 @@ public class MemberGui extends PagedGui {
                                                 .withItalic(false)
                                                 .withColor(ChatFormatting.DARK_RED)));
                 ServerPlayer targetPlayer =
-                        player.level()
-                                .getServer()
-                                .getPlayerList()
-                                .getPlayer(targetUser.getID());
+                        player.level().getServer().getPlayerList().getPlayer(targetUser.getID());
                 icon.setCallback(
                         (index, clickType, actionType) -> {
                             GuiInteract.playClickSound(player);
@@ -184,8 +183,7 @@ public class MemberGui extends PagedGui {
                                 }
                             }
                             if (clickType == ClickType.DROP) {
-                                SimpleGui gui =
-                                        new SimpleGui(MenuType.HOPPER, player, false);
+                                SimpleGui gui = new SimpleGui(MenuType.HOPPER, player, false);
                                 for (int i = 0; i < 5; i++)
                                     gui.setSlot(
                                             i,
@@ -212,8 +210,9 @@ public class MemberGui extends PagedGui {
                                                                                     == User.Rank
                                                                                             .OWNER)) {
                                                                 new Message(
-                                                                                Component.translatable(
-                                                                                        "factions.command.kick.fail.high_rank"))
+                                                                                Component
+                                                                                        .translatable(
+                                                                                                "factions.command.kick.fail.high_rank"))
                                                                         .format(ChatFormatting.RED)
                                                                         .send(player, false);
                                                                 return;
@@ -229,10 +228,11 @@ public class MemberGui extends PagedGui {
 
                                                             if (targetPlayer != null) {
                                                                 new Message(
-                                                                                Component.translatable(
-                                                                                        "factions.gui.members.entry.manage.kick.result.subject",
-                                                                                        player.getName()
-                                                                                                .getString()))
+                                                                                Component
+                                                                                        .translatable(
+                                                                                                "factions.gui.members.entry.manage.kick.result.subject",
+                                                                                                player.getName()
+                                                                                                        .getString()))
                                                                         .send(targetPlayer, false);
                                                             }
                                                             this.open();

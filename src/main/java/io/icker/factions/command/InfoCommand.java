@@ -12,6 +12,7 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.ui.InfoGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -63,8 +64,7 @@ public class InfoCommand implements Command {
         }
         List<User> users = faction.getUsers();
 
-        ProfileResolver resolver =
-                player.level().getServer().services().profileResolver();
+        ProfileResolver resolver = player.level().getServer().services().profileResolver();
         String owner =
                 ChatFormatting.WHITE
                         + users.stream()
@@ -122,10 +122,14 @@ public class InfoCommand implements Command {
                                 + " ]"
                                 + dashes)
                 .send(player, false);
-        new Message(Component.translatable("factions.gui.info.description").withStyle(ChatFormatting.GOLD))
+        new Message(
+                        Component.translatable("factions.gui.info.description")
+                                .withStyle(ChatFormatting.GOLD))
                 .add(ChatFormatting.WHITE + faction.getDescription())
                 .send(player, false);
-        new Message(Component.translatable("factions.gui.info.owner").withStyle(ChatFormatting.GOLD))
+        new Message(
+                        Component.translatable("factions.gui.info.owner")
+                                .withStyle(ChatFormatting.GOLD))
                 .add(ChatFormatting.WHITE + owner)
                 .send(player, false);
         new Message(
@@ -136,7 +140,9 @@ public class InfoCommand implements Command {
                                 .withStyle(ChatFormatting.GOLD))
                 .add(usersList)
                 .send(player, false);
-        new Message(Component.translatable("factions.gui.info.power").withStyle(ChatFormatting.GOLD))
+        new Message(
+                        Component.translatable("factions.gui.info.power")
+                                .withStyle(ChatFormatting.GOLD))
                 .add(
                         ChatFormatting.GREEN.toString()
                                 + faction.getPower()

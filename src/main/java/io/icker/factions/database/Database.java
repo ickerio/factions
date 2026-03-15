@@ -8,6 +8,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -48,8 +49,7 @@ public class Database {
             ListTag list =
                     (ListTag)
                             NbtIo.readCompressed(
-                                            Path.of(file.getPath()),
-                                            NbtAccounter.unlimitedHeap())
+                                            Path.of(file.getPath()), NbtAccounter.unlimitedHeap())
                                     .get(KEY);
             for (T item : deserializeList(clazz, list)) {
                 store.put(getStoreKey.apply(item), item);

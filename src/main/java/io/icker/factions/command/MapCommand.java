@@ -8,6 +8,7 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -33,7 +34,9 @@ public class MapCommand implements Command {
                                 .append(
                                         Component.translatable("factions.command.map.title")
                                                 .withStyle(ChatFormatting.GREEN))
-                                .append(Component.literal("├──").withStyle(ChatFormatting.DARK_GRAY)))
+                                .append(
+                                        Component.literal("├──")
+                                                .withStyle(ChatFormatting.DARK_GRAY)))
                 .send(player, false);
 
         for (int z = -4; z <= 4; z++) { // Rows (9)

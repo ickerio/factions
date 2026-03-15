@@ -2,6 +2,7 @@ package io.icker.factions.core;
 
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

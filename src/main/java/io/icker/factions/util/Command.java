@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.server.players.ProfileResolver;
+
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -81,7 +82,8 @@ public interface Command {
                 } else {
                     return source.permissions()
                             .hasPermission(
-                                    new Permission.HasCommandLevel(PermissionLevel.byId(defaultValue)));
+                                    new Permission.HasCommandLevel(
+                                            PermissionLevel.byId(defaultValue)));
                 }
             };
         }

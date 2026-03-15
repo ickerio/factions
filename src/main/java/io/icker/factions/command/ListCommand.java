@@ -10,11 +10,13 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.ui.ListGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import java.util.Collection;
+
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.Collection;
 
 public class ListCommand implements Command {
     private int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

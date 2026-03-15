@@ -1,6 +1,7 @@
 package io.icker.factions.mixin;
 
 import io.icker.factions.api.events.PlayerEvents;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -9,12 +10,13 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.ServerExplosion;
 import net.minecraft.world.level.block.state.BlockState;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ServerExplosion.class)
-public class ExplosionBehaviorMixin {
+public class ServerExplosionMixin {
     @Redirect(
             method = "calculateExplodedPositions",
             at =

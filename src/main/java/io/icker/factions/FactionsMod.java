@@ -42,6 +42,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,8 +82,7 @@ public class FactionsMod implements ModInitializer {
             CommandDispatcher<CommandSourceStack> dispatcher,
             CommandBuildContext registryAccess,
             Commands.CommandSelection environment) {
-        LiteralCommandNode<CommandSourceStack> factions =
-                Commands.literal("factions").build();
+        LiteralCommandNode<CommandSourceStack> factions = Commands.literal("factions").build();
 
         LiteralCommandNode<CommandSourceStack> alias = Commands.literal("f").build();
 

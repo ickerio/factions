@@ -9,6 +9,7 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -35,7 +36,8 @@ public class InviteCommand implements Command {
         new Message(
                         Component.translatable(
                                 "factions.command.invite.list",
-                                Component.literal(String.valueOf(count)).withStyle(ChatFormatting.YELLOW)))
+                                Component.literal(String.valueOf(count))
+                                        .withStyle(ChatFormatting.YELLOW)))
                 .send(player, false);
 
         if (count == 0) return 1;
@@ -140,15 +142,13 @@ public class InviteCommand implements Command {
                         Commands.literal("add")
                                 .requires(Requires.hasPerms("factions.invite.add", 0))
                                 .then(
-                                        Commands.argument(
-                                                        "player", EntityArgument.player())
+                                        Commands.argument("player", EntityArgument.player())
                                                 .executes(this::add)))
                 .then(
                         Commands.literal("remove")
                                 .requires(Requires.hasPerms("factions.invite.remove", 0))
                                 .then(
-                                        Commands.argument(
-                                                        "player", EntityArgument.player())
+                                        Commands.argument("player", EntityArgument.player())
                                                 .executes(this::remove)))
                 .build();
     }

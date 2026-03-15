@@ -11,10 +11,7 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -22,6 +19,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClaimCommand implements Command {
     private int list(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -34,7 +36,8 @@ public class ClaimCommand implements Command {
         new Message(
                         Component.translatable(
                                 "factions.command.claim.list",
-                                Component.literal(String.valueOf(count)).withStyle(ChatFormatting.YELLOW)))
+                                Component.literal(String.valueOf(count))
+                                        .withStyle(ChatFormatting.YELLOW)))
                 .send(source.getPlayerOrException(), false);
 
         if (count == 0) return 1;
@@ -168,7 +171,9 @@ public class ClaimCommand implements Command {
                         + faction.getAdminPower();
 
         if (maxPower < requiredPower) {
-            new Message(Component.translatable("factions.command.claim.add.fail.lacks_power.multiple"))
+            new Message(
+                            Component.translatable(
+                                    "factions.command.claim.add.fail.lacks_power.multiple"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -282,7 +287,9 @@ public class ClaimCommand implements Command {
         new Message(Component.translatable("factions.command.claim.auto.toggled"))
                 .filler("·")
                 .add(
-                        new Message(Component.translatable("options." + (user.autoclaim ? "on" : "off")))
+                        new Message(
+                                        Component.translatable(
+                                                "options." + (user.autoclaim ? "on" : "off")))
                                 .format(user.autoclaim ? ChatFormatting.GREEN : ChatFormatting.RED))
                 .send(player, false);
 
@@ -303,7 +310,9 @@ public class ClaimCommand implements Command {
         Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
 
         if (claim == null) {
-            new Message(Component.translatable("factions.command.claim.set_access_level.fail.unclaimed"))
+            new Message(
+                            Component.translatable(
+                                    "factions.command.claim.set_access_level.fail.unclaimed"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -394,8 +403,7 @@ public class ClaimCommand implements Command {
                         Commands.literal("add")
                                 .requires(Requires.hasPerms("factions.claim.add", 0))
                                 .then(
-                                        Commands.argument(
-                                                        "size", IntegerArgumentType.integer(1, 7))
+                                        Commands.argument("size", IntegerArgumentType.integer(1, 7))
                                                 .requires(
                                                         Requires.hasPerms(
                                                                 "factions.claim.add.size", 0))
@@ -428,8 +436,7 @@ public class ClaimCommand implements Command {
                                         Requires.hasPerms("factions.claim.remove", 0)
                                                 .and(Requires.isLeader()))
                                 .then(
-                                        Commands.argument(
-                                                        "size", IntegerArgumentType.integer(1, 7))
+                                        Commands.argument("size", IntegerArgumentType.integer(1, 7))
                                                 .requires(
                                                         Requires.hasPerms(
                                                                 "factions.claim.remove.size", 0))

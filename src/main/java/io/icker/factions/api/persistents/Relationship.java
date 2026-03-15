@@ -1,6 +1,5 @@
 package io.icker.factions.api.persistents;
 
-import io.icker.factions.FactionsMod;
 import io.icker.factions.database.Field;
 
 import java.util.ArrayList;

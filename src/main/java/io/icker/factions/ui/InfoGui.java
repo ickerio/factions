@@ -11,6 +11,7 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -20,6 +21,7 @@ import net.minecraft.server.players.ProfileResolver;
 import net.minecraft.util.Util;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
+
 import org.jetbrains.annotations.Nullable;
 
 import xyz.nucleoid.server.translations.api.Localization;
@@ -113,7 +115,8 @@ public class InfoGui extends SimpleGui {
                                                                 Style.EMPTY
                                                                         .withItalic(false)
                                                                         .withColor(
-                                                                                ChatFormatting.GRAY)))
+                                                                                ChatFormatting
+                                                                                        .GRAY)))
                                 .toList());
         if (membersLore.size() > 4) membersLore = membersLore.subList(0, 3);
         membersLore.add(Component.empty());
@@ -168,7 +171,9 @@ public class InfoGui extends SimpleGui {
                                                                 .withColor(ChatFormatting.GRAY)),
                                         Component.translatable(
                                                         "factions.gui.info.power.claims",
-                                                        Component.literal(String.valueOf(requiredPower))
+                                                        Component.literal(
+                                                                        String.valueOf(
+                                                                                requiredPower))
                                                                 .setStyle(
                                                                         Style.EMPTY
                                                                                 .withItalic(false)
@@ -248,7 +253,8 @@ public class InfoGui extends SimpleGui {
                             .setName(Component.translatable("factions.gui.info.settings"))
                             .setLore(
                                     List.of(
-                                            Component.translatable("factions.gui.info.settings.lore")
+                                            Component.translatable(
+                                                            "factions.gui.info.settings.lore")
                                                     .withStyle(ChatFormatting.GRAY)))
                             .setCallback(
                                     () -> {

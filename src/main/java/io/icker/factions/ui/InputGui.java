@@ -4,9 +4,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 
 import io.icker.factions.util.GuiInteract;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -17,6 +15,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class InputGui extends AnvilInputGui {
     public GuiElementBuilder returnBtn;
@@ -48,7 +50,11 @@ public class InputGui extends AnvilInputGui {
                 DataComponents.CUSTOM_NAME,
                 text.setStyle(Style.EMPTY.withItalic(false).withColor(ChatFormatting.RED)));
         GuiInteract.playSound(
-                player, SoundEvent.createVariableRangeEvent(Identifier.parse("minecraft:item.shield.break")), 1f, 1f);
+                player,
+                SoundEvent.createVariableRangeEvent(
+                        Identifier.parse("minecraft:item.shield.break")),
+                1f,
+                1f);
         timer.schedule(
                 new TimerTask() {
                     @Override

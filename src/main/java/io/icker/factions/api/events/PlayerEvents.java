@@ -103,7 +103,8 @@ public class PlayerEvents {
                     callbacks ->
                             (source, target) -> {
                                 for (IsInvulnerable callback : callbacks) {
-                                    InteractionResult result = callback.isInvulnerable(source, target);
+                                    InteractionResult result =
+                                            callback.isInvulnerable(source, target);
                                     if (result != InteractionResult.PASS) {
                                         return result;
                                     }

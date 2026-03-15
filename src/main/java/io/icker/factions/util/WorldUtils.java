@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -51,7 +52,10 @@ public class WorldUtils {
     public static ServerLevel getWorld(String level) {
         Optional<ResourceKey<Level>> key =
                 WorldUtils.server.levelKeys().stream()
-                        .filter(testKey -> Objects.equals(testKey.identifier(), Identifier.parse(level)))
+                        .filter(
+                                testKey ->
+                                        Objects.equals(
+                                                testKey.identifier(), Identifier.parse(level)))
                         .findAny();
 
         if (key.isEmpty()) {

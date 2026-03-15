@@ -8,6 +8,12 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
+
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.DynmapCommonAPIListener;
 import org.dynmap.markers.AreaMarker;
@@ -21,10 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
 
 public class DynmapWrapper {
     private DynmapCommonAPI api;
@@ -114,8 +116,7 @@ public class DynmapWrapper {
                                 new double[] {pos.getMinBlockZ(), pos.getMaxBlockZ() + 1},
                                 true);
                 if (marker != null) {
-                    marker.setFillStyle(
-                            marker.getFillOpacity(), faction.getColor().getColor());
+                    marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColor());
                     marker.setLineStyle(0, 0, 0);
                 }
             }
@@ -123,9 +124,9 @@ public class DynmapWrapper {
                     ClaimGrouper.separateClaimsByLevel(faction).entrySet()) {
                 String level = entry.getKey();
                 for (Map<Vector2i, Vector2i[]> group :
-                        ClaimGrouper.convertClaimsToLineSegmentGroups(
-                                entry.getValue())) {
-                    for (List<Vector2i> outline : ClaimGrouper.convertLineSegmentsToOutlines(group)) {
+                        ClaimGrouper.convertClaimsToLineSegmentGroups(entry.getValue())) {
+                    for (List<Vector2i> outline :
+                            ClaimGrouper.convertLineSegmentsToOutlines(group)) {
                         outline.add(outline.get(0));
                         double[] x_coords =
                                 outline.stream()
@@ -168,9 +169,7 @@ public class DynmapWrapper {
 
             marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColor());
             marker.setLineStyle(
-                    marker.getLineWeight(),
-                    marker.getLineOpacity(),
-                    faction.getColor().getColor());
+                    marker.getLineWeight(), marker.getLineOpacity(), faction.getColor().getColor());
             marker.setDescription(info);
         }
     }

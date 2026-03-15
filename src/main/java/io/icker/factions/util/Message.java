@@ -2,6 +2,7 @@ package io.icker.factions.util;
 
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent.RunCommand;
 import net.minecraft.network.chat.Component;

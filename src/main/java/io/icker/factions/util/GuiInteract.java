@@ -9,11 +9,14 @@ import net.minecraft.sounds.SoundSource;
 
 public class GuiInteract {
     public static void playClickSound(ServerPlayer player) {
-        playSound(player, SoundEvent.createVariableRangeEvent(Identifier.parse("minecraft:ui.button.click")), 1, 1);
+        playSound(
+                player,
+                SoundEvent.createVariableRangeEvent(Identifier.parse("minecraft:ui.button.click")),
+                1,
+                1);
     }
 
-    public static void playSound(
-            ServerPlayer player, SoundEvent sound, float volume, float pitch) {
+    public static void playSound(ServerPlayer player, SoundEvent sound, float volume, float pitch) {
         player.connection.send(
                 new ClientboundSoundPacket(
                         BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound),

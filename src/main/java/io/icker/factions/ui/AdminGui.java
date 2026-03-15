@@ -13,15 +13,17 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
-import xyz.nucleoid.server.translations.api.Localization;
 
-import java.util.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
+
+import xyz.nucleoid.server.translations.api.Localization;
+
+import java.util.*;
 
 public class AdminGui extends SimpleGui {
     private final Runnable defaultReturn =
@@ -54,7 +56,8 @@ public class AdminGui extends SimpleGui {
                         .setName(Component.translatable("factions.gui.admin.options.power"))
                         .setLore(
                                 List.of(
-                                        Component.translatable("factions.gui.admin.options.power.lore")
+                                        Component.translatable(
+                                                        "factions.gui.admin.options.power.lore")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
@@ -73,12 +76,14 @@ public class AdminGui extends SimpleGui {
                         .setName(Component.translatable("factions.gui.admin.options.spoof"))
                         .setLore(
                                 List.of(
-                                        Component.translatable("factions.gui.admin.options.spoof.lore1")
+                                        Component.translatable(
+                                                        "factions.gui.admin.options.spoof.lore1")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
                                                                 .withColor(ChatFormatting.GRAY)),
-                                        Component.translatable("factions.gui.admin.options.spoof.lore2")
+                                        Component.translatable(
+                                                        "factions.gui.admin.options.spoof.lore2")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
@@ -105,7 +110,8 @@ public class AdminGui extends SimpleGui {
                         .setName(Component.translatable("factions.gui.admin.options.audit"))
                         .setLore(
                                 List.of(
-                                        Component.translatable("factions.gui.admin.options.audit.lore")
+                                        Component.translatable(
+                                                        "factions.gui.admin.options.audit.lore")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
@@ -131,7 +137,9 @@ public class AdminGui extends SimpleGui {
                     indexes.get(4),
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                             .setProfileSkinTexture(Icons.GUI_EARTH_RELOAD)
-                            .setName(Component.translatable("factions.gui.admin.options.reload_dynmap"))
+                            .setName(
+                                    Component.translatable(
+                                            "factions.gui.admin.options.reload_dynmap"))
                             .setLore(
                                     List.of(
                                             Component.translatable(
@@ -139,7 +147,8 @@ public class AdminGui extends SimpleGui {
                                                     .setStyle(
                                                             Style.EMPTY
                                                                     .withItalic(false)
-                                                                    .withColor(ChatFormatting.GRAY))))
+                                                                    .withColor(
+                                                                            ChatFormatting.GRAY))))
                             .setCallback(
                                     (index, clickType, actionType) -> {
                                         GuiInteract.playClickSound(player);
@@ -217,7 +226,8 @@ public class AdminGui extends SimpleGui {
 
                     if (!input.matches("^[a-zA-Z0-9_]{2,16}$")) {
                         inputGui.showErrorMessage(
-                                Component.translatable("factions.gui.spoof.fail.invalid_name", input)
+                                Component.translatable(
+                                                "factions.gui.spoof.fail.invalid_name", input)
                                         .withStyle(ChatFormatting.RED),
                                 index);
                         return;
@@ -264,7 +274,8 @@ public class AdminGui extends SimpleGui {
                     selectedFac[0] = Faction.getByName(inputFacGui.getInput());
                     if (selectedFac[0] == null) {
                         inputFacGui.showErrorMessage(
-                                Component.translatable("factions.gui.power.setfaction.fail.no_faction")
+                                Component.translatable(
+                                                "factions.gui.power.setfaction.fail.no_faction")
                                         .withStyle(ChatFormatting.RED),
                                 index);
                         return;

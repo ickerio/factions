@@ -8,14 +8,16 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import xyz.nucleoid.server.translations.api.Localization;
 
-import java.util.UUID;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+
+import xyz.nucleoid.server.translations.api.Localization;
+
+import java.util.UUID;
 
 public class RankCommand implements Command {
     private int promote(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -156,8 +158,7 @@ public class RankCommand implements Command {
         }
     }
 
-    private int transfer(CommandContext<CommandSourceStack> context)
-            throws CommandSyntaxException {
+    private int transfer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer target = EntityArgument.getPlayer(context, "player");
 
         CommandSourceStack source = context.getSource();
@@ -206,15 +207,13 @@ public class RankCommand implements Command {
                         Commands.literal("promote")
                                 .requires(Requires.hasPerms("factions.rank.promote", 0))
                                 .then(
-                                        Commands.argument(
-                                                        "player", EntityArgument.player())
+                                        Commands.argument("player", EntityArgument.player())
                                                 .executes(this::promote)))
                 .then(
                         Commands.literal("demote")
                                 .requires(Requires.hasPerms("factions.rank.demote", 0))
                                 .then(
-                                        Commands.argument(
-                                                        "player", EntityArgument.player())
+                                        Commands.argument("player", EntityArgument.player())
                                                 .executes(this::demote)))
                 .then(
                         Commands.literal("transfer")
@@ -223,8 +222,7 @@ public class RankCommand implements Command {
                                                 Requires.hasPerms("factions.rank.transfer", 0),
                                                 Requires.isOwner()))
                                 .then(
-                                        Commands.argument(
-                                                        "player", EntityArgument.player())
+                                        Commands.argument("player", EntityArgument.player())
                                                 .executes(this::transfer)))
                 .build();
     }

@@ -10,14 +10,16 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import xyz.nucleoid.server.translations.api.Localization;
 
-import java.util.Locale;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+
+import xyz.nucleoid.server.translations.api.Localization;
+
+import java.util.Locale;
 
 public class CreateCommand implements Command {
     private int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

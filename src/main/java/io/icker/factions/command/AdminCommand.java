@@ -14,13 +14,15 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.ui.AdminGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import java.util.Optional;
-import java.util.UUID;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public class AdminCommand implements Command {
     private int gui(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -84,7 +86,9 @@ public class AdminCommand implements Command {
                                         player.getName().getString(),
                                         power))
                         .send(target);
-                new Message(Component.translatable("factions.gui.power.success.removed.admin", power))
+                new Message(
+                                Component.translatable(
+                                        "factions.gui.power.success.removed.admin", power))
                         .send(player, false);
             }
         } else {
@@ -190,8 +194,7 @@ public class AdminCommand implements Command {
                                                 "factions.admin.power",
                                                 FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
                                 .then(
-                                        Commands.argument(
-                                                        "power", IntegerArgumentType.integer())
+                                        Commands.argument("power", IntegerArgumentType.integer())
                                                 .then(
                                                         Commands.argument(
                                                                         "faction",
@@ -206,8 +209,7 @@ public class AdminCommand implements Command {
                                                 "factions.admin.spoof",
                                                 FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL))
                                 .then(
-                                        Commands.argument(
-                                                        "player", StringArgumentType.string())
+                                        Commands.argument("player", StringArgumentType.string())
                                                 .suggests(Suggests.allPlayers())
                                                 .executes(this::spoof))
                                 .executes(this::clearSpoof))

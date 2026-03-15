@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+
 import java.util.UUID;
 
 public class ChatManager {
@@ -46,8 +47,7 @@ public class ChatManager {
         return new Message(message).format(ChatFormatting.GRAY).raw();
     }
 
-    private static Component inFactionGlobal(
-            ServerPlayer sender, Faction faction, String message) {
+    private static Component inFactionGlobal(ServerPlayer sender, Faction faction, String message) {
         return new Message()
                 .add(new Message(faction.getName()).format(ChatFormatting.BOLD, faction.getColor()))
                 .filler("»")

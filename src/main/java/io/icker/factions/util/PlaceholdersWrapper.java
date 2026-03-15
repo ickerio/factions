@@ -6,17 +6,20 @@ import eu.pb4.placeholders.api.Placeholders;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
-import xyz.nucleoid.server.translations.api.Localization;
-import xyz.nucleoid.server.translations.api.language.ServerLanguage;
 
-import java.util.function.Function;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
+import xyz.nucleoid.server.translations.api.Localization;
+import xyz.nucleoid.server.translations.api.language.ServerLanguage;
+
+import java.util.function.Function;
+
 public class PlaceholdersWrapper {
-    private static final Component UNFORMATTED_NULL = Component.translatable("factions.papi.factionless");
+    private static final Component UNFORMATTED_NULL =
+            Component.translatable("factions.papi.factionless");
     private static final Component FORMATTED_NULL =
             UNFORMATTED_NULL.copy().withStyle(ChatFormatting.DARK_GRAY);
 

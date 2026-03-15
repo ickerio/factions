@@ -9,13 +9,11 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
 import io.icker.factions.api.persistents.User;
-import io.icker.factions.mixin.DamageTrackerAccessor;
+import io.icker.factions.mixin.CombatTrackerAccessor;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
 import io.icker.factions.util.WorldUtils;
-import java.time.Instant;
-import java.util.Date;
-import java.util.HashSet;
+
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -23,6 +21,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashSet;
 
 public class HomeCommand implements Command {
     private int go(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -81,11 +83,11 @@ public class HomeCommand implements Command {
             return 0;
         }
 
-        int lastDamageTime = ((DamageTrackerAccessor) player.getCombatTracker()).getLastDamageTime();
+        int lastDamageTime =
+                ((CombatTrackerAccessor) player.getCombatTracker()).getLastDamageTime();
 
         if (lastDamageTime == 0
-                || player.tickCount - lastDamageTime
-                        > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
+                || player.tickCount - lastDamageTime > FactionsMod.CONFIG.HOME.DAMAGE_COOLDOWN) {
             player.teleportTo(
                     world, home.x, home.y, home.z, new HashSet<>(), home.yaw, home.pitch, false);
             user.homeCooldown = Date.from(Instant.now()).getTime();
@@ -106,8 +108,7 @@ public class HomeCommand implements Command {
 
         Faction faction = Command.getUser(player).getFaction();
 
-        if (checkLimitToClaim(
-                faction, (ServerLevel) player.level(), player.blockPosition())) {
+        if (checkLimitToClaim(faction, (ServerLevel) player.level(), player.blockPosition())) {
             new Message(Component.translatable("factions.command.home.fail.no_claim"))
                     .fail()
                     .send(player, false);

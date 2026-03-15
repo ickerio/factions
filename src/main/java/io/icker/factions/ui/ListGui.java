@@ -9,15 +9,17 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.command.HomeCommand;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Items;
+
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ListGui extends PagedGui {
     List<Faction> factions;
@@ -71,7 +73,9 @@ public class ListGui extends PagedGui {
                 lore.add(
                         Component.translatable("factions.gui.list.entry.view_info")
                                 .setStyle(
-                                        Style.EMPTY.withItalic(false).withColor(ChatFormatting.GRAY)));
+                                        Style.EMPTY
+                                                .withItalic(false)
+                                                .withColor(ChatFormatting.GRAY)));
                 lore.add(
                         Component.translatable("factions.gui.list.entry.teleport")
                                 .setStyle(
@@ -92,7 +96,9 @@ public class ListGui extends PagedGui {
                 lore.add(
                         Component.translatable("factions.gui.list.entry.view_info")
                                 .setStyle(
-                                        Style.EMPTY.withItalic(false).withColor(ChatFormatting.GRAY)));
+                                        Style.EMPTY
+                                                .withItalic(false)
+                                                .withColor(ChatFormatting.GRAY)));
                 icon.setCallback(
                         (index, clickType, actionType) -> {
                             GuiInteract.playClickSound(player);

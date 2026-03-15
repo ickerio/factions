@@ -5,6 +5,7 @@ import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.GuiInteract;
+
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -18,11 +19,9 @@ public class SoundManager {
         ClaimEvents.ADD.register(
                 claim -> playFaction(claim.getFaction(), SoundEvents.NOTE_BLOCK_PLING, 2.0F));
         ClaimEvents.REMOVE.register(
-                (x, z, level, faction) ->
-                        playFaction(faction, SoundEvents.NOTE_BLOCK_PLING, 0.5F));
+                (x, z, level, faction) -> playFaction(faction, SoundEvents.NOTE_BLOCK_PLING, 0.5F));
         FactionEvents.POWER_CHANGE.register(
-                (faction, oldPower) ->
-                        playFaction(faction, SoundEvents.NOTE_BLOCK_CHIME, 1F));
+                (faction, oldPower) -> playFaction(faction, SoundEvents.NOTE_BLOCK_CHIME, 1F));
         FactionEvents.MEMBER_JOIN.register(
                 (faction, user) -> playFaction(faction, SoundEvents.NOTE_BLOCK_BIT, 2.0F));
         FactionEvents.MEMBER_LEAVE.register(

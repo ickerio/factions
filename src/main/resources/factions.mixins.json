@@ -4,16 +4,16 @@
     "package": "io.icker.factions.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "DamageTrackerAccessor",
+        "CombatTrackerAccessor",
         "EnderChestBlockMixin",
         "ItemInvoker",
-        "LockableContainerBlockEntityMixin",
+        "BaseContainerBlockEntityMixin",
         "MinecraftServerMixin",
-        "PlayerManagerMixin",
-        "ServerPlayerEntityMixin",
-        "ServerPlayerInteractionManagerMixin",
-        "ServerPlayNetworkHandlerMixin",
-        "ExplosionBehaviorMixin"
+        "PlayerListMixin",
+        "ServerPlayerMixin",
+        "ServerPlayerGameModeMixin",
+        "ServerGamePacketListenerImplMixin",
+        "ServerExplosionMixin"
     ],
     "injectors": {
         "defaultRequire": 1

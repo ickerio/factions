@@ -8,12 +8,14 @@ import io.icker.factions.command.ModifyCommand;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
+
 import org.jetbrains.annotations.Nullable;
 
 import xyz.nucleoid.server.translations.api.Localization;
@@ -143,7 +145,8 @@ public class ModifyGui extends SimpleGui {
     private void execDesc(Faction faction) {
         InputGui inputGui = new InputGui(player);
 
-        inputGui.setTitle(Component.translatable("factions.gui.modify.change_description.input.title"));
+        inputGui.setTitle(
+                Component.translatable("factions.gui.modify.change_description.input.title"));
         inputGui.setDefaultInputValue(
                 Localization.raw("factions.gui.modify.change_description.input.default", player));
 
@@ -175,7 +178,9 @@ public class ModifyGui extends SimpleGui {
                 (index, clickType, actionType) -> {
                     String motd = inputGui.getInput();
                     faction.setMOTD(motd);
-                    new Message(Component.translatable("factions.gui.modify.change_motd.result", motd))
+                    new Message(
+                                    Component.translatable(
+                                            "factions.gui.modify.change_motd.result", motd))
                             .prependFaction(faction)
                             .send(player, false);
                     this.open();

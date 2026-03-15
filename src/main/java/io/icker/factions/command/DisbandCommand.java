@@ -8,6 +8,7 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -71,9 +72,7 @@ public class DisbandCommand implements Command {
                         Requires.multiple(
                                 Requires.isOwner(), Requires.hasPerms("factions.disband", 0)))
                 .executes(context -> this.run(context, false))
-                .then(
-                        Commands.literal("confirm")
-                                .executes(context -> this.run(context, true)))
+                .then(Commands.literal("confirm").executes(context -> this.run(context, true)))
                 .build();
     }
 }

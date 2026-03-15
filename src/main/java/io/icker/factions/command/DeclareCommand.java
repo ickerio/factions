@@ -10,13 +10,15 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Relationship;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-import java.util.Locale;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.Locale;
 
 public class DeclareCommand implements Command {
     private int ally(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -81,7 +83,8 @@ public class DeclareCommand implements Command {
                         ? Component.translatable("factions.command.declare.success.status.ally")
                                 .withStyle(ChatFormatting.GREEN)
                         : rel.status == Relationship.Status.ENEMY
-                                ? Component.translatable("factions.command.declare.success.status.enemy")
+                                ? Component.translatable(
+                                                "factions.command.declare.success.status.enemy")
                                         .withStyle(ChatFormatting.RED)
                                 : Component.translatable(
                                         "factions.command.declare.success.status.neutral");

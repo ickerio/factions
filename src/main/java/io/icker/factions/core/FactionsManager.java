@@ -24,6 +24,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.level.ChunkPos;
+
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -126,7 +127,9 @@ public class FactionsManager {
 
         if (!user.isInFaction()) {
             if (FactionsMod.CONFIG.SAFE != null && FactionsMod.CONFIG.SAFE.ENDER_CHEST) {
-                new Message(Component.translatable("factions.events.no_enderchests_without_faction"))
+                new Message(
+                                Component.translatable(
+                                        "factions.events.no_enderchests_without_faction"))
                         .fail()
                         .send(player, false);
                 return InteractionResult.FAIL;
@@ -138,11 +141,9 @@ public class FactionsManager {
                 new SimpleMenuProvider(
                         (syncId, inventory, p) -> {
                             if (FactionsMod.CONFIG.SAFE.DOUBLE) {
-                                return ChestMenu.sixRows(
-                                        syncId, inventory, faction.getSafe());
+                                return ChestMenu.sixRows(syncId, inventory, faction.getSafe());
                             } else {
-                                return ChestMenu.threeRows(
-                                        syncId, inventory, faction.getSafe());
+                                return ChestMenu.threeRows(syncId, inventory, faction.getSafe());
                             }
                         },
                         Component.translatable("factions.gui.safe.title", faction.getName())));
