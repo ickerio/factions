@@ -12,6 +12,7 @@ import io.icker.factions.mixin.ItemInvoker;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,6 +38,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
+import org.jspecify.annotations.Nullable;
+
 public class InteractionManager {
     public static void register() {
         PlayerBlockBreakEvents.BEFORE.register(InteractionManager::onBreakBlock);
@@ -45,8 +48,8 @@ public class InteractionManager {
         UseBlockCallback.EVENT.register(InteractionManager::onUseBlock);
         UseItemCallback.EVENT.register(InteractionManager::onUseBucket);
         AttackEntityCallback.EVENT.register(InteractionManager::onAttackEntity);
+        UseEntityCallback.EVENT.register(InteractionManager::onUseEntity);
         PlayerEvents.IS_INVULNERABLE.register(InteractionManager::isInvulnerableTo);
-        PlayerEvents.USE_ENTITY.register(InteractionManager::onUseEntity);
         PlayerEvents.USE_INVENTORY.register(InteractionManager::onUseInventory);
         PlayerEvents.PLACE_BLOCK.register(InteractionManager::onPlaceBlock);
     }
@@ -199,7 +202,8 @@ public class InteractionManager {
             net.minecraft.world.level.ClipContext.Fluid handling =
                     fluid == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE;
 
-            BlockHitResult raycastResult = ItemInvoker.getPlayerPOVHitResult(world, player, handling);
+            BlockHitResult raycastResult =
+                    ItemInvoker.getPlayerPOVHitResult(world, player, handling);
 
             if (raycastResult.getType() != BlockHitResult.Type.MISS) {
                 BlockPos raycastPos = raycastResult.getBlockPos();
@@ -242,7 +246,12 @@ public class InteractionManager {
         return InteractionResult.PASS;
     }
 
-    private static InteractionResult onUseEntity(Player player, Entity entity, Level world) {
+    private static InteractionResult onUseEntity(
+            Player player,
+            Level level,
+            InteractionHand hand,
+            Entity entity,
+            @Nullable EntityHitResult hitResult) {
         BlockPos pos;
         if (entity == null) {
             pos = player.blockPosition();
@@ -250,7 +259,7 @@ public class InteractionManager {
             pos = entity.blockPosition();
         }
 
-        if (checkPermissions(player, pos, world, Permissions.USE_ENTITIES)
+        if (checkPermissions(player, pos, level, Permissions.USE_ENTITIES)
                 == InteractionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.USE_ENTITIES);
             return InteractionResult.FAIL;

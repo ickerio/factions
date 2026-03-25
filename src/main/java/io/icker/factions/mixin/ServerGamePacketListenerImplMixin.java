@@ -7,13 +7,9 @@ import io.icker.factions.util.WorldUtils;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
-import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -50,18 +46,6 @@ public class ServerGamePacketListenerImplMixin {
                                     .getPlayer(signedMessage.link().sender()),
                             false);
 
-            ci.cancel();
-        }
-    }
-
-    @Inject(method = "handleInteract", at = @At("HEAD"), cancellable = true)
-    public void handleInteract(ServerboundInteractPacket packet, CallbackInfo ci) {
-        Level world = player.level();
-        Entity entity = world.getEntity(packet.entityId());
-        if (entity == null) return;
-
-        if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, entity, world)
-                == InteractionResult.FAIL) {
             ci.cancel();
         }
     }

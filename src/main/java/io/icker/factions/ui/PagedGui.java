@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -126,7 +127,7 @@ public abstract class PagedGui extends SimpleGui {
 
     public record DisplayElement(@Nullable GuiElement element, @Nullable Slot slot) {
         private static final DisplayElement EMPTY =
-                DisplayElement.of(new GuiElementBuilder().build());
+                DisplayElement.of(GuiElementBuilder.from(ItemStack.EMPTY).build());
         private static final DisplayElement FILLER =
                 DisplayElement.of(
                         new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)

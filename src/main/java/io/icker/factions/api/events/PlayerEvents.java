@@ -18,22 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /** Events related to player actions */
 public class PlayerEvents {
-    /** Called when a player tries to interact with an entity */
-    public static final Event<UseEntity> USE_ENTITY =
-            EventFactory.createArrayBacked(
-                    UseEntity.class,
-                    callbacks ->
-                            (source, target, world) -> {
-                                for (UseEntity callback : callbacks) {
-                                    InteractionResult result =
-                                            callback.onUseEntity(source, target, world);
-                                    if (result != InteractionResult.PASS) {
-                                        return result;
-                                    }
-                                }
-                                return InteractionResult.PASS;
-                            });
-
     public static final Event<PlaceBlock> PLACE_BLOCK =
             EventFactory.createArrayBacked(
                     PlaceBlock.class,
