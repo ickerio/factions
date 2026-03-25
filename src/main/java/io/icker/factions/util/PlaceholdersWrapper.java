@@ -24,7 +24,7 @@ public class PlaceholdersWrapper {
             UNFORMATTED_NULL.copy().withStyle(ChatFormatting.DARK_GRAY);
 
     private static void register(String identifier, Function<User, Component> handler) {
-        Placeholders.register(
+        Placeholders.registerServer(
                 Identifier.fromNamespaceAndPath(FactionsMod.MODID, identifier),
                 (ctx, argument) -> {
                     if (!ctx.hasPlayer())
