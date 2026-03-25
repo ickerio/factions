@@ -31,7 +31,7 @@ public abstract class ServerPlayerMixin extends LivingEntity {
     }
 
     @Inject(at = @At("HEAD"), method = "die")
-    public void onDeath(DamageSource source, CallbackInfo info) {
+    public void die(DamageSource source, CallbackInfo info) {
         Entity entity = source.getDirectEntity();
         if (entity == null || !entity.isAlwaysTicking()) return;
         PlayerEvents.ON_KILLED_BY_PLAYER
@@ -61,7 +61,7 @@ public abstract class ServerPlayerMixin extends LivingEntity {
     }
 
     @Inject(method = "getTabListDisplayName", at = @At("HEAD"), cancellable = true)
-    public void getPlayerListName(CallbackInfoReturnable<Component> cir) {
+    public void getTabListDisplayName(CallbackInfoReturnable<Component> cir) {
         if (FactionsMod.CONFIG.DISPLAY.TAB_MENU) {
             User member = User.get(((ServerPlayer) (Object) this).getUUID());
             if (member.isInFaction()) {

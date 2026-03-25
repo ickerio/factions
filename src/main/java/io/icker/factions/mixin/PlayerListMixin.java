@@ -23,7 +23,7 @@ public class PlayerListMixin {
                             value = "INVOKE",
                             target =
                                     "Lnet/minecraft/server/level/ServerPlayer;sendChatMessage(Lnet/minecraft/network/chat/OutgoingChatMessage;ZLnet/minecraft/network/chat/ChatType$Bound;)V"))
-    public void sendChatMessage(
+    public void broadcastChatMessage(
             ServerPlayer player,
             OutgoingChatMessage message,
             boolean bl,

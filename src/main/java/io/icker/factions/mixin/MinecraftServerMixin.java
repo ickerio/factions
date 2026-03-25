@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
     @Inject(at = @At("HEAD"), method = "saveAllChunks(ZZZ)Z")
-    public void save(
+    public void saveAllChunks(
             boolean suppressLogs,
             boolean flush,
             boolean force,

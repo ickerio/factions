@@ -20,7 +20,7 @@ public class ServerPlayerGameModeMixin {
                             value = "INVOKE",
                             target =
                                     "Lnet/minecraft/world/item/ItemStack;useOn(Lnet/minecraft/world/item/context/UseOnContext;)Lnet/minecraft/world/InteractionResult;"))
-    public InteractionResult place(ItemStack instance, UseOnContext context) {
+    public InteractionResult useItemOn(ItemStack instance, UseOnContext context) {
         if (PlayerEvents.PLACE_BLOCK.invoker().onPlaceBlock(context) == InteractionResult.FAIL) {
             return InteractionResult.FAIL;
         }

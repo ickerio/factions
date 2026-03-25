@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(Item.class)
 public interface ItemInvoker {
     @Invoker("getPlayerPOVHitResult")
-    static BlockHitResult raycast(Level world, Player player, ClipContext.Fluid fluidHandling) {
+    static BlockHitResult getPlayerPOVHitResult(Level world, Player player, ClipContext.Fluid fluidHandling) {
         throw new AssertionError();
     }
 }

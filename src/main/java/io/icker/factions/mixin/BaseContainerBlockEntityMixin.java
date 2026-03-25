@@ -17,7 +17,7 @@ public class BaseContainerBlockEntityMixin {
             method = "canOpen(Lnet/minecraft/world/entity/player/Player;)Z",
             at = @At("RETURN"),
             cancellable = true)
-    private void checkUnlocked(Player player, CallbackInfoReturnable<Boolean> cir) {
+    private void canOpen(Player player, CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(
                 cir.getReturnValue()
                         && PlayerEvents.USE_INVENTORY

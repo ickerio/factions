@@ -26,12 +26,12 @@ public class ServerGamePacketListenerImplMixin {
     @Shadow public ServerPlayer player;
 
     @Inject(method = "handleMovePlayer", at = @At("HEAD"))
-    public void onPlayerMove(ServerboundMovePlayerPacket packet, CallbackInfo ci) {
+    public void handleMovePlayer(ServerboundMovePlayerPacket packet, CallbackInfo ci) {
         PlayerEvents.ON_MOVE.invoker().onMove(player);
     }
 
     @Inject(method = "broadcastChatMessage", at = @At("HEAD"), cancellable = true)
-    public void handleDecoratedMessage(PlayerChatMessage signedMessage, CallbackInfo ci) {
+    public void broadcastChatMessage(PlayerChatMessage signedMessage, CallbackInfo ci) {
         User member = User.get(signedMessage.link().sender());
 
         boolean factionChat =
@@ -55,7 +55,7 @@ public class ServerGamePacketListenerImplMixin {
     }
 
     @Inject(method = "handleInteract", at = @At("HEAD"), cancellable = true)
-    public void onPlayerInteractEntity(ServerboundInteractPacket packet, CallbackInfo ci) {
+    public void handleInteract(ServerboundInteractPacket packet, CallbackInfo ci) {
         Level world = player.level();
         Entity entity = world.getEntity(packet.entityId());
         if (entity == null) return;

@@ -24,7 +24,7 @@ public class ServerExplosionMixin {
                             value = "INVOKE",
                             target =
                                     "Lnet/minecraft/world/level/ExplosionDamageCalculator;shouldBlockExplode(Lnet/minecraft/world/level/Explosion;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;F)Z"))
-    public boolean canDestroyBlock(
+    public boolean calculateExplodedPositions(
             ExplosionDamageCalculator behavior,
             Explosion explosion,
             BlockGetter world,
@@ -49,7 +49,7 @@ public class ServerExplosionMixin {
                             value = "INVOKE",
                             target =
                                     "Lnet/minecraft/world/entity/Entity;ignoreExplosion(Lnet/minecraft/world/level/Explosion;)Z"))
-    public boolean shouldDamage(Entity entity, Explosion explosion) {
+    public boolean hurtEntities(Entity entity, Explosion explosion) {
         InteractionResult result =
                 PlayerEvents.EXPLODE_DAMAGE.invoker().onExplodeDamage(explosion, entity);
         if (result.consumesAction()) {
