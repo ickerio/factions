@@ -143,7 +143,7 @@ public class HomeCommand implements Command {
         ChunkPos chunkPos = world.getChunk(pos).getPos();
         String dimension = world.dimension().identifier().toString();
 
-        Claim possibleClaim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+        Claim possibleClaim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
         return possibleClaim == null || possibleClaim.getFaction().getID() != faction.getID();
     }
 

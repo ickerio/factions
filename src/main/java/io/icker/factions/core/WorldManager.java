@@ -31,7 +31,7 @@ public class WorldManager {
 
         ChunkPos chunkPos = world.getChunk(player.blockPosition()).getPos();
 
-        Claim claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+        Claim claim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
         if (user.autoclaim && claim == null) {
             Faction faction = user.getFaction();
             int requiredPower =
@@ -47,13 +47,13 @@ public class WorldManager {
                         .send(player, false);
                 user.autoclaim = false;
             } else {
-                faction.addClaim(chunkPos.x, chunkPos.z, dimension);
-                claim = Claim.get(chunkPos.x, chunkPos.z, dimension);
+                faction.addClaim(chunkPos.x(), chunkPos.z(), dimension);
+                claim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
                 new Message(
                                 Component.translatable(
                                         "factions.events.autoclaim.success",
-                                        chunkPos.x,
-                                        chunkPos.z,
+                                        chunkPos.x(),
+                                        chunkPos.z(),
                                         player.getName().getString()))
                         .send(faction);
             }

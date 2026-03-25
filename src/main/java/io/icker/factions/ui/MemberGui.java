@@ -139,7 +139,7 @@ public class MemberGui extends PagedGui {
                 ServerPlayer targetPlayer =
                         player.level().getServer().getPlayerList().getPlayer(targetUser.getID());
                 icon.setCallback(
-                        (index, clickType, actionType) -> {
+                        (index, clickType, actionType, _) -> {
                             GuiInteract.playClickSound(player);
                             if (clickType == ClickType.MOUSE_LEFT) {
                                 try {
@@ -201,7 +201,10 @@ public class MemberGui extends PagedGui {
                                                                         profile.name())
                                                                 .withStyle(ChatFormatting.GREEN))
                                                 .setCallback(
-                                                        ((index2, clickType2, actionType2) -> {
+                                                        ((index2,
+                                                                clickType2,
+                                                                actionType2,
+                                                                gui2) -> {
                                                             if (user.rank == User.Rank.LEADER
                                                                     && (targetUser.rank
                                                                                     == User.Rank

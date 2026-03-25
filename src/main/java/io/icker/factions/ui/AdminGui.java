@@ -63,7 +63,7 @@ public class AdminGui extends SimpleGui {
                                                                 .withItalic(false)
                                                                 .withColor(ChatFormatting.GRAY))))
                         .setCallback(
-                                (index, clickType, actionType) -> {
+                                (index, clickType, actionType, gui) -> {
                                     GuiInteract.playClickSound(player);
                                     this.execPower();
                                 }));
@@ -89,7 +89,7 @@ public class AdminGui extends SimpleGui {
                                                                 .withItalic(false)
                                                                 .withColor(ChatFormatting.GRAY))))
                         .setCallback(
-                                (index, clickType, actionType) -> {
+                                (index, clickType, actionType, gui) -> {
                                     GuiInteract.playClickSound(player);
                                     if (clickType == ClickType.MOUSE_RIGHT) {
                                         user.setSpoof(null);
@@ -117,7 +117,7 @@ public class AdminGui extends SimpleGui {
                                                                 .withItalic(false)
                                                                 .withColor(ChatFormatting.GRAY))))
                         .setCallback(
-                                (index, clickType, actionType) -> {
+                                (index, clickType, actionType, gui) -> {
                                     GuiInteract.playClickSound(player);
                                     for (int i = 0; i < 4; i++) {
                                         Claim.audit();
@@ -150,7 +150,7 @@ public class AdminGui extends SimpleGui {
                                                                     .withColor(
                                                                             ChatFormatting.GRAY))))
                             .setCallback(
-                                    (index, clickType, actionType) -> {
+                                    (index, clickType, actionType, gui) -> {
                                         GuiInteract.playClickSound(player);
                                         FactionsMod.dynmap.reloadAll();
                                         new Message(
@@ -186,7 +186,7 @@ public class AdminGui extends SimpleGui {
                                                         .withItalic(false)
                                                         .withColor(ChatFormatting.GRAY))))
                 .setCallback(
-                        (index, clickType, actionType) -> {
+                        (index, clickType, actionType, gui) -> {
                             GuiInteract.playClickSound(player);
                             user.bypass = !user.bypass;
 
@@ -219,7 +219,7 @@ public class AdminGui extends SimpleGui {
 
         inputGui.returnBtn.setCallback(defaultReturn);
         inputGui.confirmBtn.setCallback(
-                (index, clickType, actionType) -> {
+                (index, clickType, actionType, gui) -> {
                     GuiInteract.playClickSound(player);
 
                     String input = inputGui.getInput();
@@ -269,7 +269,7 @@ public class AdminGui extends SimpleGui {
 
         inputFacGui.returnBtn.setCallback(defaultReturn);
         inputFacGui.confirmBtn.setCallback(
-                (index, clickType, actionType) -> {
+                (index, clickType, actionType, gui) -> {
                     GuiInteract.playClickSound(player);
                     selectedFac[0] = Faction.getByName(inputFacGui.getInput());
                     if (selectedFac[0] == null) {
@@ -288,7 +288,7 @@ public class AdminGui extends SimpleGui {
                 Localization.raw("factions.gui.power.setpower.default", player));
         inputPowGui.returnBtn.setCallback(defaultReturn);
         inputPowGui.confirmBtn.setCallback(
-                (index, clickType, actionType) -> {
+                (index, clickType, actionType, gui) -> {
                     GuiInteract.playClickSound(player);
                     try {
                         selectedPow[0] = Integer.parseInt(inputPowGui.getInput());

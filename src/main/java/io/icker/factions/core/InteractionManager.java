@@ -84,7 +84,7 @@ public class InteractionManager {
             String dimension = explosion.level().dimension().identifier().toString();
             ChunkPos chunkPosition = explosion.level().getChunk(pos).getPos();
 
-            Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
+            Claim claim = Claim.get(chunkPosition.x(), chunkPosition.z(), dimension);
             if (claim == null) return InteractionResult.PASS;
 
             Faction claimFaction = claim.getFaction();
@@ -123,7 +123,7 @@ public class InteractionManager {
             String dimension = explosion.level().dimension().identifier().toString();
             ChunkPos chunkPosition = explosion.level().getChunk(entity.blockPosition()).getPos();
 
-            Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
+            Claim claim = Claim.get(chunkPosition.x(), chunkPosition.z(), dimension);
             if (claim == null) return InteractionResult.PASS;
 
             Faction claimFaction = claim.getFaction();
@@ -313,7 +313,7 @@ public class InteractionManager {
         String dimension = world.dimension().identifier().toString();
         ChunkPos chunkPosition = world.getChunk(position).getPos();
 
-        Claim claim = Claim.get(chunkPosition.x, chunkPosition.z, dimension);
+        Claim claim = Claim.get(chunkPosition.x(), chunkPosition.z(), dimension);
         if (claim == null) return InteractionResult.PASS;
 
         Faction claimFaction = claim.getFaction();

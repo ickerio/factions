@@ -83,7 +83,7 @@ public class ListGui extends PagedGui {
                                                 .withItalic(false)
                                                 .withColor(ChatFormatting.DARK_AQUA)));
                 icon.setCallback(
-                        (index, clickType, actionType) -> {
+                        (index, clickType, actionType, gui) -> {
                             GuiInteract.playClickSound(player);
                             if (clickType == ClickType.MOUSE_RIGHT) {
                                 new HomeCommand().execGo(player, user, faction);
@@ -100,7 +100,7 @@ public class ListGui extends PagedGui {
                                                 .withItalic(false)
                                                 .withColor(ChatFormatting.GRAY)));
                 icon.setCallback(
-                        (index, clickType, actionType) -> {
+                        (index, clickType, actionType, gui) -> {
                             GuiInteract.playClickSound(player);
                             new InfoGui(player, faction, this::open);
                         });

@@ -56,7 +56,7 @@ public class FactionsManager {
 
                         ChunkPos homeChunkPos = world.getChunk(homePos).getPos();
 
-                        if (homeChunkPos.x == x && homeChunkPos.z == z) {
+                        if (homeChunkPos.x() == x && homeChunkPos.z() == z) {
                             faction.setHome(null);
                         }
                     });

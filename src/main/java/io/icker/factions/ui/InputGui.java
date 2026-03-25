@@ -45,7 +45,7 @@ public class InputGui extends AnvilInputGui {
     }
 
     public void showErrorMessage(MutableComponent text, int slotIndex) {
-        ItemStack item = Objects.requireNonNull(this.getSlot(slotIndex)).getItemStack();
+        ItemStack item = Objects.requireNonNull(this.getGuiElement(slotIndex)).getItemStack();
         item.set(
                 DataComponents.CUSTOM_NAME,
                 text.setStyle(Style.EMPTY.withItalic(false).withColor(ChatFormatting.RED)));

@@ -42,7 +42,7 @@ public class MapCommand implements Command {
         for (int z = -4; z <= 4; z++) { // Rows (9)
             Message row = new Message();
             for (int x = -5; x <= 5; x++) { // Columns (11)
-                Claim claim = Claim.get(chunkPos.x + x, chunkPos.z + z, dimension);
+                Claim claim = Claim.get(chunkPos.x() + x, chunkPos.z() + z, dimension);
                 if (x == 0 && z == 0) { // Check if middle (your chunk)
                     if (claim == null) {
                         row.add(

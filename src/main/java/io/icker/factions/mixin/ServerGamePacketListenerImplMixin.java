@@ -9,14 +9,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -60,29 +57,12 @@ public class ServerGamePacketListenerImplMixin {
     @Inject(method = "handleInteract", at = @At("HEAD"), cancellable = true)
     public void onPlayerInteractEntity(ServerboundInteractPacket packet, CallbackInfo ci) {
         Level world = player.level();
-        Entity entity = packet.getTarget((ServerLevel) world);
+        Entity entity = world.getEntity(packet.entityId());
         if (entity == null) return;
 
-        packet.dispatch(
-                new ServerboundInteractPacket.Handler() {
-                    @Override
-                    public void onInteraction(InteractionHand hand) {
-                        if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, entity, world)
-                                == InteractionResult.FAIL) {
-                            ci.cancel();
-                        }
-                    }
-
-                    @Override
-                    public void onInteraction(InteractionHand hand, Vec3 pos) {
-                        if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, entity, world)
-                                == InteractionResult.FAIL) {
-                            ci.cancel();
-                        }
-                    }
-
-                    @Override
-                    public void onAttack() {}
-                });
+        if (PlayerEvents.USE_ENTITY.invoker().onUseEntity(player, entity, world)
+                == InteractionResult.FAIL) {
+            ci.cancel();
+        }
     }
 }
