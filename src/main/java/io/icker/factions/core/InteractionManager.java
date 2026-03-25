@@ -199,7 +199,7 @@ public class InteractionManager {
             net.minecraft.world.level.ClipContext.Fluid handling =
                     fluid == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE;
 
-            BlockHitResult raycastResult = ItemInvoker.raycast(world, player, handling);
+            BlockHitResult raycastResult = ItemInvoker.getPlayerPOVHitResult(world, player, handling);
 
             if (raycastResult.getType() != BlockHitResult.Type.MISS) {
                 BlockPos raycastPos = raycastResult.getBlockPos();
