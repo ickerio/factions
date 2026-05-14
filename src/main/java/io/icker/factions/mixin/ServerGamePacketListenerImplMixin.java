@@ -21,9 +21,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ServerGamePacketListenerImplMixin {
     @Shadow public ServerPlayer player;
 
-    @Inject(method = "handleMovePlayer", at = @At("HEAD"))
+    @Inject(method = "handleMovePlayer", at = @At("TAIL"))
     public void handleMovePlayer(ServerboundMovePlayerPacket packet, CallbackInfo ci) {
-        PlayerEvents.ON_MOVE.invoker().onMove(player);
+        if (player == null) return;
+        if (player.level() == null) return;
+
+        var server = player.level().getServer();
+        if (server == null) return;
+
+        if (server.isSameThread()) {
+            PlayerEvents.ON_MOVE.invoker().onMove(player);
+        } else {
+            server.execute(() -> PlayerEvents.ON_MOVE.invoker().onMove(player));
+        }
     }
 
     @Inject(method = "broadcastChatMessage", at = @At("HEAD"), cancellable = true)

@@ -33,7 +33,7 @@ A faction's power cap increases as new members join, expanding their ability to 
 
 &nbsp;
 
-### **GET STARTED**
+### **GET STARTED** 
 
 Factions Mod is very intuitive and works immediately after installation, requiring no additional configuration. However, you can read further about the mod on the [Wiki][wiki]. Our wiki goes in depth about the factions mechanics, its configuration, commands and integrations.
 

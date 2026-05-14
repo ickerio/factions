@@ -11,6 +11,7 @@ import io.icker.factions.api.persistents.User.Rank;
 import io.icker.factions.api.persistents.User.SoundMode;
 import io.icker.factions.util.WorldUtils;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.ByteTag;
@@ -146,6 +147,17 @@ public class SerializerRegistry {
                 el -> Enum.valueOf(clazz, el.asString().orElse("")));
     }
 
+    private static RegistryAccess resolveRegistryAccess() {
+        var world = WorldUtils.getWorld("minecraft:overworld");
+        if (world != null) {
+            return world.registryAccess();
+        }
+        if (WorldUtils.server != null) {
+            return WorldUtils.server.registryAccess();
+        }
+        return null;
+    }
+
     public record InventoryItem(int slot, ItemStack stack) {
         public static final Codec<InventoryItem> CODEC =
                 RecordCodecBuilder.create(
@@ -165,12 +177,16 @@ public class SerializerRegistry {
     private static Serializer<SimpleContainer, ListTag> createInventorySerializer(int size) {
         return new Serializer<SimpleContainer, ListTag>(
                 val -> {
+                    RegistryAccess registryAccess = resolveRegistryAccess();
+                    if (registryAccess == null) {
+                        FactionsMod.LOGGER.error(
+                                "Registry access unavailable; skipping inventory serialization.");
+                        return new ListTag();
+                    }
                     ProblemReporter.ScopedCollector reporter =
                             new ProblemReporter.ScopedCollector(FactionsMod.LOGGER);
                     TagValueOutput view =
-                            TagValueOutput.createWithContext(
-                                    reporter,
-                                    WorldUtils.getWorld("minecraft:overworld").registryAccess());
+                            TagValueOutput.createWithContext(reporter, registryAccess);
                     TypedOutputList<InventoryItem> appender =
                             view.list("Data", InventoryItem.CODEC);
 
@@ -186,6 +202,17 @@ public class SerializerRegistry {
                     return view.buildResult().getList("Data").get();
                 },
                 el -> {
+                    RegistryAccess registryAccess = resolveRegistryAccess();
+                    SimpleContainer inventory = new SimpleContainer(size);
+                    for (int i = 0; i < size; ++i) {
+                        inventory.setItem(i, ItemStack.EMPTY);
+                    }
+                    if (registryAccess == null) {
+                        FactionsMod.LOGGER.error(
+                                "Registry access unavailable; skipping inventory deserialization.");
+                        return inventory;
+                    }
+
                     CompoundTag compound = new CompoundTag();
                     compound.put("Data", el);
 
@@ -193,16 +220,7 @@ public class SerializerRegistry {
                             new ProblemReporter.ScopedCollector(FactionsMod.LOGGER);
 
                     ValueInput view =
-                            TagValueInput.create(
-                                    reporter,
-                                    WorldUtils.getWorld("minecraft:overworld").registryAccess(),
-                                    compound);
-
-                    SimpleContainer inventory = new SimpleContainer(size);
-
-                    for (int i = 0; i < size; ++i) {
-                        inventory.setItem(i, ItemStack.EMPTY);
-                    }
+                            TagValueInput.create(reporter, registryAccess, compound);
 
                     TypedInputList<InventoryItem> list_view =
                             view.listOrEmpty("Data", InventoryItem.CODEC);
