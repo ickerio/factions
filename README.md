@@ -27,7 +27,7 @@ A faction's power cap increases as new members join, expanding their ability to 
 - 🎉 In faction private chat, global chat and a stylized player list
 - ⚡ Extreme performance and reliability
 - ⚙️ Advanced [configuration][wiki:config] and customization options
-- 🔥 Dynmap and Lucko Perms support out the box
+- 🔥 Dynmap and Lucky Perms support out the box
 - 🚀 Event driven API for further extensibility 
 - 💬 Strong [community][discord] and active developer support
 
