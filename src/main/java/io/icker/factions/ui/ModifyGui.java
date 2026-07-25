@@ -1,29 +1,28 @@
 package io.icker.factions.ui;
 
+import org.jetbrains.annotations.Nullable;
+
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.command.ModifyCommand;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
-
-import org.jetbrains.annotations.Nullable;
-
 import xyz.nucleoid.server.translations.api.Localization;
 
 public class ModifyGui extends SimpleGui {
+
     Runnable closeCallback;
-    private final Runnable defaultReturn =
-            () -> {
+    private final Runnable defaultReturn
+            = () -> {
                 GuiInteract.playClickSound(player);
                 this.open();
             };
@@ -33,8 +32,12 @@ public class ModifyGui extends SimpleGui {
         this.closeCallback = closeCallback;
 
         this.setTitle(Component.translatable("factions.gui.modify.title"));
-        for (int i = 0; i < 9; i++)
-            this.setSlot(i, new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip());
+        for (int i = 0; i < 9; i++) {
+            this.setSlot(
+                    i,
+                    new GuiElementBuilder(Items.STAINED_GLASS_PANE.pick(DyeColor.WHITE))
+                            .hideTooltip());
+        }
 
         this.setSlot(
                 0,
@@ -99,12 +102,12 @@ public class ModifyGui extends SimpleGui {
                         Component.translatable(
                                 "factions.gui.modify.faction_type",
                                 faction.isOpen()
-                                        ? Component.translatable(
-                                                        "factions.gui.modify.faction_type.public")
-                                                .withStyle(ChatFormatting.AQUA)
-                                        : Component.translatable(
-                                                        "factions.gui.modify.faction_type.invite")
-                                                .withStyle(ChatFormatting.RED)))
+                                ? Component.translatable(
+                                        "factions.gui.modify.faction_type.public")
+                                        .withStyle(ChatFormatting.AQUA)
+                                : Component.translatable(
+                                        "factions.gui.modify.faction_type.invite")
+                                        .withStyle(ChatFormatting.RED)))
                 .setCallback(
                         (index, clickType, actionType, _) -> {
                             faction.setOpen(!faction.isOpen());
@@ -127,8 +130,8 @@ public class ModifyGui extends SimpleGui {
                     try {
                         ModifyCommand.execName(player, faction, name);
                         new Message(
-                                        Component.translatable(
-                                                "factions.gui.modify.change_name.result", name))
+                                Component.translatable(
+                                        "factions.gui.modify.change_name.result", name))
                                 .prependFaction(faction)
                                 .send(player, false);
                     } catch (Exception e) {
@@ -156,8 +159,8 @@ public class ModifyGui extends SimpleGui {
                     String desc = inputGui.getInput();
                     faction.setDescription(desc);
                     new Message(
-                                    Component.translatable(
-                                            "factions.gui.modify.change_description.result", desc))
+                            Component.translatable(
+                                    "factions.gui.modify.change_description.result", desc))
                             .prependFaction(faction)
                             .send(player, false);
                     this.open();
@@ -179,8 +182,8 @@ public class ModifyGui extends SimpleGui {
                     String motd = inputGui.getInput();
                     faction.setMOTD(motd);
                     new Message(
-                                    Component.translatable(
-                                            "factions.gui.modify.change_motd.result", motd))
+                            Component.translatable(
+                                    "factions.gui.modify.change_motd.result", motd))
                             .prependFaction(faction)
                             .send(player, false);
                     this.open();
@@ -191,6 +194,7 @@ public class ModifyGui extends SimpleGui {
 }
 
 class ColorGui extends SimpleGui {
+
     ServerPlayer player;
     Faction faction;
     Runnable returnCallback;
@@ -215,110 +219,111 @@ class ColorGui extends SimpleGui {
                                 Component.translatable(
                                         "factions.gui.modify.change_color.select.option.reset"))
                         .setCallback(() -> colorCallback(ChatFormatting.RESET)));
-        this.addSlot(new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip());
         this.addSlot(
-                new GuiElementBuilder(Items.RED_CONCRETE_POWDER)
+                new GuiElementBuilder(Items.STAINED_GLASS_PANE.pick(DyeColor.WHITE)).hideTooltip());
+        this.addSlot(
+                new GuiElementBuilder(Items.CONCRETE_POWDER.pick(DyeColor.RED))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.red")
+                                        "factions.gui.modify.change_color.select.option.red")
                                         .withStyle(ChatFormatting.RED))
                         .setCallback(() -> colorCallback(ChatFormatting.RED)));
         this.addSlot(
-                new GuiElementBuilder(Items.LIGHT_BLUE_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.LIGHT_BLUE))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.aqua")
+                                        "factions.gui.modify.change_color.select.option.aqua")
                                         .withStyle(ChatFormatting.AQUA))
                         .setCallback(() -> colorCallback(ChatFormatting.AQUA)));
         this.addSlot(
-                new GuiElementBuilder(Items.BLACK_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.BLACK))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.black")
+                                        "factions.gui.modify.change_color.select.option.black")
                                         .withStyle(ChatFormatting.BLACK))
                         .setCallback(() -> colorCallback(ChatFormatting.BLACK)));
         this.addSlot(
-                new GuiElementBuilder(Items.BLUE_CONCRETE_POWDER)
+                new GuiElementBuilder(Items.CONCRETE_POWDER.pick(DyeColor.BLUE))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.blue")
+                                        "factions.gui.modify.change_color.select.option.blue")
                                         .withStyle(ChatFormatting.BLUE))
                         .setCallback(() -> colorCallback(ChatFormatting.BLUE)));
         this.addSlot(
-                new GuiElementBuilder(Items.CYAN_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.CYAN))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.dark_aqua")
+                                        "factions.gui.modify.change_color.select.option.dark_aqua")
                                         .withStyle(ChatFormatting.DARK_AQUA))
                         .setCallback(() -> colorCallback(ChatFormatting.DARK_AQUA)));
         this.addSlot(
-                new GuiElementBuilder(Items.BLUE_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.BLUE))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.dark_blue")
+                                        "factions.gui.modify.change_color.select.option.dark_blue")
                                         .withStyle(ChatFormatting.DARK_BLUE))
                         .setCallback(() -> colorCallback(ChatFormatting.DARK_BLUE)));
         this.addSlot(
-                new GuiElementBuilder(Items.GRAY_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.GRAY))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.dark_gray")
+                                        "factions.gui.modify.change_color.select.option.dark_gray")
                                         .withStyle(ChatFormatting.DARK_GRAY))
                         .setCallback(() -> colorCallback(ChatFormatting.DARK_GRAY)));
         this.addSlot(
-                new GuiElementBuilder(Items.LIGHT_GRAY_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.LIGHT_GRAY))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.gray")
+                                        "factions.gui.modify.change_color.select.option.gray")
                                         .withStyle(ChatFormatting.GRAY))
                         .setCallback(() -> colorCallback(ChatFormatting.GRAY)));
         this.addSlot(
-                new GuiElementBuilder(Items.GREEN_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.GREEN))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.dark_green")
+                                        "factions.gui.modify.change_color.select.option.dark_green")
                                         .withStyle(ChatFormatting.DARK_GREEN))
                         .setCallback(() -> colorCallback(ChatFormatting.DARK_GREEN)));
         this.addSlot(
-                new GuiElementBuilder(Items.LIME_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.LIME))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.green")
+                                        "factions.gui.modify.change_color.select.option.green")
                                         .withStyle(ChatFormatting.GREEN))
                         .setCallback(() -> colorCallback(ChatFormatting.GREEN)));
         this.addSlot(
-                new GuiElementBuilder(Items.MAGENTA_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.MAGENTA))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.dark_purple")
+                                        "factions.gui.modify.change_color.select.option.dark_purple")
                                         .withStyle(ChatFormatting.DARK_PURPLE))
                         .setCallback(() -> colorCallback(ChatFormatting.DARK_PURPLE)));
         this.addSlot(
-                new GuiElementBuilder(Items.PINK_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.PINK))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.light_purple")
+                                        "factions.gui.modify.change_color.select.option.light_purple")
                                         .withStyle(ChatFormatting.LIGHT_PURPLE))
                         .setCallback(() -> colorCallback(ChatFormatting.LIGHT_PURPLE)));
         this.addSlot(
-                new GuiElementBuilder(Items.RED_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.RED))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.dark_red")
+                                        "factions.gui.modify.change_color.select.option.dark_red")
                                         .withStyle(ChatFormatting.DARK_RED))
                         .setCallback(() -> colorCallback(ChatFormatting.DARK_RED)));
         this.addSlot(
-                new GuiElementBuilder(Items.YELLOW_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.YELLOW))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.gold")
+                                        "factions.gui.modify.change_color.select.option.gold")
                                         .withStyle(ChatFormatting.GOLD))
                         .setCallback(() -> colorCallback(ChatFormatting.GOLD)));
         this.addSlot(
-                new GuiElementBuilder(Items.WHITE_CONCRETE)
+                new GuiElementBuilder(Items.CONCRETE.pick(DyeColor.WHITE))
                         .setName(
                                 Component.translatable(
-                                                "factions.gui.modify.change_color.select.option.white")
+                                        "factions.gui.modify.change_color.select.option.white")
                                         .withStyle(ChatFormatting.WHITE))
                         .setCallback(() -> colorCallback(ChatFormatting.WHITE)));
         this.open();
@@ -333,12 +338,12 @@ class ColorGui extends SimpleGui {
                     .send(player, false);
         } else {
             new Message(
+                    Component.translatable(
+                            "factions.gui.modify.change_color.result.color",
                             Component.translatable(
-                                    "factions.gui.modify.change_color.result.color",
-                                    Component.translatable(
-                                                    "factions.gui.modify.change_color.color."
-                                                            + color.name().toLowerCase())
-                                            .setStyle(Style.EMPTY.withColor(color).withBold(true))))
+                                    "factions.gui.modify.change_color.color."
+                                    + color.name().toLowerCase())
+                                    .setStyle(Style.EMPTY.withColor(color).withBold(true))))
                     .prependFaction(faction)
                     .send(player, false);
         }

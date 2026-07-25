@@ -7,6 +7,7 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
+import io.icker.factions.util.WorldUtils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -29,7 +30,7 @@ public class WorldManager {
         ServerLevel world = (ServerLevel) player.level();
         String dimension = world.dimension().identifier().toString();
 
-        ChunkPos chunkPos = world.getChunk(player.blockPosition()).getPos();
+        ChunkPos chunkPos = WorldUtils.getChunkPos(player.blockPosition());
 
         Claim claim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
         if (user.autoclaim && claim == null) {

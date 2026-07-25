@@ -22,13 +22,16 @@ import io.icker.factions.command.PermissionCommand;
 import io.icker.factions.command.RankCommand;
 import io.icker.factions.command.SafeCommand;
 import io.icker.factions.command.SettingsCommand;
+import io.icker.factions.command.XaeroSyncCommand;
 import io.icker.factions.config.Config;
 import io.icker.factions.core.ChatManager;
+import io.icker.factions.core.ClaimSyncSender;
 import io.icker.factions.core.FactionsManager;
 import io.icker.factions.core.InteractionManager;
 import io.icker.factions.core.ServerManager;
 import io.icker.factions.core.SoundManager;
 import io.icker.factions.core.WorldManager;
+import io.icker.factions.net.PacketRegistry;
 import io.icker.factions.util.BlueMapWrapper;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.DynmapWrapper;
@@ -60,6 +63,7 @@ public class FactionsMod implements ModInitializer {
         LOGGER.info("Initialized Factions Mod");
 
         WorldUtils.register();
+        PacketRegistry.register();
 
         dynmap = FabricLoader.getInstance().isModLoaded("dynmap") ? new DynmapWrapper() : null;
         bluemap = FabricLoader.getInstance().isModLoaded("bluemap") ? new BlueMapWrapper() : null;
@@ -74,6 +78,7 @@ public class FactionsMod implements ModInitializer {
         ServerManager.register();
         SoundManager.register();
         WorldManager.register();
+        ClaimSyncSender.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
     }
@@ -109,7 +114,8 @@ public class FactionsMod implements ModInitializer {
                     new ModifyCommand(),
                     new RankCommand(),
                     new SafeCommand(),
-                    new PermissionCommand()
+                    new PermissionCommand(),
+                    new XaeroSyncCommand()
                 };
 
         for (Command command : commands) {

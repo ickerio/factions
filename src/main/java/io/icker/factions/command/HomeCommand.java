@@ -140,7 +140,7 @@ public class HomeCommand implements Command {
     private static boolean checkLimitToClaim(Faction faction, ServerLevel world, BlockPos pos) {
         if (!FactionsMod.CONFIG.HOME.CLAIM_ONLY) return false;
 
-        ChunkPos chunkPos = world.getChunk(pos).getPos();
+        ChunkPos chunkPos = WorldUtils.getChunkPos(pos);
         String dimension = world.dimension().identifier().toString();
 
         Claim possibleClaim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);

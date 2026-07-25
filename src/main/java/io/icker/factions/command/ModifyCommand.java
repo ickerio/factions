@@ -1,5 +1,7 @@
 package io.icker.factions.command;
 
+import java.util.Locale;
+
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -11,20 +13,18 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.ui.ModifyGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ColorArgument;
+import net.minecraft.commands.arguments.TeamColorArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
-
+import net.minecraft.world.scores.TeamColor;
 import xyz.nucleoid.server.translations.api.Localization;
 
-import java.util.Locale;
-
 public class ModifyCommand implements Command {
+
     private int gui(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         Faction faction = Command.getUser(player).getFaction();
@@ -87,8 +87,8 @@ public class ModifyCommand implements Command {
 
         faction.setDescription(description);
         new Message(
-                        Component.translatable(
-                                "factions.gui.modify.change_description.result", description))
+                Component.translatable(
+                        "factions.gui.modify.change_description.result", description))
                 .prependFaction(faction)
                 .send(player, false);
 
@@ -112,27 +112,29 @@ public class ModifyCommand implements Command {
     }
 
     private int color(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ChatFormatting color = ColorArgument.getColor(context, "color");
+        TeamColor color = TeamColorArgument.getTeamColor(context, "color");
+        ChatFormatting formatting = ChatFormatting.valueOf(color.name());
 
         CommandSourceStack source = context.getSource();
         ServerPlayer player = source.getPlayerOrException();
 
         Faction faction = Command.getUser(player).getFaction();
 
-        faction.setColor(color);
+        faction.setColor(formatting);
 
-        if (color.equals(ChatFormatting.RESET)) {
+        if (formatting.equals(ChatFormatting.RESET)) {
             new Message(Component.translatable("factions.gui.modify.change_color.result.reset"))
                     .prependFaction(faction)
                     .send(player, false);
         } else {
             new Message(
+                    Component.translatable(
+                            "factions.gui.modify.change_color.result.color",
                             Component.translatable(
-                                    "factions.gui.modify.change_color.result.color",
-                                    Component.translatable(
-                                                    "factions.gui.modify.change_color.color."
-                                                            + color.name().toLowerCase())
-                                            .setStyle(Style.EMPTY.withColor(color).withBold(true))))
+                                    "factions.gui.modify.change_color.color."
+                                    + formatting.name().toLowerCase())
+                                    .setStyle(
+                                            Style.EMPTY.withColor(formatting).withBold(true))))
                     .prependFaction(faction)
                     .send(player, false);
         }
@@ -152,9 +154,9 @@ public class ModifyCommand implements Command {
         new Message(Component.translatable("factions.command.modify.open.success"))
                 .add(
                         new Message(
-                                        Component.translatable(
-                                                "factions.gui.modify.faction_type."
-                                                        + (open ? "public" : "invite")))
+                                Component.translatable(
+                                        "factions.gui.modify.faction_type."
+                                        + (open ? "public" : "invite")))
                                 .format(open ? ChatFormatting.GREEN : ChatFormatting.RED))
                 .prependFaction(faction)
                 .send(player, false);
@@ -183,8 +185,8 @@ public class ModifyCommand implements Command {
                                 .requires(Requires.hasPerms("factions.modify.description", 0))
                                 .then(
                                         Commands.argument(
-                                                        "description",
-                                                        StringArgumentType.greedyString())
+                                                "description",
+                                                StringArgumentType.greedyString())
                                                 .executes(this::description)))
                 .then(
                         Commands.literal("motd")
@@ -196,7 +198,7 @@ public class ModifyCommand implements Command {
                         Commands.literal("color")
                                 .requires(Requires.hasPerms("factions.modify.color", 0))
                                 .then(
-                                        Commands.argument("color", ColorArgument.color())
+                                        Commands.argument("color", TeamColorArgument.teamColor())
                                                 .executes(this::color)))
                 .then(
                         Commands.literal("open")

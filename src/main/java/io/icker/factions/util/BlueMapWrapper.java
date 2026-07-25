@@ -1,5 +1,12 @@
 package io.icker.factions.util;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import com.flowpowered.math.vector.Vector2d;
 import com.flowpowered.math.vector.Vector2i;
 
@@ -11,24 +18,16 @@ import de.bluecolored.bluemap.api.markers.MarkerSet;
 import de.bluecolored.bluemap.api.markers.POIMarker;
 import de.bluecolored.bluemap.api.math.Color;
 import de.bluecolored.bluemap.api.math.Shape;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.ClaimEvents;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
-
 import net.minecraft.server.level.ServerLevel;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 public class BlueMapWrapper {
+
     private HashMap<String, MarkerSet> markerSets = new HashMap<>();
     private BlueMapAPI api;
     private boolean loadWhenReady = false;
@@ -88,27 +87,27 @@ public class BlueMapWrapper {
 
             String info = getInfo(faction);
 
-            for (Map.Entry<String, Set<Vector2i>> entry :
-                    ClaimGrouper.separateClaimsByLevel(faction).entrySet()) {
+            for (Map.Entry<String, Set<Vector2i>> entry
+                    : ClaimGrouper.separateClaimsByLevel(faction).entrySet()) {
                 String level = entry.getKey();
-                for (Map<Vector2i, Vector2i[]> group :
-                        ClaimGrouper.convertClaimsToLineSegmentGroups(entry.getValue())) {
-                    List<List<Vector2i>> outlines =
-                            ClaimGrouper.convertLineSegmentsToOutlines(group);
-                    List<Shape> shapes =
-                            outlines.stream()
+                for (Map<Vector2i, Vector2i[]> group
+                        : ClaimGrouper.convertClaimsToLineSegmentGroups(entry.getValue())) {
+                    List<List<Vector2i>> outlines
+                            = ClaimGrouper.convertLineSegmentsToOutlines(group);
+                    List<Shape> shapes
+                            = outlines.stream()
                                     .map(
-                                            (hole) ->
-                                                    new Shape(
-                                                            hole.stream()
-                                                                    .map(
-                                                                            (point) ->
-                                                                                    new Vector2d(
-                                                                                            point
-                                                                                                    .getX(),
-                                                                                            point
-                                                                                                    .getY()))
-                                                                    .collect(Collectors.toList())))
+                                            (hole)
+                                            -> new Shape(
+                                                    hole.stream()
+                                                            .map(
+                                                                    (point)
+                                                                    -> new Vector2d(
+                                                                            point
+                                                                                    .getX(),
+                                                                            point
+                                                                                    .getY()))
+                                                            .collect(Collectors.toList())))
                                     .collect(Collectors.toList());
 
                     MarkerSet markerSet = markerSets.get(level);
@@ -124,8 +123,8 @@ public class BlueMapWrapper {
                         markerSets.put(level, markerSet);
                     }
 
-                    ExtrudeMarker marker =
-                            ExtrudeMarker.builder()
+                    ExtrudeMarker marker
+                            = ExtrudeMarker.builder()
                                     .position(
                                             (double) outlines.get(0).get(0).getX(),
                                             320,
@@ -133,9 +132,9 @@ public class BlueMapWrapper {
                                     .shape(shapes.removeFirst(), -64, 320)
                                     .holes(shapes.toArray(new Shape[0]))
                                     .fillColor(
-                                            new Color(faction.getColor().getColor() | 0x40000000))
+                                            new Color(faction.getColorValue() | 0x40000000))
                                     .lineColor(
-                                            new Color(faction.getColor().getColor() | 0xFF000000))
+                                            new Color(faction.getColorValue() | 0xFF000000))
                                     .label(faction.getName())
                                     .detail(info)
                                     .build();
@@ -178,8 +177,8 @@ public class BlueMapWrapper {
         Marker marker = markerSet.get(faction.getID().toString() + "-home");
 
         if (marker == null) {
-            POIMarker homeMarker =
-                    POIMarker.builder()
+            POIMarker homeMarker
+                    = POIMarker.builder()
                             .position(home.x, home.y, home.z)
                             .detail(getInfo(faction))
                             .label(faction.getName() + "'s Home")

@@ -30,6 +30,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class SquareMapWrapper {
+
     private HashMap<String, SimpleLayerProvider> layers = new HashMap<>();
     private Squaremap api;
 
@@ -72,35 +73,35 @@ public class SquareMapWrapper {
             }
 
             String info = getInfo(faction);
-            for (Map.Entry<String, Set<Vector2i>> entry :
-                    ClaimGrouper.separateClaimsByLevel(faction).entrySet()) {
+            for (Map.Entry<String, Set<Vector2i>> entry
+                    : ClaimGrouper.separateClaimsByLevel(faction).entrySet()) {
                 String level = entry.getKey();
-                for (Map<Vector2i, Vector2i[]> group :
-                        ClaimGrouper.convertClaimsToLineSegmentGroups(entry.getValue())) {
-                    List<List<Vector2i>> outlines =
-                            ClaimGrouper.convertLineSegmentsToOutlines(group);
-                    List<List<Point>> points =
-                            outlines.stream()
+                for (Map<Vector2i, Vector2i[]> group
+                        : ClaimGrouper.convertClaimsToLineSegmentGroups(entry.getValue())) {
+                    List<List<Vector2i>> outlines
+                            = ClaimGrouper.convertLineSegmentsToOutlines(group);
+                    List<List<Point>> points
+                            = outlines.stream()
                                     .map(
-                                            (hole) ->
-                                                    hole.stream()
-                                                            .map(
-                                                                    (point) ->
-                                                                            Point.of(
-                                                                                    point.getX(),
-                                                                                    point.getY()))
-                                                            .collect(Collectors.toList()))
+                                            (hole)
+                                            -> hole.stream()
+                                                    .map(
+                                                            (point)
+                                                            -> Point.of(
+                                                                    point.getX(),
+                                                                    point.getY()))
+                                                    .collect(Collectors.toList()))
                                     .collect(Collectors.toList());
 
                     SimpleLayerProvider layer = layers.get(level);
                     if (layer == null) {
-                        layer =
-                                SimpleLayerProvider.builder("factions-" + level)
+                        layer
+                                = SimpleLayerProvider.builder("factions-" + level)
                                         .showControls(true)
                                         .build();
 
-                        MapWorld world =
-                                api.getWorldIfEnabled(WorldIdentifier.parse(level)).orElse(null);
+                        MapWorld world
+                                = api.getWorldIfEnabled(WorldIdentifier.parse(level)).orElse(null);
                         if (world != null) {
                             world.layerRegistry()
                                     .register(Key.of("factions-" + level.replace(':', '-')), layer);
@@ -109,16 +110,14 @@ public class SquareMapWrapper {
                         layers.put(level, layer);
                     }
 
-                    Marker marker =
-                            Marker.polygon(points.removeFirst(), points)
+                    Marker marker
+                            = Marker.polygon(points.removeFirst(), points)
                                     .markerOptions(
                                             MarkerOptions.builder()
                                                     .fillColor(
-                                                            new Color(
-                                                                    faction.getColor().getColor()))
+                                                            new Color(faction.getColorValue()))
                                                     .strokeColor(
-                                                            new Color(
-                                                                    faction.getColor().getColor()))
+                                                            new Color(faction.getColorValue()))
                                                     .hoverTooltip(faction.getName())
                                                     .clickTooltip(info));
 
@@ -139,8 +138,8 @@ public class SquareMapWrapper {
         SimpleLayerProvider layer = layers.get(home.level);
 
         if (layer == null) {
-            layer =
-                    SimpleLayerProvider.builder("factions-" + home.level)
+            layer
+                    = SimpleLayerProvider.builder("factions-" + home.level)
                             .showControls(true)
                             .build();
 
@@ -165,8 +164,8 @@ public class SquareMapWrapper {
         Marker marker = layer.registeredMarkers().get(Key.of(faction.getID().toString() + "-home"));
 
         if (marker == null) {
-            Marker homeMarker =
-                    Marker.icon(Point.of(home.x, home.z), Key.of("squaremap-spawn_icon"), 16)
+            Marker homeMarker
+                    = Marker.icon(Point.of(home.x, home.z), Key.of("squaremap-spawn_icon"), 16)
                             .markerOptions(
                                     MarkerOptions.builder()
                                             .clickTooltip(getInfo(faction))

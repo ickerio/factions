@@ -11,6 +11,7 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+import io.icker.factions.util.WorldUtils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -82,7 +83,8 @@ public class ClaimCommand implements Command {
         for (int x = -size + 1; x < size; x++) {
             for (int y = -size + 1; y < size; y++) {
                 ChunkPos chunkPos =
-                        world.getChunk(player.blockPosition().offset(x * 16, 0, y * 16)).getPos();
+                        WorldUtils.getChunkPos(
+                                player.blockPosition().offset(x * 16, 0, y * 16));
                 Claim existingClaim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
 
                 if (existingClaim != null) {
@@ -188,7 +190,7 @@ public class ClaimCommand implements Command {
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
 
-        ChunkPos chunkPos = world.getChunk(player.blockPosition()).getPos();
+        ChunkPos chunkPos = WorldUtils.getChunkPos(player.blockPosition());
         String dimension = world.dimension().identifier().toString();
 
         Claim existingClaim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
@@ -236,7 +238,8 @@ public class ClaimCommand implements Command {
         for (int x = -size + 1; x < size; x++) {
             for (int y = -size + 1; y < size; y++) {
                 ChunkPos chunkPos =
-                        world.getChunk(player.blockPosition().offset(x * 16, 0, y * 16)).getPos();
+                        WorldUtils.getChunkPos(
+                                player.blockPosition().offset(x * 16, 0, y * 16));
                 Claim existingClaim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
 
                 if (existingClaim != null
@@ -246,8 +249,8 @@ public class ClaimCommand implements Command {
         }
 
         ChunkPos chunkPos =
-                world.getChunk(player.blockPosition().offset((-size + 1) * 16, 0, (-size + 1) * 16))
-                        .getPos();
+                WorldUtils.getChunkPos(
+                        player.blockPosition().offset((-size + 1) * 16, 0, (-size + 1) * 16));
         new Message(
                         Component.translatable(
                                 "factions.command.claim.remove.success.multiple",
@@ -304,7 +307,7 @@ public class ClaimCommand implements Command {
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
 
-        ChunkPos chunkPos = world.getChunk(player.blockPosition()).getPos();
+        ChunkPos chunkPos = WorldUtils.getChunkPos(player.blockPosition());
         String dimension = world.dimension().identifier().toString();
 
         Claim claim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);

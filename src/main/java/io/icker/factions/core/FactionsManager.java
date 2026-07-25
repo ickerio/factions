@@ -15,7 +15,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.InteractionResult;
@@ -52,9 +51,7 @@ public class FactionsManager {
 
                         BlockPos homePos = BlockPos.containing(home.x, home.y, home.z);
 
-                        ServerLevel world = WorldUtils.getWorld(home.level);
-
-                        ChunkPos homeChunkPos = world.getChunk(homePos).getPos();
+                        ChunkPos homeChunkPos = WorldUtils.getChunkPos(homePos);
 
                         if (homeChunkPos.x() == x && homeChunkPos.z() == z) {
                             faction.setHome(null);

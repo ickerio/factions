@@ -1,18 +1,9 @@
 package io.icker.factions.util;
 
-import com.flowpowered.math.vector.Vector2i;
-
-import io.icker.factions.FactionsMod;
-import io.icker.factions.api.events.ClaimEvents;
-import io.icker.factions.api.events.FactionEvents;
-import io.icker.factions.api.persistents.Claim;
-import io.icker.factions.api.persistents.Faction;
-import io.icker.factions.api.persistents.Home;
-
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.DynmapCommonAPIListener;
@@ -23,12 +14,21 @@ import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.PolyLineMarker;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import com.flowpowered.math.vector.Vector2i;
+
+import io.icker.factions.FactionsMod;
+import io.icker.factions.api.events.ClaimEvents;
+import io.icker.factions.api.events.FactionEvents;
+import io.icker.factions.api.persistents.Claim;
+import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.Home;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 
 public class DynmapWrapper {
+
     private DynmapCommonAPI api;
     private MarkerAPI markerApi;
     private MarkerSet markerSet;
@@ -37,23 +37,23 @@ public class DynmapWrapper {
     public DynmapWrapper() {
         DynmapCommonAPIListener.register(
                 new DynmapCommonAPIListener() {
-                    @Override
-                    public void apiEnabled(DynmapCommonAPI dCAPI) {
-                        api = dCAPI;
-                        markerApi = api.getMarkerAPI();
-                        markerSet = markerApi.getMarkerSet("dynmap-factions");
-                        if (markerSet == null) {
-                            markerSet =
-                                    markerApi.createMarkerSet(
-                                            "dynmap-factions",
-                                            "The Dynmap Factions integration",
-                                            null,
-                                            true);
-                        }
-                        markerSet.getMarkers().forEach(GenericMarker::deleteMarker);
-                        generateMarkers();
-                    }
-                });
+            @Override
+            public void apiEnabled(DynmapCommonAPI dCAPI) {
+                api = dCAPI;
+                markerApi = api.getMarkerAPI();
+                markerSet = markerApi.getMarkerSet("dynmap-factions");
+                if (markerSet == null) {
+                    markerSet
+                            = markerApi.createMarkerSet(
+                                    "dynmap-factions",
+                                    "The Dynmap Factions integration",
+                                    null,
+                                    true);
+                }
+                markerSet.getMarkers().forEach(GenericMarker::deleteMarker);
+                generateMarkers();
+            }
+        });
 
         ClaimEvents.ADD.register(
                 (claim) -> {
@@ -106,41 +106,41 @@ public class DynmapWrapper {
             for (Claim claim : faction.getClaims()) {
                 ChunkPos pos = new ChunkPos(claim.x, claim.z);
 
-                AreaMarker marker =
-                        markerSet.createAreaMarker(
+                AreaMarker marker
+                        = markerSet.createAreaMarker(
                                 claim.getKey(),
                                 info,
                                 true,
                                 dimensionTagToID(claim.level),
-                                new double[] {pos.getMinBlockX(), pos.getMaxBlockX() + 1},
-                                new double[] {pos.getMinBlockZ(), pos.getMaxBlockZ() + 1},
+                                new double[]{pos.getMinBlockX(), pos.getMaxBlockX() + 1},
+                                new double[]{pos.getMinBlockZ(), pos.getMaxBlockZ() + 1},
                                 true);
                 if (marker != null) {
-                    marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColor());
+                    marker.setFillStyle(marker.getFillOpacity(), faction.getColorValue());
                     marker.setLineStyle(0, 0, 0);
                 }
             }
-            for (Map.Entry<String, Set<Vector2i>> entry :
-                    ClaimGrouper.separateClaimsByLevel(faction).entrySet()) {
+            for (Map.Entry<String, Set<Vector2i>> entry
+                    : ClaimGrouper.separateClaimsByLevel(faction).entrySet()) {
                 String level = entry.getKey();
-                for (Map<Vector2i, Vector2i[]> group :
-                        ClaimGrouper.convertClaimsToLineSegmentGroups(entry.getValue())) {
-                    for (List<Vector2i> outline :
-                            ClaimGrouper.convertLineSegmentsToOutlines(group)) {
+                for (Map<Vector2i, Vector2i[]> group
+                        : ClaimGrouper.convertClaimsToLineSegmentGroups(entry.getValue())) {
+                    for (List<Vector2i> outline
+                            : ClaimGrouper.convertLineSegmentsToOutlines(group)) {
                         outline.add(outline.get(0));
-                        double[] x_coords =
-                                outline.stream()
+                        double[] x_coords
+                                = outline.stream()
                                         .mapToDouble((point) -> (double) point.getX())
                                         .toArray();
-                        double[] z_coords =
-                                outline.stream()
+                        double[] z_coords
+                                = outline.stream()
                                         .mapToDouble((point) -> (double) point.getY())
                                         .toArray();
-                        double[] y_coords =
-                                outline.stream().mapToDouble((point) -> 320.0).toArray();
+                        double[] y_coords
+                                = outline.stream().mapToDouble((point) -> 320.0).toArray();
 
-                        PolyLineMarker marker =
-                                markerSet.createPolyLineMarker(
+                        PolyLineMarker marker
+                                = markerSet.createPolyLineMarker(
                                         UUID.randomUUID().toString(),
                                         "",
                                         false,
@@ -153,7 +153,7 @@ public class DynmapWrapper {
                             marker.setLineStyle(
                                     marker.getLineWeight(),
                                     marker.getLineOpacity(),
-                                    faction.getColor().getColor());
+                                    faction.getColorValue());
                         }
                     }
                 }
@@ -167,9 +167,9 @@ public class DynmapWrapper {
         for (Claim claim : faction.getClaims()) {
             AreaMarker marker = markerSet.findAreaMarker(claim.getKey());
 
-            marker.setFillStyle(marker.getFillOpacity(), faction.getColor().getColor());
+            marker.setFillStyle(marker.getFillOpacity(), faction.getColorValue());
             marker.setLineStyle(
-                    marker.getLineWeight(), marker.getLineOpacity(), faction.getColor().getColor());
+                    marker.getLineWeight(), marker.getLineOpacity(), faction.getColorValue());
             marker.setDescription(info);
         }
     }
@@ -245,8 +245,8 @@ public class DynmapWrapper {
 
     public void reloadAll() {
         markerSet.deleteMarkerSet();
-        markerSet =
-                markerApi.createMarkerSet(
+        markerSet
+                = markerApi.createMarkerSet(
                         "dynmap-factions", "The Dynmap Factions integration", null, true);
         generateMarkers();
     }

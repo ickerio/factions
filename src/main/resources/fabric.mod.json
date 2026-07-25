@@ -21,17 +21,21 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-        "io.icker.factions.FactionsMod"
+            "io.icker.factions.FactionsMod"
+        ],
+        "client": [
+            "io.icker.factions.client.FactionsClientMod"
         ]
     },
     "mixins": [
-        "factions.mixins.json"
+        "factions.mixins.json",
+        "factions.client.mixins.json"
     ],
 
   "depends": {
     "fabricloader": ">=0.13.3",
-    "minecraft": "~26.1",
-    "java": ">=17",
+    "minecraft": "~26.2",
+    "java": ">=25",
     "fabric-api": "*"
   },
   "suggests": {
