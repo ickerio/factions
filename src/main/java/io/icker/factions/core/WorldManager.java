@@ -27,6 +27,8 @@ public class WorldManager {
 
     private static void onMove(ServerPlayer player) {
         User user = User.get(player.getUUID());
+        if (!user.autoclaim && !user.radar) return;
+
         ServerLevel world = (ServerLevel) player.level();
         String dimension = world.dimension().identifier().toString();
 
@@ -36,7 +38,7 @@ public class WorldManager {
         if (user.autoclaim && claim == null) {
             Faction faction = user.getFaction();
             int requiredPower =
-                    (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+                    (faction.getClaimCount() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
             int maxPower =
                     faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
                             + FactionsMod.CONFIG.POWER.BASE

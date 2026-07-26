@@ -93,7 +93,7 @@ public class InteractionManager {
 
             Faction claimFaction = claim.getFaction();
 
-            if (claimFaction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT
+            if (claimFaction.getClaimCount() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT
                     > claimFaction.getPower()) {
                 return InteractionResult.PASS;
             }
@@ -132,7 +132,7 @@ public class InteractionManager {
 
             Faction claimFaction = claim.getFaction();
 
-            if (claimFaction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT
+            if (claimFaction.getClaimCount() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT
                     > claimFaction.getPower()) {
                 return InteractionResult.PASS;
             }
@@ -328,7 +328,7 @@ public class InteractionManager {
 
         Faction claimFaction = claim.getFaction();
 
-        if (claimFaction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT
+        if (claimFaction.getClaimCount() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT
                 > claimFaction.getPower()) {
             return InteractionResult.PASS;
         }

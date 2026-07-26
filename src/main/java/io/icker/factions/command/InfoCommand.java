@@ -103,7 +103,7 @@ public class InfoCommand implements Command {
                                 .map(fac -> fac.getColor() + fac.getName())
                                 .collect(Collectors.joining(ChatFormatting.GRAY + ", "));
 
-        int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+        int requiredPower = faction.getClaimCount() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
         int maxPower =
                 users.size() * FactionsMod.CONFIG.POWER.MEMBER + FactionsMod.CONFIG.POWER.BASE;
 

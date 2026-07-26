@@ -14,6 +14,7 @@ import java.util.UUID;
 @Name("Claim")
 public class Claim {
     private static final HashMap<String, Claim> STORE = Database.load(Claim.class, c -> c.getKey());
+    private static final FactionClaimCounts COUNTS_BY_FACTION = buildFactionCounts();
 
     @Field("X")
     public int x;
@@ -42,27 +43,29 @@ public class Claim {
     public Claim() {}
 
     public String getKey() {
-        return String.format("%s-%d-%d", level, x, z);
+        return key(x, z, level);
     }
 
     public static Claim get(int x, int z, String level) {
-        return STORE.get(String.format("%s-%d-%d", level, x, z));
+        return STORE.get(key(x, z, level));
     }
 
     public static List<Claim> getByFaction(UUID factionID) {
         return STORE.values().stream().filter(c -> c.factionID.equals(factionID)).toList();
     }
 
+    public static int getCountByFaction(UUID factionID) {
+        return COUNTS_BY_FACTION.get(factionID);
+    }
+
     public static void audit() {
-        STORE.values()
-                .removeIf(
-                        (claim) ->
-                                Faction.get(claim.factionID) == null
-                                        || !WorldUtils.isValid(claim.level));
+        STORE.values().removeIf(Claim::isInvalid);
+        rebuildFactionCounts();
     }
 
     public static void add(Claim claim) {
-        STORE.put(claim.getKey(), claim);
+        Claim replaced = STORE.put(claim.getKey(), claim);
+        COUNTS_BY_FACTION.replace(replaced == null ? null : replaced.factionID, claim.factionID);
         ClaimEvents.ADD.invoker().onAdd(claim);
     }
 
@@ -71,11 +74,43 @@ public class Claim {
     }
 
     public void remove() {
-        STORE.remove(getKey());
-        ClaimEvents.REMOVE.invoker().onRemove(x, z, level, Faction.get(factionID));
+        Claim removed = STORE.remove(getKey());
+        if (removed == null) return;
+
+        COUNTS_BY_FACTION.remove(removed.factionID);
+        ClaimEvents.REMOVE
+                .invoker()
+                .onRemove(
+                        removed.x,
+                        removed.z,
+                        removed.level,
+                        Faction.get(removed.factionID));
     }
 
     public static void save() {
         Database.save(Claim.class, STORE.values().stream().toList());
+    }
+
+    private static String key(int x, int z, String level) {
+        return level + '-' + x + '-' + z;
+    }
+
+    private static FactionClaimCounts buildFactionCounts() {
+        FactionClaimCounts counts = new FactionClaimCounts();
+        for (Claim claim : STORE.values()) {
+            counts.add(claim.factionID);
+        }
+        return counts;
+    }
+
+    private static void rebuildFactionCounts() {
+        COUNTS_BY_FACTION.clear();
+        for (Claim claim : STORE.values()) {
+            COUNTS_BY_FACTION.add(claim.factionID);
+        }
+    }
+
+    private static boolean isInvalid(Claim claim) {
+        return Faction.get(claim.factionID) == null || !WorldUtils.isValid(claim.level);
     }
 }

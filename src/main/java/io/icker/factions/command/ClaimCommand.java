@@ -144,7 +144,7 @@ public class ClaimCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower =
-                (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+                (faction.getClaimCount() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
         int maxPower =
                 faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
                         + FactionsMod.CONFIG.POWER.BASE
@@ -166,7 +166,7 @@ public class ClaimCommand implements Command {
         Faction faction = Command.getUser(player).getFaction();
 
         int requiredPower =
-                (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+                (faction.getClaimCount() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
         int maxPower =
                 faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
                         + FactionsMod.CONFIG.POWER.BASE

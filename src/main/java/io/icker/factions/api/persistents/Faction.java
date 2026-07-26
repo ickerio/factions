@@ -221,6 +221,10 @@ public class Faction {
         return Claim.getByFaction(id);
     }
 
+    public int getClaimCount() {
+        return Claim.getCountByFaction(id);
+    }
+
     public void removeAllClaims() {
         Claim.getByFaction(id).stream().forEach(Claim::remove);
         FactionEvents.REMOVE_ALL_CLAIMS.invoker().onRemoveAllClaims(this);

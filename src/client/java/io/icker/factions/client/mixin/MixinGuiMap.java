@@ -3,6 +3,7 @@ package io.icker.factions.client.mixin;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.client.ClaimCache;
 import io.icker.factions.client.ClaimCache.PackedRect;
+import io.icker.factions.client.ClaimOverlayToggle;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -28,6 +29,7 @@ public class MixinGuiMap {
     private void factions$renderClaims(
             GuiGraphicsExtractor extractor, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         try {
+            if (!ClaimOverlayToggle.isWorldMapEnabled()) return;
             if (mapProcessor == null || scale <= 0.0 || screenScale <= 0.0) return;
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null) return;
@@ -36,6 +38,7 @@ public class MixinGuiMap {
             if (claims.isEmpty()) return;
 
             double pixelsPerBlock = scale / screenScale;
+            if (pixelsPerBlock * 16.0 < 0.5) return;
             double centerX = extractor.guiWidth() * 0.5;
             double centerZ = extractor.guiHeight() * 0.5;
             double viewMinX = cameraX - centerX / pixelsPerBlock - 16.0;

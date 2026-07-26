@@ -147,7 +147,7 @@ public class InfoGui extends SimpleGui {
                                 }));
 
         // Power info
-        int requiredPower = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+        int requiredPower = faction.getClaimCount() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
         int maxPower = faction.calculateMaxPower();
         this.setSlot(
                 2,

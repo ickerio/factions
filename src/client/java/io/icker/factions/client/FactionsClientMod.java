@@ -20,6 +20,7 @@ public class FactionsClientMod implements ClientModInitializer {
 
         if (FabricLoader.getInstance().isModLoaded("xaeroworldmap")) {
             XaeroWorldMapWrapper.register();
+            ClaimOverlayToggle.register();
         }
         if (FabricLoader.getInstance().isModLoaded("xaerominimap")) {
             XaeroMinimapWrapper.register();

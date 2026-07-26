@@ -31,7 +31,7 @@ public final class ClaimCache {
         Map<String, List<PackedRect>> newMap = new HashMap<>();
         for (ClaimSyncPayload.FactionClaims fc : payload.factions()) {
             int rgb = fc.argbColor() & 0x00FFFFFF;
-            int argb = 0x40000000 | rgb;
+            int argb = 0x25000000 | rgb;
             for (ClaimSyncPayload.FactionClaims.DimClaims dc : fc.dims()) {
                 List<PackedRect> rects = newMap.computeIfAbsent(dc.dimensionId(), k -> new ArrayList<>());
                 for (long packed : dc.chunkLongs()) {

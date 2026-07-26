@@ -172,7 +172,7 @@ public class PlaceholdersWrapper {
 
                     return Component.nullToEmpty(
                             String.valueOf(
-                                    faction.getClaims().size()
+                                    faction.getClaimCount()
                                     * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT));
                 });
 
@@ -185,7 +185,7 @@ public class PlaceholdersWrapper {
                     }
 
                     int reqPower
-                    = faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+                    = faction.getClaimCount() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
                     int red = mapBoundRange(0, faction.getPower(), 85, 255, reqPower);
                     return Component.literal(String.valueOf(reqPower))
                             .setStyle(Style.EMPTY.withColor(rgbToInt(red, 85, 85)));

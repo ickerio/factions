@@ -29,7 +29,10 @@
     },
     "mixins": [
         "factions.mixins.json",
-        "factions.client.mixins.json"
+        {
+            "config": "factions.client.mixins.json",
+            "environment": "client"
+        }
     ],
 
   "depends": {
