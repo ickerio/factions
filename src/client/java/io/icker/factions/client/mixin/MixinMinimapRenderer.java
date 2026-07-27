@@ -97,6 +97,7 @@ public class MixinMinimapRenderer {
             if (claims.isEmpty()) return;
 
             MinimapProcessor processor = session.getProcessor();
+            if (processor.isCaveModeDisplayed()) return;
             double blocksPerPixel = processor.getMinimapZoom();
             int minimapSize = processor.getMinimapSize();
             if (!(blocksPerPixel > 0.0) || minimapSize <= 0) return;
