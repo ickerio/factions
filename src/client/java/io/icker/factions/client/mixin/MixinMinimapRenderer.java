@@ -119,10 +119,10 @@ public class MixinMinimapRenderer {
             java.util.ArrayList<ClaimCache.PackedRect> visible = visibleBuffer;
             visible.clear();
             for (ClaimCache.PackedRect claim : claims) {
-                double cxMid = (claim.minX() + claim.maxX() + 1) * 0.5;
-                double czMid = (claim.minZ() + claim.maxZ() + 1) * 0.5;
-                if (Math.abs(cxMid - playerX) > viewRadius) continue;
-                if (Math.abs(czMid - playerZ) > viewRadius) continue;
+                if (claim.maxX() + 1 < playerX - viewRadius) continue;
+                if (claim.minX() > playerX + viewRadius) continue;
+                if (claim.maxZ() + 1 < playerZ - viewRadius) continue;
+                if (claim.minZ() > playerZ + viewRadius) continue;
                 visible.add(claim);
             }
             if (visible.isEmpty()) return;

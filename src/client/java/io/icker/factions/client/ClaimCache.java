@@ -6,6 +6,7 @@ import net.minecraft.world.level.ChunkPos;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -31,25 +32,53 @@ public final class ClaimCache {
         Map<String, List<PackedRect>> newMap = new HashMap<>();
         for (ClaimSyncPayload.FactionClaims fc : payload.factions()) {
             int rgb = fc.argbColor() & 0x00FFFFFF;
-            int argb = 0x25000000 | rgb;
+            int argb = 0x45000000 | rgb;
             for (ClaimSyncPayload.FactionClaims.DimClaims dc : fc.dims()) {
                 List<PackedRect> rects = newMap.computeIfAbsent(dc.dimensionId(), k -> new ArrayList<>());
-                for (long packed : dc.chunkLongs()) {
-                    int cx = ChunkPos.getX(packed);
-                    int cz = ChunkPos.getZ(packed);
-                    // Precompute block-coord rect so render path does zero arithmetic
-                    rects.add(new PackedRect(
-                            cx << 4,
-                            cz << 4,
-                            (cx << 4) + 15,
-                            (cz << 4) + 15,
-                            argb));
-                }
+                mergeIntoRects(dc.chunkLongs(), argb, rects);
             }
         }
-        // Wrap lists as unmodifiable so renderers can read without synchronisation concerns
         newMap.replaceAll((k, v) -> Collections.unmodifiableList(v));
         byDim = Collections.unmodifiableMap(newMap);
+    }
+
+    // Greedy rectilinear cover: sweep row-major, grow each seed rightward
+    // then downward while every column is still in the set. O(n * avgArea).
+    private static void mergeIntoRects(List<Long> chunks, int argb, List<PackedRect> out) {
+        if (chunks.isEmpty()) return;
+        HashSet<Long> remaining = new HashSet<>(chunks.size() * 2);
+        remaining.addAll(chunks);
+        List<Long> sorted = new ArrayList<>(chunks);
+        sorted.sort((a, b) -> {
+            int az = ChunkPos.getZ(a), bz = ChunkPos.getZ(b);
+            if (az != bz) return Integer.compare(az, bz);
+            return Integer.compare(ChunkPos.getX(a), ChunkPos.getX(b));
+        });
+        for (Long seed : sorted) {
+            if (!remaining.contains(seed)) continue;
+            int cx = ChunkPos.getX(seed);
+            int cz = ChunkPos.getZ(seed);
+            int w = 1;
+            while (remaining.contains(ChunkPos.pack(cx + w, cz))) w++;
+            int h = 1;
+            growH: while (true) {
+                for (int i = 0; i < w; i++) {
+                    if (!remaining.contains(ChunkPos.pack(cx + i, cz + h))) break growH;
+                }
+                h++;
+            }
+            for (int j = 0; j < h; j++) {
+                for (int i = 0; i < w; i++) {
+                    remaining.remove(ChunkPos.pack(cx + i, cz + j));
+                }
+            }
+            out.add(new PackedRect(
+                    cx << 4,
+                    cz << 4,
+                    ((cx + w) << 4) - 1,
+                    ((cz + h) << 4) - 1,
+                    argb));
+        }
     }
 
     /** Called on ClientPlayConnectionEvents.DISCONNECT. */
