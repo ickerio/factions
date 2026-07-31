@@ -41,6 +41,7 @@ public class InteractionsUtil {
         PLACE_OR_PICKUP_LIQUIDS,
         ATTACK_ENTITIES,
         USE_ENTITIES,
-        USE_INVENTORY
+        USE_INVENTORY,
+        RESTRICTED_ITEM
     }
 }

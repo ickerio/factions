@@ -307,6 +307,9 @@ public class Faction {
             }
         }
         removeAllClaims();
+        for (GuestGrant grant : GuestGrant.getByFaction(id)) {
+            grant.remove();
+        }
         STORE.remove(id);
         FactionEvents.DISBAND.invoker().onDisband(this);
     }

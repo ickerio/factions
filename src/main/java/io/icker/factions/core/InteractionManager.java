@@ -4,6 +4,7 @@ import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.PlayerEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.GuestGrant;
 import io.icker.factions.api.persistents.Relationship.Permissions;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.core.InteractionsUtil.InteractionsUtilActions;
@@ -16,6 +17,7 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.PermissionLevel;
@@ -41,6 +43,8 @@ import net.minecraft.world.phys.EntityHitResult;
 
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
+
 public class InteractionManager {
     public static void register() {
         PlayerBlockBreakEvents.BEFORE.register(InteractionManager::onBreakBlock);
@@ -58,7 +62,7 @@ public class InteractionManager {
     private static boolean onBreakBlock(
             Level world, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         boolean result =
-                checkPermissions(player, pos, world, Permissions.BREAK_BLOCKS)
+                checkPermissions(player, pos, world, Permissions.BREAK_BLOCKS, true)
                         == InteractionResult.FAIL;
         if (result) {
             InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.BREAK_BLOCKS);
@@ -68,18 +72,13 @@ public class InteractionManager {
 
     private static InteractionResult onExplodeBlock(
             Explosion explosion, BlockGetter world, BlockPos pos, BlockState state) {
-        if (explosion.getIndirectSourceEntity() != null
-                && explosion.getIndirectSourceEntity() instanceof Player) {
+        Entity source = explosion.getIndirectSourceEntity();
+        if (source instanceof Player player) {
             InteractionResult result =
                     checkPermissions(
-                            (Player) explosion.getIndirectSourceEntity(),
-                            pos,
-                            explosion.level(),
-                            Permissions.BREAK_BLOCKS);
+                            player, pos, explosion.level(), Permissions.BREAK_BLOCKS, true);
             if (result == InteractionResult.FAIL) {
-                InteractionsUtil.warn(
-                        (ServerPlayer) explosion.getIndirectSourceEntity(),
-                        InteractionsUtilActions.BREAK_BLOCKS);
+                InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.BREAK_BLOCKS);
             }
             return result;
         } else {
@@ -107,18 +106,16 @@ public class InteractionManager {
     }
 
     private static InteractionResult onExplodeDamage(Explosion explosion, Entity entity) {
-        if (explosion.getIndirectSourceEntity() != null
-                && explosion.getIndirectSourceEntity() instanceof Player) {
+        Entity source = explosion.getIndirectSourceEntity();
+        if (source instanceof Player player) {
             InteractionResult result =
                     checkPermissions(
-                            (Player) explosion.getIndirectSourceEntity(),
+                            player,
                             entity.blockPosition(),
                             explosion.level(),
                             Permissions.ATTACK_ENTITIES);
             if (result == InteractionResult.FAIL) {
-                InteractionsUtil.warn(
-                        (ServerPlayer) explosion.getIndirectSourceEntity(),
-                        InteractionsUtilActions.BREAK_BLOCKS);
+                InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.BREAK_BLOCKS);
             }
             return result;
         } else {
@@ -150,7 +147,14 @@ public class InteractionManager {
         ItemStack stack = player.getItemInHand(hand);
 
         BlockPos hitPos = hitResult.getBlockPos();
-        if (checkPermissions(player, hitPos, world, Permissions.USE_BLOCKS)
+
+        if (isRestrictedForGuests(stack) && isNonMemberInClaim(player, hitPos, world)) {
+            InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.RESTRICTED_ITEM);
+            InteractionsUtil.sync((ServerPlayer) player, stack, hand);
+            return InteractionResult.FAIL;
+        }
+
+        if (checkPermissions(player, hitPos, world, Permissions.USE_BLOCKS, false, stack)
                 == InteractionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.USE_BLOCKS);
             InteractionsUtil.sync((ServerPlayer) player, stack, hand);
@@ -158,7 +162,7 @@ public class InteractionManager {
         }
 
         BlockPos placePos = hitPos.offset(hitResult.getDirection().getUnitVec3i());
-        if (checkPermissions(player, placePos, world, Permissions.USE_BLOCKS)
+        if (checkPermissions(player, placePos, world, Permissions.USE_BLOCKS, false, stack)
                 == InteractionResult.FAIL) {
             InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.USE_BLOCKS);
             InteractionsUtil.sync((ServerPlayer) player, stack, hand);
@@ -169,16 +173,28 @@ public class InteractionManager {
     }
 
     private static InteractionResult onPlaceBlock(UseOnContext context) {
+        Player player = context.getPlayer();
+        ItemStack stack = context.getItemInHand();
+        BlockPos clickedPos = context.getClickedPos();
+
+        if (isRestrictedForGuests(stack) && isNonMemberInClaim(player, clickedPos, context.getLevel())) {
+            InteractionsUtil.warn((ServerPlayer) player, InteractionsUtilActions.RESTRICTED_ITEM);
+            InteractionsUtil.sync((ServerPlayer) player, stack, context.getHand());
+            return InteractionResult.FAIL;
+        }
+
         if (checkPermissions(
-                        context.getPlayer(),
-                        context.getClickedPos(),
+                        player,
+                        clickedPos,
                         context.getLevel(),
-                        Permissions.PLACE_BLOCKS)
+                        Permissions.PLACE_BLOCKS,
+                        true,
+                        stack)
                 == InteractionResult.FAIL) {
             InteractionsUtil.warn(
-                    (ServerPlayer) context.getPlayer(), InteractionsUtilActions.PLACE_BLOCKS);
+                    (ServerPlayer) player, InteractionsUtilActions.PLACE_BLOCKS);
             InteractionsUtil.sync(
-                    (ServerPlayer) context.getPlayer(), context.getItemInHand(), context.getHand());
+                    (ServerPlayer) player, stack, context.getHand());
             return InteractionResult.FAIL;
         }
 
@@ -186,16 +202,30 @@ public class InteractionManager {
     }
 
     private static InteractionResult onUseBucket(Player player, Level world, InteractionHand hand) {
-        Item item = player.getItemInHand(hand).getItem();
+        ItemStack stack = player.getItemInHand(hand);
+        Item item = stack.getItem();
 
         if (item instanceof BucketItem) {
+            if (isRestrictedForGuests(stack)
+                    && isNonMemberInClaim(player, player.blockPosition(), world)) {
+                InteractionsUtil.warn(
+                        (ServerPlayer) player, InteractionsUtilActions.RESTRICTED_ITEM);
+                InteractionsUtil.sync((ServerPlayer) player, stack, hand);
+                return InteractionResult.FAIL;
+            }
+
             InteractionResult playerResult =
                     checkPermissions(
-                            player, player.blockPosition(), world, Permissions.PLACE_BLOCKS);
+                            player,
+                            player.blockPosition(),
+                            world,
+                            Permissions.PLACE_BLOCKS,
+                            false,
+                            stack);
             if (playerResult == InteractionResult.FAIL) {
                 InteractionsUtil.warn(
                         (ServerPlayer) player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
-                InteractionsUtil.sync((ServerPlayer) player, player.getItemInHand(hand), hand);
+                InteractionsUtil.sync((ServerPlayer) player, stack, hand);
                 return InteractionResult.FAIL;
             }
 
@@ -208,20 +238,32 @@ public class InteractionManager {
 
             if (raycastResult.getType() != BlockHitResult.Type.MISS) {
                 BlockPos raycastPos = raycastResult.getBlockPos();
-                if (checkPermissions(player, raycastPos, world, Permissions.PLACE_BLOCKS)
+                if (checkPermissions(
+                                        player,
+                                        raycastPos,
+                                        world,
+                                        Permissions.PLACE_BLOCKS,
+                                        false,
+                                        stack)
                         == InteractionResult.FAIL) {
                     InteractionsUtil.warn(
                             (ServerPlayer) player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
-                    InteractionsUtil.sync((ServerPlayer) player, player.getItemInHand(hand), hand);
+                    InteractionsUtil.sync((ServerPlayer) player, stack, hand);
                     return InteractionResult.FAIL;
                 }
 
                 BlockPos placePos = raycastPos.offset(raycastResult.getDirection().getUnitVec3i());
-                if (checkPermissions(player, placePos, world, Permissions.PLACE_BLOCKS)
+                if (checkPermissions(
+                                        player,
+                                        placePos,
+                                        world,
+                                        Permissions.PLACE_BLOCKS,
+                                        true,
+                                        stack)
                         == InteractionResult.FAIL) {
                     InteractionsUtil.warn(
                             (ServerPlayer) player, InteractionsUtilActions.PLACE_OR_PICKUP_LIQUIDS);
-                    InteractionsUtil.sync((ServerPlayer) player, player.getItemInHand(hand), hand);
+                    InteractionsUtil.sync((ServerPlayer) player, stack, hand);
                     return InteractionResult.FAIL;
                 }
             }
@@ -304,8 +346,66 @@ public class InteractionManager {
         return InteractionResult.PASS;
     }
 
+    public static boolean isRestrictedForGuests(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return false;
+        List<String> restricted = FactionsMod.CONFIG.GUEST_GRANT.RESTRICTED_ITEMS;
+        if (restricted == null || restricted.isEmpty()) return false;
+        String id = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        return restricted.contains(id);
+    }
+
+    private static boolean isNonMemberInClaim(Player player, BlockPos pos, Level world) {
+        if (!FactionsMod.CONFIG.CLAIM_PROTECTION) {
+            return false;
+        }
+
+        User user = User.get(player.getUUID());
+        if (player.permissions()
+                        .hasPermission(
+                                new Permission.HasCommandLevel(
+                                        PermissionLevel.byId(
+                                                FactionsMod.CONFIG.REQUIRED_BYPASS_LEVEL)))
+                && user.bypass) {
+            return false;
+        }
+
+        String dimension = world.dimension().identifier().toString();
+        ChunkPos chunkPosition = WorldUtils.getChunkPos(pos);
+
+        Claim claim = Claim.get(chunkPosition.x(), chunkPosition.z(), dimension);
+        if (claim == null) return false;
+
+        Faction claimFaction = claim.getFaction();
+
+        if (claimFaction.getClaimCount() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT
+                > claimFaction.getPower()) {
+            return false;
+        }
+
+        return !user.isInFaction();
+    }
+
     private static InteractionResult checkPermissions(
             Player player, BlockPos position, Level world, Permissions permission) {
+        return checkPermissions(player, position, world, permission, false, ItemStack.EMPTY);
+    }
+
+    private static InteractionResult checkPermissions(
+            Player player,
+            BlockPos position,
+            Level world,
+            Permissions permission,
+            boolean consumeQuota) {
+        return checkPermissions(player, position, world, permission, consumeQuota, ItemStack.EMPTY);
+    }
+
+    private static InteractionResult checkPermissions(
+            Player player,
+            BlockPos position,
+            Level world,
+            Permissions permission,
+            boolean consumeQuota,
+            ItemStack usedItem) {
         if (!FactionsMod.CONFIG.CLAIM_PROTECTION) {
             return InteractionResult.PASS;
         }
@@ -334,9 +434,42 @@ public class InteractionManager {
         }
 
         if (!user.isInFaction()) {
-            return claimFaction.guest_permissions.contains(permission)
-                    ? InteractionResult.SUCCESS
-                    : InteractionResult.FAIL;
+            if (isRestrictedForGuests(usedItem)) {
+                return InteractionResult.FAIL;
+            }
+
+            if (claimFaction.guest_permissions.contains(permission)) {
+                return InteractionResult.SUCCESS;
+            }
+
+            GuestGrant grant = GuestGrant.get(claimFaction.getID(), user.getID());
+            if (grant != null) {
+                if (permission == Permissions.BREAK_BLOCKS && grant.breakRemaining > 0) {
+                    if (consumeQuota) {
+                        grant.consumeBreak();
+                        if (grant.breakRemaining == 0 && grant.placeRemaining == 0) {
+                            grant.remove();
+                            GuestGrant.save();
+                        } else {
+                            GuestGrant.saveThrottled();
+                        }
+                    }
+                    return InteractionResult.SUCCESS;
+                }
+                if (permission == Permissions.PLACE_BLOCKS && grant.placeRemaining > 0) {
+                    if (consumeQuota) {
+                        grant.consumePlace();
+                        if (grant.breakRemaining == 0 && grant.placeRemaining == 0) {
+                            grant.remove();
+                            GuestGrant.save();
+                        } else {
+                            GuestGrant.saveThrottled();
+                        }
+                    }
+                    return InteractionResult.SUCCESS;
+                }
+            }
+            return InteractionResult.FAIL;
         }
 
         Faction userFaction = user.getFaction();

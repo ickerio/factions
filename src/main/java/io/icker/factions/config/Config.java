@@ -40,6 +40,8 @@ public class Config {
                         .registerTypeAdapter(
                                 PowerConfig.class, new Deserializer<>(PowerConfig.class))
                         .registerTypeAdapter(SafeConfig.class, new Deserializer<>(SafeConfig.class))
+                        .registerTypeAdapter(
+                                TeleportConfig.class, new Deserializer<>(TeleportConfig.class))
                         .create();
 
         try {
@@ -83,6 +85,12 @@ public class Config {
     @SerializedName("power")
     public PowerConfig POWER = new PowerConfig();
 
+    @SerializedName("guestGrant")
+    public GuestGrantConfig GUEST_GRANT = new GuestGrantConfig();
+
+    @SerializedName("announcer")
+    public AnnouncerConfig ANNOUNCER = new AnnouncerConfig();
+
     @SerializedName("safe")
     @Nullable
     public SafeConfig SAFE = new SafeConfig();
@@ -90,6 +98,9 @@ public class Config {
     @SerializedName("home")
     @Nullable
     public HomeConfig HOME = new HomeConfig();
+
+    @SerializedName("teleport")
+    public TeleportConfig TELEPORT = new TeleportConfig();
 
     @SerializedName("display")
     public DisplayConfig DISPLAY = new DisplayConfig();

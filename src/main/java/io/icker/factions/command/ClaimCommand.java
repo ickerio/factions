@@ -76,7 +76,8 @@ public class ClaimCommand implements Command {
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
 
-        Faction faction = Command.getUser(player).getFaction();
+        User user = Command.getUser(player);
+        Faction faction = user.getFaction();
         String dimension = world.dimension().identifier().toString();
         ArrayList<ChunkPos> chunks = new ArrayList<ChunkPos>();
 
@@ -89,19 +90,21 @@ public class ClaimCommand implements Command {
 
                 if (existingClaim != null) {
                     if (size == 1) {
-                        boolean isActorOwner = existingClaim.getFaction().equals(faction);
-                        new Message(
-                                        Component.translatable(
-                                                "factions.command.claim.add.fail.already_owned.single",
-                                                Component.translatable(
-                                                        "factions.command.claim.add.fail.already_owned.single."
-                                                                + (isActorOwner
-                                                                        ? "your"
-                                                                        : "another"))))
-                                .fail()
-                                .send(player, false);
-                        return 0;
-                    } else if (!existingClaim.getFaction().equals(faction)) {
+                        if (!user.bypass) {
+                            boolean isActorOwner = existingClaim.getFaction().equals(faction);
+                            new Message(
+                                            Component.translatable(
+                                                    "factions.command.claim.add.fail.already_owned.single",
+                                                    Component.translatable(
+                                                            "factions.command.claim.add.fail.already_owned.single."
+                                                                    + (isActorOwner
+                                                                            ? "your"
+                                                                            : "another"))))
+                                    .fail()
+                                    .send(player, false);
+                            return 0;
+                        }
+                    } else if (!user.bypass && !existingClaim.getFaction().equals(faction)) {
                         new Message(
                                         Component.translatable(
                                                 "factions.command.claim.add.fail.already_owned.multiple"))
