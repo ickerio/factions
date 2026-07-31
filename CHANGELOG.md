@@ -6,6 +6,26 @@ Format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ---
 
+## [3.2]
+
+**Minecraft 26.2 · Fabric Loader 0.18.4 · Fabric API 0.155.2+26.2**
+
+Release adding faction gathering hall travel, faction trade meeting requests, and tighter claim
+permissions. **Fully save-compatible with 3.1.1** — no world data migration, no config migration.
+
+### Added
+
+- **`/f gather` teleports a player to the faction gathering hall.** Uses the configured hall
+  coordinates for quick regrouping.
+- **`/f trade <faction>` sends a trade meeting request to another faction.** On accept, both
+  parties teleport to the gathering hall.
+- **`/f claim` is now restricted to LEADER/OWNER ranks.** This tightens claim control from the
+  previous COMMANDER+ access.
+
+### Changed
+
+- **`safe.enderChest` now defaults to `false`, restoring personal ender chests by default for new installs.** Previously, the default `true` value redirected ender chest use to the shared faction safe, so every member of a faction opened the same container and players without a faction were blocked from ender chests entirely. The faction safe itself is unchanged and still available through `/f safe`. This only affects fresh installs: existing `config/factions.json` files keep their current `enderChest` value, so servers upgrading this release must change it manually to `"enderChest": false` if they want the new default behavior. Items already stored in a faction safe stay there and remain reachable via `/f safe`; they do not migrate into players' personal ender chests.
+
 ## [3.1.1]
 
 **Minecraft 26.2 · Fabric Loader 0.18.4 · Fabric API 0.155.2+26.2**

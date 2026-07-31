@@ -26,7 +26,7 @@ public class MapCommand implements Command {
         ServerLevel world = (ServerLevel) player.level();
 
         ChunkPos chunkPos = WorldUtils.getChunkPos(player.blockPosition());
-        String dimension = world.dimension().identifier().toString();
+        String dimension = WorldUtils.dimensionString(world);
 
         // Print the header of the faction map.
         new Message(

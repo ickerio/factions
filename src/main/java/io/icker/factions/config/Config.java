@@ -42,6 +42,7 @@ public class Config {
                         .registerTypeAdapter(SafeConfig.class, new Deserializer<>(SafeConfig.class))
                         .registerTypeAdapter(
                                 TeleportConfig.class, new Deserializer<>(TeleportConfig.class))
+                        .registerTypeAdapter(GatherConfig.class, new Deserializer<>(GatherConfig.class))
                         .create();
 
         try {
@@ -101,6 +102,10 @@ public class Config {
 
     @SerializedName("teleport")
     public TeleportConfig TELEPORT = new TeleportConfig();
+
+    @SerializedName("gather")
+    @Nullable
+    public GatherConfig GATHER = new GatherConfig();
 
     @SerializedName("display")
     public DisplayConfig DISPLAY = new DisplayConfig();

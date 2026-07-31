@@ -95,7 +95,7 @@ public class WorldManager {
         if (!user.autoclaim && !user.radar && !FactionsMod.CONFIG.ANNOUNCER.ENABLED) return;
 
         ServerLevel world = (ServerLevel) player.level();
-        String dimension = world.dimension().identifier().toString();
+        String dimension = WorldUtils.dimensionString(world);
 
         ChunkPos chunkPos = WorldUtils.getChunkPos(player.blockPosition());
 

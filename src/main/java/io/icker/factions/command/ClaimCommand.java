@@ -78,7 +78,7 @@ public class ClaimCommand implements Command {
 
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
-        String dimension = world.dimension().identifier().toString();
+        String dimension = WorldUtils.dimensionString(world);
         ArrayList<ChunkPos> chunks = new ArrayList<ChunkPos>();
         int newChunkCount = 0;
 
@@ -181,10 +181,7 @@ public class ClaimCommand implements Command {
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
 
-        ChunkPos chunkPos = WorldUtils.getChunkPos(player.blockPosition());
-        String dimension = world.dimension().identifier().toString();
-
-        Claim existingClaim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
+        Claim existingClaim = Claim.get(world, player.blockPosition());
 
         if (existingClaim == null) {
             new Message(Component.translatable("factions.command.claim.remove.fail.unclaimed"))
@@ -221,7 +218,7 @@ public class ClaimCommand implements Command {
 
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
-        String dimension = world.dimension().identifier().toString();
+        String dimension = WorldUtils.dimensionString(world);
 
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
@@ -298,10 +295,7 @@ public class ClaimCommand implements Command {
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
 
-        ChunkPos chunkPos = WorldUtils.getChunkPos(player.blockPosition());
-        String dimension = world.dimension().identifier().toString();
-
-        Claim claim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
+        Claim claim = Claim.get(world, player.blockPosition());
 
         if (claim == null) {
             new Message(
@@ -392,7 +386,7 @@ public class ClaimCommand implements Command {
     @Override
     public LiteralCommandNode<CommandSourceStack> getNode() {
         return Commands.literal("claim")
-                .requires(Requires.isCommander())
+                .requires(Requires.isLeader())
                 .then(
                         Commands.literal("add")
                                 .requires(Requires.hasPerms("factions.claim.add", 0))

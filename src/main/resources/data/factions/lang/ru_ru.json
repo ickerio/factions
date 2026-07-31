@@ -301,5 +301,19 @@
 
     "factions.papi.chat.global": "Глобальный чат",
     "factions.papi.chat.faction": "Чат фракции",
-    "factions.papi.factionless": "БЕЗ ФРАКЦИИ"
+    "factions.papi.factionless": "БЕЗ ФРАКЦИИ",
+    "factions.command.gather.fail.no_world": "Cannot find dimension",
+    "factions.command.gather.success": "Teleported to the gathering hall",
+    "factions.command.trade.request.sent": "Trade meeting request sent to %s",
+    "factions.command.trade.request.received": "%s wants to meet at the gathering hall. Use /f trade y or /f trade n (expires in %s seconds)",
+    "factions.command.trade.request.hover": "Click to accept this trade request",
+    "factions.command.trade.fail.nonexistent_faction": "Cannot send trade request to a faction that doesn't exist",
+    "factions.command.trade.fail.own_faction": "Cannot send a trade request to your own faction",
+    "factions.command.trade.fail.not_member": "You must be in a faction to use this command",
+    "factions.command.trade.accept.fail.no_request": "Your faction has no pending trade request",
+    "factions.command.trade.accept.fail.expired": "That trade request has expired",
+    "factions.command.trade.accept.success": "Trade meeting accepted — teleporting to the gathering hall",
+    "factions.command.trade.deny.success": "Trade request denied",
+    "factions.command.trade.deny.fail.no_request": "Your faction has no pending trade request",
+    "factions.command.trade.deny.notified": "%s denied your trade request"
 }

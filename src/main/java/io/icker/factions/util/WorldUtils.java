@@ -13,10 +13,14 @@ import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldUtils {
+    private static final Map<Identifier, String> DIMENSION_STRINGS = new ConcurrentHashMap<>();
+
     public static MinecraftServer server;
 
     public static final Event<Ready> ON_READY =
@@ -57,6 +61,11 @@ public class WorldUtils {
 
     public static ChunkPos getChunkPos(BlockPos position) {
         return new ChunkPos(position.getX() >> 4, position.getZ() >> 4);
+    }
+
+    public static String dimensionString(Level world) {
+        return DIMENSION_STRINGS.computeIfAbsent(
+                world.dimension().identifier(), Identifier::toString);
     }
 
     @Nullable

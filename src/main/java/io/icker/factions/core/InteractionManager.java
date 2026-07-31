@@ -9,7 +9,6 @@ import io.icker.factions.api.persistents.Relationship.Permissions;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.core.InteractionsUtil.InteractionsUtilActions;
 import io.icker.factions.mixin.ItemInvoker;
-import io.icker.factions.util.WorldUtils;
 
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -30,7 +29,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -84,10 +82,7 @@ public class InteractionManager {
         } else {
             if (!FactionsMod.CONFIG.BLOCK_TNT) return InteractionResult.PASS;
 
-            String dimension = explosion.level().dimension().identifier().toString();
-            ChunkPos chunkPosition = WorldUtils.getChunkPos(pos);
-
-            Claim claim = Claim.get(chunkPosition.x(), chunkPosition.z(), dimension);
+            Claim claim = Claim.get(explosion.level(), pos);
             if (claim == null) return InteractionResult.PASS;
 
             Faction claimFaction = claim.getFaction();
@@ -121,10 +116,7 @@ public class InteractionManager {
         } else {
             if (!FactionsMod.CONFIG.BLOCK_TNT) return InteractionResult.PASS;
 
-            String dimension = explosion.level().dimension().identifier().toString();
-            ChunkPos chunkPosition = WorldUtils.getChunkPos(entity.blockPosition());
-
-            Claim claim = Claim.get(chunkPosition.x(), chunkPosition.z(), dimension);
+            Claim claim = Claim.get(explosion.level(), entity.blockPosition());
             if (claim == null) return InteractionResult.PASS;
 
             Faction claimFaction = claim.getFaction();
@@ -369,10 +361,7 @@ public class InteractionManager {
             return false;
         }
 
-        String dimension = world.dimension().identifier().toString();
-        ChunkPos chunkPosition = WorldUtils.getChunkPos(pos);
-
-        Claim claim = Claim.get(chunkPosition.x(), chunkPosition.z(), dimension);
+        Claim claim = Claim.get(world, pos);
         if (claim == null) return false;
 
         Faction claimFaction = claim.getFaction();
@@ -420,10 +409,7 @@ public class InteractionManager {
             return InteractionResult.PASS;
         }
 
-        String dimension = world.dimension().identifier().toString();
-        ChunkPos chunkPosition = WorldUtils.getChunkPos(position);
-
-        Claim claim = Claim.get(chunkPosition.x(), chunkPosition.z(), dimension);
+        Claim claim = Claim.get(world, position);
         if (claim == null) return InteractionResult.PASS;
 
         Faction claimFaction = claim.getFaction();

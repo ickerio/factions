@@ -108,7 +108,7 @@ public class DynmapWrapper {
 
                 AreaMarker marker
                         = markerSet.createAreaMarker(
-                                claim.getKey(),
+                                claim.level + '-' + claim.x + '-' + claim.z,
                                 info,
                                 true,
                                 dimensionTagToID(claim.level),
@@ -165,7 +165,8 @@ public class DynmapWrapper {
         String info = getInfo(faction);
 
         for (Claim claim : faction.getClaims()) {
-            AreaMarker marker = markerSet.findAreaMarker(claim.getKey());
+            AreaMarker marker =
+                    markerSet.findAreaMarker(claim.level + '-' + claim.x + '-' + claim.z);
 
             marker.setFillStyle(marker.getFillOpacity(), faction.getColorValue());
             marker.setLineStyle(

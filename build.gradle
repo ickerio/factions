@@ -58,11 +58,13 @@ dependencies {
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.10.0"
 }
 
+def modVersion = project.version
+
 processResources {
-    inputs.property "version", project.version
+    inputs.property "version", modVersion
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand "version": modVersion
     }
 }
 
@@ -81,9 +83,11 @@ test {
     useJUnitPlatform()
 }
 
+def archivesName = base.archivesName
+
 jar {
     from("LICENSE") {
-        rename { "${it}_${inputs.properties.archivesName}"}
+        rename { "${it}_${archivesName.get()}"}
     }
 }
 

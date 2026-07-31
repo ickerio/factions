@@ -7,13 +7,18 @@ import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.util.WorldUtils;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 @Name("Claim")
 public class Claim {
-    private static final HashMap<String, Claim> STORE = Database.load(Claim.class, c -> c.getKey());
+    public record ClaimKey(int x, int z, String level) {}
+
+    private static final HashMap<ClaimKey, Claim> STORE = Database.load(Claim.class, Claim::getKey);
     private static final FactionClaimCounts COUNTS_BY_FACTION = buildFactionCounts();
 
     @Field("X")
@@ -42,12 +47,16 @@ public class Claim {
 
     public Claim() {}
 
-    public String getKey() {
-        return key(x, z, level);
+    public ClaimKey getKey() {
+        return new ClaimKey(x, z, level);
     }
 
     public static Claim get(int x, int z, String level) {
-        return STORE.get(key(x, z, level));
+        return STORE.get(new ClaimKey(x, z, level));
+    }
+
+    public static Claim get(Level world, BlockPos pos) {
+        return get(pos.getX() >> 4, pos.getZ() >> 4, WorldUtils.dimensionString(world));
     }
 
     public static List<Claim> getByFaction(UUID factionID) {
@@ -89,10 +98,6 @@ public class Claim {
 
     public static void save() {
         Database.save(Claim.class, STORE.values().stream().toList());
-    }
-
-    private static String key(int x, int z, String level) {
-        return level + '-' + x + '-' + z;
     }
 
     private static FactionClaimCounts buildFactionCounts() {
