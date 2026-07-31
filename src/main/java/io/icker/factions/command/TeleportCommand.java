@@ -217,7 +217,7 @@ public class TeleportCommand implements Command {
                 .then(Commands.literal("deny").executes(this::deny))
                 .then(
                         Commands.argument("player", StringArgumentType.word())
-                                .suggests(Suggests.allPlayersInYourFactionButYou())
+                                .suggests(Suggests.onlineFactionMembersButYou())
                                 .executes(this::request))
                 .build();
     }

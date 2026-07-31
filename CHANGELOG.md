@@ -6,6 +6,60 @@ Format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ---
 
+## [3.1.1]
+
+**Minecraft 26.2 · Fabric Loader 0.18.4 · Fabric API 0.155.2+26.2**
+
+Patch release covering two tab-completion fixes, one gameplay-affecting economy fix, and a
+dead-config cleanup. **Fully save-compatible with 3.1.0** — no world data migration, no config
+migration. Existing config files containing `announcer.style` are silently ignored by Gson.
+
+### Fixed
+
+- **`/f tp` and `/f kick` tab-completion showed raw UUIDs instead of player names.** When the
+  server's `ProfileResolver` had no cached entry for a factionmate (common on servers that
+  disable the Mojang profile cache or restart frequently), the suggestion fallback leaked the
+  raw UUID string. `/f kick` now prefers the live player's real name for anyone currently
+  online, keeping the `ProfileResolver → UUID` chain only for offline members it legitimately
+  needs to target. `/f tp` — which can only ever teleport to online players anyway — now
+  suggests **only online factionmates**, matching what its executor can actually resolve. No
+  more UUID suggestions in either command.
+- **`/f claim add <size>` only required power for a single chunk.** The multi-chunk claim path
+  checked affordability as though claiming exactly one chunk, so `/f claim add 7` acquired up
+  to 169 chunks (a `13×13` square) for the price of one. Power is now required for **every
+  genuinely new chunk** in the requested square; chunks already owned by the acting faction
+  are re-claimed harmlessly and do not add cost.
+
+  **⚠️ Gameplay-affecting change.** Factions that mass-claimed cheaply under the old rule will
+  find that large claims now cost proportionally more. The `1..7` size cap and the
+  foreign-claim exclusivity rules are unchanged. **`/f claim add <size> force` still bypasses
+  the power check for leaders holding `factions.claim.add.force`** — that path is
+  intentional and unchanged.
+
+### Removed
+
+- **`announcer.style` config field and its unused datapack templates.** Nothing in the mod
+  ever read `AnnouncerConfig.STYLE`; the announcer builds its styling in code via
+  `AnnouncerManager`. The `data/factions/factions/announcer/*.json` files were reference-only
+  and shipped for a styling system that was never implemented. Both the field and the
+  templates are gone. Existing configs containing `"style": "default"` are ignored by Gson —
+  **no action required**.
+
+### Upgrade from 3.1.0
+
+1. Stop the server
+2. Replace `factions-mc26.2-3.1.0.jar` with `factions-mc26.2-3.1.1.jar`
+3. Start the server
+
+No config edits required. No data migration. Downgrading back to 3.1.0 is safe.
+
+### Testing
+
+`./gradlew clean build test` exits 0. All 42 tests from 3.1.0 still pass, plus 7 new
+arithmetic assertions in the new `ClaimPowerTest` suite (49 total, 9 suites).
+
+---
+
 ## [3.1.0]
 
 **Minecraft 26.2 · Fabric Loader 0.18.4 · Fabric API 0.155.2+26.2**
@@ -140,8 +194,8 @@ No config edits required. No data migration. Downgrading back to 3.0.4 is safe �
 
 Documented deliberately. None are regressions from 3.0.4 unless noted.
 
-- **`announcer.style` is not implemented.** The config field exists and the datapack templates under `data/factions/factions/announcer/` ship with the mod, but nothing reads them — announcement styling is currently built in code. The field is inert; changing it has no effect. Slated for removal or implementation in 3.1.x.
-- **Multi-chunk claims only charge power for one chunk.** `/f claim add <size>` validates power as though claiming a single chunk, so `/f claim add 7` acquires up to 169 chunks for the cost of one. **Pre-existing since 3.0.4** — carried forward unchanged, not introduced here. Worth addressing in a future release if land economy matters on your server.
+- **`announcer.style` is not implemented.** ~~The config field exists and the datapack templates under `data/factions/factions/announcer/` ship with the mod, but nothing reads them — announcement styling is currently built in code. The field is inert; changing it has no effect. Slated for removal or implementation in 3.1.x.~~ **Fixed in 3.1.1** — the field and templates have been removed.
+- **Multi-chunk claims only charge power for one chunk.** ~~`/f claim add <size>` validates power as though claiming a single chunk, so `/f claim add 7` acquires up to 169 chunks for the cost of one. **Pre-existing since 3.0.4** — carried forward unchanged, not introduced here. Worth addressing in a future release if land economy matters on your server.~~ **Fixed in 3.1.1** — power is now required for every genuinely new chunk in the requested square.
 - **Overclaimed factions lose all protection.** When a faction's claim count exceeds its power, every interaction — including chest access — is permitted. Pre-existing, believed intentional.
 - **Teleport can be used as combat reinforcement.** `/f tp accept` checks combat status on the requester but not the target, so a player under attack can summon a teammate. An inherent consequence of the consent-based design.
 - **Teleport requests can be stomped.** Only one pending request is tracked per target, so a same-faction griefer can repeatedly overwrite a teammate's legitimate request.

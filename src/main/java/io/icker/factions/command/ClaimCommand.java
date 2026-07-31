@@ -69,7 +69,7 @@ public class ClaimCommand implements Command {
         return 1;
     }
 
-    private int addForced(CommandContext<CommandSourceStack> context, int size)
+    private int addForced(CommandContext<CommandSourceStack> context, int size, boolean checkPower)
             throws CommandSyntaxException {
         CommandSourceStack source = context.getSource();
 
@@ -80,6 +80,7 @@ public class ClaimCommand implements Command {
         Faction faction = user.getFaction();
         String dimension = world.dimension().identifier().toString();
         ArrayList<ChunkPos> chunks = new ArrayList<ChunkPos>();
+        int newChunkCount = 0;
 
         for (int x = -size + 1; x < size; x++) {
             for (int y = -size + 1; y < size; y++) {
@@ -112,9 +113,32 @@ public class ClaimCommand implements Command {
                                 .send(player, false);
                         return 0;
                     }
+                } else {
+                    newChunkCount++;
                 }
 
                 chunks.add(chunkPos);
+            }
+        }
+
+        if (checkPower) {
+            int requiredPower =
+                    (faction.getClaimCount() + newChunkCount)
+                            * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+            int maxPower =
+                    faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
+                            + FactionsMod.CONFIG.POWER.BASE
+                            + faction.getAdminPower();
+
+            if (maxPower < requiredPower) {
+                new Message(
+                                Component.translatable(
+                                        size == 1
+                                                ? "factions.command.claim.add.fail.lacks_power"
+                                                : "factions.command.claim.add.fail.lacks_power.multiple"))
+                        .fail()
+                        .send(player, false);
+                return 0;
             }
         }
 
@@ -143,48 +167,12 @@ public class ClaimCommand implements Command {
     }
 
     private int add(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        Faction faction = Command.getUser(player).getFaction();
-
-        int requiredPower =
-                (faction.getClaimCount() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-        int maxPower =
-                faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
-                        + FactionsMod.CONFIG.POWER.BASE
-                        + faction.getAdminPower();
-
-        if (maxPower < requiredPower) {
-            new Message(Component.translatable("factions.command.claim.add.fail.lacks_power"))
-                    .fail()
-                    .send(player, false);
-            return 0;
-        }
-
-        return addForced(context, 1);
+        return addForced(context, 1, true);
     }
 
     private int addSize(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         int size = IntegerArgumentType.getInteger(context, "size");
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        Faction faction = Command.getUser(player).getFaction();
-
-        int requiredPower =
-                (faction.getClaimCount() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-        int maxPower =
-                faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
-                        + FactionsMod.CONFIG.POWER.BASE
-                        + faction.getAdminPower();
-
-        if (maxPower < requiredPower) {
-            new Message(
-                            Component.translatable(
-                                    "factions.command.claim.add.fail.lacks_power.multiple"))
-                    .fail()
-                    .send(player, false);
-            return 0;
-        }
-
-        return addForced(context, size);
+        return addForced(context, size, true);
     }
 
     private int remove(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -429,7 +417,8 @@ public class ClaimCommand implements Command {
                                                                                         IntegerArgumentType
                                                                                                 .getInteger(
                                                                                                         context,
-                                                                                                        "size"))))
+                                                                                                        "size"),
+                                                                                        false)))
                                                 .executes(this::addSize))
                                 .executes(this::add))
                 .then(

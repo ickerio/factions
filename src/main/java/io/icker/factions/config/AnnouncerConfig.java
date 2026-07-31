@@ -8,7 +8,4 @@ public class AnnouncerConfig {
 
     @SerializedName("displaySeconds")
     public int DISPLAY_SECONDS = 5;
-
-    @SerializedName("style")
-    public String STYLE = "default";
 }
