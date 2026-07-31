@@ -6,7 +6,7 @@ Format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ---
 
-## [rc-3.1.0] — Release Candidate
+## [3.1.0]
 
 **Minecraft 26.2 · Fabric Loader 0.18.4 · Fabric API 0.155.2+26.2**
 
@@ -33,10 +33,10 @@ Faction leaders can grant a limited number of block breaks and/or places to non-
 
 | Command | Description |
 |---|---|
-| `/f guest grant <player> break <n>` | Grant `n` block breaks |
-| `/f guest grant <player> place <n>` | Grant `n` block places |
-| `/f guest revoke <player>` | Revoke a player's grant |
-| `/f guest list` | List all grants for your faction |
+| `/f grant <player> break <n>` | Grant `n` block breaks |
+| `/f grant <player> place <n>` | Grant `n` block places |
+| `/f grant revoke <player>` | Revoke a player's grant |
+| `/f grant list` | List all grants for your faction |
 
 - Requires **LEADER** or **OWNER** rank
 - Quota is consumed **only** when the action would otherwise be denied — if your faction's `guest_permissions` already allow it, no quota is spent
@@ -131,7 +131,7 @@ Three new blocks are written to `config/factions.json` on first launch. **Existi
 
 1. Stop the server
 2. **Back up your world** (specifically the `factions/` data directory)
-3. Replace `factions-mc26.2-3.0.4.jar` with `factions-mc26.2-rc-3.1.0.jar`
+3. Replace `factions-mc26.2-3.0.4.jar` with `factions-mc26.2-3.1.0.jar`
 4. Start the server
 
 No config edits required. No data migration. Downgrading back to 3.0.4 is safe — the new `guestgrant` data file is simply ignored, and unknown config keys are skipped.

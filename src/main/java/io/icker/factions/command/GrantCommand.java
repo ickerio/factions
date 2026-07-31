@@ -20,7 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.UUID;
 
-public class GuestCommand implements Command {
+public class GrantCommand implements Command {
     private UUID resolvePlayer(CommandContext<CommandSourceStack> context, String name)
             throws CommandSyntaxException {
         ServerPlayer target = context.getSource().getServer().getPlayerList().getPlayerByName(name);
@@ -46,7 +46,7 @@ public class GuestCommand implements Command {
         if (targetID == null) {
             new Message(
                             Component.translatable(
-                                    "factions.command.guest.grant.fail.player_not_found"))
+                                    "factions.command.grant.fail.player_not_found"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -55,7 +55,7 @@ public class GuestCommand implements Command {
         if (hasFactionMember(faction, targetID)) {
             new Message(
                             Component.translatable(
-                                    "factions.command.guest.grant.fail.already_member"))
+                                    "factions.command.grant.fail.already_member"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -70,7 +70,7 @@ public class GuestCommand implements Command {
         if (remaining > maximum || amount > maximum - remaining) {
             new Message(
                             Component.translatable(
-                                    "factions.command.guest.grant.fail.max_exceeded"))
+                                    "factions.command.grant.fail.max_exceeded"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -94,8 +94,8 @@ public class GuestCommand implements Command {
         new Message(
                         Component.translatable(
                                 breakBlocks
-                                        ? "factions.command.guest.grant.success.break"
-                                        : "factions.command.guest.grant.success.place"))
+                                        ? "factions.command.grant.success.break"
+                                        : "factions.command.grant.success.place"))
                 .send(player, false);
         return 1;
     }
@@ -118,7 +118,7 @@ public class GuestCommand implements Command {
         if (targetID == null) {
             new Message(
                             Component.translatable(
-                                    "factions.command.guest.grant.fail.player_not_found"))
+                                    "factions.command.grant.fail.player_not_found"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -127,7 +127,7 @@ public class GuestCommand implements Command {
         GuestGrant grant = GuestGrant.get(faction.getID(), targetID);
         if (grant == null) {
             new Message(
-                            Component.translatable("factions.command.guest.revoke.fail.no_grant"))
+                            Component.translatable("factions.command.grant.revoke.fail.no_grant"))
                     .fail()
                     .send(player, false);
             return 0;
@@ -135,7 +135,7 @@ public class GuestCommand implements Command {
 
         grant.remove();
         GuestGrant.save();
-        new Message(Component.translatable("factions.command.guest.revoke.success"))
+        new Message(Component.translatable("factions.command.grant.revoke.success"))
                 .send(player, false);
         return 1;
     }
@@ -143,7 +143,7 @@ public class GuestCommand implements Command {
     private int list(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         Faction faction = Command.getUser(player).getFaction();
-        new Message(Component.translatable("factions.command.guest.list.header"))
+        new Message(Component.translatable("factions.command.grant.list.header"))
                 .send(player, false);
 
         for (GuestGrant grant : GuestGrant.getByFaction(faction.getID())) {
@@ -153,7 +153,7 @@ public class GuestCommand implements Command {
                     grantedPlayer != null ? grantedPlayer.getName().getString() : grant.playerID.toString();
             new Message(
                             Component.translatable(
-                                    "factions.command.guest.list.entry",
+                                    "factions.command.grant.list.entry",
                                     name,
                                     grant.breakRemaining,
                                     grant.placeRemaining))
@@ -164,39 +164,30 @@ public class GuestCommand implements Command {
 
     @Override
     public LiteralCommandNode<CommandSourceStack> getNode() {
-        return Commands.literal("guest")
+        return Commands.literal("grant")
                 .requires(Requires.isLeader())
-                .then(
-                        Commands.literal("grant")
-                                .then(
-                                                        Commands.argument(
-                                                                        "player", StringArgumentType.word())
-                                                .then(
-                                                        Commands.literal("break")
-                                                                .then(
-                                                                        Commands.argument(
-                                                                                        "amount",
-                                                                                        IntegerArgumentType
-                                                                                                .integer(1))
-                                                                                .executes(
-                                                                                        this
-                                                                                                ::grantBreak))))
-                                                .then(
-                                                        Commands.literal("place")
-                                                                .then(
-                                                                        Commands.argument(
-                                                                                        "amount",
-                                                                                        IntegerArgumentType
-                                                                                                .integer(1))
-                                                                                .executes(
-                                                                                        this
-                                                                                                ::grantPlace))))
                 .then(
                         Commands.literal("revoke")
                                 .then(
                                         Commands.argument("player", StringArgumentType.word())
                                                 .executes(this::revoke)))
                 .then(Commands.literal("list").executes(this::list))
+                .then(
+                        Commands.argument("player", StringArgumentType.word())
+                                .then(
+                                        Commands.literal("break")
+                                                .then(
+                                                        Commands.argument(
+                                                                        "amount",
+                                                                        IntegerArgumentType.integer(1))
+                                                                .executes(this::grantBreak)))
+                                .then(
+                                        Commands.literal("place")
+                                                .then(
+                                                        Commands.argument(
+                                                                        "amount",
+                                                                        IntegerArgumentType.integer(1))
+                                                                .executes(this::grantPlace))))
                 .build();
     }
 }

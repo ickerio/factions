@@ -8,7 +8,7 @@ import io.icker.factions.command.ClaimCommand;
 import io.icker.factions.command.CreateCommand;
 import io.icker.factions.command.DeclareCommand;
 import io.icker.factions.command.DisbandCommand;
-import io.icker.factions.command.GuestCommand;
+import io.icker.factions.command.GrantCommand;
 import io.icker.factions.command.HomeCommand;
 import io.icker.factions.command.InfoCommand;
 import io.icker.factions.command.InviteCommand;
@@ -117,7 +117,7 @@ public class FactionsMod implements ModInitializer {
                     new RankCommand(),
                     new SafeCommand(),
                     new PermissionCommand(),
-                    new GuestCommand(),
+                    new GrantCommand(),
                     new TeleportCommand(),
                     new XaeroSyncCommand()
                 };
