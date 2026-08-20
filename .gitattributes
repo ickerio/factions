@@ -1,0 +1,34 @@
+# Normalise line endings — auto-detect text, keep LF
+* text=auto eol=lf
+
+# Windows batch scripts MUST be CRLF or cmd.exe will misinterpret them
+*.bat        text eol=crlf
+*.cmd        text eol=crlf
+*.ps1        text eol=crlf
+
+# Unix shell scripts stay LF even on Windows checkouts
+*.sh         text eol=lf
+gradlew      text eol=lf
+
+# Binary formats — never diff, never touch
+*.jar        binary
+*.class      binary
+*.png        binary
+*.jpg        binary
+*.jpeg       binary
+*.gif        binary
+*.ogg        binary
+*.wav        binary
+*.mp3        binary
+*.zip        binary
+*.tar.gz     binary
+*.gz         binary
+
+# Java sources
+*.java       text eol=lf diff=java
+*.gradle     text eol=lf
+*.properties text eol=lf
+*.json       text eol=lf
+*.yml        text eol=lf
+*.yaml       text eol=lf
+*.md         text eol=lf

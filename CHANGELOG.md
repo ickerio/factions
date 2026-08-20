@@ -6,7 +6,7 @@ Format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ---
 
-## [3.4]
+## [3.4] — 2026-08-20
 
 **Minecraft 26.2 · Fabric Loader 0.19.3 · Fabric API 0.155.2+26.2**
 

@@ -8,11 +8,13 @@
     "authors": [
         "ickerio",
         "BlueZeeKing",
-        "PyPylia"
+        "PyPylia",
+        "joshes14"
     ],
     "contact": {
-        "homepage": "https://icker.io/factions/",
-        "sources": "https://github.com/ickerio/factions"
+        "homepage": "https://github.com/joshes14/factions",
+        "sources":  "https://github.com/joshes14/factions",
+        "issues":   "https://github.com/joshes14/factions/issues"
     },
 
     "license": "MIT",
