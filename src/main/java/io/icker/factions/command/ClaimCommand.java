@@ -11,6 +11,7 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+import io.icker.factions.util.WorldUtils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -68,38 +69,43 @@ public class ClaimCommand implements Command {
         return 1;
     }
 
-    private int addForced(CommandContext<CommandSourceStack> context, int size)
+    private int addForced(CommandContext<CommandSourceStack> context, int size, boolean checkPower)
             throws CommandSyntaxException {
         CommandSourceStack source = context.getSource();
 
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
 
-        Faction faction = Command.getUser(player).getFaction();
-        String dimension = world.dimension().identifier().toString();
+        User user = Command.getUser(player);
+        Faction faction = user.getFaction();
+        String dimension = WorldUtils.dimensionString(world);
         ArrayList<ChunkPos> chunks = new ArrayList<ChunkPos>();
+        int newChunkCount = 0;
 
         for (int x = -size + 1; x < size; x++) {
             for (int y = -size + 1; y < size; y++) {
                 ChunkPos chunkPos =
-                        world.getChunk(player.blockPosition().offset(x * 16, 0, y * 16)).getPos();
+                        WorldUtils.getChunkPos(
+                                player.blockPosition().offset(x * 16, 0, y * 16));
                 Claim existingClaim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
 
                 if (existingClaim != null) {
                     if (size == 1) {
-                        boolean isActorOwner = existingClaim.getFaction().equals(faction);
-                        new Message(
-                                        Component.translatable(
-                                                "factions.command.claim.add.fail.already_owned.single",
-                                                Component.translatable(
-                                                        "factions.command.claim.add.fail.already_owned.single."
-                                                                + (isActorOwner
-                                                                        ? "your"
-                                                                        : "another"))))
-                                .fail()
-                                .send(player, false);
-                        return 0;
-                    } else if (!existingClaim.getFaction().equals(faction)) {
+                        if (!user.bypass) {
+                            boolean isActorOwner = existingClaim.getFaction().equals(faction);
+                            new Message(
+                                            Component.translatable(
+                                                    "factions.command.claim.add.fail.already_owned.single",
+                                                    Component.translatable(
+                                                            "factions.command.claim.add.fail.already_owned.single."
+                                                                    + (isActorOwner
+                                                                            ? "your"
+                                                                            : "another"))))
+                                    .fail()
+                                    .send(player, false);
+                            return 0;
+                        }
+                    } else if (!user.bypass && !existingClaim.getFaction().equals(faction)) {
                         new Message(
                                         Component.translatable(
                                                 "factions.command.claim.add.fail.already_owned.multiple"))
@@ -107,9 +113,32 @@ public class ClaimCommand implements Command {
                                 .send(player, false);
                         return 0;
                     }
+                } else {
+                    newChunkCount++;
                 }
 
                 chunks.add(chunkPos);
+            }
+        }
+
+        if (checkPower) {
+            int requiredPower =
+                    (faction.getClaimCount() + newChunkCount)
+                            * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+            int maxPower =
+                    faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
+                            + FactionsMod.CONFIG.POWER.BASE
+                            + faction.getAdminPower();
+
+            if (maxPower < requiredPower) {
+                new Message(
+                                Component.translatable(
+                                        size == 1
+                                                ? "factions.command.claim.add.fail.lacks_power"
+                                                : "factions.command.claim.add.fail.lacks_power.multiple"))
+                        .fail()
+                        .send(player, false);
+                return 0;
             }
         }
 
@@ -138,48 +167,12 @@ public class ClaimCommand implements Command {
     }
 
     private int add(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        Faction faction = Command.getUser(player).getFaction();
-
-        int requiredPower =
-                (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-        int maxPower =
-                faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
-                        + FactionsMod.CONFIG.POWER.BASE
-                        + faction.getAdminPower();
-
-        if (maxPower < requiredPower) {
-            new Message(Component.translatable("factions.command.claim.add.fail.lacks_power"))
-                    .fail()
-                    .send(player, false);
-            return 0;
-        }
-
-        return addForced(context, 1);
+        return addForced(context, 1, true);
     }
 
     private int addSize(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         int size = IntegerArgumentType.getInteger(context, "size");
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        Faction faction = Command.getUser(player).getFaction();
-
-        int requiredPower =
-                (faction.getClaims().size() + 1) * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
-        int maxPower =
-                faction.getUsers().size() * FactionsMod.CONFIG.POWER.MEMBER
-                        + FactionsMod.CONFIG.POWER.BASE
-                        + faction.getAdminPower();
-
-        if (maxPower < requiredPower) {
-            new Message(
-                            Component.translatable(
-                                    "factions.command.claim.add.fail.lacks_power.multiple"))
-                    .fail()
-                    .send(player, false);
-            return 0;
-        }
-
-        return addForced(context, size);
+        return addForced(context, size, true);
     }
 
     private int remove(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -188,10 +181,7 @@ public class ClaimCommand implements Command {
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
 
-        ChunkPos chunkPos = world.getChunk(player.blockPosition()).getPos();
-        String dimension = world.dimension().identifier().toString();
-
-        Claim existingClaim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
+        Claim existingClaim = Claim.get(world, player.blockPosition());
 
         if (existingClaim == null) {
             new Message(Component.translatable("factions.command.claim.remove.fail.unclaimed"))
@@ -228,7 +218,7 @@ public class ClaimCommand implements Command {
 
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
-        String dimension = world.dimension().identifier().toString();
+        String dimension = WorldUtils.dimensionString(world);
 
         User user = Command.getUser(player);
         Faction faction = user.getFaction();
@@ -236,7 +226,8 @@ public class ClaimCommand implements Command {
         for (int x = -size + 1; x < size; x++) {
             for (int y = -size + 1; y < size; y++) {
                 ChunkPos chunkPos =
-                        world.getChunk(player.blockPosition().offset(x * 16, 0, y * 16)).getPos();
+                        WorldUtils.getChunkPos(
+                                player.blockPosition().offset(x * 16, 0, y * 16));
                 Claim existingClaim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
 
                 if (existingClaim != null
@@ -246,8 +237,8 @@ public class ClaimCommand implements Command {
         }
 
         ChunkPos chunkPos =
-                world.getChunk(player.blockPosition().offset((-size + 1) * 16, 0, (-size + 1) * 16))
-                        .getPos();
+                WorldUtils.getChunkPos(
+                        player.blockPosition().offset((-size + 1) * 16, 0, (-size + 1) * 16));
         new Message(
                         Component.translatable(
                                 "factions.command.claim.remove.success.multiple",
@@ -304,10 +295,7 @@ public class ClaimCommand implements Command {
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
 
-        ChunkPos chunkPos = world.getChunk(player.blockPosition()).getPos();
-        String dimension = world.dimension().identifier().toString();
-
-        Claim claim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
+        Claim claim = Claim.get(world, player.blockPosition());
 
         if (claim == null) {
             new Message(
@@ -398,7 +386,7 @@ public class ClaimCommand implements Command {
     @Override
     public LiteralCommandNode<CommandSourceStack> getNode() {
         return Commands.literal("claim")
-                .requires(Requires.isCommander())
+                .requires(Requires.isLeader())
                 .then(
                         Commands.literal("add")
                                 .requires(Requires.hasPerms("factions.claim.add", 0))
@@ -423,7 +411,8 @@ public class ClaimCommand implements Command {
                                                                                         IntegerArgumentType
                                                                                                 .getInteger(
                                                                                                         context,
-                                                                                                        "size"))))
+                                                                                                        "size"),
+                                                                                        false)))
                                                 .executes(this::addSize))
                                 .executes(this::add))
                 .then(

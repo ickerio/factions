@@ -8,6 +8,7 @@ import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+import io.icker.factions.util.WorldUtils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -24,8 +25,8 @@ public class MapCommand implements Command {
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel world = (ServerLevel) player.level();
 
-        ChunkPos chunkPos = world.getChunk(player.blockPosition()).getPos();
-        String dimension = world.dimension().identifier().toString();
+        ChunkPos chunkPos = WorldUtils.getChunkPos(player.blockPosition());
+        String dimension = WorldUtils.dimensionString(world);
 
         // Print the header of the faction map.
         new Message(

@@ -3,6 +3,7 @@ package io.icker.factions.core;
 import io.icker.factions.api.events.MiscEvents;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
+import io.icker.factions.api.persistents.GuestGrant;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 
@@ -16,6 +17,7 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 public class ServerManager {
     public static void register() {
         ServerPlayConnectionEvents.JOIN.register(ServerManager::playerJoin);
+        ServerPlayConnectionEvents.DISCONNECT.register(ServerManager::playerDisconnect);
         MiscEvents.ON_SAVE.register(ServerManager::save);
     }
 
@@ -23,6 +25,14 @@ public class ServerManager {
         Claim.save();
         Faction.save();
         User.save();
+        GuestGrant.save();
+    }
+
+    private static void playerDisconnect(
+            ServerGamePacketListenerImpl handler, MinecraftServer server) {
+        WorldManager.clearPlayerState(handler.getPlayer().getUUID());
+        TeleportRequestManager.clearPlayer(handler.getPlayer().getUUID());
+        GuestGrant.save();
     }
 
     private static void playerJoin(

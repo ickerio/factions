@@ -156,12 +156,43 @@ public interface Command {
                             || !user.getFaction().equals(currentUser.getFaction())) {
                         continue;
                     }
-                    Optional<GameProfile> player;
-                    if ((player = resolver.fetchById(user.getID())).isPresent()) {
-                        builder.suggest(player.get().name());
+                    ServerPlayer online =
+                            context.getSource().getServer().getPlayerList().getPlayer(user.getID());
+                    if (online != null) {
+                        builder.suggest(online.getName().getString());
+                        continue;
+                    }
+                    Optional<GameProfile> profile = resolver.fetchById(user.getID());
+                    if (profile.isPresent()) {
+                        builder.suggest(profile.get().name());
                     } else {
                         builder.suggest(user.getID().toString());
                     }
+                }
+                return builder.buildFuture();
+            };
+        }
+
+        static SuggestionProvider<CommandSourceStack> onlineFactionMembersButYou() {
+            return (context, builder) -> {
+                ServerPlayer self = context.getSource().getPlayerOrException();
+                User currentUser = Command.getUser(self);
+
+                if (!currentUser.isInFaction()) {
+                    return builder.buildFuture();
+                }
+
+                Faction faction = currentUser.getFaction();
+                for (ServerPlayer online :
+                        context.getSource().getServer().getPlayerList().getPlayers()) {
+                    if (online.getUUID().equals(self.getUUID())) continue;
+
+                    User onlineUser = User.get(online.getUUID());
+                    if (!onlineUser.isInFaction()
+                            || !onlineUser.getFaction().getID().equals(faction.getID())) {
+                        continue;
+                    }
+                    builder.suggest(online.getName().getString());
                 }
                 return builder.buildFuture();
             };

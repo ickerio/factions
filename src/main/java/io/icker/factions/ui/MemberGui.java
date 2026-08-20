@@ -1,11 +1,16 @@
 package io.icker.factions.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.authlib.GameProfile;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
 import io.icker.factions.command.RankCommand;
@@ -13,24 +18,18 @@ import io.icker.factions.util.Command;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.ProfileResolver;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
-
-import org.jetbrains.annotations.Nullable;
-
 import xyz.nucleoid.server.translations.api.Localization;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 public class MemberGui extends PagedGui {
+
     Faction faction;
     int size;
     ProfileResolver resolver;
@@ -69,8 +68,8 @@ public class MemberGui extends PagedGui {
     protected DisplayElement getElement(int id) {
         if (this.size > id) {
             var targetUser = this.members.get(id);
-            GameProfile unknownPlayer =
-                    new GameProfile(
+            GameProfile unknownPlayer
+                    = new GameProfile(
                             UUID.randomUUID(),
                             Localization.raw("factions.gui.generic.unknown_player", player));
 
@@ -81,8 +80,8 @@ public class MemberGui extends PagedGui {
             icon.setName(Component.literal(profile.name()));
 
             if (profile.equals(unknownPlayer)) {
-                List<Component> lore =
-                        List.of(
+                List<Component> lore
+                        = List.of(
                                 Component.translatable("factions.gui.members.entry.unknown_player")
                                         .setStyle(
                                                 Style.EMPTY
@@ -93,21 +92,20 @@ public class MemberGui extends PagedGui {
                 return DisplayElement.of(icon);
             }
 
-            List<Component> lore =
-                    new ArrayList<>(
+            List<Component> lore
+                    = new ArrayList<>(
                             List.of(
                                     Component.translatable(
-                                                    "factions.gui.members.entry.info.rank",
-                                                    Component.translatable(
-                                                                    "factions.gui.members.entry.info.rank."
-                                                                            + targetUser
-                                                                                    .getRankName())
-                                                            .setStyle(
-                                                                    Style.EMPTY
-                                                                            .withItalic(false)
-                                                                            .withColor(
-                                                                                    ChatFormatting
-                                                                                            .GREEN)))
+                                            "factions.gui.members.entry.info.rank",
+                                            Component.translatable(
+                                                    "factions.gui.members.entry.info.rank."
+                                                    + targetUser
+                                                            .getRankName())
+                                                    .setStyle(
+                                                            Style.EMPTY
+                                                                    .withItalic(false)
+                                                                    .withColor(
+                                                                            ChatFormatting.GREEN)))
                                             .setStyle(
                                                     Style.EMPTY
                                                             .withItalic(false)
@@ -136,8 +134,8 @@ public class MemberGui extends PagedGui {
                                         Style.EMPTY
                                                 .withItalic(false)
                                                 .withColor(ChatFormatting.DARK_RED)));
-                ServerPlayer targetPlayer =
-                        player.level().getServer().getPlayerList().getPlayer(targetUser.getID());
+                ServerPlayer targetPlayer
+                        = player.level().getServer().getPlayerList().getPlayer(targetUser.getID());
                 icon.setCallback(
                         (index, clickType, actionType, _) -> {
                             GuiInteract.playClickSound(player);
@@ -145,13 +143,13 @@ public class MemberGui extends PagedGui {
                                 try {
                                     RankCommand.execPromote(targetUser, player);
                                     new Message(
+                                            Component.translatable(
+                                                    "factions.gui.members.entry.manage.promote.result",
+                                                    profile.name(),
                                                     Component.translatable(
-                                                            "factions.gui.members.entry.manage.promote.result",
-                                                            profile.name(),
-                                                            Component.translatable(
-                                                                    "factions.gui.members.entry.info.rank."
-                                                                            + targetUser
-                                                                                    .getRankName())))
+                                                            "factions.gui.members.entry.info.rank."
+                                                            + targetUser
+                                                                    .getRankName())))
                                             .prependFaction(faction)
                                             .send(player, false);
                                 } catch (Exception e) {
@@ -166,13 +164,13 @@ public class MemberGui extends PagedGui {
                                     RankCommand.execDemote(targetUser, player);
 
                                     new Message(
+                                            Component.translatable(
+                                                    "factions.gui.members.entry.manage.demote.result",
+                                                    profile.name(),
                                                     Component.translatable(
-                                                            "factions.gui.members.entry.manage.demote.result",
-                                                            profile.name(),
-                                                            Component.translatable(
-                                                                    "factions.gui.members.entry.info.rank."
-                                                                            + targetUser
-                                                                                    .getRankName())))
+                                                            "factions.gui.members.entry.info.rank."
+                                                            + targetUser
+                                                                    .getRankName())))
                                             .prependFaction(faction)
                                             .send(player, false);
                                 } catch (Exception e) {
@@ -184,11 +182,14 @@ public class MemberGui extends PagedGui {
                             }
                             if (clickType == ClickType.DROP) {
                                 SimpleGui gui = new SimpleGui(MenuType.HOPPER, player, false);
-                                for (int i = 0; i < 5; i++)
+                                for (int i = 0; i < 5; i++) {
                                     gui.setSlot(
                                             i,
-                                            new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)
+                                            new GuiElementBuilder(
+                                                    Items.STAINED_GLASS_PANE.pick(
+                                                            DyeColor.WHITE))
                                                     .hideTooltip());
+                                }
                                 gui.setTitle(
                                         Component.translatable(
                                                 "factions.gui.members.entry.manage.kick.confirm.title"));
@@ -197,8 +198,8 @@ public class MemberGui extends PagedGui {
                                         new GuiElementBuilder(Items.SLIME_BALL)
                                                 .setName(
                                                         Component.translatable(
-                                                                        "factions.gui.members.entry.manage.kick.confirm.yes",
-                                                                        profile.name())
+                                                                "factions.gui.members.entry.manage.kick.confirm.yes",
+                                                                profile.name())
                                                                 .withStyle(ChatFormatting.GREEN))
                                                 .setCallback(
                                                         ((index2,
@@ -206,16 +207,14 @@ public class MemberGui extends PagedGui {
                                                                 actionType2,
                                                                 gui2) -> {
                                                             if (user.rank == User.Rank.LEADER
-                                                                    && (targetUser.rank
-                                                                                    == User.Rank
-                                                                                            .LEADER
-                                                                            || targetUser.rank
-                                                                                    == User.Rank
-                                                                                            .OWNER)) {
+                                                            && (targetUser.rank
+                                                            == User.Rank.LEADER
+                                                            || targetUser.rank
+                                                            == User.Rank.OWNER)) {
                                                                 new Message(
-                                                                                Component
-                                                                                        .translatable(
-                                                                                                "factions.command.kick.fail.high_rank"))
+                                                                        Component
+                                                                                .translatable(
+                                                                                        "factions.command.kick.fail.high_rank"))
                                                                         .format(ChatFormatting.RED)
                                                                         .send(player, false);
                                                                 return;
@@ -224,18 +223,18 @@ public class MemberGui extends PagedGui {
                                                             GuiInteract.playClickSound(player);
                                                             targetUser.leaveFaction();
                                                             new Message(
-                                                                            Component.translatable(
-                                                                                    "factions.gui.members.entry.manage.kick.result.actor",
-                                                                                    profile.name()))
+                                                                    Component.translatable(
+                                                                            "factions.gui.members.entry.manage.kick.result.actor",
+                                                                            profile.name()))
                                                                     .send(player, false);
 
                                                             if (targetPlayer != null) {
                                                                 new Message(
-                                                                                Component
-                                                                                        .translatable(
-                                                                                                "factions.gui.members.entry.manage.kick.result.subject",
-                                                                                                player.getName()
-                                                                                                        .getString()))
+                                                                        Component
+                                                                                .translatable(
+                                                                                        "factions.gui.members.entry.manage.kick.result.subject",
+                                                                                        player.getName()
+                                                                                                .getString()))
                                                                         .send(targetPlayer, false);
                                                             }
                                                             this.open();
@@ -245,7 +244,7 @@ public class MemberGui extends PagedGui {
                                         new GuiElementBuilder(Items.STRUCTURE_VOID)
                                                 .setName(
                                                         Component.translatable(
-                                                                        "factions.gui.members.entry.manage.kick.confirm.no")
+                                                                "factions.gui.members.entry.manage.kick.confirm.no")
                                                                 .withStyle(ChatFormatting.RED))
                                                 .setCallback(
                                                         () -> {
@@ -257,17 +256,16 @@ public class MemberGui extends PagedGui {
                             lore.removeFirst();
                             lore.addFirst(
                                     Component.translatable(
-                                                    "factions.gui.members.entry.info.rank",
-                                                    Component.translatable(
-                                                                    "factions.gui.members.entry.info.rank."
-                                                                            + targetUser
-                                                                                    .getRankName())
-                                                            .setStyle(
-                                                                    Style.EMPTY
-                                                                            .withItalic(false)
-                                                                            .withColor(
-                                                                                    ChatFormatting
-                                                                                            .GREEN)))
+                                            "factions.gui.members.entry.info.rank",
+                                            Component.translatable(
+                                                    "factions.gui.members.entry.info.rank."
+                                                    + targetUser
+                                                            .getRankName())
+                                                    .setStyle(
+                                                            Style.EMPTY
+                                                                    .withItalic(false)
+                                                                    .withColor(
+                                                                            ChatFormatting.GREEN)))
                                             .setStyle(
                                                     Style.EMPTY
                                                             .withItalic(false)

@@ -1,11 +1,13 @@
 package io.icker.factions.ui;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.mojang.authlib.GameProfile;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Claim;
 import io.icker.factions.api.persistents.Faction;
@@ -13,21 +15,19 @@ import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
 import io.icker.factions.util.Message;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
-
 import xyz.nucleoid.server.translations.api.Localization;
 
-import java.util.*;
-
 public class AdminGui extends SimpleGui {
-    private final Runnable defaultReturn =
-            () -> {
+
+    private final Runnable defaultReturn
+            = () -> {
                 GuiInteract.playClickSound(player);
                 this.open();
             };
@@ -39,11 +39,15 @@ public class AdminGui extends SimpleGui {
         // GUI
         this.setTitle(Component.translatable("factions.gui.admin.title"));
 
-        List<Integer> indexes =
-                FactionsMod.dynmap == null ? List.of(1, 3, 5, 7) : List.of(0, 2, 4, 6, 8);
+        List<Integer> indexes
+                = FactionsMod.dynmap == null ? List.of(1, 3, 5, 7) : List.of(0, 2, 4, 6, 8);
 
-        for (int i = 0; i < 9; i++)
-            this.setSlot(i, new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip());
+        for (int i = 0; i < 9; i++) {
+            this.setSlot(
+                    i,
+                    new GuiElementBuilder(Items.STAINED_GLASS_PANE.pick(DyeColor.WHITE))
+                            .hideTooltip());
+        }
 
         // Bypass icon
         this.setSlot(indexes.get(0), buildBypassElement(user));
@@ -57,7 +61,7 @@ public class AdminGui extends SimpleGui {
                         .setLore(
                                 List.of(
                                         Component.translatable(
-                                                        "factions.gui.admin.options.power.lore")
+                                                "factions.gui.admin.options.power.lore")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
@@ -77,13 +81,13 @@ public class AdminGui extends SimpleGui {
                         .setLore(
                                 List.of(
                                         Component.translatable(
-                                                        "factions.gui.admin.options.spoof.lore1")
+                                                "factions.gui.admin.options.spoof.lore1")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
                                                                 .withColor(ChatFormatting.GRAY)),
                                         Component.translatable(
-                                                        "factions.gui.admin.options.spoof.lore2")
+                                                "factions.gui.admin.options.spoof.lore2")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
@@ -94,8 +98,8 @@ public class AdminGui extends SimpleGui {
                                     if (clickType == ClickType.MOUSE_RIGHT) {
                                         user.setSpoof(null);
                                         new Message(
-                                                        Component.translatable(
-                                                                "factions.gui.admin.options.spoof.clear.success"))
+                                                Component.translatable(
+                                                        "factions.gui.admin.options.spoof.clear.success"))
                                                 .send(player, false);
                                         return;
                                     }
@@ -111,7 +115,7 @@ public class AdminGui extends SimpleGui {
                         .setLore(
                                 List.of(
                                         Component.translatable(
-                                                        "factions.gui.admin.options.audit.lore")
+                                                "factions.gui.admin.options.audit.lore")
                                                 .setStyle(
                                                         Style.EMPTY
                                                                 .withItalic(false)
@@ -126,8 +130,8 @@ public class AdminGui extends SimpleGui {
                                     }
 
                                     new Message(
-                                                    Component.translatable(
-                                                            "factions.gui.admin.options.audit.success"))
+                                            Component.translatable(
+                                                    "factions.gui.admin.options.audit.success"))
                                             .send(player, false);
                                 }));
 
@@ -143,7 +147,7 @@ public class AdminGui extends SimpleGui {
                             .setLore(
                                     List.of(
                                             Component.translatable(
-                                                            "factions.gui.admin.options.reload_dynmap.lore")
+                                                    "factions.gui.admin.options.reload_dynmap.lore")
                                                     .setStyle(
                                                             Style.EMPTY
                                                                     .withItalic(false)
@@ -154,8 +158,8 @@ public class AdminGui extends SimpleGui {
                                         GuiInteract.playClickSound(player);
                                         FactionsMod.dynmap.reloadAll();
                                         new Message(
-                                                        Component.translatable(
-                                                                "factions.gui.admin.options.reload_dynmap.success"))
+                                                Component.translatable(
+                                                        "factions.gui.admin.options.reload_dynmap.success"))
                                                 .send(player, false);
                                     }));
         }
@@ -178,9 +182,9 @@ public class AdminGui extends SimpleGui {
                 .setLore(
                         List.of(
                                 Component.translatable(
-                                                user.bypass
-                                                        ? "factions.gui.admin.options.bypass.lore.disable"
-                                                        : "factions.gui.admin.options.bypass.lore.enable")
+                                        user.bypass
+                                                ? "factions.gui.admin.options.bypass.lore.disable"
+                                                : "factions.gui.admin.options.bypass.lore.enable")
                                         .setStyle(
                                                 Style.EMPTY
                                                         .withItalic(false)
@@ -193,16 +197,16 @@ public class AdminGui extends SimpleGui {
                             this.setSlot(index, buildBypassElement(user));
 
                             new Message(
-                                            Component.translatable(
-                                                    "factions.gui.admin.options.bypass.success"))
+                                    Component.translatable(
+                                            "factions.gui.admin.options.bypass.success"))
                                     .filler("·")
                                     .add(
                                             new Message(
-                                                            user.bypass
-                                                                    ? Component.translatable(
-                                                                            "options.on")
-                                                                    : Component.translatable(
-                                                                            "options.off"))
+                                                    user.bypass
+                                                            ? Component.translatable(
+                                                                    "options.on")
+                                                            : Component.translatable(
+                                                                    "options.off"))
                                                     .format(
                                                             user.bypass
                                                                     ? ChatFormatting.GREEN
@@ -227,18 +231,18 @@ public class AdminGui extends SimpleGui {
                     if (!input.matches("^[a-zA-Z0-9_]{2,16}$")) {
                         inputGui.showErrorMessage(
                                 Component.translatable(
-                                                "factions.gui.spoof.fail.invalid_name", input)
+                                        "factions.gui.spoof.fail.invalid_name", input)
                                         .withStyle(ChatFormatting.RED),
                                 index);
                         return;
                     }
                     Optional<GameProfile> profile;
-                    if (!(profile =
-                                    player.level()
-                                            .getServer()
-                                            .services()
-                                            .profileResolver()
-                                            .fetchByName(input))
+                    if (!(profile
+                            = player.level()
+                                    .getServer()
+                                    .services()
+                                    .profileResolver()
+                                    .fetchByName(input))
                             .isPresent()) {
                         inputGui.showErrorMessage(
                                 Component.translatable("factions.gui.spoof.fail.no_player", input)
@@ -275,7 +279,7 @@ public class AdminGui extends SimpleGui {
                     if (selectedFac[0] == null) {
                         inputFacGui.showErrorMessage(
                                 Component.translatable(
-                                                "factions.gui.power.setfaction.fail.no_faction")
+                                        "factions.gui.power.setfaction.fail.no_faction")
                                         .withStyle(ChatFormatting.RED),
                                 index);
                         return;
@@ -305,27 +309,27 @@ public class AdminGui extends SimpleGui {
                     if (selectedPow[0] != 0) {
                         if (selectedPow[0] > 0) {
                             new Message(
-                                            Component.translatable(
-                                                    "factions.gui.power.success.added.faction",
-                                                    player.getName().getString(),
-                                                    selectedPow[0]))
+                                    Component.translatable(
+                                            "factions.gui.power.success.added.faction",
+                                            player.getName().getString(),
+                                            selectedPow[0]))
                                     .send(selectedFac[0]);
                             new Message(
-                                            Component.translatable(
-                                                    "factions.gui.power.success.added.admin",
-                                                    selectedPow[0]))
+                                    Component.translatable(
+                                            "factions.gui.power.success.added.admin",
+                                            selectedPow[0]))
                                     .send(player, false);
                         } else {
                             new Message(
-                                            Component.translatable(
-                                                    "factions.gui.power.success.removed.faction",
-                                                    player.getName().getString(),
-                                                    selectedPow[0]))
+                                    Component.translatable(
+                                            "factions.gui.power.success.removed.faction",
+                                            player.getName().getString(),
+                                            selectedPow[0]))
                                     .send(selectedFac[0]);
                             new Message(
-                                            Component.translatable(
-                                                    "factions.gui.power.success.removed.admin",
-                                                    selectedPow[0]))
+                                    Component.translatable(
+                                            "factions.gui.power.success.removed.admin",
+                                            selectedPow[0]))
                                     .send(player, false);
                         }
                     } else {

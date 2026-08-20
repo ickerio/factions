@@ -32,3 +32,9 @@ bin/
 
 run/
 remappedSrc/
+
+# session/build artifacts
+
+.omo/
+logs/
+xaero/

@@ -1,30 +1,32 @@
 package io.icker.factions.api.persistents;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import org.jetbrains.annotations.Nullable;
+
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.events.FactionEvents;
 import io.icker.factions.database.Database;
 import io.icker.factions.database.Field;
 import io.icker.factions.database.Name;
 import io.icker.factions.util.WorldUtils;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Stream;
-
 @Name("Faction")
 public class Faction {
-    private static final HashMap<UUID, Faction> STORE =
-            Database.load(Faction.class, Faction::getID);
+
+    private static final HashMap<UUID, Faction> STORE
+            = Database.load(Faction.class, Faction::getID);
 
     @Field("ID")
     private UUID id;
@@ -41,7 +43,9 @@ public class Faction {
     @Field("Color")
     private String color;
 
-    /** Whether a player can join without an invitation */
+    /**
+     * Whether a player can join without an invitation
+     */
     @Field("Open")
     private boolean open;
 
@@ -64,8 +68,18 @@ public class Faction {
     private ArrayList<Relationship> relationships = new ArrayList<>();
 
     @Field("GuestPermissions")
-    public ArrayList<Relationship.Permissions> guest_permissions =
-            new ArrayList<>(FactionsMod.CONFIG.RELATIONSHIPS.DEFAULT_GUEST_PERMISSIONS);
+    public ArrayList<Relationship.Permissions> guest_permissions
+            = new ArrayList<>(FactionsMod.CONFIG.RELATIONSHIPS.DEFAULT_GUEST_PERMISSIONS);
+
+    @Field("Rules")
+    public Rules rules = new Rules();
+
+    public static class Rules {
+        @Field("Elytra")
+        public boolean elytra = true;
+
+        public Rules() {}
+    }
 
     public Faction(
             String name,
@@ -78,12 +92,13 @@ public class Faction {
         this.name = name;
         this.motd = motd;
         this.description = description;
-        this.color = color.getName();
+        this.color = color.name().toLowerCase(Locale.ROOT);
         this.open = open;
         this.power = power;
     }
 
-    public Faction() {}
+    public Faction() {
+    }
 
     public Stream<Relationship> getRelationships() {
         return relationships.stream().filter(rel -> Faction.get(rel.target) != null);
@@ -124,7 +139,15 @@ public class Faction {
     }
 
     public ChatFormatting getColor() {
-        return ChatFormatting.getByName(color);
+        return ChatFormatting.valueOf(color.toUpperCase(Locale.ROOT));
+    }
+
+    public String getColorName() {
+        return color;
+    }
+
+    public int getColorValue() {
+        return TextColor.fromLegacyFormat(getColor()).getValue();
     }
 
     public String getDescription() {
@@ -169,7 +192,7 @@ public class Faction {
     }
 
     public void setColor(ChatFormatting color) {
-        this.color = color.getName();
+        this.color = color.name().toLowerCase(Locale.ROOT);
         FactionEvents.MODIFY.invoker().onModify(this);
     }
 
@@ -183,7 +206,9 @@ public class Faction {
         int newPower = Math.min(Math.max(0, power + adjustment), maxPower);
         int oldPower = this.power;
 
-        if (newPower == oldPower) return 0;
+        if (newPower == oldPower) {
+            return 0;
+        }
 
         power = newPower;
         FactionEvents.POWER_CHANGE.invoker().onPowerChange(this, oldPower);
@@ -198,12 +223,20 @@ public class Faction {
         adminPower += amount;
     }
 
+    public boolean isElytraAllowed() {
+        return rules != null && rules.elytra;
+    }
+
     public List<User> getUsers() {
         return User.getByFaction(id);
     }
 
     public List<Claim> getClaims() {
         return Claim.getByFaction(id);
+    }
+
+    public int getClaimCount() {
+        return Claim.getCountByFaction(id);
     }
 
     public void removeAllClaims() {
@@ -262,8 +295,8 @@ public class Faction {
     }
 
     public void removeRelationship(UUID target) {
-        relationships =
-                new ArrayList<>(
+        relationships
+                = new ArrayList<>(
                         this.getRelationships().filter(rel -> !rel.target.equals(target)).toList());
     }
 
@@ -272,7 +305,9 @@ public class Faction {
             removeRelationship(relationship.target);
         }
         if (relationship.status != Relationship.Status.NEUTRAL
-                || !relationship.permissions.isEmpty()) relationships.add(relationship);
+                || !relationship.permissions.isEmpty()) {
+            relationships.add(relationship);
+        }
     }
 
     public void remove() {
@@ -286,14 +321,21 @@ public class Faction {
             }
         }
         removeAllClaims();
+        for (GuestGrant grant : GuestGrant.getByFaction(id)) {
+            grant.remove();
+        }
         STORE.remove(id);
         FactionEvents.DISBAND.invoker().onDisband(this);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Faction faction = (Faction) o;
         return id.equals(faction.id);
     }

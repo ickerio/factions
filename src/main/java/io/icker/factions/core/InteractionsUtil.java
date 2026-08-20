@@ -1,6 +1,5 @@
 package io.icker.factions.core;
 
-import io.icker.factions.api.persistents.User;
 import io.icker.factions.util.Message;
 
 import net.minecraft.network.chat.Component;
@@ -23,7 +22,6 @@ public class InteractionsUtil {
 
     public static void warn(ServerPlayer player, InteractionsUtilActions action) {
         SoundManager.warningSound(player);
-        User user = User.get(player.getUUID());
         new Message(
                         Component.translatable(
                                 "factions.interactions.cannot_do",
@@ -31,7 +29,7 @@ public class InteractionsUtil {
                                         "factions.interactions.name."
                                                 + action.toString().toLowerCase())))
                 .fail()
-                .send(player, !user.radar);
+                .send(player, true);
     }
 
     public enum InteractionsUtilActions {
@@ -41,6 +39,7 @@ public class InteractionsUtil {
         PLACE_OR_PICKUP_LIQUIDS,
         ATTACK_ENTITIES,
         USE_ENTITIES,
-        USE_INVENTORY
+        USE_INVENTORY,
+        RESTRICTED_ITEM
     }
 }

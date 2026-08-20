@@ -266,7 +266,6 @@
     "factions.command.settings.sound.faction": "Фракция",
     "factions.command.settings.sound.none": "Никакие",
     "factions.command.settings.sound.warnings": "Предупреждения",
-    "factions.command.settings.radar": "Успешно переключён радар захватов",
 
     "factions.chat.in_faction_symbol": "F",
     "factions.chat.faction_chat_when_not_in_faction": "Нельзя отправить сообщение в чат фракции, если вы не состоите в фракции.",
@@ -293,7 +292,6 @@
 
     "factions.events.autoclaim.fail": "Недостаточно мощи фракции, чтобы захватить чанк. Автозахват выключен",
     "factions.events.autoclaim.success": "Чанк (%d, %d) захвачен %s",
-    "factions.radar.wilderness": "Незахвачено",
 
     "factions.factionless": "[БЕЗ ФРАКЦИИ]",
     "factions.default_description": "Нет описания",
@@ -301,5 +299,45 @@
 
     "factions.papi.chat.global": "Глобальный чат",
     "factions.papi.chat.faction": "Чат фракции",
-    "factions.papi.factionless": "БЕЗ ФРАКЦИИ"
+    "factions.papi.factionless": "БЕЗ ФРАКЦИИ",
+    "factions.command.gather.fail.no_world": "Cannot find dimension",
+    "factions.command.gather.success": "Teleported to the gathering hall",
+    "factions.command.trade.request.sent": "Trade meeting request sent to %s",
+    "factions.command.trade.request.received": "%s хочет торговать с вашей фракцией. Используйте /f trade y или /f trade n (истекает через %s секунд)",
+    "factions.command.trade.request.hover": "Click to accept this trade request",
+    "factions.command.trade.fail.nonexistent_faction": "Cannot send trade request to a faction that doesn't exist",
+    "factions.command.trade.fail.own_faction": "Cannot send a trade request to your own faction",
+    "factions.command.trade.fail.not_member": "You must be in a faction to use this command",
+    "factions.command.trade.accept.fail.no_request": "Your faction has no pending trade request",
+    "factions.command.trade.accept.fail.expired": "That trade request has expired",
+    "factions.command.trade.accept.fail.requester_offline": "Инициатор обмена уже не в сети",
+    "factions.command.trade.accept.success": "Обмен принят — открывается торговый интерфейс",
+    "factions.command.trade.deny.success": "Trade request denied",
+    "factions.command.trade.deny.fail.no_request": "Your faction has no pending trade request",
+    "factions.command.trade.deny.notified": "%s denied your trade request",
+    "factions.command.trade.stage.fail.already_trading": "Один из вас уже участвует в обмене",
+    "factions.command.trade.stage.fail.no_world": "Измерение торговой площадки не найдено",
+
+    "factions.command.rules.elytra.disabled": "Полёт на элитрах теперь запрещён в клеймах вашей фракции",
+    "factions.command.rules.elytra.enabled": "Полёт на элитрах теперь разрешён в клеймах вашей фракции",
+
+    "factions.rules.elytra.blocked": "Полёт на элитрах отключён в этом клейме",
+
+    "factions.gui.trade.placement.cancel": "Отменить сделку",
+    "factions.gui.trade.placement.confirm": "Подтвердить предложение",
+    "factions.gui.trade.placement.title": "Торговля — положите своё предложение",
+    "factions.gui.trade.reveal.title": "Торговля — просмотрите предложение",
+
+    "factions.trade.accept": "Принять сделку",
+    "factions.trade.cancelled.declined": "Сделка отклонена",
+    "factions.trade.cancelled.disconnected": "Сделка отменена — игрок отключился",
+    "factions.trade.cancelled.faction_disbanded": "Сделка отменена — фракция распущена",
+    "factions.trade.cancelled.gui_closed": "Сделка отменена",
+    "factions.trade.cancelled.inventory_full": "Сделка отменена — инвентарь полон",
+    "factions.trade.cancelled.player_cancelled": "Сделка отменена",
+    "factions.trade.cancelled.server_stopping": "Сделка отменена — сервер останавливается",
+    "factions.trade.decline": "Отклонить",
+    "factions.trade.filler": " ",
+    "factions.trade.negotiate": "Пересогласовать",
+    "factions.trade.result.completed": "Сделка завершена"
 }

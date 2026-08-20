@@ -5,16 +5,22 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldUtils {
+    private static final Map<Identifier, String> DIMENSION_STRINGS = new ConcurrentHashMap<>();
+
     public static MinecraftServer server;
 
     public static final Event<Ready> ON_READY =
@@ -39,6 +45,11 @@ public class WorldUtils {
         return server != null;
     }
 
+    @Nullable
+    public static MinecraftServer getServer() {
+        return server;
+    }
+
     public static boolean hasWorlds() {
         return !WorldUtils.server.levelKeys().isEmpty();
     }
@@ -46,6 +57,15 @@ public class WorldUtils {
     public static boolean isValid(String level) {
         return WorldUtils.server.levelKeys().stream()
                 .anyMatch(key -> Objects.equals(key.identifier(), Identifier.parse(level)));
+    }
+
+    public static ChunkPos getChunkPos(BlockPos position) {
+        return new ChunkPos(position.getX() >> 4, position.getZ() >> 4);
+    }
+
+    public static String dimensionString(Level world) {
+        return DIMENSION_STRINGS.computeIfAbsent(
+                world.dimension().identifier(), Identifier::toString);
     }
 
     @Nullable

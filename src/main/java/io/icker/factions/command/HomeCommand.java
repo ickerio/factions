@@ -20,7 +20,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.ChunkPos;
 
 import java.time.Instant;
 import java.util.Date;
@@ -123,7 +122,7 @@ public class HomeCommand implements Command {
                         player.getZ(),
                         player.getYHeadRot(),
                         player.getXRot(),
-                        player.level().dimension().identifier().toString());
+                        WorldUtils.dimensionString(player.level()));
 
         faction.setHome(home);
         new Message(
@@ -140,10 +139,7 @@ public class HomeCommand implements Command {
     private static boolean checkLimitToClaim(Faction faction, ServerLevel world, BlockPos pos) {
         if (!FactionsMod.CONFIG.HOME.CLAIM_ONLY) return false;
 
-        ChunkPos chunkPos = world.getChunk(pos).getPos();
-        String dimension = world.dimension().identifier().toString();
-
-        Claim possibleClaim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
+        Claim possibleClaim = Claim.get(world, pos);
         return possibleClaim == null || possibleClaim.getFaction().getID() != faction.getID();
     }
 

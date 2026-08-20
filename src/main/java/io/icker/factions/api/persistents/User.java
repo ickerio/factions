@@ -50,9 +50,6 @@ public class User {
     @Field("Rank")
     public Rank rank;
 
-    @Field("Radar")
-    public boolean radar = false;
-
     @Field("Chat")
     public ChatMode chat = ChatMode.GLOBAL;
 
@@ -79,10 +76,7 @@ public class User {
 
     @NotNull
     public static User get(UUID id) {
-        if (!STORE.containsKey(id)) {
-            User.add(new User(id));
-        }
-        return STORE.get(id);
+        return STORE.computeIfAbsent(id, User::new);
     }
 
     public static List<User> getByFaction(UUID factionID) {

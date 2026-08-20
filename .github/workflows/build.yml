@@ -1,29 +1,69 @@
-name: build
-on: [ push, pull_request ]
+name: Build
+
+on:
+  push:
+    branches: ['**']
+    tags: ['*']
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # required to attach artifacts to the Release on tag push
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+
     steps:
-      - name: checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-      - name: validate gradle wrapper
+
+      - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
-      - name: setup jdk 25
+
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: 25
-      - name: make gradle wrapper executable
-        if: ${{ runner.os != 'Windows' }}
+          distribution: temurin
+          java-version: '25'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Make Gradle wrapper executable
+        if: runner.os != 'Windows'
         run: chmod +x ./gradlew
-      - name: build
-        run: ./gradlew build
-      - name: capture build artifacts
-        if: ${{ runner.os == 'Linux' }}
+
+      - name: Build
+        run: ./gradlew clean build --no-daemon --stacktrace
+
+      - name: Upload build artifact
+        if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
         with:
-          path: build/libs/
+          name: factions-${{ github.sha }}
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+      - name: Attach to GitHub Release
+        if: runner.os == 'Linux' && startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/*.jar
+          fail_on_unmatched_files: true

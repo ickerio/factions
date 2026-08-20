@@ -1,27 +1,27 @@
 package io.icker.factions.ui;
 
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
 import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-
 import io.icker.factions.util.GuiInteract;
 import io.icker.factions.util.Icons;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 // Shamelessly stolen from Get off My Lawn https://github.com/Patbox/get-off-my-lawn-reserved
 @ApiStatus.Internal
 public abstract class PagedGui extends SimpleGui {
+
     public static final int PAGE_SIZE = 9 * 4;
     protected final Runnable closeCallback;
     protected int page = 0;
@@ -104,33 +104,37 @@ public abstract class PagedGui extends SimpleGui {
 
     protected DisplayElement getNavElement(int id) {
         return switch (id) {
-            case 1 -> DisplayElement.previousPage(this);
-            case 3 -> DisplayElement.nextPage(this);
+            case 1 ->
+                DisplayElement.previousPage(this);
+            case 3 ->
+                DisplayElement.nextPage(this);
             case 7 ->
-                    DisplayElement.of(
-                            new GuiElementBuilder(Items.STRUCTURE_VOID)
-                                    .setName(
-                                            Component.translatable(
-                                                            this.closeCallback != null
-                                                                    ? "factions.gui.generic.back"
-                                                                    : "factions.gui.generic.close")
-                                                    .withStyle(ChatFormatting.RED))
-                                    .hideDefaultTooltip()
-                                    .setCallback(
-                                            (x, y, z, _) -> {
-                                                playClickSound(this.player);
-                                                this.close(this.closeCallback != null);
-                                            }));
-            default -> DisplayElement.filler();
+                DisplayElement.of(
+                new GuiElementBuilder(Items.STRUCTURE_VOID)
+                .setName(
+                Component.translatable(
+                this.closeCallback != null
+                ? "factions.gui.generic.back"
+                : "factions.gui.generic.close")
+                .withStyle(ChatFormatting.RED))
+                .hideDefaultTooltip()
+                .setCallback(
+                (x, y, z, _) -> {
+                    playClickSound(this.player);
+                    this.close(this.closeCallback != null);
+                }));
+            default ->
+                DisplayElement.filler();
         };
     }
 
     public record DisplayElement(@Nullable GuiElement element, @Nullable Slot slot) {
-        private static final DisplayElement EMPTY =
-                DisplayElement.of(GuiElementBuilder.from(ItemStack.EMPTY).build());
-        private static final DisplayElement FILLER =
-                DisplayElement.of(
-                        new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)
+
+        private static final DisplayElement EMPTY
+                = DisplayElement.of(GuiElementBuilder.from(ItemStack.EMPTY).build());
+        private static final DisplayElement FILLER
+                = DisplayElement.of(
+                        new GuiElementBuilder(Items.STAINED_GLASS_PANE.pick(DyeColor.WHITE))
                                 .setName(Component.empty())
                                 .hideTooltip());
 

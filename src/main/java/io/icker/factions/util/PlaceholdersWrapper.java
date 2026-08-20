@@ -18,20 +18,22 @@ import xyz.nucleoid.server.translations.api.language.ServerLanguage;
 import java.util.function.Function;
 
 public class PlaceholdersWrapper {
-    private static final Component UNFORMATTED_NULL =
-            Component.translatable("factions.papi.factionless");
-    private static final Component FORMATTED_NULL =
-            UNFORMATTED_NULL.copy().withStyle(ChatFormatting.DARK_GRAY);
+
+    private static final Component UNFORMATTED_NULL
+            = Component.translatable("factions.papi.factionless");
+    private static final Component FORMATTED_NULL
+            = UNFORMATTED_NULL.copy().withStyle(ChatFormatting.DARK_GRAY);
 
     private static void register(String identifier, Function<User, Component> handler) {
         Placeholders.registerServer(
                 Identifier.fromNamespaceAndPath(FactionsMod.MODID, identifier),
                 (ctx, argument) -> {
-                    if (!ctx.hasPlayer())
+                    if (!ctx.hasPlayer()) {
                         return PlaceholderResult.invalid(
                                 Localization.raw(
                                         "argument.entity.notfound.player",
                                         ServerLanguage.getLanguage(FactionsMod.CONFIG.LANGUAGE)));
+                    }
 
                     User member = User.get(ctx.player().getUUID());
                     return PlaceholderResult.value(handler.apply(member));
@@ -43,7 +45,9 @@ public class PlaceholdersWrapper {
                 "name",
                 (member) -> {
                     Faction faction = member.getFaction();
-                    if (faction == null) return FORMATTED_NULL;
+                    if (faction == null) {
+                        return FORMATTED_NULL;
+                    }
 
                     return Component.literal(faction.getName())
                             .withStyle(member.getFaction().getColor());
@@ -53,7 +57,9 @@ public class PlaceholdersWrapper {
                 "colorless_name",
                 (member) -> {
                     Faction faction = member.getFaction();
-                    if (faction == null) return FORMATTED_NULL;
+                    if (faction == null) {
+                        return FORMATTED_NULL;
+                    }
 
                     return Component.nullToEmpty(faction.getName());
                 });
@@ -61,8 +67,9 @@ public class PlaceholdersWrapper {
         register(
                 "chat",
                 (member) -> {
-                    if (member.chat == User.ChatMode.GLOBAL || !member.isInFaction())
+                    if (member.chat == User.ChatMode.GLOBAL || !member.isInFaction()) {
                         return Component.translatable("factions.papi.chat.global");
+                    }
 
                     return Component.translatable("factions.papi.chat.faction");
                 });
@@ -70,7 +77,9 @@ public class PlaceholdersWrapper {
         register(
                 "rank",
                 (member) -> {
-                    if (!member.isInFaction()) return FORMATTED_NULL;
+                    if (!member.isInFaction()) {
+                        return FORMATTED_NULL;
+                    }
 
                     return Component.nullToEmpty(member.getRankName());
                 });
@@ -78,16 +87,20 @@ public class PlaceholdersWrapper {
         register(
                 "color",
                 (member) -> {
-                    if (!member.isInFaction()) return Component.nullToEmpty("reset");
+                    if (!member.isInFaction()) {
+                        return Component.nullToEmpty("reset");
+                    }
 
-                    return Component.nullToEmpty(member.getFaction().getColor().getName());
+                    return Component.nullToEmpty(member.getFaction().getColorName());
                 });
 
         register(
                 "description",
                 (member) -> {
                     Faction faction = member.getFaction();
-                    if (faction == null) return FORMATTED_NULL;
+                    if (faction == null) {
+                        return FORMATTED_NULL;
+                    }
 
                     return Component.nullToEmpty(faction.getDescription());
                 });
@@ -96,7 +109,9 @@ public class PlaceholdersWrapper {
                 "state",
                 (member) -> {
                     Faction faction = member.getFaction();
-                    if (faction == null) return UNFORMATTED_NULL;
+                    if (faction == null) {
+                        return UNFORMATTED_NULL;
+                    }
 
                     return Component.nullToEmpty(String.valueOf(faction.isOpen()));
                 });
@@ -105,7 +120,9 @@ public class PlaceholdersWrapper {
                 "power",
                 (member) -> {
                     Faction faction = member.getFaction();
-                    if (faction == null) return UNFORMATTED_NULL;
+                    if (faction == null) {
+                        return UNFORMATTED_NULL;
+                    }
 
                     return Component.nullToEmpty(String.valueOf(faction.getPower()));
                 });
@@ -114,14 +131,16 @@ public class PlaceholdersWrapper {
                 "power_formatted",
                 (member) -> {
                     Faction faction = member.getFaction();
-                    if (faction == null) return FORMATTED_NULL;
+                    if (faction == null) {
+                        return FORMATTED_NULL;
+                    }
 
-                    int red =
-                            mapBoundRange(
-                                    faction.calculateMaxPower(), 0, 170, 255, faction.getPower());
-                    int green =
-                            mapBoundRange(
-                                    0, faction.calculateMaxPower(), 170, 255, faction.getPower());
+                    int red
+                    = mapBoundRange(
+                            faction.calculateMaxPower(), 0, 170, 255, faction.getPower());
+                    int green
+                    = mapBoundRange(
+                            0, faction.calculateMaxPower(), 170, 255, faction.getPower());
                     return Component.literal(String.valueOf(faction.getPower()))
                             .setStyle(Style.EMPTY.withColor(rgbToInt(red, green, 170)));
                 });
@@ -130,7 +149,9 @@ public class PlaceholdersWrapper {
                 "max_power",
                 (member) -> {
                     Faction faction = member.getFaction();
-                    if (faction == null) return UNFORMATTED_NULL;
+                    if (faction == null) {
+                        return UNFORMATTED_NULL;
+                    }
 
                     return Component.nullToEmpty(String.valueOf(faction.calculateMaxPower()));
                 });
@@ -145,22 +166,26 @@ public class PlaceholdersWrapper {
                 "required_power",
                 (member) -> {
                     Faction faction = member.getFaction();
-                    if (faction == null) return UNFORMATTED_NULL;
+                    if (faction == null) {
+                        return UNFORMATTED_NULL;
+                    }
 
                     return Component.nullToEmpty(
                             String.valueOf(
-                                    faction.getClaims().size()
-                                            * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT));
+                                    faction.getClaimCount()
+                                    * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT));
                 });
 
         register(
                 "required_power_formatted",
                 (member) -> {
                     Faction faction = member.getFaction();
-                    if (faction == null) return FORMATTED_NULL;
+                    if (faction == null) {
+                        return FORMATTED_NULL;
+                    }
 
-                    int reqPower =
-                            faction.getClaims().size() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
+                    int reqPower
+                    = faction.getClaimCount() * FactionsMod.CONFIG.POWER.CLAIM_WEIGHT;
                     int red = mapBoundRange(0, faction.getPower(), 85, 255, reqPower);
                     return Component.literal(String.valueOf(reqPower))
                             .setStyle(Style.EMPTY.withColor(rgbToInt(red, 85, 85)));
