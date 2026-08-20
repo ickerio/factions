@@ -8,10 +8,14 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.icker.factions.FactionsMod;
 import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.User;
+import io.icker.factions.config.TradeStageConfig;
 import io.icker.factions.core.TradeRequestManager;
 import io.icker.factions.core.TradeRequestManager.TradeRequest;
+import io.icker.factions.core.TradeSession;
+import io.icker.factions.ui.TradePlacementGui;
 import io.icker.factions.util.Command;
 import io.icker.factions.util.Message;
+import io.icker.factions.util.WorldUtils;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -108,18 +112,47 @@ public class TradeCommand implements Command {
         ServerPlayer requester =
                 context.getSource().getServer().getPlayerList().getPlayer(req.requesterPlayerID());
 
-        GatherCommand gather = new GatherCommand();
-        gather.execGo(responder);
-        if (requester != null) {
-            gather.execGo(requester);
+        if (requester == null) {
+            new Message(
+                            Component.translatable(
+                                    "factions.command.trade.accept.fail.requester_offline"))
+                    .fail()
+                    .send(responder, false);
+            return 0;
         }
+
+        TradeStageConfig cfg = FactionsMod.CONFIG.TRADE_STAGE;
+        if (cfg == null || WorldUtils.getWorld(cfg.LEVEL) == null) {
+            new Message(Component.translatable("factions.command.trade.stage.fail.no_world"))
+                    .fail()
+                    .send(responder, false);
+            return 0;
+        }
+
+        if (TradeSession.getFor(requester.getUUID()).isPresent()
+                || TradeSession.getFor(responder.getUUID()).isPresent()) {
+            new Message(Component.translatable("factions.command.trade.stage.fail.already_trading"))
+                    .fail()
+                    .send(responder, false);
+            return 0;
+        }
+
+        TradeSession session = TradeSession.begin(requester, responder, cfg);
+        if (session == null) {
+            new Message(Component.translatable("factions.command.trade.stage.fail.no_world"))
+                    .fail()
+                    .send(responder, false);
+            return 0;
+        }
+
+        // TradePlacementGui's constructor calls this.open() automatically — do NOT call .open().
+        new TradePlacementGui(requester, session.getId());
+        new TradePlacementGui(responder, session.getId());
 
         new Message(Component.translatable("factions.command.trade.accept.success"))
                 .send(responder, false);
-        if (requester != null) {
-            new Message(Component.translatable("factions.command.trade.accept.success"))
-                    .send(requester, false);
-        }
+        new Message(Component.translatable("factions.command.trade.accept.success"))
+                .send(requester, false);
         return 1;
     }
 
@@ -168,8 +201,8 @@ public class TradeCommand implements Command {
                 .requires(
                         Requires.multiple(
                                 Requires.isMember(),
-                                s -> FactionsMod.CONFIG.GATHER != null
-                                        && FactionsMod.CONFIG.GATHER.ENABLED,
+                                s -> FactionsMod.CONFIG.TRADE_STAGE != null
+                                        && FactionsMod.CONFIG.TRADE_STAGE.ENABLED,
                                 Requires.hasPerms("factions.trade", 0)))
                 .then(Commands.literal("y").executes(this::accept))
                 .then(Commands.literal("n").executes(this::deny))

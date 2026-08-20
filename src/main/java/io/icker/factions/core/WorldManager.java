@@ -92,7 +92,6 @@ public class WorldManager {
 
     private static void onMove(ServerPlayer player) {
         User user = User.get(player.getUUID());
-        if (!user.autoclaim && !user.radar && !FactionsMod.CONFIG.ANNOUNCER.ENABLED) return;
 
         ServerLevel world = (ServerLevel) player.level();
         String dimension = WorldUtils.dimensionString(world);
@@ -100,6 +99,17 @@ public class WorldManager {
         ChunkPos chunkPos = WorldUtils.getChunkPos(player.blockPosition());
 
         Claim claim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
+        Faction claimFaction = claim == null ? null : claim.getFaction();
+
+        if (claim != null && !claimFaction.isElytraAllowed() && !user.bypass && player.isFallFlying()) {
+            player.stopFallFlying();
+            new Message(Component.translatable("factions.rules.elytra.blocked"))
+                    .format(ChatFormatting.RED)
+                    .send(player, true);
+        }
+
+        if (!user.autoclaim && !FactionsMod.CONFIG.ANNOUNCER.ENABLED) return;
+
         if (user.autoclaim && claim == null) {
             Faction faction = user.getFaction();
             int requiredPower =
@@ -127,18 +137,7 @@ public class WorldManager {
             }
         }
 
-        Faction claimFaction = claim == null ? null : claim.getFaction();
-        if (user.radar) {
-            if (claim != null) {
-                new Message(claimFaction.getName())
-                        .format(claimFaction.getColor())
-                        .send(player, true);
-            } else {
-                new Message(Component.translatable("factions.radar.wilderness"))
-                        .format(ChatFormatting.GREEN)
-                        .send(player, true);
-            }
-        }
+        claimFaction = claim == null ? null : claim.getFaction();
 
         if (!FactionsMod.CONFIG.ANNOUNCER.ENABLED) return;
 

@@ -22,6 +22,7 @@ import io.icker.factions.command.MemberCommand;
 import io.icker.factions.command.ModifyCommand;
 import io.icker.factions.command.PermissionCommand;
 import io.icker.factions.command.RankCommand;
+import io.icker.factions.command.RulesCommand;
 import io.icker.factions.command.SafeCommand;
 import io.icker.factions.command.SettingsCommand;
 import io.icker.factions.command.TeleportCommand;
@@ -35,6 +36,7 @@ import io.icker.factions.core.InteractionManager;
 import io.icker.factions.core.ServerManager;
 import io.icker.factions.core.SoundManager;
 import io.icker.factions.core.TradeRequestManager;
+import io.icker.factions.core.TradeSession;
 import io.icker.factions.core.WorldManager;
 import io.icker.factions.net.PacketRegistry;
 import io.icker.factions.util.BlueMapWrapper;
@@ -85,6 +87,7 @@ public class FactionsMod implements ModInitializer {
         WorldManager.register();
         ClaimSyncSender.register();
         TradeRequestManager.register();
+        TradeSession.register();
 
         CommandRegistrationCallback.EVENT.register(FactionsMod::registerCommands);
     }
@@ -119,6 +122,7 @@ public class FactionsMod implements ModInitializer {
                     new MemberCommand(),
                     new ModifyCommand(),
                     new RankCommand(),
+                    new RulesCommand(),
                     new SafeCommand(),
                     new PermissionCommand(),
                     new GrantCommand(),

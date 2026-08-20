@@ -50,9 +50,6 @@ public class User {
     @Field("Rank")
     public Rank rank;
 
-    @Field("Radar")
-    public boolean radar = false;
-
     @Field("Chat")
     public ChatMode chat = ChatMode.GLOBAL;
 

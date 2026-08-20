@@ -6,6 +6,169 @@ Format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ---
 
+## [3.4]
+
+**Minecraft 26.2 · Fabric Loader 0.19.3 · Fabric API 0.155.2+26.2**
+
+Patch release adding a public permission API for third-party mod integration,
+Carry On mod support, and fixing one gameplay-affecting enderchest interaction
+bug. **Fully save-compatible with 3.3** — no world data migration, no config
+migration. **Requires Fabric Loader 0.19.3 or later** (bumped from 0.18.4).
+
+### Added
+
+- **`io.icker.factions.api.ClaimPermissions` — public permission API.** A stable,
+  additive surface for other server-side mods to consult claim rules before
+  mutating the world. The full decision engine — bypass level, claim ownership,
+  power sufficiency, guest permissions, guest-grant quotas, ally overrides, and
+  relationship permissions — is exposed as static methods and used internally by
+  `InteractionManager` for every break/place/use event.
+
+  ```java
+  ClaimPermissions.canPlaceBlock(ServerPlayer, BlockPos)               // dry-run
+  ClaimPermissions.canPlaceBlock(ServerPlayer, BlockPos, ItemStack)    // dry-run, honors restrictedItems
+  ClaimPermissions.tryPlaceBlock(ServerPlayer, BlockPos)               // allow + consume guest quota
+  ClaimPermissions.tryPlaceBlock(ServerPlayer, BlockPos, ItemStack)    // allow + consume, honors restrictedItems
+  ClaimPermissions.check(Player, BlockPos, Level, Permissions,
+                         boolean consumeQuota, ItemStack usedItem)     // general predicate
+  ClaimPermissions.isRestrictedForGuests(ItemStack)
+  ClaimPermissions.isNonMemberInClaim(Player, BlockPos, Level)
+  ```
+
+  Consuming variants (`tryPlaceBlock`, `check(..., true, ...)`) decrement guest
+  quotas exactly once and warn the player via `InteractionsUtil`. Dry-run
+  variants never mutate state. `ItemStack.EMPTY` skips the guest-restricted-item
+  check.
+
+- **Carry On mod integration.** With Carry On 2.11.1+ installed, block pickup
+  and placement now respect Factions claim rules — non-members cannot carry
+  blocks out of a claim they lack `BREAK_BLOCKS` on, and cannot place carried
+  blocks into a claim they lack `PLACE_BLOCKS` on. Guest grants are consumed
+  exactly once per successful action. Carry On calls `ClaimPermissions` via
+  optional reflection, so it also works standalone when Factions is absent.
+
+  **Version pairing required.** Carry On 2.11.1+ fails **closed** (denies every
+  carried-block placement) if it detects a Factions build older than 3.4 — the
+  `ClaimPermissions` class is missing, so the reflective lookup returns nothing
+  and the compat layer conservatively rejects. Keep both jars in lockstep on
+  servers that use both mods.
+
+### Changed
+
+- **Minimum Fabric Loader raised to 0.19.3** (from 0.18.4). Required for Carry
+  On compatibility on Minecraft 26.2. No other API surfaces changed.
+- **`InteractionManager` permission logic extracted into `ClaimPermissions`.**
+  Internal refactor — every break/place/use decision that lived inline in
+  `InteractionManager.checkPermissions` now delegates to
+  `ClaimPermissions.check`. Same inputs produce the same `InteractionResult`;
+  no gameplay change.
+
+### Fixed
+
+- **Right-clicking an enderchest without being in a faction was blocked with
+  "Cannot use enderchests when not in a faction" instead of opening the personal
+  enderchest.** When `safe.enderChest=true` (faction safe replaces the vanilla
+  enderchest for members), `FactionsManager.openSafe` unconditionally rejected
+  non-faction players — sending the `factions.events.no_enderchests_without_faction`
+  fail message and returning `InteractionResult.FAIL`, which the
+  `EnderChestBlockMixin` propagated to cancel the vanilla open. Non-faction
+  players now fall through with `InteractionResult.PASS` so vanilla
+  `EnderChestBlock.useWithoutItem` opens their personal enderchest. Faction
+  members continue to open the shared faction safe when the feature is enabled.
+  When `safe.enderChest=false` the mixin still short-circuits early, so this
+  change has no effect there — it only matters when the feature is turned on.
+
+  The `factions.events.no_enderchests_without_faction` translation key is now
+  unreferenced by code but left in `en_us.json` and `ru_ru.json` for downstream
+  language packs — **no action required**.
+
+### Upgrade from 3.3
+
+1. Stop the server
+2. **Verify your Fabric Loader is 0.19.3 or later.** The 3.3 minimum was 0.18.4;
+   this release bumps that requirement.
+3. Replace `factions-mc26.2-3.3.jar` with `factions-mc26.2-3.4.jar`
+4. Start the server
+
+No config edits required. No data migration. Downgrading back to 3.3 is safe.
+Third-party mods that reflectively call `ClaimPermissions` will need to handle
+its absence when downgraded (Carry On does this automatically).
+
+### Testing
+
+`./gradlew build` exits 0.
+
+---
+
+## [3.3]
+
+**Minecraft 26.2 · Fabric Loader 0.18.4 · Fabric API 0.155.2+26.2**
+
+Release adding a full two-phase item-trading GUI on `/f trade`, a per-faction elytra flight rule, and removing the superseded `/f settings radar` command. **Fully save-compatible with 3.2** — no world data migration, no config migration.
+
+### Added
+
+- **`/f trade` now opens a two-phase trading interface.** On accept, the requesting player
+  teleports to a configurable facing-west position and the responding player to a
+  facing-east position (both configurable via the new `tradeStage` config block). Each
+  player gets a private 27-slot **Placement chest** (Phase 1): place items to trade, then
+  click the slimeball to confirm. Once both confirm, a read-only **Reveal chest** (Phase 2)
+  shows each other's offer: click the slimeball to **Accept**, the ender pearl to
+  **Renegotiate** (returns to Phase 1 with items intact), or magma cream to **Decline**.
+  When both accept, items swap atomically on the server main thread with a capacity
+  pre-flight — if either player's inventory is full the trade is rejected and all items
+  return to their owners. Any disconnect, decline, or GUI-close cancels for both players
+  and returns items to each owner's inventory (or drops them at the pre-trade position if
+  inventory full).
+- **`/f rules elytra <enabled|disabled>` disables elytra flight in faction claims.**
+  LEADER/OWNER only; defaults to `enabled` (no behavior change on existing worlds). When
+  disabled, any player who enters a claim while fall-flying is force-landed via
+  `stopFallFlying()` (vanilla fall damage applies). Applies to all visitors including
+  allies; `user.bypass=true` admins are exempt.
+
+### Changed
+
+- **`/f trade` on-accept now opens the trading GUI** instead of teleporting both parties
+  to the gathering hall. A new `tradeStage` config block (separate from `gather`)
+  controls the two facing positions.
+
+### Removed
+
+- **`/f settings radar`** and the `User.radar` persistent field are removed. The Location
+  Announcer (added in 3.1) provides the same territory indicator via the actionbar.
+  Existing user JSON records containing `"Radar": true/false` are silently ignored by the
+  database layer on load — **no action required**.
+
+### Configuration
+
+New `tradeStage` block written to `config/factions.json` on first launch. Existing
+settings are preserved.
+
+```json
+{
+  "tradeStage": {
+    "enabled": true,
+    "requesterX": 1.050, "requesterY": 160.125, "requesterZ": -27.500,
+    "requesterYaw": 89.7, "requesterPitch": 3.2,
+    "recipientX": -2.050, "recipientY": 160.125, "recipientZ": -27.482,
+    "recipientYaw": -90.9, "recipientPitch": 3.2,
+    "level": "minecraft:overworld"
+  }
+}
+```
+
+### Upgrade from 3.2
+
+1. Stop the server
+2. Replace `factions-mc26.2-3.2.jar` with `factions-mc26.2-3.3.jar`
+3. Start the server
+
+No config edits required. No data migration. Downgrading back to 3.2 is safe.
+
+### Testing
+
+`./gradlew clean build test` exits 0. All previous tests pass, plus N new suites.
+
 ## [3.2]
 
 **Minecraft 26.2 · Fabric Loader 0.18.4 · Fabric API 0.155.2+26.2**

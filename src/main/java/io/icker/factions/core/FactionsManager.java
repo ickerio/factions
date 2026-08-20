@@ -123,14 +123,6 @@ public class FactionsManager {
         User user = User.get(player.getUUID());
 
         if (!user.isInFaction()) {
-            if (FactionsMod.CONFIG.SAFE != null && FactionsMod.CONFIG.SAFE.ENDER_CHEST) {
-                new Message(
-                                Component.translatable(
-                                        "factions.events.no_enderchests_without_faction"))
-                        .fail()
-                        .send(player, false);
-                return InteractionResult.FAIL;
-            }
             return InteractionResult.PASS;
         }
 

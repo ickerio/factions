@@ -53,24 +53,6 @@ public class SettingsCommand implements Command {
         return 1;
     }
 
-    private int radar(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        CommandSourceStack source = context.getSource();
-        ServerPlayer player = source.getPlayerOrException();
-
-        User config = User.get(player.getUUID());
-        boolean radar = !config.radar;
-        config.radar = radar;
-
-        new Message(Component.translatable("factions.command.settings.radar"))
-                .filler("·")
-                .add(
-                        new Message(Component.translatable("options." + (radar ? "on" : "off")))
-                                .format(radar ? ChatFormatting.GREEN : ChatFormatting.RED))
-                .send(player, false);
-
-        return 1;
-    }
-
     public LiteralCommandNode<CommandSourceStack> getNode() {
         return Commands.literal("settings")
                 .requires(Requires.hasPerms("factions.settings", 0))
@@ -98,10 +80,6 @@ public class SettingsCommand implements Command {
                                                                 setChat(
                                                                         context,
                                                                         User.ChatMode.FOCUS))))
-                .then(
-                        Commands.literal("radar")
-                                .requires(Requires.hasPerms("factions.settings.radar", 0))
-                                .executes(this::radar))
                 .then(
                         Commands.literal("sounds")
                                 .requires(Requires.hasPerms("factions.settings.sounds", 0))

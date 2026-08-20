@@ -43,6 +43,7 @@ public class Config {
                         .registerTypeAdapter(
                                 TeleportConfig.class, new Deserializer<>(TeleportConfig.class))
                         .registerTypeAdapter(GatherConfig.class, new Deserializer<>(GatherConfig.class))
+                        .registerTypeAdapter(TradeStageConfig.class, new Deserializer<>(TradeStageConfig.class))
                         .create();
 
         try {
@@ -106,6 +107,10 @@ public class Config {
     @SerializedName("gather")
     @Nullable
     public GatherConfig GATHER = new GatherConfig();
+
+    @SerializedName("tradeStage")
+    @Nullable
+    public TradeStageConfig TRADE_STAGE = new TradeStageConfig();
 
     @SerializedName("display")
     public DisplayConfig DISPLAY = new DisplayConfig();

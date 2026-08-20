@@ -71,6 +71,16 @@ public class Faction {
     public ArrayList<Relationship.Permissions> guest_permissions
             = new ArrayList<>(FactionsMod.CONFIG.RELATIONSHIPS.DEFAULT_GUEST_PERMISSIONS);
 
+    @Field("Rules")
+    public Rules rules = new Rules();
+
+    public static class Rules {
+        @Field("Elytra")
+        public boolean elytra = true;
+
+        public Rules() {}
+    }
+
     public Faction(
             String name,
             String description,
@@ -211,6 +221,10 @@ public class Faction {
 
     public void addAdminPower(int amount) {
         adminPower += amount;
+    }
+
+    public boolean isElytraAllowed() {
+        return rules != null && rules.elytra;
     }
 
     public List<User> getUsers() {
