@@ -80,7 +80,7 @@ public class PlaceholdersWrapper {
                 (member) -> {
                     if (!member.isInFaction()) return Component.nullToEmpty("reset");
 
-                    return Component.nullToEmpty(member.getFaction().getColor().getName());
+                    return Component.nullToEmpty(member.getFaction().getColor().name());
                 });
 
         register(

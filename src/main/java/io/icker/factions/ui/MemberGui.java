@@ -20,6 +20,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.ProfileResolver;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 
 import org.jetbrains.annotations.Nullable;
@@ -187,7 +188,7 @@ public class MemberGui extends PagedGui {
                                 for (int i = 0; i < 5; i++)
                                     gui.setSlot(
                                             i,
-                                            new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)
+                                            new GuiElementBuilder(Items.STAINED_GLASS_PANE.pick(DyeColor.WHITE))
                                                     .hideTooltip());
                                 gui.setTitle(
                                         Component.translatable(

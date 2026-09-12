@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.ProfileResolver;
 import net.minecraft.util.Util;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 
 import org.jetbrains.annotations.Nullable;
@@ -61,7 +62,7 @@ public class InfoGui extends SimpleGui {
         this.setTitle(Component.translatable("factions.gui.info.title"));
 
         for (int i = 0; i < 9; i++)
-            this.setSlot(i, new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip());
+            this.setSlot(i, new GuiElementBuilder(Items.STAINED_GLASS_PANE.pick(DyeColor.WHITE)).hideTooltip());
 
         // Faction info
         this.setSlot(
