@@ -116,10 +116,10 @@ public class SquareMapWrapper {
                                             MarkerOptions.builder()
                                                     .fillColor(
                                                             new Color(
-                                                                    TeamColor.byName(faction.getColor().name()).rgb()))
+                                                                    TeamColor.byName(faction.getColor().name().toLowerCase()).rgb()))
                                                     .strokeColor(
                                                             new Color(
-                                                                    TeamColor.byName(faction.getColor().name()).rgb()))
+                                                                    TeamColor.byName(faction.getColor().name().toLowerCase()).rgb()))
                                                     .hoverTooltip(faction.getName())
                                                     .clickTooltip(info));
 

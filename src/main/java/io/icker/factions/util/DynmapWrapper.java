@@ -117,7 +117,7 @@ public class DynmapWrapper {
                                 new double[] {pos.getMinBlockZ(), pos.getMaxBlockZ() + 1},
                                 true);
                 if (marker != null) {
-                    marker.setFillStyle(marker.getFillOpacity(), TeamColor.byName(faction.getColor().name()).rgb());
+                    marker.setFillStyle(marker.getFillOpacity(), TeamColor.byName(faction.getColor().name().toLowerCase()).rgb());
                     marker.setLineStyle(0, 0, 0);
                 }
             }
@@ -154,7 +154,7 @@ public class DynmapWrapper {
                             marker.setLineStyle(
                                     marker.getLineWeight(),
                                     marker.getLineOpacity(),
-                                    TeamColor.byName(faction.getColor().name()).rgb());
+                                    TeamColor.byName(faction.getColor().name().toLowerCase()).rgb());
                         }
                     }
                 }
@@ -168,9 +168,9 @@ public class DynmapWrapper {
         for (Claim claim : faction.getClaims()) {
             AreaMarker marker = markerSet.findAreaMarker(claim.getKey());
 
-            marker.setFillStyle(marker.getFillOpacity(), TeamColor.byName(faction.getColor().name()).rgb());
+            marker.setFillStyle(marker.getFillOpacity(), TeamColor.byName(faction.getColor().name().toLowerCase()).rgb());
             marker.setLineStyle(
-                    marker.getLineWeight(), marker.getLineOpacity(), TeamColor.byName(faction.getColor().name()).rgb());
+                    marker.getLineWeight(), marker.getLineOpacity(), TeamColor.byName(faction.getColor().name().toLowerCase()).rgb());
             marker.setDescription(info);
         }
     }
