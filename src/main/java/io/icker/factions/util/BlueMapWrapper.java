@@ -20,6 +20,7 @@ import io.icker.factions.api.persistents.Faction;
 import io.icker.factions.api.persistents.Home;
 
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.scores.TeamColor;
 
 import java.util.HashMap;
 import java.util.List;
@@ -133,9 +134,9 @@ public class BlueMapWrapper {
                                     .shape(shapes.removeFirst(), -64, 320)
                                     .holes(shapes.toArray(new Shape[0]))
                                     .fillColor(
-                                            new Color(faction.getColor().getColor() | 0x40000000))
+                                            new Color(TeamColor.byName(faction.getColor().name().toLowerCase()).rgb() | 0x40000000))
                                     .lineColor(
-                                            new Color(faction.getColor().getColor() | 0xFF000000))
+                                            new Color(TeamColor.byName(faction.getColor().name().toLowerCase()).rgb() | 0xFF000000))
                                     .label(faction.getName())
                                     .detail(info)
                                     .build();

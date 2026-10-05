@@ -19,6 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 
 import xyz.nucleoid.server.translations.api.Localization;
@@ -43,7 +44,7 @@ public class AdminGui extends SimpleGui {
                 FactionsMod.dynmap == null ? List.of(1, 3, 5, 7) : List.of(0, 2, 4, 6, 8);
 
         for (int i = 0; i < 9; i++)
-            this.setSlot(i, new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip());
+            this.setSlot(i, new GuiElementBuilder(Items.STAINED_GLASS_PANE.pick(DyeColor.WHITE)).hideTooltip());
 
         // Bypass icon
         this.setSlot(indexes.get(0), buildBypassElement(user));

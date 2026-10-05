@@ -78,7 +78,7 @@ public class Faction {
         this.name = name;
         this.motd = motd;
         this.description = description;
-        this.color = color.getName();
+        this.color = color.name();
         this.open = open;
         this.power = power;
     }
@@ -124,7 +124,7 @@ public class Faction {
     }
 
     public ChatFormatting getColor() {
-        return ChatFormatting.getByName(color);
+        return ChatFormatting.valueOf(color.toUpperCase());
     }
 
     public String getDescription() {
@@ -169,7 +169,7 @@ public class Faction {
     }
 
     public void setColor(ChatFormatting color) {
-        this.color = color.getName();
+        this.color = color.name();
         FactionEvents.MODIFY.invoker().onModify(this);
     }
 

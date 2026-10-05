@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -130,7 +131,7 @@ public abstract class PagedGui extends SimpleGui {
                 DisplayElement.of(GuiElementBuilder.from(ItemStack.EMPTY).build());
         private static final DisplayElement FILLER =
                 DisplayElement.of(
-                        new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)
+                        new GuiElementBuilder(Items.STAINED_GLASS_PANE.pick(DyeColor.WHITE))
                                 .setName(Component.empty())
                                 .hideTooltip());
 

@@ -15,11 +15,12 @@ import io.icker.factions.util.Message;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ColorArgument;
+import net.minecraft.commands.arguments.TeamColorArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 
+import net.minecraft.world.scores.TeamColor;
 import xyz.nucleoid.server.translations.api.Localization;
 
 import java.util.Locale;
@@ -112,7 +113,8 @@ public class ModifyCommand implements Command {
     }
 
     private int color(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ChatFormatting color = ColorArgument.getColor(context, "color");
+        TeamColor teamColor = TeamColorArgument.getTeamColor(context, "color");
+        ChatFormatting color = ChatFormatting.valueOf(teamColor.name());
 
         CommandSourceStack source = context.getSource();
         ServerPlayer player = source.getPlayerOrException();
@@ -196,7 +198,7 @@ public class ModifyCommand implements Command {
                         Commands.literal("color")
                                 .requires(Requires.hasPerms("factions.modify.color", 0))
                                 .then(
-                                        Commands.argument("color", ColorArgument.color())
+                                        Commands.argument("color", TeamColorArgument.teamColor())
                                                 .executes(this::color)))
                 .then(
                         Commands.literal("open")

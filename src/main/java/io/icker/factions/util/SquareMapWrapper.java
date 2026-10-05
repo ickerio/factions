@@ -10,6 +10,7 @@ import io.icker.factions.api.persistents.Home;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
+import net.minecraft.world.scores.TeamColor;
 import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.api.Point;
@@ -115,10 +116,10 @@ public class SquareMapWrapper {
                                             MarkerOptions.builder()
                                                     .fillColor(
                                                             new Color(
-                                                                    faction.getColor().getColor()))
+                                                                    TeamColor.byName(faction.getColor().name().toLowerCase()).rgb()))
                                                     .strokeColor(
                                                             new Color(
-                                                                    faction.getColor().getColor()))
+                                                                    TeamColor.byName(faction.getColor().name().toLowerCase()).rgb()))
                                                     .hoverTooltip(faction.getName())
                                                     .clickTooltip(info));
 
