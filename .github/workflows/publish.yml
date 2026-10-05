@@ -53,7 +53,7 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           # Only include this section if you wish to publish your assets to CurseForge.
-          curseforge-id: 394468
+          curseforge-id: 497362
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           # Only include this section if you wish to publish your assets to GitHub.
