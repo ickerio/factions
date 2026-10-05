@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: checkout repository
@@ -26,13 +28,13 @@ jobs:
           ./gradlew javadoc
       - name: Create hash
         uses: BlueZeeKing/fabric-mod-hash@v1.2
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            ./build/libs/factions-mc!(-sources).jar
-            ./*.sha512
-          draft: true
+      # - name: Release
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     files: |
+      #       ./build/libs/factions-mc!(-sources).jar
+      #       ./*.sha512
+      #     draft: true
       - name: Deploy javadoc
         uses: crazy-max/ghaction-github-pages@v3
         with:
@@ -40,3 +42,19 @@ jobs:
           build_dir: build/docs/javadoc
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: Kira-NT/mc-publish@v3
+        with:
+          # If your build toolchain doesn't place the resulting artifacts directly in build/libs/,
+          # you will need to manually specify what you want to upload:
+          # files: build/libs/fabric/!(*-@(dev|sources|javadoc)).jar
+
+          # Only include this section if you wish to publish your assets to Modrinth.
+          modrinth-id: ZjwW8Q6n
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          # Only include this section if you wish to publish your assets to CurseForge.
+          curseforge-id: 394468
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          # Only include this section if you wish to publish your assets to GitHub.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
