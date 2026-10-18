@@ -29,7 +29,7 @@ public class WorldManager {
         ServerLevel world = (ServerLevel) player.level();
         String dimension = world.dimension().identifier().toString();
 
-        ChunkPos chunkPos = world.getChunk(player.blockPosition()).getPos();
+        ChunkPos chunkPos = player.chunkPosition();
 
         Claim claim = Claim.get(chunkPos.x(), chunkPos.z(), dimension);
         if (user.autoclaim && claim == null) {
