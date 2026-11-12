@@ -36,10 +36,10 @@ public class PlayerEvents {
             EventFactory.createArrayBacked(
                     ExplodeBlock.class,
                     callbacks ->
-                            (explosion, world, pos, state) -> {
+                            (explosion, world, pos) -> {
                                 for (ExplodeBlock callback : callbacks) {
                                     InteractionResult result =
-                                            callback.onExplodeBlock(explosion, world, pos, state);
+                                            callback.onExplodeBlock(explosion, world, pos);
                                     if (result != InteractionResult.PASS) {
                                         return result;
                                     }
@@ -156,8 +156,7 @@ public class PlayerEvents {
 
     @FunctionalInterface
     public interface ExplodeBlock {
-        InteractionResult onExplodeBlock(
-                Explosion explosion, BlockGetter world, BlockPos pos, BlockState state);
+        InteractionResult onExplodeBlock(Explosion explosion, BlockGetter world, BlockPos pos);
     }
 
     @FunctionalInterface
