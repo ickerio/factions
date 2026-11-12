@@ -3,43 +3,32 @@ package io.icker.factions.mixin;
 import io.icker.factions.api.events.PlayerEvents;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.ExplosionDamageCalculator;
-import net.minecraft.world.level.ServerExplosion;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.*;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Mixin(ServerExplosion.class)
 public class ServerExplosionMixin {
-    @Redirect(
-            method = "calculateExplodedPositions",
-            at =
-                    @At(
-                            value = "INVOKE",
-                            target =
-                                    "Lnet/minecraft/world/level/ExplosionDamageCalculator;shouldBlockExplode(Lnet/minecraft/world/level/Explosion;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;F)Z"))
-    public boolean calculateExplodedPositions(
-            ExplosionDamageCalculator behavior,
-            Explosion explosion,
-            BlockGetter world,
-            BlockPos pos,
-            BlockState state,
-            float power) {
-        InteractionResult result =
-                PlayerEvents.EXPLODE_BLOCK.invoker().onExplodeBlock(explosion, world, pos, state);
-        if (result.consumesAction()) {
-            return true;
-        } else if (result == InteractionResult.FAIL) {
-            return false;
-        }
+    @Shadow
+    @Final
+    private ServerLevel level;
 
-        return behavior.shouldBlockExplode(explosion, world, pos, state, power);
+    @Inject(method = "calculateExplodedPositions", at = @At("TAIL"))
+    private void canDestroyBlock(CallbackInfoReturnable<List<BlockPos>> cir) {
+        Explosion explosion = (Explosion) this;
+
+        cir.getReturnValue().removeIf((b) -> PlayerEvents.EXPLODE_BLOCK.invoker().onExplodeBlock(explosion, level, b) == InteractionResult.FAIL);
     }
 
     @Redirect(
