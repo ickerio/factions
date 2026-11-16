@@ -53,7 +53,7 @@ public class PlaceholdersWrapper {
                 "colorless_name",
                 (member) -> {
                     Faction faction = member.getFaction();
-                    if (faction == null) return FORMATTED_NULL;
+                    if (faction == null) return UNFORMATTED_NULL;
 
                     return Component.nullToEmpty(faction.getName());
                 });
@@ -78,7 +78,7 @@ public class PlaceholdersWrapper {
         register(
                 "color",
                 (member) -> {
-                    if (!member.isInFaction()) return Component.nullToEmpty("reset");
+                    if (!member.isInFaction()) return Component.nullToEmpty("dark_gray");
 
                     return Component.nullToEmpty(member.getFaction().getColor().name());
                 });
