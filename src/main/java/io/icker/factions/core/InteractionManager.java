@@ -65,8 +65,7 @@ public class InteractionManager {
         return !result;
     }
 
-    private static InteractionResult onExplodeBlock(
-            Explosion explosion, BlockGetter world, BlockPos pos, BlockState state) {
+    private static InteractionResult onExplodeBlock(Explosion explosion, BlockGetter world, BlockPos pos) {
         if (explosion.getIndirectSourceEntity() != null
                 && explosion.getIndirectSourceEntity() instanceof Player) {
             InteractionResult result =
